@@ -20,6 +20,7 @@ import Settings from './Settings';
 import UserProfile from './UserProfile';
 import CourseDetailView from './CourseDetailView';
 import StudentTeacherDashboard from './StudentTeacherDashboard';
+import EnrollmentFlow from './EnrollmentFlow';
 import { getAllInstructors, getInstructorWithCourses, getCourseById, getAllCourses, getInstructorById, getIndexedCourses, getIndexedInstructors } from '../data/database';
 import { UserPropType } from './PropTypes';
 
@@ -169,6 +170,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   const [openCreatorFollowDropdown, setOpenCreatorFollowDropdown] = useState(null); // Track which creator's follow dropdown is open
   const [selectedCourseForListing, setSelectedCourseForListing] = useState(null);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false); // Track course description expansion
+  const [showEnrollmentFlow, setShowEnrollmentFlow] = useState(false); // Track enrollment modal visibility
+  const [enrollingCourse, setEnrollingCourse] = useState(null); // Course being enrolled in
 
     // Only reset Browse state when explicitly requested (double-click Browse or Browse_Reset)
     // This preserves state when navigating away and back
@@ -1174,6 +1177,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             {courseData.price}
           </span>
           <button 
+            onClick={() => {
+              setEnrollingCourse(courseData);
+              setShowEnrollmentFlow(true);
+            }}
             style={{ 
               background: accentBlue,
               color: '#fff',
@@ -1766,6 +1773,25 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             </div>
           </div>
         </div>
+        
+        {/* Enrollment Flow Modal */}
+        {showEnrollmentFlow && enrollingCourse && (
+          <EnrollmentFlow
+            course={enrollingCourse}
+            instructor={getInstructorById(enrollingCourse.instructorId)}
+            isDarkMode={isDarkMode}
+            onClose={() => {
+              setShowEnrollmentFlow(false);
+              setEnrollingCourse(null);
+            }}
+            onComplete={(booking) => {
+              console.log('Booking complete:', booking);
+              setShowEnrollmentFlow(false);
+              setEnrollingCourse(null);
+              // Could navigate to dashboard or show success message
+            }}
+          />
+        )}
       </div>
     );
   }
