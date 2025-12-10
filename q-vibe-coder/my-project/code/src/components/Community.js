@@ -692,19 +692,23 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       likes: post.likes || 0,
       replies: post.comments || 0,
       retweets: post.shares || 0,
+      audience: post.audience, // Keep original audience for filtering
       community: post.audience === 'everyone' ? 'Everyone' : post.audience,
       isRealPost: true,
       supabaseId: post.id
     }));
 
     let filteredFakePosts;
+    let filteredRealPosts;
     
     // Get all followed course IDs from grouped creators
     const allFollowedCourseIds = groupedByCreator.flatMap(c => c.followedCourseIds);
     
     if (activeTab === 'Home') {
-      // Home tab: Show all posts from followed courses
+      // Home tab: Show all posts from followed courses AND all real posts (everyone + creator-specific)
       filteredFakePosts = fakePosts.filter(post => allFollowedCourseIds.includes(post.courseId));
+      // Show all real posts on Home tab
+      filteredRealPosts = formattedRealPosts;
     } else {
       // Specific creator tab: Filter based on that creator's followed courses
       const activeCreator = groupedByCreator.find(c => c.id === activeTab);
@@ -718,18 +722,22 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
             activeCreator.followedCourseIds.includes(post.courseId)
           );
         }
+        // Filter real posts to show only those posted to 'everyone' OR this specific creator
+        filteredRealPosts = formattedRealPosts.filter(post => 
+          post.audience === 'everyone' || post.audience === activeTab
+        );
       } else {
         filteredFakePosts = [];
+        filteredRealPosts = [];
       }
     }
     
-    // ALWAYS show real posts first, then filtered fake posts
-    // Real posts appear regardless of followed communities
-    const combinedPosts = [...formattedRealPosts, ...filteredFakePosts];
+    // Combine filtered real posts with filtered fake posts
+    const combinedPosts = [...filteredRealPosts, ...filteredFakePosts];
     
     // If on Home tab and no communities followed, still show real posts
     if (activeTab === 'Home' && combinedPosts.length === 0) {
-      return formattedRealPosts;
+      return filteredRealPosts;
     }
     
     // Sort: Real posts first (by time), then fake posts by engagement
@@ -1107,11 +1115,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                                 // Toggle follow/unfollow for this course
                                 const courseCommunityId = `course-${course.id}`;
                                 const creatorId = `creator-${creator.instructorId}`;
-                                console.log('[Community] MouseDown on course:', course.title, 'isFollowed:', isFollowed);
-                                
                                 if (isFollowed) {
                                   // Unfollow this course - need to handle both direct course follows AND creator follows
-                                  console.log('[Community] Unfollowing course:', course.id);
                                   actualSetFollowedCommunities(prev => {
                                     let newList = [...prev];
                                     
@@ -1143,12 +1148,10 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                                       }
                                     }
                                     
-                                    console.log('[Community] After unfollow:', newList.map(c => c.id));
                                     return newList;
                                   });
                                 } else {
                                   // Follow this course
-                                  console.log('[Community] Following course:', course.id);
                                   const courseCommunity = {
                                     id: courseCommunityId,
                                     name: course.title,
