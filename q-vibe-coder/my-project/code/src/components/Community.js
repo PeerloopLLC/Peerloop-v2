@@ -970,51 +970,21 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         style={{ fontSize: 10, marginLeft: 4, padding: '4px', cursor: 'pointer' }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          // Toggle dropdown only when clicking the arrow
-                          if (openCreatorDropdown === creator.id) {
-                            setOpenCreatorDropdown(null);
-                          } else {
-                            // Calculate position based on the button
-                            const button = e.target.closest('.community-tab-btn');
-                            if (button) {
-                              const rect = button.getBoundingClientRect();
-                              const dropdownWidth = 280; // Max dropdown width
-                              const viewportWidth = window.innerWidth;
-                              
-                              // Check if dropdown would overflow right edge
-                              const wouldOverflowRight = rect.right + 50 > viewportWidth || rect.left + dropdownWidth > viewportWidth - 20;
-                              
-                              if (wouldOverflowRight) {
-                                // Use right positioning - anchor to right edge of screen
-                                setDropdownPosition({
-                                  top: rect.bottom + 4,
-                                  left: 'auto',
-                                  useRight: true
-                                });
-                              } else {
-                                // Use left positioning - align to button
-                                setDropdownPosition({
-                                  top: rect.bottom + 4,
-                                  left: Math.max(10, rect.left),
-                                  useRight: false
-                                });
-                              }
-                            }
-                            setOpenCreatorDropdown(creator.id);
-                          }
+                          // Toggle dropdown
+                          setOpenCreatorDropdown(openCreatorDropdown === creator.id ? null : creator.id);
                         }}
                       >▼</span>
                     </button>
                     
-                    {/* Minimalist dropdown - same style as Browse Creators */}
+                    {/* Minimalist dropdown - positioned below the tab */}
                     {openCreatorDropdown === creator.id && (
                       <div 
                         className="community-tab-dropdown"
                         style={{
-                          position: 'fixed',
-                          top: dropdownPosition.top,
-                          left: dropdownPosition.useRight ? 'auto' : dropdownPosition.left,
-                          right: dropdownPosition.useRight ? 10 : 'auto',
+                          position: 'absolute',
+                          top: '100%',
+                          left: 0,
+                          marginTop: 4,
                           background: isDarkMode ? '#16181c' : '#fff',
                           border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
                           borderRadius: 8,
