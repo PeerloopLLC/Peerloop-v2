@@ -709,25 +709,22 @@ body.dark-mode .creator-badge {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-width: 320px;
-  width: 100%;
+  max-width: 890px; /* 240px sidebar + 650px content */
+  margin: 0 auto;
   overflow-x: hidden;
   position: relative;
   align-items: flex-start;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Browse page - center sidebar and content together */
-.app.browse-centered {
-  max-width: 890px; /* 240px sidebar + 650px content */
-  margin: 0 auto;
-}
-
-.app.browse-centered .sidebar {
+/* Sidebar flows in the centered layout */
+.app .sidebar {
   position: relative;
   left: auto;
 }
 
-.app.browse-centered .main-content {
+/* Main content uses remaining width */
+.app .main-content {
   width: 650px;
   margin-left: 0;
 }

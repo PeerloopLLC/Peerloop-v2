@@ -52,26 +52,13 @@
 }
 
 .community-center-column {
-  flex: 0 1 760px;
+  flex: 1;
   min-width: 0;
-  max-width: 760px;
+  max-width: 100%;
   border-right: 1px solid var(--border-color);
   border-left: 1px solid var(--border-color);
   overflow-y: auto;
   height: 100vh;
-}
-
-.community-right-pane {
-  flex: 1 0 160px;
-  min-width: 160px;
-  max-width: 250px;
-  padding: 12px;
-  background: var(--bg-secondary);
-  overflow-y: auto;
-  height: 100vh;
-  position: sticky;
-  top: 0;
-  box-sizing: border-box;
 }
 
 .community-right-section {

@@ -1655,39 +1655,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
           </div>
         </div>
 
-        {/* Right Pane */}
-        <div className="community-right-pane">
-          <div className="community-right-section">
-            <h3>Your Communities</h3>
-            {groupedByCreator.length > 0 ? (
-              groupedByCreator.slice(0, 5).map(creator => (
-                <div 
-                  key={creator.id} 
-                  className={`community-mini-card ${activeTab === creator.id ? 'active' : ''}`}
-                  onClick={() => handleTabClick(creator.id)}
-                >
-                  <span className="mini-card-name">{creator.name}</span>
-                  <span className="mini-card-members">
-                    {creator.followedCourseIds.length} course{creator.followedCourseIds.length !== 1 ? 's' : ''} followed
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="no-communities-text">Follow courses or creators</p>
-            )}
-          </div>
-          <div className="community-right-section">
-            <h3>Trending Topics</h3>
-            <div className="topic-tag">#PeerLearning</div>
-            <div className="topic-tag">#StudentTeacher</div>
-            <div className="topic-tag">#AIJourney</div>
-            <div className="topic-tag">#LearnTeachEarn</div>
-          </div>
-          <div className="community-right-section">
-            <h3>Quick Tips</h3>
-            <p className="tip-text">💡 Complete a course to become a Student-Teacher and earn 70% teaching others!</p>
-          </div>
-        </div>
       </div>
     </div>
   );

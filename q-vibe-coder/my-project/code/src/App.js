@@ -267,12 +267,9 @@ function App() {
     return <Login onLoginSuccess={handleLoginSuccess} onDemoLogin={handleDemoLogin} />;
   }
 
-  // Check if we're on Browse page for centered layout
-  const isBrowsePage = activeMenu === 'Browse' || activeMenu === 'Browse_Reset';
-
   return (
     <ErrorBoundary>
-      <div className={`app ${isDarkMode ? 'dark-mode' : ''} ${device.deviceType} ${isBrowsePage ? 'browse-centered' : ''}`}>
+      <div className={`app ${isDarkMode ? 'dark-mode' : ''} ${device.deviceType}`}>
         {/* Left Sidebar - Navigation and user profile */}
         {isCreatorMode ? (
           <CreatorSidebar 

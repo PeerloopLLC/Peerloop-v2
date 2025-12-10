@@ -2232,11 +2232,6 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               ))}
             </div>
           </div>
-          
-          {/* Right Pane - Uses same CSS as Browse */}
-          <div className="right-pane">
-            {/* Placeholder for right pane content */}
-          </div>
         </div>
       </div>
     );
