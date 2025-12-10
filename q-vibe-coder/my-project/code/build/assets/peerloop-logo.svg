@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60">
+  <!-- Left figure (black) -->
+  <circle cx="45" cy="10" r="8" fill="#000000"/>
+  <path d="M 35 20 C 15 25 10 45 40 48 C 65 50 75 35 70 28 C 65 22 55 22 50 28" 
+        stroke="#000000" stroke-width="8" fill="none" stroke-linecap="round"/>
+  
+  <!-- Right figure (blue) -->
+  <circle cx="125" cy="10" r="8" fill="#3F51B5"/>
+  <path d="M 135 20 C 155 25 160 45 130 48 C 105 50 95 35 100 28 C 105 22 115 22 120 28" 
+        stroke="#3F51B5" stroke-width="8" fill="none" stroke-linecap="round"/>
+  
+  <!-- Connection in middle -->
+  <path d="M 70 28 C 80 35 90 35 100 28" 
+        stroke="#000000" stroke-width="8" fill="none" stroke-linecap="round"/>
+  
+  <!-- Text -->
+  <text x="30" y="58" font-family="Arial, sans-serif" font-weight="bold" font-size="18">
+    <tspan fill="#3F51B5">Peer</tspan><tspan fill="#000000">Loop</tspan>
+  </text>
+</svg>
