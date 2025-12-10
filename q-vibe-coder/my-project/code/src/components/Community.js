@@ -970,21 +970,32 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         style={{ fontSize: 10, marginLeft: 4, padding: '4px', cursor: 'pointer' }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          // Toggle dropdown
-                          setOpenCreatorDropdown(openCreatorDropdown === creator.id ? null : creator.id);
+                          if (openCreatorDropdown === creator.id) {
+                            setOpenCreatorDropdown(null);
+                          } else {
+                            // Get button position for dropdown placement
+                            const btn = e.target.closest('.community-tab-btn');
+                            if (btn) {
+                              const rect = btn.getBoundingClientRect();
+                              setDropdownPosition({
+                                top: rect.bottom + 4,
+                                left: rect.left
+                              });
+                            }
+                            setOpenCreatorDropdown(creator.id);
+                          }
                         }}
                       >▼</span>
                     </button>
                     
-                    {/* Minimalist dropdown - positioned below the tab */}
+                    {/* Minimalist dropdown - fixed position to escape overflow containers */}
                     {openCreatorDropdown === creator.id && (
                       <div 
                         className="community-tab-dropdown"
                         style={{
-                          position: 'absolute',
-                          top: '100%',
-                          left: 0,
-                          marginTop: 4,
+                          position: 'fixed',
+                          top: dropdownPosition.top,
+                          left: dropdownPosition.left,
                           background: isDarkMode ? '#16181c' : '#fff',
                           border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
                           borderRadius: 8,
