@@ -722,9 +722,14 @@ body.dark-mode .creator-badge {
   margin: 0 auto;
 }
 
+.app.browse-centered .sidebar {
+  position: relative;
+  left: auto;
+}
+
 .app.browse-centered .main-content {
   width: 650px;
-  margin-left: 240px;
+  margin-left: 0;
 }
 
 /* Responsive design - sidebar shrinks at 1400px */
