@@ -1011,14 +1011,14 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         style={{
                           position: 'fixed',
                           top: dropdownPosition.top,
-                          left: dropdownPosition.left,
+                          left: Math.min(dropdownPosition.left, window.innerWidth - 290),
+                          right: 'auto',
                           background: isDarkMode ? '#16181c' : '#fff',
                           border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
                           borderRadius: 8,
                           boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.4)' : '0 2px 12px rgba(0,0,0,0.1)',
                           zIndex: 99999,
-                          minWidth: 200,
-                          maxWidth: 280,
+                          width: 250,
                           padding: '4px 0'
                         }}>
                         {/* Follow All option */}
