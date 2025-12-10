@@ -96,6 +96,9 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   // This ensures consistency between Browse follows and Community display
   const actualFollowedCommunities = followedCommunities;
   const actualSetFollowedCommunities = setFollowedCommunities || (() => {});
+  
+  // Debug: log if setFollowedCommunities is available
+  console.log('Community: setFollowedCommunities is:', typeof setFollowedCommunities);
 
   // Group followed communities by creator - always show creator tabs, not individual courses
   const groupedByCreator = React.useMemo(() => {
@@ -977,9 +980,22 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                             const btn = e.target.closest('.community-tab-btn');
                             if (btn) {
                               const rect = btn.getBoundingClientRect();
+                              const dropdownWidth = 280;
+                              const viewportWidth = window.innerWidth;
+                              
+                              // Calculate left position, ensuring dropdown doesn't go off right edge
+                              let leftPos = rect.left;
+                              if (rect.left + dropdownWidth > viewportWidth - 10) {
+                                // Align to right edge of button instead
+                                leftPos = rect.right - dropdownWidth;
+                              }
+                              // Ensure it doesn't go off left edge either
+                              leftPos = Math.max(10, leftPos);
+                              
+                              console.log('Button rect:', rect, 'Dropdown at:', { top: rect.bottom + 4, left: leftPos });
                               setDropdownPosition({
                                 top: rect.bottom + 4,
-                                left: rect.left
+                                left: leftPos
                               });
                             }
                             setOpenCreatorDropdown(creator.id);
@@ -1102,11 +1118,16 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                                 e.preventDefault();
                                 // Toggle follow/unfollow for this course
                                 const courseCommunityId = `course-${course.id}`;
+                                console.log('Dropdown click:', { courseId: course.id, courseCommunityId, isFollowed });
                                 if (isFollowed) {
                                   // Unfollow this course
-                                  actualSetFollowedCommunities(prev => 
-                                    prev.filter(c => c.id !== courseCommunityId)
-                                  );
+                                  console.log('Unfollowing:', courseCommunityId);
+                                  actualSetFollowedCommunities(prev => {
+                                    console.log('Previous communities:', prev);
+                                    const filtered = prev.filter(c => c.id !== courseCommunityId);
+                                    console.log('Filtered communities:', filtered);
+                                    return filtered;
+                                  });
                                 } else {
                                   // Follow this course
                                   const courseCommunity = {
