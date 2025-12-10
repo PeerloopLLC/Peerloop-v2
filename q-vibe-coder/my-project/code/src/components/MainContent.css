@@ -5,17 +5,17 @@
   overflow-y: auto;
   overflow-x: hidden;
   height: 100vh;
-  margin-left: 240px;
-  width: calc(100vw - 240px);
-  max-width: none;
+  margin-left: 0;
+  width: 650px;
+  max-width: 650px;
   min-width: 0;
-  transition: margin-left 0.3s ease, width 0.3s ease, background-color 0.3s ease;
+  transition: background-color 0.3s ease;
   position: relative;
   box-sizing: border-box;
   padding: 0;
 }
 
-/* Three Column Layout */
+/* Two Column Layout (no right pane) */
 .three-column-layout {
   display: flex;
   width: 100%;
@@ -24,18 +24,18 @@
 }
 
 .center-column {
-  flex: 0 1 760px;
+  flex: 1;
   min-width: 0;
-  max-width: 760px;
+  max-width: 650px;
   border-right: 1px solid var(--border-color, #e2e8f0);
   border-left: 1px solid var(--border-color, #e2e8f0);
   overflow-y: auto;
   height: 100vh;
 }
-/* Browse layout - no right pane, left-aligned content column */
 
+/* Browse layout - same as default now */
 .browse-layout .center-column {
-  flex: 0 1 650px;
+  flex: 1;
   max-width: 650px;
   margin: 0;
   border-right: 1px solid var(--border-color, #e2e8f0);

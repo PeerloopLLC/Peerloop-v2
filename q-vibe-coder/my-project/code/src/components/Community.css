@@ -54,7 +54,7 @@
 .community-center-column {
   flex: 1;
   min-width: 0;
-  max-width: 100%;
+  max-width: 650px;
   border-right: 1px solid var(--border-color);
   border-left: 1px solid var(--border-color);
   overflow-y: auto;
