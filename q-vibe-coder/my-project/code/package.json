@@ -2,7 +2,7 @@
   "name": "peerloop-app",
   "version": "1.0.0",
   "description": "PeerLoop - Learn, Teach, Earn Education Marketplace",
-  "homepage": "https://brianpeerloop.github.io/Peerloopapp",
+  "homepage": "https://brianpeerloop.github.io/Peerloop-v2",
   "main": "index.js",
   "scripts": {
     "start": "react-scripts start",
