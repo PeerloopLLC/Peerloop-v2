@@ -1106,18 +1106,49 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                                 e.preventDefault();
                                 // Toggle follow/unfollow for this course
                                 const courseCommunityId = `course-${course.id}`;
-                                console.log('[Community] MouseDown on course:', course.title, 'isFollowed:', isFollowed, 'id:', courseCommunityId);
+                                const creatorId = `creator-${creator.instructorId}`;
+                                console.log('[Community] MouseDown on course:', course.title, 'isFollowed:', isFollowed);
+                                
                                 if (isFollowed) {
-                                  // Unfollow this course
-                                  console.log('[Community] Unfollowing:', courseCommunityId);
+                                  // Unfollow this course - need to handle both direct course follows AND creator follows
+                                  console.log('[Community] Unfollowing course:', course.id);
                                   actualSetFollowedCommunities(prev => {
-                                    const newList = prev.filter(c => c.id !== courseCommunityId);
-                                    console.log('[Community] Removed, new list:', newList.map(c => c.id));
+                                    let newList = [...prev];
+                                    
+                                    // 1. Remove direct course follow if exists
+                                    newList = newList.filter(c => c.id !== courseCommunityId);
+                                    
+                                    // 2. Check if this course is part of a creator follow
+                                    const creatorFollow = newList.find(c => c.id === creatorId && c.type === 'creator');
+                                    if (creatorFollow && creatorFollow.courseIds?.includes(course.id)) {
+                                      // Remove this course from the creator's courseIds
+                                      const updatedCourseIds = creatorFollow.courseIds.filter(id => id !== course.id);
+                                      const updatedFollowedCourseIds = (creatorFollow.followedCourseIds || creatorFollow.courseIds).filter(id => id !== course.id);
+                                      
+                                      if (updatedCourseIds.length === 0) {
+                                        // No more courses - remove the creator follow entirely
+                                        newList = newList.filter(c => c.id !== creatorId);
+                                      } else {
+                                        // Update the creator follow with remaining courses
+                                        newList = newList.map(c => {
+                                          if (c.id === creatorId) {
+                                            return {
+                                              ...c,
+                                              courseIds: updatedCourseIds,
+                                              followedCourseIds: updatedFollowedCourseIds
+                                            };
+                                          }
+                                          return c;
+                                        });
+                                      }
+                                    }
+                                    
+                                    console.log('[Community] After unfollow:', newList.map(c => c.id));
                                     return newList;
                                   });
                                 } else {
                                   // Follow this course
-                                  console.log('[Community] Following:', courseCommunityId);
+                                  console.log('[Community] Following course:', course.id);
                                   const courseCommunity = {
                                     id: courseCommunityId,
                                     name: course.title,
