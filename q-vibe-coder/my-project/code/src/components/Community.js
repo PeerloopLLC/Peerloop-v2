@@ -1105,11 +1105,17 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                                 e.preventDefault();
                                 // Toggle follow/unfollow for this course
                                 const courseCommunityId = `course-${course.id}`;
+                                console.log('[Community] Click on course:', course.title, 'isFollowed:', isFollowed, 'id:', courseCommunityId);
+                                console.log('[Community] actualSetFollowedCommunities is:', typeof actualSetFollowedCommunities);
                                 if (isFollowed) {
                                   // Unfollow this course
-                                  actualSetFollowedCommunities(prev => 
-                                    prev.filter(c => c.id !== courseCommunityId)
-                                  );
+                                  console.log('[Community] Attempting to unfollow:', courseCommunityId);
+                                  actualSetFollowedCommunities(prev => {
+                                    console.log('[Community] Current communities:', prev);
+                                    const newList = prev.filter(c => c.id !== courseCommunityId);
+                                    console.log('[Community] After filter:', newList);
+                                    return newList;
+                                  });
                                 } else {
                                   // Follow this course
                                   const courseCommunity = {
