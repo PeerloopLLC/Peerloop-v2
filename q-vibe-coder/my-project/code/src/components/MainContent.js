@@ -435,7 +435,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           {/* Bio */}
           {creator.bio && (
             <p style={{ 
-              margin: 0, 
+              margin: '0 0 12px 0', 
               color: isDarkMode ? '#e7e9ea' : '#0f1419', 
               fontSize: 15, 
               lineHeight: 1.5 
@@ -443,9 +443,27 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               {creator.bio}
             </p>
           )}
+          
+          {/* Credentials */}
+          {creator.qualifications && creator.qualifications.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {creator.qualifications.slice(0, 3).map((qual, index) => (
+                <span key={index} style={{ 
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  fontSize: 13, 
+                  color: isDarkMode ? '#71767b' : '#536471'
+                }}>
+                  <span style={{ color: '#1d9bf0' }}>✓</span>
+                  {qual.sentence}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Pill Buttons: Courses | Community | About | Following */}
+        {/* Pill Buttons: Courses | Community | Following */}
         <div style={{ 
           display: 'flex', 
           justifyContent: 'center',
@@ -489,24 +507,6 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             }}
           >
             Community
-          </button>
-          
-          {/* About */}
-          <button
-            onClick={() => setCreatorProfileTab('about')}
-            style={{
-              padding: '10px 20px',
-              background: creatorProfileTab === 'about' ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#eff3f4'),
-              border: 'none',
-              borderRadius: 20,
-              cursor: 'pointer',
-              fontSize: 14,
-              fontWeight: 600,
-              color: creatorProfileTab === 'about' ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-              transition: 'all 0.15s ease'
-            }}
-          >
-            About
           </button>
           
           {/* Following - pill button with dropdown */}
@@ -765,64 +765,6 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             </div>
           )}
 
-          {/* ABOUT TAB */}
-          {creatorProfileTab === 'about' && (
-            <div style={{ padding: '16px', background: isDarkMode ? '#000' : '#fff' }}>
-              {/* Bio */}
-              <div style={{ marginBottom: 24 }}>
-                <h3 style={{ margin: '0 0 8px 0', fontSize: 15, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>About</h3>
-                <p style={{ margin: 0, color: isDarkMode ? '#e7e9ea' : '#0f1419', fontSize: 15, lineHeight: 1.5 }}>{creator.bio}</p>
-              </div>
-
-              {/* Credentials */}
-              {creator.qualifications && creator.qualifications.length > 0 && (
-                <div style={{ marginBottom: 24 }}>
-                  <h3 style={{ margin: '0 0 8px 0', fontSize: 15, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Credentials</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {creator.qualifications.map((qual, index) => (
-                      <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 8, color: isDarkMode ? '#e7e9ea' : '#0f1419', fontSize: 14 }}>
-                        <span style={{ color: '#1d9bf0' }}>✓</span>
-                        <span>{qual.sentence}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Expertise */}
-              {creator.expertise && creator.expertise.length > 0 && (
-                <div style={{ marginBottom: 24 }}>
-                  <h3 style={{ margin: '0 0 8px 0', fontSize: 15, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Expertise</h3>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {creator.expertise.map((skill, index) => (
-                      <span key={index} style={{ 
-                        background: isDarkMode ? '#2f3336' : '#eff3f4', 
-                        color: isDarkMode ? '#e7e9ea' : '#0f1419', 
-                        padding: '6px 12px', 
-                        borderRadius: 16, 
-                        fontSize: 13,
-                        fontWeight: 500
-                      }}>
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Website */}
-              {creator.website && (
-                <a 
-                  href={creator.website} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#1d9bf0', fontWeight: 500, fontSize: 14 }}
-                >
-                  🌐 {creator.website}
-                </a>
-              )}
-            </div>
-          )}
         </div>
       </div>
     );
