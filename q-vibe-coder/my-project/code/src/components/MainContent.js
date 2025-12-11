@@ -463,12 +463,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           )}
         </div>
 
-        {/* Pill Buttons: Courses | Community | Following */}
+        {/* Tab Buttons: Courses | Community | Following - matching Browse style */}
         <div style={{ 
           display: 'flex', 
           justifyContent: 'center',
-          gap: 8,
-          padding: '12px 16px',
+          gap: 0,
+          padding: '0',
           background: isDarkMode ? '#000' : '#fff',
           borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
           position: 'relative'
@@ -477,61 +477,106 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           <button
             onClick={() => setCreatorProfileTab('courses')}
             style={{
-              padding: '10px 20px',
-              background: creatorProfileTab === 'courses' ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#eff3f4'),
+              padding: '12px 16px',
+              background: 'transparent',
               border: 'none',
-              borderRadius: 20,
               cursor: 'pointer',
               fontSize: 14,
-              fontWeight: 600,
-              color: creatorProfileTab === 'courses' ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+              fontWeight: creatorProfileTab === 'courses' ? 700 : 500,
+              color: creatorProfileTab === 'courses' ? '#1d9bf0' : (isDarkMode ? '#71767b' : '#536471'),
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              position: 'relative',
               transition: 'all 0.15s ease'
             }}
           >
-            Courses
+            <FaBook style={{ fontSize: 14 }} />
+            <span>COURSES</span>
+            {creatorProfileTab === 'courses' && (
+              <span style={{
+                position: 'absolute',
+                bottom: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '60%',
+                height: 3,
+                background: '#1d9bf0',
+                borderRadius: '3px 3px 0 0'
+              }} />
+            )}
           </button>
           
           {/* Community */}
           <button
             onClick={() => setCreatorProfileTab('community')}
             style={{
-              padding: '10px 20px',
-              background: creatorProfileTab === 'community' ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#eff3f4'),
+              padding: '12px 16px',
+              background: 'transparent',
               border: 'none',
-              borderRadius: 20,
               cursor: 'pointer',
               fontSize: 14,
-              fontWeight: 600,
-              color: creatorProfileTab === 'community' ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+              fontWeight: creatorProfileTab === 'community' ? 700 : 500,
+              color: creatorProfileTab === 'community' ? '#1d9bf0' : (isDarkMode ? '#71767b' : '#536471'),
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              position: 'relative',
               transition: 'all 0.15s ease'
             }}
           >
-            Community
+            <FaUsers style={{ fontSize: 14 }} />
+            <span>COMMUNITY</span>
+            {creatorProfileTab === 'community' && (
+              <span style={{
+                position: 'absolute',
+                bottom: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '60%',
+                height: 3,
+                background: '#1d9bf0',
+                borderRadius: '3px 3px 0 0'
+              }} />
+            )}
           </button>
           
-          {/* Following - pill button with dropdown */}
+          {/* Following - with dropdown */}
           <button 
             onClick={(e) => {
               e.stopPropagation();
               setOpenCreatorFollowDropdown(openCreatorFollowDropdown === `detail-${creator.id}` ? null : `detail-${creator.id}`);
             }}
             style={{ 
-              padding: '10px 20px',
-              background: openCreatorFollowDropdown === `detail-${creator.id}` ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#eff3f4'),
+              padding: '12px 16px',
+              background: 'transparent',
               border: 'none',
-              borderRadius: 20,
               cursor: 'pointer',
               fontSize: 14,
-              fontWeight: 600,
-              color: openCreatorFollowDropdown === `detail-${creator.id}` ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+              fontWeight: openCreatorFollowDropdown === `detail-${creator.id}` ? 700 : 500,
+              color: openCreatorFollowDropdown === `detail-${creator.id}` ? '#1d9bf0' : (isDarkMode ? '#71767b' : '#536471'),
               display: 'flex',
               alignItems: 'center',
-              gap: 4,
+              gap: 6,
+              position: 'relative',
               transition: 'all 0.15s ease'
             }}
           >
-            {hasAnyCreatorCourseFollowed(creator.id) ? '✓ Following' : 'Follow'}
+            <FaHeart style={{ fontSize: 14 }} />
+            <span>{hasAnyCreatorCourseFollowed(creator.id) ? 'FOLLOWING' : 'FOLLOW'}</span>
             <span style={{ fontSize: 10 }}>▼</span>
+            {openCreatorFollowDropdown === `detail-${creator.id}` && (
+              <span style={{
+                position: 'absolute',
+                bottom: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '60%',
+                height: 3,
+                background: '#1d9bf0',
+                borderRadius: '3px 3px 0 0'
+              }} />
+            )}
           </button>
           
           {/* Follow Dropdown - positioned below the segmented control */}
