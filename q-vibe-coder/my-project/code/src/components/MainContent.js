@@ -517,13 +517,13 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             }}
             style={{ 
               padding: '10px 20px',
-              background: hasAnyCreatorCourseFollowed(creator.id) ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#eff3f4'),
+              background: openCreatorFollowDropdown === `detail-${creator.id}` ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#eff3f4'),
               border: 'none',
               borderRadius: 20,
               cursor: 'pointer',
               fontSize: 14,
               fontWeight: 600,
-              color: hasAnyCreatorCourseFollowed(creator.id) ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+              color: openCreatorFollowDropdown === `detail-${creator.id}` ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
               display: 'flex',
               alignItems: 'center',
               gap: 4,
