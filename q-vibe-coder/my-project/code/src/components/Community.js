@@ -25,6 +25,10 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const [realPosts, setRealPosts] = useState([]); // Posts from Supabase
   const [isPosting, setIsPosting] = useState(false); // Loading state for posting
   const [postError, setPostError] = useState(null); // Error state for posting
+  
+  // New Option A states
+  const [communityMode, setCommunityMode] = useState('hub'); // 'hub' for Community Hub (Everyone), 'creators' for My Creators
+  const [selectedCreatorId, setSelectedCreatorId] = useState(null); // Selected creator in 'creators' mode
 
   // Initialize GetStream and load posts on mount
   useEffect(() => {
@@ -930,8 +934,150 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     <div className="community-content-outer">
       <div className="community-three-column">
         <div className="community-center-column">
-          {/* Horizontal Scrollable Tabs - X.com Style */}
-          <div className="community-top-menu">
+          {/* Option A: Two-Panel Toggle */}
+          <div className="community-mode-toggle" style={{
+            display: 'flex',
+            gap: 0,
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+            background: isDarkMode ? '#000' : '#fff'
+          }}>
+            <button
+              onClick={() => {
+                setCommunityMode('hub');
+                setPostAudience('everyone');
+                setSelectedCreatorId(null);
+              }}
+              style={{
+                flex: 1,
+                padding: '16px 12px',
+                background: communityMode === 'hub' 
+                  ? (isDarkMode ? '#1d1f23' : '#f0f9ff') 
+                  : 'transparent',
+                border: 'none',
+                borderBottom: communityMode === 'hub' ? '3px solid #1d9bf0' : '3px solid transparent',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div style={{ 
+                fontSize: 20, 
+                marginBottom: 4 
+              }}>🌍</div>
+              <div style={{ 
+                fontSize: 14, 
+                fontWeight: 700, 
+                color: communityMode === 'hub' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419')
+              }}>COMMUNITY HUB</div>
+              <div style={{ 
+                fontSize: 11, 
+                color: isDarkMode ? '#71767b' : '#536471',
+                marginTop: 2
+              }}>Everyone</div>
+            </button>
+            
+            <button
+              onClick={() => {
+                setCommunityMode('creators');
+                setSelectedCreatorId(null);
+              }}
+              style={{
+                flex: 1,
+                padding: '16px 12px',
+                background: communityMode === 'creators' 
+                  ? (isDarkMode ? '#1d1f23' : '#f0f9ff') 
+                  : 'transparent',
+                border: 'none',
+                borderBottom: communityMode === 'creators' ? '3px solid #1d9bf0' : '3px solid transparent',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div style={{ 
+                fontSize: 20, 
+                marginBottom: 4 
+              }}>👤</div>
+              <div style={{ 
+                fontSize: 14, 
+                fontWeight: 700, 
+                color: communityMode === 'creators' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419')
+              }}>MY CREATORS</div>
+              <div style={{ 
+                fontSize: 11, 
+                color: isDarkMode ? '#71767b' : '#536471',
+                marginTop: 2
+              }}>Pick one to post</div>
+            </button>
+          </div>
+          
+          {/* Creator Selection Links - Only show in 'creators' mode */}
+          {communityMode === 'creators' && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0,
+              overflowX: 'auto',
+              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+              background: isDarkMode ? '#000' : '#fff',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+            className="creator-links-scroll"
+            >
+              {groupedByCreator.length === 0 ? (
+                <div style={{ 
+                  color: isDarkMode ? '#71767b' : '#536471', 
+                  fontSize: 13,
+                  padding: '16px'
+                }}>
+                  No creators followed yet. Go to Browse to follow creators.
+                </div>
+              ) : (
+                groupedByCreator.map(creator => (
+                  <button
+                    key={creator.id}
+                    onClick={() => {
+                      setSelectedCreatorId(creator.id);
+                      setPostAudience(creator.id);
+                      setActiveTab(creator.id);
+                    }}
+                    style={{
+                      padding: '16px 20px',
+                      background: 'transparent',
+                      border: 'none',
+                      borderBottom: selectedCreatorId === creator.id 
+                        ? '3px solid #1d9bf0' 
+                        : '3px solid transparent',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      whiteSpace: 'nowrap',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (selectedCreatorId !== creator.id) {
+                        e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent';
+                    }}
+                  >
+                    <span style={{
+                      fontSize: 15,
+                      fontWeight: selectedCreatorId === creator.id ? 700 : 500,
+                      color: selectedCreatorId === creator.id 
+                        ? (isDarkMode ? '#e7e9ea' : '#0f1419')
+                        : (isDarkMode ? '#71767b' : '#536471')
+                    }}>
+                      {creator.name}
+                    </span>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* Legacy Horizontal Scrollable Tabs - Hidden, keeping for reference */}
+          <div className="community-top-menu" style={{ display: 'none' }}>
             <div className="community-tabs-wrapper">
               {/* Left scroll arrow */}
               {showLeftArrow && (
@@ -1203,7 +1349,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
 
           {/* Feed Content */}
           <div className="community-feed-content">
-            {/* What's Happening Post Composer - X.com Style */}
+            {/* Option A: Simplified Composer based on mode */}
+            {(communityMode === 'hub' || (communityMode === 'creators' && selectedCreatorId)) && (
             <div 
               className="post-composer"
               style={{
@@ -1214,9 +1361,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 background: isDarkMode ? '#000' : '#fff'
               }}
             >
-              {/* User Avatar - Clickable to go to Profile */}
+              {/* User Avatar */}
               <div 
-                className="post-card-avatar"
                 onClick={handleAvatarClick}
                 style={{
                   width: 40,
@@ -1229,316 +1375,101 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   lineHeight: '40px',
                   textAlign: 'center',
                   cursor: 'pointer',
-                  transition: 'transform 0.15s, box-shadow 0.15s'
+                  flexShrink: 0
                 }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(29, 155, 240, 0.4)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-                title={`View ${currentUser?.name || 'your'} profile`}
               >
                 {getUserInitials()}
               </div>
               
               {/* Composer Input Area */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                {/* Audience Selector Row with Welcome Message */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                  {/* Audience Selector Dropdown */}
-                  <div style={{ position: 'relative' }}>
-                    <button
-                      onClick={() => setShowAudienceDropdown(!showAudienceDropdown)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        background: 'none',
-                        border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
-                        borderRadius: 16,
-                        padding: '4px 12px',
-                        fontSize: 14,
-                        fontWeight: 700,
-                        color: '#1d9bf0',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {postAudience === 'everyone' ? '🌍 Everyone' : 
-                        groupedByCreator.find(c => c.id === postAudience)?.name || 'Everyone'}
-                      <span style={{ fontSize: 10 }}>▼</span>
-                    </button>
-                  
-                  {/* Audience Dropdown Menu */}
-                  {showAudienceDropdown && (
-                    <div 
-                      style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        marginTop: 4,
-                        background: isDarkMode ? '#000' : '#fff',
-                        border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                        borderRadius: 12,
-                        boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.5)' : '0 4px 12px rgba(0,0,0,0.15)',
-                        zIndex: 1000,
-                        minWidth: 200,
-                        overflow: 'hidden'
-                      }}
-                    >
-                      {/* Everyone Option */}
-                      <div
-                        onClick={() => {
-                          setPostAudience('everyone');
-                          setShowAudienceDropdown(false);
-                          // Also switch the active tab to Home to show all posts
-                          setActiveTab('Home');
-                          setSelectedCourseFilters([]);
-                        }}
-                        style={{
-                          padding: '12px 16px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 12,
-                          background: postAudience === 'everyone' ? (isDarkMode ? '#1d1f23' : '#f7f9f9') : 'transparent',
-                          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = postAudience === 'everyone' ? (isDarkMode ? '#1d1f23' : '#f7f9f9') : 'transparent'}
-                      >
-                        <span style={{ fontSize: 20 }}>🌍</span>
-                        <div>
-                          <div style={{ fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', fontSize: 15 }}>Everyone</div>
-                          <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 13 }}>Anyone can see this post</div>
-                        </div>
-                        {postAudience === 'everyone' && <span style={{ marginLeft: 'auto', color: '#1d9bf0' }}>✓</span>}
-                      </div>
-                      
-                      {/* Creator Community Options */}
-                      {groupedByCreator.map(creator => (
-                        <div
-                          key={creator.id}
-                          onClick={() => {
-                            setPostAudience(creator.id);
-                            setShowAudienceDropdown(false);
-                            // Also switch the active tab to show this creator's feed
-                            setActiveTab(creator.id);
-                            setSelectedCourseFilters([]);
-                          }}
-                          style={{
-                            padding: '12px 16px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 12,
-                            background: postAudience === creator.id ? (isDarkMode ? '#1d1f23' : '#f7f9f9') : 'transparent'
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9'}
-                          onMouseLeave={(e) => e.currentTarget.style.background = postAudience === creator.id ? (isDarkMode ? '#1d1f23' : '#f7f9f9') : 'transparent'}
-                        >
-                          <div 
-                            style={{
-                              width: 32,
-                              height: 32,
-                              borderRadius: '50%',
-                              background: '#2f3336',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: '#fff',
-                              fontSize: 12,
-                              fontWeight: 700
-                            }}
-                          >
-                            {creator.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
-                          </div>
-                          <div>
-                            <div style={{ fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', fontSize: 15 }}>{creator.name}</div>
-                            <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 13 }}>
-                              {creator.followedCourseIds.length} course{creator.followedCourseIds.length !== 1 ? 's' : ''} followed
-                            </div>
-                          </div>
-                          {postAudience === creator.id && <span style={{ marginLeft: 'auto', color: '#1d9bf0' }}>✓</span>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  </div>
-                  
-                  {/* Welcome Message with Info Icon */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{
-                      fontSize: 13,
-                      color: isDarkMode ? '#71767b' : '#536471',
-                      fontWeight: 500
-                    }}>
-                      Welcome to your communities
-                    </span>
-                    <div 
-                      style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
-                      onMouseEnter={() => setShowInfoTooltip('composer')}
-                      onMouseLeave={() => setShowInfoTooltip(null)}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowInfoTooltip(showInfoTooltip === 'composer' ? null : 'composer');
-                      }}
-                    >
-                      <FaInfoCircle 
-                        style={{ 
-                          color: '#1d9bf0', 
-                          fontSize: 14, 
-                          cursor: 'pointer'
-                        }} 
-                      />
-                      {/* Info tooltip */}
-                      {showInfoTooltip === 'composer' && (
-                        <div style={{
-                          position: 'absolute',
-                          top: '100%',
-                          right: -10,
-                          marginTop: 8,
-                          background: isDarkMode ? '#000' : '#0f1419',
-                          color: '#fff',
-                          padding: '10px 14px',
-                          borderRadius: 8,
-                          fontSize: 13,
-                          lineHeight: 1.4,
-                          width: 220,
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                          zIndex: 100000
-                        }}>
-                          Go to Browse and follow courses or Creators. Feeds will show in your community here
-                          <div style={{
-                            position: 'absolute',
-                            top: -6,
-                            right: 16,
-                            width: 0,
-                            height: 0,
-                            borderLeft: '6px solid transparent',
-                            borderRight: '6px solid transparent',
-                            borderBottom: isDarkMode ? '6px solid #000' : '6px solid #0f1419'
-                          }} />
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                {/* Clear Posting Destination Label */}
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 8, 
+                  marginBottom: 8,
+                  padding: '6px 12px',
+                  background: isDarkMode ? '#1d1f23' : '#f0f9ff',
+                  borderRadius: 8,
+                  fontSize: 13
+                }}>
+                  <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>Posting to:</span>
+                  <span style={{ fontWeight: 700, color: '#1d9bf0' }}>
+                    {communityMode === 'hub' ? '🌍 Everyone (Community Hub)' : 
+                      `👤 ${groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'Creator'}'s followers`}
+                  </span>
                 </div>
                 
                 <textarea
                   value={newPostText}
                   onChange={(e) => setNewPostText(e.target.value)}
                   onFocus={() => setIsComposerFocused(true)}
-                  placeholder="Post here..."
+                  placeholder={communityMode === 'hub' 
+                    ? "Share something with the community..." 
+                    : `Post to ${groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'creator'}'s community...`}
                   style={{
                     width: '100%',
                     border: 'none',
                     outline: 'none',
                     resize: 'none',
-                    fontSize: 20,
+                    fontSize: 15,
                     fontWeight: 400,
-                    lineHeight: 1.3,
+                    lineHeight: 1.4,
                     background: 'transparent',
                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
                     padding: '8px 0',
-                    minHeight: isComposerFocused ? '80px' : '24px',
+                    minHeight: isComposerFocused ? '60px' : '24px',
                     fontFamily: 'inherit',
                     transition: 'min-height 0.2s ease'
                   }}
                 />
                 
-                {/* Action Row - only show when focused or has text */}
+                {/* Post Button */}
                 {(isComposerFocused || newPostText) && (
-                  <div 
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                      paddingTop: 12,
-                      marginTop: 12
-                    }}
-                  >
-                    {/* Media Icons */}
-                    <div style={{ display: 'flex', gap: 4 }}>
-                      <button 
-                        style={{ 
-                          background: 'none', 
-                          border: 'none', 
-                          color: '#1d9bf0', 
-                          cursor: 'pointer',
-                          padding: 8,
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                        title="Media"
-                      >
-                        🖼️
-                      </button>
-                      <button 
-                        style={{ 
-                          background: 'none', 
-                          border: 'none', 
-                          color: '#1d9bf0', 
-                          cursor: 'pointer',
-                          padding: 8,
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                        title="GIF"
-                      >
-                        GIF
-                      </button>
-                      <button 
-                        style={{ 
-                          background: 'none', 
-                          border: 'none', 
-                          color: '#1d9bf0', 
-                          cursor: 'pointer',
-                          padding: 8,
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                        title="Emoji"
-                      >
-                        😊
-                      </button>
-                    </div>
-                    
-                    {/* Post Button */}
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'flex-end', 
+                    paddingTop: 8,
+                    borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                  }}>
                     <button
-                      disabled={!newPostText.trim() || isPosting}
                       onClick={handleSubmitPost}
+                      disabled={!newPostText.trim() || isPosting}
                       style={{
-                        background: (newPostText.trim() && !isPosting) ? '#1d9bf0' : (isDarkMode ? '#0e4d78' : '#8ecdf8'),
-                        color: (newPostText.trim() && !isPosting) ? '#fff' : (isDarkMode ? '#808080' : '#fff'),
+                        padding: '8px 20px',
+                        background: newPostText.trim() ? '#1d9bf0' : (isDarkMode ? '#0e4f82' : '#8ecdf8'),
+                        color: '#fff',
                         border: 'none',
                         borderRadius: 20,
-                        padding: '8px 16px',
                         fontWeight: 700,
-                        fontSize: 15,
-                        cursor: (newPostText.trim() && !isPosting) ? 'pointer' : 'not-allowed',
-                        opacity: (newPostText.trim() && !isPosting) ? 1 : 0.5
+                        fontSize: 14,
+                        cursor: newPostText.trim() ? 'pointer' : 'not-allowed',
+                        opacity: newPostText.trim() ? 1 : 0.5
                       }}
                     >
                       {isPosting ? 'Posting...' : 'Post'}
                     </button>
-                    {postError && (
-                      <span style={{ color: '#f44', fontSize: 12, marginLeft: 8 }}>{postError}</span>
-                    )}
                   </div>
                 )}
               </div>
             </div>
+            )}
             
+            {/* Prompt to select creator in creators mode */}
+            {communityMode === 'creators' && !selectedCreatorId && (
+              <div style={{
+                padding: '24px 16px',
+                textAlign: 'center',
+                color: isDarkMode ? '#71767b' : '#536471',
+                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+              }}>
+                <div style={{ fontSize: 24, marginBottom: 8 }}>👆</div>
+                <div style={{ fontSize: 14 }}>Select a creator above to post to their community</div>
+              </div>
+            )}
+
+            {/* Posts Feed */}
             {(groupedByCreator.length > 0 || realPosts.length > 0) ? (
               <div className="posts-feed">
                 {displayedPosts.length > 0 ? (

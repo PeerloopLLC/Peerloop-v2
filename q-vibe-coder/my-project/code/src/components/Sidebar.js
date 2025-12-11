@@ -75,7 +75,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
    */
   const menuItems = [
     { icon: <FaUsers />, label: 'My Community', displayLabel: 'Community' }, // Community features
-    { icon: <FaHome />, label: 'Browse', displayLabel: 'Browse' }, // Browse courses and instructors
+    { icon: <FaSearch />, label: 'Browse', displayLabel: 'Browse' }, // Browse courses and instructors
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
     { icon: <FaTachometerAlt />, label: 'Dashboard', displayLabel: 'Dashboard' }, // User's learning dashboard
     { icon: <FaChalkboardTeacher />, label: 'Teaching', displayLabel: 'Teaching' }, // Student-Teacher dashboard

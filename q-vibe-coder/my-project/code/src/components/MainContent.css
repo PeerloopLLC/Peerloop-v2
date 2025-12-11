@@ -200,16 +200,27 @@
   padding: 0 12px;
   box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  height: 53px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.browse-instruction {
+  margin: 0;
+  padding: 8px 0 0 60px;
+  font-size: 11px;
+  color: var(--text-secondary, #536471);
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .tabs-section {
   display: flex;
   align-items: center;
   gap: 0;
-  height: 53px;
+  height: 32px;
   background: none;
   width: 100%;
 }
@@ -217,13 +228,13 @@
 .tab-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 16px;
-  height: 53px;
+  gap: 4px;
+  padding: 0 8px;
+  height: 28px;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary, #536471);
   border-bottom: 2px solid transparent;
@@ -268,14 +279,17 @@
   display: flex;
   align-items: center;
   background-color: #eff3f4;
-  border-radius: 20px;
-  padding: 0 12px;
+  border-radius: 14px;
+  padding: 0 10px;
   margin-left: auto;
   border: 1px solid transparent;
-  flex: 0 0 auto;
-  width: 200px;
-  height: 40px;
+  flex: 0 0 150px;
+  width: 150px;
+  max-width: 150px;
+  min-width: 150px;
+  height: 26px;
   box-sizing: border-box;
+  overflow: hidden;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
@@ -288,6 +302,10 @@
 body.dark-mode .search-container {
   background-color: #000 !important;
   border: 1px solid #2f3336 !important;
+  width: 150px !important;
+  max-width: 150px !important;
+  min-width: 150px !important;
+  flex: 0 0 150px !important;
 }
 
 .dark-mode .search-container:focus-within,
@@ -384,20 +402,21 @@ body.dark-mode .search-container:focus-within {
 .instructors-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  margin-top: 20px;
+  gap: 0;
+  padding: 0;
+  margin-top: 0;
 }
 
 .instructor-summary {
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .instructor-card {
   display: flex;
-  padding: 16px;
-  border: 1px solid var(--border-color, #e1e8ed);
-  border-radius: 12px;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid var(--border-color, #e1e8ed);
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.3s ease;
   background-color: var(--card-bg, #ffffff);

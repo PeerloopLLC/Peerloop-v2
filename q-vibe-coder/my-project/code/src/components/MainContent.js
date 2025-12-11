@@ -1417,10 +1417,11 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             setSelectedInstructor(fullCreatorData || creator);
           }} style={{
             background: isDarkMode ? '#000' : '#fff',
-            borderRadius: 12,
-            padding: '20px',
-            marginBottom: 16,
-            border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+            borderRadius: 0,
+            padding: '12px 16px',
+            marginBottom: 0,
+            border: 'none',
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             position: 'relative'
@@ -1589,26 +1590,27 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         <div className="three-column-layout browse-layout">
           <div className="center-column">
             <div className="top-menu-section">
+              <p className="browse-instruction">BROWSE COURSES OR COURSE CREATORS</p>
               <div className="tabs-section">
                 <button
                   className={`tab-btn ${activeTopMenu === 'courses' ? 'active' : ''}`}
                   onClick={() => setActiveTopMenu('courses')}
                 >
                   <FaBook />
-                  <span>Courses</span>
+                  <span>COURSES</span>
                 </button>
                 <button
                   className={`tab-btn ${activeTopMenu === 'instructors' ? 'active' : ''}`}
                   onClick={() => setActiveTopMenu('instructors')}
                 >
                   <FaUser />
-                  <span>Creators</span>
+                  <span>CREATORS</span>
                 </button>
                 <div className="search-container">
                   <FaSearch className="search-icon" />
                   <input
                     type="text"
-                    placeholder="Search courses, creators..."
+                    placeholder="Search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="search-input"

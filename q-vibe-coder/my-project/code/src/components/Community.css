@@ -43,6 +43,15 @@
   box-sizing: border-box;
 }
 
+/* Creator Links Horizontal Scroll - X.com style tabs */
+.creator-links-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.creator-links-scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
 /* Community Three Column Layout */
 .community-three-column {
   display: flex;
@@ -680,7 +689,7 @@
   align-items: center;
   width: 100%;
   position: relative;
-  height: 53px;
+  height: 32px;
   overflow: visible;
 }
 
@@ -743,10 +752,10 @@
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
-  padding: 0 16px;
-  height: 53px;
+  padding: 0 12px;
+  height: 28px;
   border-radius: 0;
   transition: all 0.15s ease;
   display: flex;
