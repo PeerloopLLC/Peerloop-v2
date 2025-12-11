@@ -51,6 +51,26 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     init();
   }, [currentUser?.id]);
 
+  // Check for pending creator selection from Browse page
+  useEffect(() => {
+    const pendingCreator = localStorage.getItem('pendingCommunityCreator');
+    if (pendingCreator) {
+      try {
+        const { id, name } = JSON.parse(pendingCreator);
+        // Switch to creators mode and select the creator
+        setCommunityMode('creators');
+        setSelectedCreatorId(id);
+        setPostAudience(id);
+        setActiveTab(id);
+        // Clear the pending selection
+        localStorage.removeItem('pendingCommunityCreator');
+      } catch (e) {
+        console.error('Error parsing pending creator:', e);
+        localStorage.removeItem('pendingCommunityCreator');
+      }
+    }
+  }, []);
+
   // Handle posting a new message
   const handleSubmitPost = async () => {
     if (!newPostText.trim() || isPosting) return;

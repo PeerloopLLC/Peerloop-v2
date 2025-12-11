@@ -441,6 +441,32 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                 >
                   📅 Schedule Session
                 </button>
+                {/* Go to Community Button */}
+                <button 
+                  onClick={() => {
+                    // Store the creator ID to pre-select in Community
+                    localStorage.setItem('pendingCommunityCreator', JSON.stringify({
+                      id: `creator-${creator.id}`,
+                      name: creator.name
+                    }));
+                    onMenuChange('Community');
+                  }}
+                  style={{ 
+                    background: isDarkMode ? '#16181c' : '#fff',
+                    color: '#1d9bf0', 
+                    border: '2px solid #1d9bf0', 
+                    padding: '12px 24px', 
+                    borderRadius: 8, 
+                    fontWeight: 600, 
+                    fontSize: 14, 
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8
+                  }}
+                >
+                  💬 Go to Community
+                </button>
                 {/* Follow Button with Dropdown */}
                 <div className="creator-follow-dropdown-wrapper" style={{ position: 'relative' }}>
                   <button 
