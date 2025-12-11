@@ -58,6 +58,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   const [previousBrowseContext, setPreviousBrowseContext] = useState(null);
   // { type: 'course', course: courseObj } or { type: 'courseList' } or { type: 'creatorList' }
   
+  // Creator profile tab: 'courses' or 'community'
+  const [creatorProfileTab, setCreatorProfileTab] = useState('courses');
+  
   // Save Browse state to localStorage when it changes
   useEffect(() => {
     try {
@@ -351,12 +354,20 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     const creator = selectedInstructor;
     const creatorCourses = creator.courses ? creator.courses.map(c => typeof c === 'object' ? c : indexedCourses.find(course => course.id === c)).filter(Boolean) : [];
 
+    // Mock community posts for this creator
+    const creatorPosts = [
+      { id: 1, author: 'TechLearner99', handle: '@techlearner99', content: `Just finished ${creator.name}'s course! The 1-on-1 sessions were amazing. Highly recommend! 🚀`, timestamp: '2 hours ago', likes: 45, replies: 8 },
+      { id: 2, author: 'CodeNewbie_Sam', handle: '@codenewbie_sam', content: `Can anyone help me with the week 3 assignment? Having trouble with the implementation.`, timestamp: '5 hours ago', likes: 12, replies: 15 },
+      { id: 3, author: 'DataDriven_Dan', handle: '@datadriven_dan', content: `Just became a Student-Teacher for this course! Excited to help others learn while earning 70% 💪`, timestamp: '1 day ago', likes: 89, replies: 23 },
+      { id: 4, author: 'MLEnthusiast', handle: '@mlenthusiast', content: `The community here is so supportive. Got my question answered in minutes. Thank you ${creator.name}!`, timestamp: '2 days ago', likes: 56, replies: 11 },
+    ];
+
     return (
       <div style={{ background: isDarkMode ? '#000' : '#f8fafc', minHeight: '100vh', padding: '0' }}>
         {/* Back Button */}
         <button 
           onClick={() => {
-            // Check if we came from a course view
+            setCreatorProfileTab('courses'); // Reset tab when leaving
             if (previousBrowseContext?.type === 'course' && previousBrowseContext.course) {
               setSelectedInstructor(null);
               setSelectedCourse(previousBrowseContext.course);
@@ -367,7 +378,6 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               setActiveTopMenu('courses');
               setPreviousBrowseContext(null);
             } else {
-              // Default: go back to creators list
               setSelectedInstructor(null);
               setPreviousBrowseContext(null);
             }
@@ -375,298 +385,246 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
-            background: isDarkMode ? '#16181c' : '#fff',
-            border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-            borderRadius: 8,
-            padding: '10px 16px',
-            margin: '16px',
+            gap: 6,
+            background: 'transparent',
+            border: 'none',
+            padding: '12px 16px',
             cursor: 'pointer',
             fontWeight: 600,
-            color: isDarkMode ? '#e7e9ea' : '#64748b'
+            fontSize: 14,
+            color: isDarkMode ? '#71767b' : '#64748b'
           }}
         >
-          ← {previousBrowseContext?.type === 'course' ? 'Back to Course' : previousBrowseContext?.type === 'courseList' ? 'Back to Courses' : 'Back to Creators'}
+          ← {previousBrowseContext?.type === 'course' ? 'Back to Course' : previousBrowseContext?.type === 'courseList' ? 'Back to Courses' : 'Back'}
         </button>
 
-        {/* Creator Profile Card */}
-        <div style={{ background: isDarkMode ? '#16181c' : '#fff', borderRadius: 16, margin: '0 16px 24px 16px', overflow: 'hidden', boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.08)', border: isDarkMode ? '1px solid #2f3336' : 'none' }}>
-          {/* Header Banner */}
-          <div style={{ background: 'linear-gradient(135deg, #1d9bf0 0%, #0284c7 100%)', height: 120 }} />
-          
-          {/* Profile Content */}
-          <div style={{ padding: '0 24px 24px 24px', marginTop: -50 }}>
-            {/* Avatar & Basic Info */}
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 20, marginBottom: 20 }}>
-              <img 
-                src={creator.avatar} 
-                alt={creator.name}
-                style={{ 
-                  width: 100, 
-                  height: 100, 
-                  minWidth: 100,
-                  minHeight: 100,
-                  maxWidth: 100,
-                  maxHeight: 100,
-                  borderRadius: '50%', 
-                  border: isDarkMode ? '4px solid #000' : '4px solid #fff',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  objectFit: 'cover',
-                  flexShrink: 0,
-                  aspectRatio: '1 / 1'
-                }}
-              />
-              <div style={{ flex: 1, paddingBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-                  <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#1e293b' }}>{creator.name}</h1>
-                  <span style={{ background: isDarkMode ? 'rgba(29, 155, 240, 0.2)' : '#dbeafe', color: '#1d9bf0', fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 20 }}>CREATOR</span>
-                </div>
-                <p style={{ margin: 0, color: isDarkMode ? '#71767b' : '#64748b', fontSize: 16 }}>{creator.title}</p>
+        {/* Compact Creator Header */}
+        <div style={{ 
+          background: isDarkMode ? '#16181c' : '#fff', 
+          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+          padding: '16px'
+        }}>
+          {/* Avatar + Name + Stats Row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+            <img 
+              src={creator.avatar} 
+              alt={creator.name}
+              style={{ 
+                width: 56, 
+                height: 56, 
+                borderRadius: '50%', 
+                objectFit: 'cover',
+                flexShrink: 0
+              }}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <h1 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.name}</h1>
+                <span style={{ background: isDarkMode ? 'rgba(29, 155, 240, 0.2)' : '#e0f2fe', color: '#1d9bf0', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 12 }}>CREATOR</span>
               </div>
-              <div style={{ display: 'flex', gap: 12 }}>
-                <button 
-                  style={{ 
-                    background: '#1d9bf0', 
-                    color: '#fff', 
-                    border: 'none', 
-                    padding: '12px 24px', 
-                    borderRadius: 8, 
-                    fontWeight: 600, 
-                    fontSize: 14, 
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8
-                  }}
-                >
-                  📅 Schedule Session
-                </button>
-                {/* Go to Community Button */}
-                <button 
-                  onClick={() => {
-                    // Store the creator ID to pre-select in Community
-                    localStorage.setItem('pendingCommunityCreator', JSON.stringify({
-                      id: `creator-${creator.id}`,
-                      name: creator.name
-                    }));
-                    onMenuChange('Community');
-                  }}
-                  style={{ 
-                    background: isDarkMode ? '#16181c' : '#fff',
-                    color: '#1d9bf0', 
-                    border: '2px solid #1d9bf0', 
-                    padding: '12px 24px', 
-                    borderRadius: 8, 
-                    fontWeight: 600, 
-                    fontSize: 14, 
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8
-                  }}
-                >
-                  💬 Go to Community
-                </button>
-                {/* Follow Button with Dropdown */}
-                <div className="creator-follow-dropdown-wrapper" style={{ position: 'relative' }}>
+              <p style={{ margin: '2px 0 0 0', color: isDarkMode ? '#71767b' : '#536471', fontSize: 13 }}>{creator.title}</p>
+              {/* Inline Stats */}
+              <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                <span>⭐ {creator.stats?.averageRating || '4.8'}</span>
+                <span>👥 {(creator.stats?.studentsTaught || 0).toLocaleString()} students</span>
+                <span>📚 {creator.stats?.coursesCreated || creatorCourses.length} courses</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Action Buttons Row - Compact */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button 
+              onClick={() => setCreatorProfileTab('community')}
+              style={{ 
+                background: creatorProfileTab === 'community' ? '#1d9bf0' : (isDarkMode ? '#16181c' : '#fff'),
+                color: creatorProfileTab === 'community' ? '#fff' : '#1d9bf0', 
+                border: '1px solid #1d9bf0', 
+                padding: '8px 16px', 
+                borderRadius: 20, 
+                fontWeight: 600, 
+                fontSize: 13, 
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6
+              }}
+            >
+              💬 Community
+            </button>
+            <button 
+              style={{ 
+                background: isDarkMode ? '#16181c' : '#fff',
+                color: isDarkMode ? '#e7e9ea' : '#0f1419', 
+                border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de', 
+                padding: '8px 16px', 
+                borderRadius: 20, 
+                fontWeight: 600, 
+                fontSize: 13, 
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6
+              }}
+            >
+              📅 Schedule
+            </button>
+            {/* Follow Button */}
+            <div style={{ position: 'relative' }}>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenCreatorFollowDropdown(openCreatorFollowDropdown === `detail-${creator.id}` ? null : `detail-${creator.id}`);
+                }}
+                style={{ 
+                  background: hasAnyCreatorCourseFollowed(creator.id) ? (isDarkMode ? '#2f3336' : '#eff3f4') : '#1d9bf0',
+                  color: hasAnyCreatorCourseFollowed(creator.id) ? (isDarkMode ? '#e7e9ea' : '#0f1419') : '#fff',
+                  border: 'none', 
+                  padding: '8px 16px', 
+                  borderRadius: 20, 
+                  fontWeight: 700, 
+                  fontSize: 13, 
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}
+              >
+                {hasAnyCreatorCourseFollowed(creator.id) ? 'Following' : 'Follow'}
+                <span style={{ fontSize: 10 }}>▼</span>
+              </button>
+              
+              {/* Follow Dropdown */}
+              {openCreatorFollowDropdown === `detail-${creator.id}` && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  marginTop: 4,
+                  background: isDarkMode ? '#16181c' : '#fff',
+                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                  borderRadius: 12,
+                  boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.1)',
+                  zIndex: 1000,
+                  minWidth: 200,
+                  padding: '4px 0'
+                }}>
                   <button 
+                    type="button"
+                    style={{ 
+                      padding: '10px 16px',
+                      cursor: 'pointer',
+                      fontSize: 14,
+                      color: hasAnyCreatorCourseFollowed(creator.id) ? '#f4212e' : '#1d9bf0',
+                      fontWeight: 500,
+                      background: 'transparent',
+                      border: 'none',
+                      width: '100%',
+                      textAlign: 'left'
+                    }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setOpenCreatorFollowDropdown(openCreatorFollowDropdown === `detail-${creator.id}` ? null : `detail-${creator.id}`);
-                    }}
-                    style={{ 
-                      background: hasAnyCreatorCourseFollowed(creator.id) ? (isDarkMode ? '#2f3336' : '#e2e8f0') : (isDarkMode ? '#16181c' : '#fff'),
-                      color: hasAnyCreatorCourseFollowed(creator.id) ? (isDarkMode ? '#71767b' : '#64748b') : '#1d9bf0',
-                      border: isDarkMode ? '2px solid #2f3336' : '2px solid #e2e8f0', 
-                      padding: '12px 24px', 
-                      borderRadius: 8, 
-                      fontWeight: 600, 
-                      fontSize: 14, 
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6
+                      handleFollowInstructor(creator.id);
+                      setOpenCreatorFollowDropdown(null);
                     }}
                   >
-                    {hasAnyCreatorCourseFollowed(creator.id) ? '✓ Following' : 'Follow'}
-                    <span style={{ fontSize: 10 }}>▼</span>
+                    {hasAnyCreatorCourseFollowed(creator.id) ? 'Unfollow All' : 'Follow All Courses'}
                   </button>
-                  
-                  {/* Dropdown */}
-                  {openCreatorFollowDropdown === `detail-${creator.id}` && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '100%',
-                      right: 0,
-                      marginTop: 4,
-                      background: isDarkMode ? '#16181c' : '#fff',
-                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-                      borderRadius: 8,
-                      boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.4)' : '0 2px 12px rgba(0,0,0,0.1)',
-                      zIndex: 1000,
-                      minWidth: 200,
-                      maxWidth: 280,
-                      padding: '4px 0'
-                    }}>
-                      <button 
-                        type="button"
+                  <div style={{ borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4', margin: '4px 0' }} />
+                  {creatorCourses.map(course => {
+                    const isFollowed = isCourseFollowed(course.id);
+                    return (
+                      <div 
+                        key={course.id}
                         style={{ 
-                          padding: '8px 12px',
+                          padding: '10px 16px',
                           cursor: 'pointer',
-                          fontSize: 13,
-                          color: hasAnyCreatorCourseFollowed(creator.id) ? '#dc2626' : '#1d9bf0',
-                          fontWeight: 500,
-                          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #f1f5f9',
-                          background: 'transparent',
-                          border: 'none',
-                          width: '100%',
-                          textAlign: 'left',
-                          display: 'block'
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          fontSize: 14,
+                          color: isDarkMode ? '#e7e9ea' : '#0f1419'
                         }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          e.preventDefault();
-                          handleFollowInstructor(creator.id);
-                          setOpenCreatorFollowDropdown(null);
+                          handleFollowCourse(course.id);
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                       >
-                        {hasAnyCreatorCourseFollowed(creator.id) ? 'Unfollow All' : 'Follow All'}
-                      </button>
-                      <div style={{ maxHeight: 200, overflowY: 'auto' }}>
-                        {creatorCourses.map(course => {
-                          const isFollowed = isCourseFollowed(course.id);
-                          return (
-                            <div 
-                              key={course.id}
-                              style={{ 
-                                padding: '8px 12px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                gap: 8,
-                                fontSize: 13,
-                                color: isFollowed ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#475569'),
-                                fontWeight: isFollowed ? 500 : 400
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleFollowCourse(course.id);
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
-                              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                            >
-                              <span style={{ 
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis'
-                              }}>
-                                {course.title}
-                              </span>
-                              {isFollowed && <span>✓</span>}
-                            </div>
-                          );
-                        })}
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.title}</span>
+                        {isFollowed && <span style={{ color: '#1d9bf0' }}>✓</span>}
                       </div>
-                    </div>
-                  )}
+                    );
+                  })}
                 </div>
-              </div>
+              )}
             </div>
-
-            {/* Stats Bar */}
-            <div style={{ 
-              display: 'flex', 
-              gap: 32, 
-              padding: '16px 0', 
-              borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-              marginBottom: 20
-            }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 24, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#1e293b' }}>{creator.stats?.studentsTaught?.toLocaleString() || 0}</div>
-                <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#64748b' }}>Students Taught</div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 24, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#1e293b' }}>⭐ {creator.stats?.averageRating || 0}</div>
-                <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#64748b' }}>Avg Rating</div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 24, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#1e293b' }}>{creator.stats?.coursesCreated || creatorCourses.length}</div>
-                <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#64748b' }}>Courses</div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 24, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#1e293b' }}>{creator.stats?.totalReviews?.toLocaleString() || 0}</div>
-                <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#64748b' }}>Reviews</div>
-              </div>
-            </div>
-
-            {/* Bio */}
-            <div style={{ marginBottom: 24 }}>
-              <h3 style={{ margin: '0 0 12px 0', fontSize: 16, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#1e293b' }}>About</h3>
-              <p style={{ margin: 0, color: isDarkMode ? '#e7e9ea' : '#475569', fontSize: 15, lineHeight: 1.7 }}>{creator.bio}</p>
-            </div>
-
-            {/* Credentials */}
-            {creator.qualifications && creator.qualifications.length > 0 && (
-              <div style={{ marginBottom: 24 }}>
-                <h3 style={{ margin: '0 0 12px 0', fontSize: 16, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#1e293b' }}>Credentials</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {creator.qualifications.map((qual, index) => (
-                    <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 8, color: isDarkMode ? '#e7e9ea' : '#475569', fontSize: 14 }}>
-                      <span style={{ color: '#1d9bf0' }}>✓</span>
-                      <span>{qual.sentence}</span>
-                    </div>
-                  ))}
-                </div>
-                {creator.website && (
-                  <a 
-                    href={creator.website} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    style={{ display: 'inline-block', marginTop: 12, color: '#1d9bf0', fontWeight: 500, fontSize: 14 }}
-                  >
-                    🌐 Visit Website →
-                  </a>
-                )}
-              </div>
-            )}
-
-            {/* Expertise Tags */}
-            {creator.expertise && creator.expertise.length > 0 && (
-              <div style={{ marginBottom: 24 }}>
-                <h3 style={{ margin: '0 0 12px 0', fontSize: 16, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#1e293b' }}>Expertise</h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {creator.expertise.map((skill, index) => (
-                    <span key={index} style={{ 
-                      background: isDarkMode ? '#2f3336' : '#f1f5f9', 
-                      color: isDarkMode ? '#e7e9ea' : '#475569', 
-                      padding: '6px 14px', 
-                      borderRadius: 20, 
-                      fontSize: 13,
-                      fontWeight: 500
-                    }}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Courses Section */}
-        {creatorCourses.length > 0 && (
-          <div style={{ margin: '0 16px 24px 16px' }}>
-            <h2 style={{ margin: '0 0 16px 0', fontSize: 20, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#1e293b' }}>
-              Courses by {creator.name}
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* Tab Navigation */}
+        <div style={{ 
+          display: 'flex', 
+          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+          background: isDarkMode ? '#000' : '#fff'
+        }}>
+          <button
+            onClick={() => setCreatorProfileTab('courses')}
+            style={{
+              flex: 1,
+              padding: '16px',
+              background: 'transparent',
+              border: 'none',
+              borderBottom: creatorProfileTab === 'courses' ? '2px solid #1d9bf0' : '2px solid transparent',
+              cursor: 'pointer',
+              fontSize: 15,
+              fontWeight: creatorProfileTab === 'courses' ? 700 : 500,
+              color: creatorProfileTab === 'courses' ? (isDarkMode ? '#e7e9ea' : '#0f1419') : (isDarkMode ? '#71767b' : '#536471')
+            }}
+          >
+            Courses ({creatorCourses.length})
+          </button>
+          <button
+            onClick={() => setCreatorProfileTab('community')}
+            style={{
+              flex: 1,
+              padding: '16px',
+              background: 'transparent',
+              border: 'none',
+              borderBottom: creatorProfileTab === 'community' ? '2px solid #1d9bf0' : '2px solid transparent',
+              cursor: 'pointer',
+              fontSize: 15,
+              fontWeight: creatorProfileTab === 'community' ? 700 : 500,
+              color: creatorProfileTab === 'community' ? (isDarkMode ? '#e7e9ea' : '#0f1419') : (isDarkMode ? '#71767b' : '#536471')
+            }}
+          >
+            Community
+          </button>
+          <button
+            onClick={() => setCreatorProfileTab('about')}
+            style={{
+              flex: 1,
+              padding: '16px',
+              background: 'transparent',
+              border: 'none',
+              borderBottom: creatorProfileTab === 'about' ? '2px solid #1d9bf0' : '2px solid transparent',
+              cursor: 'pointer',
+              fontSize: 15,
+              fontWeight: creatorProfileTab === 'about' ? 700 : 500,
+              color: creatorProfileTab === 'about' ? (isDarkMode ? '#e7e9ea' : '#0f1419') : (isDarkMode ? '#71767b' : '#536471')
+            }}
+          >
+            About
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        <div style={{ padding: '0' }}>
+          
+          {/* COURSES TAB */}
+          {creatorProfileTab === 'courses' && creatorCourses.length > 0 && (
+            <div style={{ padding: '0' }}>
               {creatorCourses.map(course => {
                 const isFollowed = isCourseFollowed(course.id);
-                const isViaCreator = isCourseFollowedViaCreator(course.id);
                 return (
                   <div 
                     key={course.id} 
@@ -675,72 +633,214 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                       setCurrentInstructorForCourse(creator);
                     }}
                     style={{ 
-                      background: isDarkMode ? '#16181c' : '#fff', 
-                      borderRadius: 12, 
-                      padding: 20, 
+                      background: isDarkMode ? '#000' : '#fff', 
+                      padding: '16px',
                       cursor: 'pointer',
-                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                      borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
                       display: 'flex',
-                      gap: 20,
-                      alignItems: 'flex-start',
-                      transition: 'all 0.2s ease'
+                      gap: 12,
+                      alignItems: 'flex-start'
                     }}
                   >
                     <img 
                       src={course.thumbnail} 
                       alt={course.title}
-                      style={{ width: 160, height: 100, borderRadius: 8, objectFit: 'cover' }}
+                      style={{ width: 120, height: 68, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }}
                     />
-                    <div style={{ flex: 1 }}>
-                      <h3 style={{ margin: '0 0 8px 0', fontSize: 18, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#1e293b' }}>{course.title}</h3>
-                      <p style={{ margin: '0 0 12px 0', color: isDarkMode ? '#71767b' : '#64748b', fontSize: 14, lineHeight: 1.5 }}>{course.description}</p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: isDarkMode ? '#71767b' : '#64748b' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <h3 style={{ margin: '0 0 4px 0', fontSize: 15, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{course.title}</h3>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
                         <span>⭐ {course.rating}</span>
-                        <span>👥 {course.students?.toLocaleString()} students</span>
-                        <span>⏱️ {course.duration}</span>
-                        <span>📊 {course.level}</span>
+                        <span>👥 {course.students?.toLocaleString()}</span>
+                        <span>{course.level}</span>
+                        <span style={{ color: '#1d9bf0', fontWeight: 700 }}>{course.price}</span>
                       </div>
                     </div>
-                    <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <div style={{ fontSize: 24, fontWeight: 700, color: '#1d9bf0' }}>{course.price}</div>
-                      <button 
-                        onClick={e => { e.stopPropagation(); handleFollowCourse(course.id); }}
-                        disabled={isFollowingLoading}
-                        style={{ 
-                          background: isFollowed ? (isDarkMode ? '#2f3336' : '#e2e8f0') : '#1d9bf0',
-                          color: isFollowed ? (isDarkMode ? '#71767b' : '#64748b') : '#fff',
-                          border: 'none', 
-                          padding: '10px 20px', 
-                          borderRadius: 8, 
-                          fontWeight: 600, 
-                          fontSize: 14, 
-                          cursor: 'pointer'
-                        }}
-                      >
-                        {isFollowed ? '✓ Following' : 'Follow'}
-                      </button>
-                      <button 
-                        onClick={e => { e.stopPropagation(); }}
-                        style={{ 
-                          background: '#1d9bf0', 
-                          color: '#fff', 
-                          border: 'none', 
-                          padding: '10px 20px', 
-                          borderRadius: 8, 
-                          fontWeight: 600, 
-                          fontSize: 14, 
-                          cursor: 'pointer' 
-                        }}
-                      >
-                        View Course
-                      </button>
-                    </div>
+                    <button 
+                      onClick={e => { e.stopPropagation(); handleFollowCourse(course.id); }}
+                      disabled={isFollowingLoading}
+                      style={{ 
+                        background: isFollowed ? 'transparent' : '#1d9bf0',
+                        color: isFollowed ? (isDarkMode ? '#e7e9ea' : '#0f1419') : '#fff',
+                        border: isFollowed ? (isDarkMode ? '1px solid #536471' : '1px solid #cfd9de') : 'none', 
+                        padding: '6px 16px', 
+                        borderRadius: 20, 
+                        fontWeight: 700, 
+                        fontSize: 13, 
+                        cursor: 'pointer',
+                        flexShrink: 0
+                      }}
+                    >
+                      {isFollowed ? 'Following' : 'Follow'}
+                    </button>
                   </div>
                 );
               })}
             </div>
-          </div>
-        )}
+          )}
+
+          {/* COMMUNITY TAB */}
+          {creatorProfileTab === 'community' && (
+            <div style={{ padding: '0' }}>
+              {/* Post Composer */}
+              <div style={{ 
+                padding: '16px', 
+                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                background: isDarkMode ? '#000' : '#fff'
+              }}>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <div style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    background: '#1d9bf0',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    flexShrink: 0
+                  }}>
+                    {currentUser?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U'}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <textarea
+                      placeholder={`Post to ${creator.name}'s community...`}
+                      style={{
+                        width: '100%',
+                        border: 'none',
+                        outline: 'none',
+                        resize: 'none',
+                        fontSize: 15,
+                        background: 'transparent',
+                        color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                        padding: '8px 0',
+                        minHeight: 48,
+                        fontFamily: 'inherit'
+                      }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <button style={{
+                        background: '#1d9bf0',
+                        color: '#fff',
+                        border: 'none',
+                        padding: '8px 20px',
+                        borderRadius: 20,
+                        fontWeight: 700,
+                        fontSize: 14,
+                        cursor: 'pointer',
+                        opacity: 0.5
+                      }}>
+                        Post
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Community Posts */}
+              {creatorPosts.map(post => (
+                <div key={post.id} style={{ 
+                  padding: '16px', 
+                  borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                  background: isDarkMode ? '#000' : '#fff'
+                }}>
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    <div style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      background: '#536471',
+                      color: '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 14,
+                      fontWeight: 700,
+                      flexShrink: 0
+                    }}>
+                      {post.author.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                        <span style={{ fontWeight: 700, fontSize: 15, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{post.author}</span>
+                        <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 15 }}>{post.handle}</span>
+                        <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 15 }}>·</span>
+                        <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 15 }}>{post.timestamp}</span>
+                      </div>
+                      <p style={{ margin: '0 0 12px 0', fontSize: 15, lineHeight: 1.4, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{post.content}</p>
+                      <div style={{ display: 'flex', gap: 24, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                        <span style={{ cursor: 'pointer' }}>💬 {post.replies}</span>
+                        <span style={{ cursor: 'pointer' }}>❤️ {post.likes}</span>
+                        <span style={{ cursor: 'pointer' }}>🔗 Share</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ABOUT TAB */}
+          {creatorProfileTab === 'about' && (
+            <div style={{ padding: '16px', background: isDarkMode ? '#000' : '#fff' }}>
+              {/* Bio */}
+              <div style={{ marginBottom: 24 }}>
+                <h3 style={{ margin: '0 0 8px 0', fontSize: 15, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>About</h3>
+                <p style={{ margin: 0, color: isDarkMode ? '#e7e9ea' : '#0f1419', fontSize: 15, lineHeight: 1.5 }}>{creator.bio}</p>
+              </div>
+
+              {/* Credentials */}
+              {creator.qualifications && creator.qualifications.length > 0 && (
+                <div style={{ marginBottom: 24 }}>
+                  <h3 style={{ margin: '0 0 8px 0', fontSize: 15, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Credentials</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {creator.qualifications.map((qual, index) => (
+                      <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 8, color: isDarkMode ? '#e7e9ea' : '#0f1419', fontSize: 14 }}>
+                        <span style={{ color: '#1d9bf0' }}>✓</span>
+                        <span>{qual.sentence}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Expertise */}
+              {creator.expertise && creator.expertise.length > 0 && (
+                <div style={{ marginBottom: 24 }}>
+                  <h3 style={{ margin: '0 0 8px 0', fontSize: 15, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Expertise</h3>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {creator.expertise.map((skill, index) => (
+                      <span key={index} style={{ 
+                        background: isDarkMode ? '#2f3336' : '#eff3f4', 
+                        color: isDarkMode ? '#e7e9ea' : '#0f1419', 
+                        padding: '6px 12px', 
+                        borderRadius: 16, 
+                        fontSize: 13,
+                        fontWeight: 500
+                      }}>
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Website */}
+              {creator.website && (
+                <a 
+                  href={creator.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#1d9bf0', fontWeight: 500, fontSize: 14 }}
+                >
+                  🌐 {creator.website}
+                </a>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
