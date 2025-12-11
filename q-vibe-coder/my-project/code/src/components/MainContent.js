@@ -432,6 +432,35 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             </div>
           </div>
           
+          {/* Bio */}
+          {creator.bio && (
+            <p style={{ 
+              margin: '0 0 12px 0', 
+              color: isDarkMode ? '#e7e9ea' : '#0f1419', 
+              fontSize: 15, 
+              lineHeight: 1.5 
+            }}>
+              {creator.bio}
+            </p>
+          )}
+          
+          {/* Expertise Tags */}
+          {creator.expertise && creator.expertise.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {creator.expertise.map((skill, index) => (
+                <span key={index} style={{ 
+                  background: isDarkMode ? '#2f3336' : '#eff3f4', 
+                  color: isDarkMode ? '#e7e9ea' : '#536471', 
+                  padding: '4px 10px', 
+                  borderRadius: 16, 
+                  fontSize: 12,
+                  fontWeight: 500
+                }}>
+                  {skill}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Segmented Control: Courses | Community | About | Following */}
