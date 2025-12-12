@@ -633,12 +633,44 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                       style={{ width: 120, height: 68, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }}
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <h3 style={{ margin: '0 0 4px 0', fontSize: 15, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{course.title}</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{course.title}</h3>
+                        {course.badge && (
+                          <span style={{
+                            background: course.badge === 'Bestseller' ? '#fbbf24' : 
+                                       course.badge === 'Popular' ? '#1d9bf0' : 
+                                       course.badge === 'New' ? '#22c55e' : 
+                                       course.badge === 'Featured' ? '#a855f7' : '#6b7280',
+                            color: course.badge === 'Bestseller' ? '#000' : '#fff',
+                            padding: '2px 6px',
+                            borderRadius: 10,
+                            fontSize: 10,
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            flexShrink: 0
+                          }}>
+                            {course.badge}
+                          </span>
+                        )}
+                      </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
-                        <span>⭐ {course.rating}</span>
+                        <span>⭐ {course.rating} ({course.ratingCount || 0})</span>
                         <span>👥 {course.students?.toLocaleString()}</span>
                         <span>{course.level}</span>
                         <span style={{ color: '#1d9bf0', fontWeight: 700 }}>{course.price}</span>
+                        <span 
+                          onClick={(e) => { e.stopPropagation(); setSelectedCourse(course); }}
+                          style={{ 
+                            color: '#1d9bf0', 
+                            cursor: 'pointer',
+                            fontWeight: 500
+                          }}
+                          onMouseEnter={e => e.target.style.textDecoration = 'underline'}
+                          onMouseLeave={e => e.target.style.textDecoration = 'none'}
+                        >
+                          View course →
+                        </span>
                       </div>
                     </div>
                     <button 
@@ -1650,10 +1682,28 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                 {creatorInitials}
                               </div>
                               <div className="post-content" style={{ padding: 0, flex: 1, minWidth: 0 }}>
-                                {/* Title, Duration, and Follow Button Row */}
+                                {/* Title, Duration, Badge, and Follow Button Row */}
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: isDarkMode ? '#e7e9ea' : '#222', flex: 1, minWidth: 0 }}>
                                     <span style={{ fontWeight: 700, fontSize: 15, lineHeight: '20px', color: isDarkMode ? '#e7e9ea' : '#0f1419', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{course.title}</span>
+                                    {course.badge && (
+                                      <span style={{
+                                        background: course.badge === 'Bestseller' ? '#fbbf24' : 
+                                                   course.badge === 'Popular' ? '#1d9bf0' : 
+                                                   course.badge === 'New' ? '#22c55e' : 
+                                                   course.badge === 'Featured' ? '#a855f7' : '#6b7280',
+                                        color: course.badge === 'Bestseller' ? '#000' : '#fff',
+                                        padding: '2px 8px',
+                                        borderRadius: 12,
+                                        fontSize: 11,
+                                        fontWeight: 600,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.5px',
+                                        flexShrink: 0
+                                      }}>
+                                        {course.badge}
+                                      </span>
+                                    )}
                                     <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 15, fontWeight: 400, flexShrink: 0 }}>• {course.duration}</span>
                                   </div>
                                   <button 
@@ -1706,6 +1756,33 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                   textOverflow: 'ellipsis'
                                 }}>
                                   {course.description}
+                                </div>
+
+                                {/* Course Stats Row */}
+                                <div style={{ 
+                                  display: 'flex', 
+                                  flexWrap: 'wrap', 
+                                  gap: 12, 
+                                  marginTop: 10,
+                                  fontSize: 13, 
+                                  color: isDarkMode ? '#71767b' : '#536471' 
+                                }}>
+                                  <span>⭐ {course.rating} ({course.ratingCount || 0} reviews)</span>
+                                  <span>👥 {course.students?.toLocaleString()} students</span>
+                                  <span>📚 {course.level}</span>
+                                  <span style={{ color: '#1d9bf0', fontWeight: 700 }}>{course.price}</span>
+                                  <span 
+                                    onClick={(e) => { e.stopPropagation(); setSelectedCourse(course); }}
+                                    style={{ 
+                                      color: '#1d9bf0', 
+                                      cursor: 'pointer',
+                                      fontWeight: 500
+                                    }}
+                                    onMouseEnter={e => e.target.style.textDecoration = 'underline'}
+                                    onMouseLeave={e => e.target.style.textDecoration = 'none'}
+                                  >
+                                    View course →
+                                  </span>
                                 </div>
 
                                 {/* About the Creator Section */}

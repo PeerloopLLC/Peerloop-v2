@@ -88,6 +88,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
     { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system
     { icon: <FaBriefcase />, label: 'Job Exchange', displayLabel: 'Job Exchange' }, // Job exchange system
     { icon: <FaUser />, label: 'Profile', displayLabel: 'Profile' }, // User profile
+    { icon: isDarkMode ? <FaSun /> : <FaMoon />, label: 'ToggleTheme', displayLabel: isDarkMode ? 'Light Mode' : 'Dark Mode' }, // Theme toggle
   ];
 
   /**
@@ -99,6 +100,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
     { icon: <FaBookmark />, label: 'Bookmarks', action: 'bookmarks' },
     { icon: <FaHistory />, label: 'History', action: 'history' },
     { icon: <FaCog />, label: 'Settings', action: 'settings' },
+    { icon: isDarkMode ? <FaSun /> : <FaMoon />, label: isDarkMode ? 'Light Mode' : 'Dark Mode', action: 'toggle-theme' },
     { icon: <FaShieldAlt />, label: 'Privacy & Security', action: 'privacy' },
     { icon: <FaQuestionCircle />, label: 'Help & Support', action: 'help' },
     { icon: <FaSignOutAlt />, label: 'Sign Out', action: 'signout' },
@@ -124,6 +126,11 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
       }
     } else if (action === 'settings') {
       onMenuChange('Settings');
+    } else if (action === 'toggle-theme') {
+      // Toggle dark/light mode
+      if (toggleDarkMode) {
+        toggleDarkMode();
+      }
     } else {
       onMenuChange('Profile');
     }
@@ -134,7 +141,12 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
    * @param {string} label - The label of the clicked menu item
    */
   const handleMenuClick = (label) => {
-    if (label === 'Browse' && activeMenu === 'Browse') {
+    if (label === 'ToggleTheme') {
+      // Handle theme toggle
+      if (toggleDarkMode) {
+        toggleDarkMode();
+      }
+    } else if (label === 'Browse' && activeMenu === 'Browse') {
       // If already on Browse page, pass a special signal to reset the view
       onMenuChange('Browse_Reset');
     } else {
@@ -194,22 +206,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
           </div>
         ))}
       </nav>
-
-      {/* Dark Mode Toggle */}
-      <div className="dark-mode-toggle-container">
-        <button 
-          className="dark-mode-toggle"
-          onClick={toggleDarkMode}
-          title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        >
-          <div className="toggle-icon">
-            {isDarkMode ? <FaSun /> : <FaMoon />}
-          </div>
-          <span className="toggle-label">
-            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-          </span>
-        </button>
-      </div>
     </div>
   );
 };
