@@ -200,6 +200,74 @@
 
 ---
 
+### Session 6
+**Date:** December 11, 2025
+**Duration:** ~2.5 hours
+**Phase:** Building & Community Redesign
+
+**What we did:**
+
+- **Git Cleanup & Fresh Start:**
+  - Fixed detached HEAD state from previous repo linkage issues
+  - Re-initialized git repo in C:\PeerLoop2 directory
+  - Force-pushed to establish clean history on GitHub
+  - Redeployed to GitHub Pages
+
+- **Community Page Redesign:**
+  - **Two-panel toggle:** "Community Hub" and "My Creators" buttons at top
+  - **Horizontal scrollable creator links:** X.com style when "My Creators" selected
+  - **Simplified post composer:** Compact textarea with "Posting to:" label
+  - **Removed right pane entirely** - centered single-column layout
+
+- **Go to Community Button:**
+  - From creator profile → navigates to Community page
+  - Auto-selects "My Creators" mode
+  - Highlights and scrolls to the specific creator
+  - Shows helpful message if creator not followed
+
+- **Creator Dropdown Menus:**
+  - Click ▼ next to creator name → shows course list with checkboxes
+  - "Follow All" / "Unfollow All" text links with hover effects
+  - Individual course toggle working correctly
+
+- **UI Polish:**
+  - Toggle buttons: gray background, blue text when selected, white text when not
+  - Compact post composer (reduced padding, avatar, textarea size)
+  - Fixed button spreading issue with proper flexbox styling
+  - Made dropdown arrow more visible (white, larger)
+
+**Commits (10 total):**
+1. Gray background, blue text toggle buttons
+2. Bright white text when not selected
+3. Go to Community sets My Creators mode
+4. Show helpful message for unfollowed creators
+5. Fix menu name mismatch ('My Community')
+6. Auto-scroll to selected creator
+7. Make dropdown arrow visible
+8. Add Follow All/Unfollow All with course toggle
+9. Change to text links instead of buttons
+10. Fix Unfollow All to handle all ID formats
+
+**Decisions made:**
+- Single-column centered layout for Community
+- Toggle between hub and creators (not tabs)
+- Dropdown menus for course selection per creator
+- Text links for follow actions (not buttons)
+
+**Technical notes:**
+- Dev server: http://localhost:3001/Peerloop-v2
+- GitHub: https://github.com/brianpeerloop/Peerloop-v2
+- `communityMode` state: 'hub' or 'creators'
+- `selectedCreatorId` tracks current creator in My Creators view
+- `pendingCommunityCreator` in localStorage for cross-component navigation
+
+**Next session:** 
+- Test all Community features end-to-end
+- Continue with remaining Browse/Creator polish
+- Consider mobile responsiveness for new layouts
+
+---
+
 <!-- Add more sessions as needed -->
 
 ---

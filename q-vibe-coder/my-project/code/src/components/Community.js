@@ -14,8 +14,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
   const [openCreatorDropdown, setOpenCreatorDropdown] = useState(null); // Track which creator dropdown is open
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 }); // Track dropdown position
-  const buttonRefs = useRef({}); // Track button refs for dropdown positioning
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, useRight: false }); // Track dropdown position
   const [selectedCourseFilters, setSelectedCourseFilters] = useState([]); // Filter to specific courses within creator (multi-select)
   const [newPostText, setNewPostText] = useState(''); // Text for new post
   const [isComposerFocused, setIsComposerFocused] = useState(false); // Track if composer is focused
@@ -25,15 +24,9 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const [realPosts, setRealPosts] = useState([]); // Posts from Supabase
   const [isPosting, setIsPosting] = useState(false); // Loading state for posting
   const [postError, setPostError] = useState(null); // Error state for posting
-  
-  // New Option A states
-  const [communityMode, setCommunityMode] = useState('hub'); // 'hub' for Community Hub (Everyone), 'creators' for My Creators
-  const [selectedCreatorId, setSelectedCreatorId] = useState(null); // Selected creator in 'creators' mode
-  
-  // Creator links scroll state
-  const creatorLinksRef = useRef(null);
-  const [showCreatorLeftArrow, setShowCreatorLeftArrow] = useState(false);
-  const [showCreatorRightArrow, setShowCreatorRightArrow] = useState(false);
+  const [communityMode, setCommunityMode] = useState('hub'); // 'hub' or 'creators'
+  const [selectedCreatorId, setSelectedCreatorId] = useState(null); // Selected creator in My Creators mode
+  const [pendingCreatorName, setPendingCreatorName] = useState(null); // Name of creator from Go to Community button (not yet followed)
 
   // Initialize GetStream and load posts on mount
   useEffect(() => {
@@ -51,18 +44,22 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     init();
   }, [currentUser?.id]);
 
-  // Check for pending creator selection from Browse page
+  // Check for pending creator navigation from "Go to Community" button
   useEffect(() => {
     const pendingCreator = localStorage.getItem('pendingCommunityCreator');
     if (pendingCreator) {
       try {
-        const { id, name } = JSON.parse(pendingCreator);
-        // Switch to creators mode and select the creator
-        setCommunityMode('creators');
-        setSelectedCreatorId(id);
-        setPostAudience(id);
-        setActiveTab(id);
-        // Clear the pending selection
+        const creator = JSON.parse(pendingCreator);
+        // Set to My Creators mode and select this creator
+        if (creator.id) {
+          setCommunityMode('creators');
+          setSelectedCreatorId(creator.id);
+          setPostAudience(creator.id);
+          setActiveTab(creator.id);
+          // Store the name in case the creator isn't in groupedByCreator (not followed yet)
+          setPendingCreatorName(creator.name);
+        }
+        // Clear the pending creator so it doesn't trigger again
         localStorage.removeItem('pendingCommunityCreator');
       } catch (e) {
         console.error('Error parsing pending creator:', e);
@@ -70,6 +67,34 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       }
     }
   }, []);
+
+  // Scroll to selected creator in the horizontal tabs when selectedCreatorId changes
+  useEffect(() => {
+    if (communityMode === 'creators' && selectedCreatorId && tabsContainerRef.current) {
+      // Small delay to ensure DOM is rendered
+      setTimeout(() => {
+        const container = tabsContainerRef.current;
+        if (!container) return;
+        
+        // Find the button for the selected creator
+        const buttons = container.querySelectorAll('button');
+        const selectedButton = Array.from(buttons).find(btn => {
+          // Match by checking if this button's creator id matches
+          const creatorId = btn.getAttribute('data-creator-id');
+          return creatorId === selectedCreatorId;
+        });
+        
+        if (selectedButton) {
+          // Scroll the button into view, centered
+          const containerWidth = container.clientWidth;
+          const buttonLeft = selectedButton.offsetLeft;
+          const buttonWidth = selectedButton.offsetWidth;
+          const scrollTo = buttonLeft - (containerWidth / 2) + (buttonWidth / 2);
+          container.scrollTo({ left: Math.max(0, scrollTo), behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [communityMode, selectedCreatorId]);
 
   // Handle posting a new message
   const handleSubmitPost = async () => {
@@ -646,32 +671,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     }
   };
 
-  // Check creator links scroll arrows visibility
-  const checkCreatorScrollArrows = () => {
-    if (creatorLinksRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = creatorLinksRef.current;
-      setShowCreatorLeftArrow(scrollLeft > 0);
-      setShowCreatorRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
-
-  useEffect(() => {
-    checkCreatorScrollArrows();
-    window.addEventListener('resize', checkCreatorScrollArrows);
-    return () => window.removeEventListener('resize', checkCreatorScrollArrows);
-  }, [groupedByCreator, communityMode]);
-
-  const scrollCreatorLinks = (direction) => {
-    if (creatorLinksRef.current) {
-      const scrollAmount = 150;
-      creatorLinksRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-      setTimeout(checkCreatorScrollArrows, 300);
-    }
-  };
-
   const handleCommunityClick = (community) => {
     setSelectedCommunity(community);
   };
@@ -747,52 +746,39 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       likes: post.likes || 0,
       replies: post.comments || 0,
       retweets: post.shares || 0,
-      audience: post.audience, // Keep original audience for filtering
       community: post.audience === 'everyone' ? 'Everyone' : post.audience,
       isRealPost: true,
       supabaseId: post.id
     }));
 
     let filteredFakePosts;
-    let filteredRealPosts;
     
     // Get all followed course IDs from grouped creators
     const allFollowedCourseIds = groupedByCreator.flatMap(c => c.followedCourseIds);
     
-    if (activeTab === 'Home') {
-      // Home tab: Show all posts from followed courses AND all real posts (everyone + creator-specific)
+    if (communityMode === 'hub') {
+      // Community Hub: Show all posts from followed courses
       filteredFakePosts = fakePosts.filter(post => allFollowedCourseIds.includes(post.courseId));
-      // Show all real posts on Home tab
-      filteredRealPosts = formattedRealPosts;
     } else {
-      // Specific creator tab: Filter based on that creator's followed courses
-      const activeCreator = groupedByCreator.find(c => c.id === activeTab);
+      // My Creators mode: Filter based on selected creator's followed courses
+      const activeCreator = groupedByCreator.find(c => c.id === selectedCreatorId);
       if (activeCreator) {
-        if (selectedCourseFilters.length > 0) {
-          // Filter to selected courses only
-          filteredFakePosts = fakePosts.filter(post => selectedCourseFilters.includes(post.courseId));
-        } else {
-          // No filter selected - show all posts from this creator's followed courses
-          filteredFakePosts = fakePosts.filter(post => 
-            activeCreator.followedCourseIds.includes(post.courseId)
-          );
-        }
-        // Filter real posts to show only those posted to 'everyone' OR this specific creator
-        filteredRealPosts = formattedRealPosts.filter(post => 
-          post.audience === 'everyone' || post.audience === activeTab
+        // Show all posts from this creator's followed courses
+        filteredFakePosts = fakePosts.filter(post => 
+          activeCreator.followedCourseIds.includes(post.courseId)
         );
       } else {
         filteredFakePosts = [];
-        filteredRealPosts = [];
       }
     }
     
-    // Combine filtered real posts with filtered fake posts
-    const combinedPosts = [...filteredRealPosts, ...filteredFakePosts];
+    // ALWAYS show real posts first, then filtered fake posts
+    // Real posts appear regardless of followed communities
+    const combinedPosts = [...formattedRealPosts, ...filteredFakePosts];
     
-    // If on Home tab and no communities followed, still show real posts
-    if (activeTab === 'Home' && combinedPosts.length === 0) {
-      return filteredRealPosts;
+    // If in Hub mode and no communities followed, still show real posts
+    if (communityMode === 'hub' && combinedPosts.length === 0) {
+      return formattedRealPosts;
     }
     
     // Sort: Real posts first (by time), then fake posts by engagement
@@ -818,7 +804,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       // Combine engagement and recency (recent + high engagement first)
       return (engagementB / (timeB + 1)) - (engagementA / (timeA + 1));
     });
-  }, [activeTab, groupedByCreator, selectedCourseFilters, realPosts]);
+  }, [communityMode, selectedCreatorId, groupedByCreator, realPosts]);
 
   if (selectedCommunity) {
     // Get posts for this community
@@ -985,211 +971,449 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     <div className="community-content-outer">
       <div className="community-three-column">
         <div className="community-center-column">
-          {/* Option A: Two-Panel Toggle - Compact version */}
-          <div className="community-mode-toggle" style={{
-            display: 'flex',
-            gap: 0,
-            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-            background: isDarkMode ? '#000' : '#fff'
-          }}>
-            <button
-              onClick={() => {
-                setCommunityMode('hub');
-                setPostAudience('everyone');
-                setSelectedCreatorId(null);
-              }}
-              style={{
-                flex: 1,
-                padding: '12px 16px',
-                background: communityMode === 'hub' 
-                  ? (isDarkMode ? '#1d1f23' : '#f0f9ff') 
-                  : 'transparent',
-                border: 'none',
-                borderBottom: communityMode === 'hub' ? '3px solid #1d9bf0' : '3px solid transparent',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8
-              }}
-            >
-              <span style={{ fontSize: 16 }}>🌍</span>
-              <span style={{ 
-                fontSize: 14, 
-                fontWeight: 700, 
-                color: communityMode === 'hub' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419')
-              }}>Community Hub</span>
-            </button>
-            
-            <button
-              onClick={() => {
-                setCommunityMode('creators');
-                setSelectedCreatorId(null);
-              }}
-              style={{
-                flex: 1,
-                padding: '12px 16px',
-                background: communityMode === 'creators' 
-                  ? (isDarkMode ? '#1d1f23' : '#f0f9ff') 
-                  : 'transparent',
-                border: 'none',
-                borderBottom: communityMode === 'creators' ? '3px solid #1d9bf0' : '3px solid transparent',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8
-              }}
-            >
-              <span style={{ fontSize: 16 }}>👤</span>
-              <span style={{ 
-                fontSize: 14, 
-                fontWeight: 700, 
-                color: communityMode === 'creators' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419')
-              }}>My Creators</span>
-            </button>
-          </div>
-          
-          {/* Creator Selection Links - Only show in 'creators' mode */}
-          {communityMode === 'creators' && (
+          {/* Community Hub / My Creators Toggle */}
+          <div className="community-top-menu" style={{ display: 'block' }}>
             <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              position: 'relative',
-              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-              background: isDarkMode ? '#000' : '#fff'
+              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+              width: '100%',
+              boxSizing: 'border-box'
             }}>
-              {/* Left scroll arrow */}
-              {showCreatorLeftArrow && (
+              {/* Icon Tab Toggle - X.com style underlined tabs */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 0,
+                width: '100%',
+                boxSizing: 'border-box'
+              }}>
                 <button
-                  onClick={() => scrollCreatorLinks('left')}
+                  onClick={() => {
+                    setCommunityMode('hub');
+                    setSelectedCreatorId(null);
+                    setPostAudience('everyone');
+                  }}
                   style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: 32,
-                    height: 32,
-                    borderRadius: '50%',
-                    background: isDarkMode ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)',
-                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                    flex: '1 1 0',
+                    maxWidth: 200,
+                    padding: '16px 20px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: communityMode === 'hub' 
+                      ? (isDarkMode ? '#e7e9ea' : '#0f1419')
+                      : (isDarkMode ? '#71767b' : '#536471'),
+                    fontWeight: communityMode === 'hub' ? 700 : 500,
+                    fontSize: 15,
                     cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxSizing: 'border-box',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    zIndex: 10,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                    gap: 8,
+                    position: 'relative',
+                    borderBottom: communityMode === 'hub' 
+                      ? '4px solid #1d9bf0' 
+                      : '4px solid transparent',
+                    marginBottom: -1
                   }}
-                  aria-label="Scroll left"
                 >
-                  <FaChevronLeft style={{ color: isDarkMode ? '#e7e9ea' : '#0f1419', fontSize: 12 }} />
+                  <FaHome style={{ fontSize: 18 }} />
+                  <span>Community Hub</span>
                 </button>
-              )}
-              
-              {/* Scrollable creator links */}
-              <div 
-                ref={creatorLinksRef}
-                onScroll={checkCreatorScrollArrows}
-                className="creator-links-scroll"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0,
-                  overflowX: 'auto',
-                  flex: 1,
-                  scrollbarWidth: 'none',
-                  msOverflowStyle: 'none',
-                  paddingLeft: showCreatorLeftArrow ? 36 : 0,
-                  paddingRight: showCreatorRightArrow ? 36 : 0
-                }}
-              >
-                {groupedByCreator.length === 0 ? (
-                  <div style={{ 
-                    color: isDarkMode ? '#71767b' : '#536471', 
-                    fontSize: 13,
-                    padding: '12px 16px'
-                  }}>
-                    No creators followed yet. Go to Browse to follow creators.
-                  </div>
-                ) : (
-                  groupedByCreator.map(creator => (
-                    <button
-                      key={creator.id}
-                      onClick={() => {
-                        setSelectedCreatorId(creator.id);
-                        setPostAudience(creator.id);
-                        setActiveTab(creator.id);
-                      }}
-                      style={{
-                        padding: '12px 20px',
-                        background: 'transparent',
-                        border: 'none',
-                        borderBottom: selectedCreatorId === creator.id 
-                          ? '3px solid #1d9bf0' 
-                          : '3px solid transparent',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                        whiteSpace: 'nowrap',
-                        position: 'relative'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (selectedCreatorId !== creator.id) {
-                          e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'transparent';
-                      }}
-                    >
-                      <span style={{
-                        fontSize: 15,
-                        fontWeight: selectedCreatorId === creator.id ? 700 : 500,
-                        color: selectedCreatorId === creator.id 
-                          ? (isDarkMode ? '#e7e9ea' : '#0f1419')
-                          : (isDarkMode ? '#71767b' : '#536471')
-                      }}>
-                        {creator.name}
-                      </span>
-                    </button>
-                  ))
-                )}
+                <button
+                  onClick={() => {
+                    setCommunityMode('creators');
+                    if (groupedByCreator.length > 0 && !selectedCreatorId) {
+                      setSelectedCreatorId(groupedByCreator[0].id);
+                      setPostAudience(groupedByCreator[0].id);
+                    }
+                  }}
+                  style={{
+                    flex: '1 1 0',
+                    maxWidth: 200,
+                    padding: '16px 20px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: communityMode === 'creators' 
+                      ? (isDarkMode ? '#e7e9ea' : '#0f1419')
+                      : (isDarkMode ? '#71767b' : '#536471'),
+                    fontWeight: communityMode === 'creators' ? 700 : 500,
+                    fontSize: 15,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    position: 'relative',
+                    borderBottom: communityMode === 'creators' 
+                      ? '4px solid #1d9bf0' 
+                      : '4px solid transparent',
+                    marginBottom: -1
+                  }}
+                >
+                  <FaUsers style={{ fontSize: 18 }} />
+                  <span>My Creators</span>
+                </button>
               </div>
-              
-              {/* Right scroll arrow */}
-              {showCreatorRightArrow && (
-                <button
-                  onClick={() => scrollCreatorLinks('right')}
-                  style={{
-                    position: 'absolute',
-                    right: 0,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: 32,
-                    height: 32,
-                    borderRadius: '50%',
-                    background: isDarkMode ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)',
-                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 10,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                  }}
-                  aria-label="Scroll right"
-                >
-                  <FaChevronRight style={{ color: isDarkMode ? '#e7e9ea' : '#0f1419', fontSize: 12 }} />
-                </button>
-              )}
             </div>
-          )}
+            
+            {/* Creator Links - Show underneath when My Creators is selected */}
+            {communityMode === 'creators' && groupedByCreator.length > 0 && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
+                overflow: 'hidden',
+                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                padding: '8px 0'
+              }}>
+                  <button 
+                    onClick={() => {
+                      if (tabsContainerRef.current) {
+                        tabsContainerRef.current.scrollBy({ left: -150, behavior: 'smooth' });
+                      }
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: isDarkMode ? '#71767b' : '#536471',
+                      cursor: 'pointer',
+                      padding: 8,
+                      flexShrink: 0
+                    }}
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  
+                  <div 
+                    ref={tabsContainerRef}
+                    style={{
+                      display: 'flex',
+                      gap: 8,
+                      overflowX: 'auto',
+                      flex: 1,
+                      minWidth: 0,
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none'
+                    }}
+                  >
+                  {groupedByCreator.map(creator => (
+                    <div 
+                      key={creator.id} 
+                      style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
+                      data-creator-id={creator.id}
+                    >
+                      <button
+                        onClick={() => {
+                          setSelectedCreatorId(creator.id);
+                          setPostAudience(creator.id);
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          padding: '8px 12px 8px 16px',
+                          fontSize: 15,
+                          fontWeight: selectedCreatorId === creator.id ? 700 : 400,
+                          color: selectedCreatorId === creator.id 
+                            ? '#1d9bf0' 
+                            : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          borderBottom: selectedCreatorId === creator.id 
+                            ? '2px solid #1d9bf0' 
+                            : '2px solid transparent',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {creator.name}
+                      </button>
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (openCreatorDropdown === creator.id) {
+                            setOpenCreatorDropdown(null);
+                          } else {
+                            const wrapper = e.target.closest('[data-creator-id]');
+                            if (wrapper) {
+                              const rect = wrapper.getBoundingClientRect();
+                              const dropdownWidth = 260;
+                              const viewportWidth = window.innerWidth;
+                              const margin = 16;
+                              
+                              // Always constrain: never let dropdown exceed right edge
+                              let leftPos = Math.min(rect.left, viewportWidth - dropdownWidth - margin);
+                              
+                              // Ensure it doesn't go off left edge
+                              leftPos = Math.max(margin, leftPos);
+                              
+                              setDropdownPosition({
+                                top: rect.bottom + 4,
+                                left: leftPos,
+                                useRight: false
+                              });
+                            }
+                            setOpenCreatorDropdown(creator.id);
+                          }
+                        }}
+                        style={{
+                          fontSize: 12,
+                          padding: '6px 10px 6px 4px',
+                          cursor: 'pointer',
+                          color: selectedCreatorId === creator.id 
+                            ? '#1d9bf0' 
+                            : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                          borderBottom: selectedCreatorId === creator.id 
+                            ? '2px solid #1d9bf0' 
+                            : '2px solid transparent',
+                          transition: 'color 0.2s'
+                        }}
+                      >
+                        ▼
+                      </span>
+                      
+                      {/* Dropdown menu for courses - rendered via Portal to escape transform context */}
+                      {openCreatorDropdown === creator.id && ReactDOM.createPortal(
+                        <div 
+                          style={{
+                            position: 'fixed',
+                            top: dropdownPosition.top,
+                            left: dropdownPosition.left,
+                            background: isDarkMode ? '#16181c' : '#fff',
+                            border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                            borderRadius: 8,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            zIndex: 1000,
+                            width: 260,
+                            maxHeight: '60vh',
+                            overflowY: 'auto'
+                          }}
+                        >
+                          {/* Header */}
+                          <div style={{
+                            padding: '10px 12px',
+                            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                            fontWeight: 600,
+                            fontSize: 13,
+                            color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                          }}>
+                            Courses by {creator.name}
+                          </div>
+                          
+                          {/* Follow All / Unfollow All text links */}
+                          <div style={{
+                            display: 'flex',
+                            gap: 16,
+                            padding: '8px 12px',
+                            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
+                          }}>
+                            <span
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Follow all courses from this creator
+                                const allCourseIds = (creator.allCourses || []).map(c => c.id);
+                                actualSetFollowedCommunities(prev => {
+                                  const newFollows = [...prev];
+                                  allCourseIds.forEach(courseId => {
+                                    const courseCommunityId = `course-${courseId}`;
+                                    if (!newFollows.some(c => c.id === courseCommunityId)) {
+                                      const course = (creator.allCourses || []).find(c => c.id === courseId);
+                                      if (course) {
+                                        newFollows.push({
+                                          id: courseCommunityId,
+                                          name: course.title,
+                                          type: 'course',
+                                          courseId: course.id,
+                                          instructorId: course.instructorId
+                                        });
+                                      }
+                                    }
+                                  });
+                                  return newFollows;
+                                });
+                              }}
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 500,
+                                color: '#1d9bf0',
+                                cursor: 'pointer',
+                                transition: 'opacity 0.2s'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+                              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                            >
+                              Follow All
+                            </span>
+                            <span
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                console.log('Unfollow All clicked for creator:', creator.name);
+                                // Unfollow all courses from this creator
+                                const allCourseIds = (creator.allCourses || []).map(c => c.id);
+                                actualSetFollowedCommunities(prev => {
+                                  console.log('Before unfollow:', prev);
+                                  const filtered = prev.filter(c => {
+                                    // Remove creator follow
+                                    if (c.id === creator.id) return false;
+                                    // Remove individual course follows from this creator
+                                    if (c.type === 'course') {
+                                      const courseId = c.courseId || parseInt(c.id.replace('course-', ''));
+                                      if (allCourseIds.includes(courseId)) return false;
+                                    }
+                                    // Also check by course-ID format
+                                    if (c.id && c.id.startsWith('course-')) {
+                                      const courseId = parseInt(c.id.replace('course-', ''));
+                                      if (allCourseIds.includes(courseId)) return false;
+                                    }
+                                    return true;
+                                  });
+                                  console.log('After unfollow:', filtered);
+                                  return filtered;
+                                });
+                              }}
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 500,
+                                color: isDarkMode ? '#71767b' : '#536471',
+                                cursor: 'pointer',
+                                transition: 'color 0.2s'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.color = '#f4212e'}
+                              onMouseLeave={(e) => e.currentTarget.style.color = isDarkMode ? '#71767b' : '#536471'}
+                            >
+                              Unfollow All
+                            </span>
+                          </div>
+                          
+                          {/* Course list */}
+                          {(creator.allCourses || []).map(course => {
+                            if (!course) return null;
+                            const courseCommunityId = `course-${course.id}`;
+                            const isFollowed = actualFollowedCommunities.some(
+                              c => c.id === courseCommunityId || 
+                                   (c.type === 'creator' && c.courseIds?.includes(course.id))
+                            );
+                            return (
+                              <div
+                                key={course.id}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  console.log('Course clicked:', course.title, 'isFollowed:', isFollowed);
+                                  if (isFollowed) {
+                                    // Unfollow - remove the course-specific follow
+                                    actualSetFollowedCommunities(prev => {
+                                      console.log('Unfollowing, prev:', prev);
+                                      return prev.filter(c => {
+                                        // Remove exact course match
+                                        if (c.id === courseCommunityId) return false;
+                                        // Also handle creator follow with this course
+                                        if (c.type === 'creator' && c.courseIds?.includes(course.id)) {
+                                          // Remove this course from the creator's courseIds
+                                          const newCourseIds = c.courseIds.filter(id => id !== course.id);
+                                          if (newCourseIds.length === 0) return false; // Remove entirely if no courses left
+                                          c.courseIds = newCourseIds;
+                                        }
+                                        return true;
+                                      });
+                                    });
+                                  } else {
+                                    // Follow
+                                    actualSetFollowedCommunities(prev => {
+                                      console.log('Following, prev:', prev);
+                                      if (prev.some(c => c.id === courseCommunityId)) return prev;
+                                      return [...prev, {
+                                        id: courseCommunityId,
+                                        name: course.title,
+                                        type: 'course',
+                                        courseId: course.id,
+                                        instructorId: course.instructorId
+                                      }];
+                                    });
+                                  }
+                                }}
+                                style={{
+                                  padding: '10px 12px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 10,
+                                  cursor: 'pointer',
+                                  fontSize: 14,
+                                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                  transition: 'background 0.15s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                              >
+                                <span style={{
+                                  width: 18,
+                                  height: 18,
+                                  borderRadius: 4,
+                                  border: isFollowed 
+                                    ? '2px solid #1d9bf0' 
+                                    : (isDarkMode ? '2px solid #71767b' : '2px solid #cfd9de'),
+                                  background: isFollowed ? '#1d9bf0' : 'transparent',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  flexShrink: 0
+                                }}>
+                                  {isFollowed && <span style={{ color: '#fff', fontSize: 12 }}>✓</span>}
+                                </span>
+                                <span style={{
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap'
+                                }}>
+                                  {course.title}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>,
+                        document.body
+                      )}
+                    </div>
+                  ))}
+                </div>
+                
+                  <button 
+                    onClick={() => {
+                      if (tabsContainerRef.current) {
+                        tabsContainerRef.current.scrollBy({ left: 150, behavior: 'smooth' });
+                      }
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: isDarkMode ? '#71767b' : '#536471',
+                      cursor: 'pointer',
+                      padding: 8,
+                      flexShrink: 0
+                    }}
+                  >
+                    <FaChevronRight />
+                  </button>
+                </div>
+              )}
+            
+            {/* Hidden old tabs for reference - keeping the structure */}
+            <div style={{ display: 'none' }}>
+              <div className="community-tabs-wrapper">
+                {groupedByCreator.map(creator => (
+                  <div key={creator.id} className="community-tab-wrapper">
+                    <span>{creator.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-          {/* Legacy Horizontal Scrollable Tabs - Hidden, keeping for reference */}
-          <div className="community-top-menu" style={{ display: 'none' }}>
+          {/* REMOVED: Old tabs code - replaced with toggle above */}
+          {false && <div className="old-tabs-removed">
             <div className="community-tabs-wrapper">
-              {/* Left scroll arrow */}
               {showLeftArrow && (
                 <button 
                   className="tab-scroll-arrow left"
@@ -1200,13 +1424,10 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 </button>
               )}
               
-              {/* Scrollable tabs container */}
               <div 
-                className="community-tabs-scroll"
-                ref={tabsContainerRef}
+                className="community-tabs-scroll-old"
                 onScroll={checkScrollArrows}
               >
-                {/* Home tab - always first */}
                 <button
                   className={`community-tab-btn ${activeTab === 'Home' ? 'active' : ''}`}
                   onClick={() => handleTabClick('Home')}
@@ -1215,19 +1436,15 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   <span>Home</span>
                 </button>
                 
-                {/* Creator tabs - grouped by creator, each with dropdown for their courses */}
                 {groupedByCreator.map(creator => (
                   <div key={creator.id} className="community-tab-wrapper">
                     <button
-                      ref={el => buttonRefs.current[creator.id] = el}
                       className={`community-tab-btn ${activeTab === creator.id ? 'active' : ''}`}
                       onClick={() => {
-                        // Just select the tab, don't open dropdown
                         if (activeTab !== creator.id) {
                           handleTabClick(creator.id);
                           setSelectedCourseFilters([]);
                         }
-                        // Close any open dropdown when clicking tab text
                         setOpenCreatorDropdown(null);
                       }}
                       title={`${creator.name} - ${creator.followedCourseIds.length} course(s) followed`}
@@ -1240,13 +1457,23 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           if (openCreatorDropdown === creator.id) {
                             setOpenCreatorDropdown(null);
                           } else {
-                            // Calculate position from button
-                            const btn = buttonRefs.current[creator.id];
-                            if (btn) {
-                              const rect = btn.getBoundingClientRect();
+                            const button = e.target.closest('.community-tab-btn');
+                            if (button) {
+                              const rect = button.getBoundingClientRect();
+                              const dropdownWidth = 280;
+                              const viewportWidth = window.innerWidth;
+                              const margin = 16;
+                              
+                              // Always constrain: never let dropdown exceed right edge
+                              let leftPos = Math.min(rect.left, viewportWidth - dropdownWidth - margin);
+                              
+                              // Ensure it doesn't go off left edge
+                              leftPos = Math.max(margin, leftPos);
+                              
                               setDropdownPosition({
                                 top: rect.bottom + 4,
-                                left: rect.left
+                                left: leftPos,
+                                useRight: false
                               });
                             }
                             setOpenCreatorDropdown(creator.id);
@@ -1255,21 +1482,20 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       >▼</span>
                     </button>
                     
-                    {/* Dropdown - rendered via portal to escape overflow:hidden containers */}
+                    {/* Minimalist dropdown - rendered via Portal to escape transform context */}
                     {openCreatorDropdown === creator.id && ReactDOM.createPortal(
                       <div 
                         className="community-tab-dropdown"
-                        onClick={(e) => e.stopPropagation()}
                         style={{
                           position: 'fixed',
                           top: dropdownPosition.top,
-                          left: Math.min(dropdownPosition.left, window.innerWidth - 260),
+                          left: dropdownPosition.left,
                           background: isDarkMode ? '#16181c' : '#fff',
                           border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
                           borderRadius: 8,
-                          boxShadow: isDarkMode ? '0 4px 20px rgba(0,0,0,0.5)' : '0 4px 20px rgba(0,0,0,0.15)',
+                          boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.4)' : '0 2px 12px rgba(0,0,0,0.1)',
                           zIndex: 99999,
-                          width: 250,
+                          width: 280,
                           padding: '4px 0'
                         }}>
                         {/* Follow All option */}
@@ -1364,48 +1590,16 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                                 alignItems: 'center',
                                 justifyContent: 'space-between'
                               }}
-                              onMouseDown={(e) => {
-                                // Use onMouseDown instead of onClick for more reliable event handling
+                              onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 // Toggle follow/unfollow for this course
                                 const courseCommunityId = `course-${course.id}`;
-                                const creatorId = `creator-${creator.instructorId}`;
                                 if (isFollowed) {
-                                  // Unfollow this course - need to handle both direct course follows AND creator follows
-                                  actualSetFollowedCommunities(prev => {
-                                    let newList = [...prev];
-                                    
-                                    // 1. Remove direct course follow if exists
-                                    newList = newList.filter(c => c.id !== courseCommunityId);
-                                    
-                                    // 2. Check if this course is part of a creator follow
-                                    const creatorFollow = newList.find(c => c.id === creatorId && c.type === 'creator');
-                                    if (creatorFollow && creatorFollow.courseIds?.includes(course.id)) {
-                                      // Remove this course from the creator's courseIds
-                                      const updatedCourseIds = creatorFollow.courseIds.filter(id => id !== course.id);
-                                      const updatedFollowedCourseIds = (creatorFollow.followedCourseIds || creatorFollow.courseIds).filter(id => id !== course.id);
-                                      
-                                      if (updatedCourseIds.length === 0) {
-                                        // No more courses - remove the creator follow entirely
-                                        newList = newList.filter(c => c.id !== creatorId);
-                                      } else {
-                                        // Update the creator follow with remaining courses
-                                        newList = newList.map(c => {
-                                          if (c.id === creatorId) {
-                                            return {
-                                              ...c,
-                                              courseIds: updatedCourseIds,
-                                              followedCourseIds: updatedFollowedCourseIds
-                                            };
-                                          }
-                                          return c;
-                                        });
-                                      }
-                                    }
-                                    
-                                    return newList;
-                                  });
+                                  // Unfollow this course
+                                  actualSetFollowedCommunities(prev => 
+                                    prev.filter(c => c.id !== courseCommunityId)
+                                  );
                                 } else {
                                   // Follow this course
                                   const courseCommunity = {
@@ -1420,7 +1614,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                                     return [...prev, courseCommunity];
                                   });
                                 }
-                                // Close the dropdown after action
+                                // Close the dropdown after selecting a course
                                 setOpenCreatorDropdown(null);
                               }}
                               onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
@@ -1444,7 +1638,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 ))}
               </div>
               
-              {/* Right scroll arrow */}
               {showRightArrow && (
                 <button 
                   className="tab-scroll-arrow right"
@@ -1455,59 +1648,72 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 </button>
               )}
             </div>
-          </div>
+          </div>}
 
           {/* Feed Content */}
           <div className="community-feed-content">
-            {/* Option A: Simplified Composer based on mode */}
-            {(communityMode === 'hub' || (communityMode === 'creators' && selectedCreatorId)) && (
+            {/* What's Happening Post Composer - Compact */}
             <div 
               className="post-composer"
               style={{
                 borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                padding: '12px 16px',
+                padding: '10px 16px',
                 display: 'flex',
-                gap: 12,
+                gap: 10,
                 background: isDarkMode ? '#000' : '#fff'
               }}
             >
-              {/* User Avatar */}
+              {/* User Avatar - Clickable to go to Profile */}
               <div 
+                className="post-card-avatar"
                 onClick={handleAvatarClick}
                 style={{
-                  width: 40,
-                  height: 40,
+                  width: 36,
+                  height: 36,
                   borderRadius: '50%',
                   background: '#1d9bf0',
                   color: '#fff',
                   fontWeight: 700,
-                  fontSize: 14,
-                  lineHeight: '40px',
+                  fontSize: 13,
+                  lineHeight: '36px',
                   textAlign: 'center',
                   cursor: 'pointer',
-                  flexShrink: 0
+                  flexShrink: 0,
+                  transition: 'transform 0.15s, box-shadow 0.15s'
                 }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(29, 155, 240, 0.4)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+                title={`View ${currentUser?.name || 'your'} profile`}
               >
                 {getUserInitials()}
               </div>
               
               {/* Composer Input Area */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                {/* Clear Posting Destination Label */}
+                {/* Posting To Label - Simple and Clear */}
                 <div style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
                   gap: 8, 
                   marginBottom: 8,
-                  padding: '6px 12px',
-                  background: isDarkMode ? '#1d1f23' : '#f0f9ff',
-                  borderRadius: 8,
-                  fontSize: 13
+                  fontSize: 14,
+                  color: isDarkMode ? '#71767b' : '#536471'
                 }}>
-                  <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>Posting to:</span>
-                  <span style={{ fontWeight: 700, color: '#1d9bf0' }}>
-                    {communityMode === 'hub' ? '🌍 Everyone (Community Hub)' : 
-                      `👤 ${groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'Creator'}'s followers`}
+                  <span>Posting to:</span>
+                  <span style={{ 
+                    fontWeight: 700, 
+                    color: '#1d9bf0'
+                  }}>
+                    {communityMode === 'hub' 
+                      ? 'Community Hub' 
+                      : (groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'Community Hub') + "'s Community"
+                    }
                   </span>
                 </div>
                 
@@ -1515,72 +1721,115 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   value={newPostText}
                   onChange={(e) => setNewPostText(e.target.value)}
                   onFocus={() => setIsComposerFocused(true)}
-                  placeholder={communityMode === 'hub' 
-                    ? "Share something with the community..." 
-                    : `Post to ${groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'creator'}'s community...`}
+                  placeholder="Post here..."
                   style={{
                     width: '100%',
                     border: 'none',
                     outline: 'none',
                     resize: 'none',
-                    fontSize: 15,
+                    fontSize: 16,
                     fontWeight: 400,
                     lineHeight: 1.4,
                     background: 'transparent',
                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                    padding: '8px 0',
-                    minHeight: isComposerFocused ? '60px' : '24px',
+                    padding: '4px 0',
+                    minHeight: isComposerFocused ? '60px' : '20px',
                     fontFamily: 'inherit',
                     transition: 'min-height 0.2s ease'
                   }}
                 />
                 
-                {/* Post Button */}
+                {/* Action Row - only show when focused or has text */}
                 {(isComposerFocused || newPostText) && (
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'flex-end', 
-                    paddingTop: 8,
-                    borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-                  }}>
+                  <div 
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                      paddingTop: 12,
+                      marginTop: 12
+                    }}
+                  >
+                    {/* Media Icons */}
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <button 
+                        style={{ 
+                          background: 'none', 
+                          border: 'none', 
+                          color: '#1d9bf0', 
+                          cursor: 'pointer',
+                          padding: 8,
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        title="Media"
+                      >
+                        🖼️
+                      </button>
+                      <button 
+                        style={{ 
+                          background: 'none', 
+                          border: 'none', 
+                          color: '#1d9bf0', 
+                          cursor: 'pointer',
+                          padding: 8,
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        title="GIF"
+                      >
+                        GIF
+                      </button>
+                      <button 
+                        style={{ 
+                          background: 'none', 
+                          border: 'none', 
+                          color: '#1d9bf0', 
+                          cursor: 'pointer',
+                          padding: 8,
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        title="Emoji"
+                      >
+                        😊
+                      </button>
+                    </div>
+                    
+                    {/* Post Button */}
                     <button
-                      onClick={handleSubmitPost}
                       disabled={!newPostText.trim() || isPosting}
+                      onClick={handleSubmitPost}
                       style={{
-                        padding: '8px 20px',
-                        background: newPostText.trim() ? '#1d9bf0' : (isDarkMode ? '#0e4f82' : '#8ecdf8'),
-                        color: '#fff',
+                        background: (newPostText.trim() && !isPosting) ? '#1d9bf0' : (isDarkMode ? '#0e4d78' : '#8ecdf8'),
+                        color: (newPostText.trim() && !isPosting) ? '#fff' : (isDarkMode ? '#808080' : '#fff'),
                         border: 'none',
                         borderRadius: 20,
+                        padding: '8px 16px',
                         fontWeight: 700,
-                        fontSize: 14,
-                        cursor: newPostText.trim() ? 'pointer' : 'not-allowed',
-                        opacity: newPostText.trim() ? 1 : 0.5
+                        fontSize: 15,
+                        cursor: (newPostText.trim() && !isPosting) ? 'pointer' : 'not-allowed',
+                        opacity: (newPostText.trim() && !isPosting) ? 1 : 0.5
                       }}
                     >
                       {isPosting ? 'Posting...' : 'Post'}
                     </button>
+                    {postError && (
+                      <span style={{ color: '#f44', fontSize: 12, marginLeft: 8 }}>{postError}</span>
+                    )}
                   </div>
                 )}
               </div>
             </div>
-            )}
             
-            {/* Prompt to select creator in creators mode */}
-            {communityMode === 'creators' && !selectedCreatorId && (
-              <div style={{
-                padding: '24px 16px',
-                textAlign: 'center',
-                color: isDarkMode ? '#71767b' : '#536471',
-                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-              }}>
-                <div style={{ fontSize: 24, marginBottom: 8 }}>👆</div>
-                <div style={{ fontSize: 14 }}>Select a creator above to post to their community</div>
-              </div>
-            )}
-
-            {/* Posts Feed */}
-            {(groupedByCreator.length > 0 || realPosts.length > 0) ? (
+            {(groupedByCreator.length > 0 || realPosts.length > 0 || (communityMode === 'creators' && selectedCreatorId)) ? (
               <div className="posts-feed">
                 {displayedPosts.length > 0 ? (
                   displayedPosts.map(post => {
@@ -1699,12 +1948,26 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     <div className="empty-state-icon">
                       <FaBook />
                     </div>
-                    <h2>No Posts Yet</h2>
-                    <p>
-                      {activeTab === 'Home' 
-                        ? 'Posts from your followed communities will appear here.'
-                        : 'No posts in this community yet. Be the first to share!'}
-                    </p>
+                    {communityMode === 'creators' && selectedCreatorId && !groupedByCreator.find(c => c.id === selectedCreatorId) ? (
+                      <>
+                        <h2>Not Following {pendingCreatorName || 'This Creator'}</h2>
+                        <p>
+                          You haven't followed any courses from {pendingCreatorName || 'this creator'} yet.
+                        </p>
+                        <p style={{ marginTop: 8, color: '#1d9bf0' }}>
+                          Go to <strong>Browse → Creators</strong> to follow their courses!
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <h2>No Posts Yet</h2>
+                        <p>
+                          {communityMode === 'hub' 
+                            ? 'Posts from your followed communities will appear here.'
+                            : 'No posts in this community yet. Be the first to share!'}
+                        </p>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -1721,6 +1984,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
           </div>
         </div>
 
+        {/* Right Pane - Removed for cleaner centered layout */}
       </div>
     </div>
   );

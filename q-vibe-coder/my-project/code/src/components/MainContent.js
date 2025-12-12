@@ -443,7 +443,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                   }));
                   // Navigate to Community page
                   if (onMenuChange) {
-                    onMenuChange('Community');
+                    onMenuChange('My Community');
                   }
                 }}
                 style={{ 
@@ -1543,7 +1543,6 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         <div className="three-column-layout browse-layout">
           <div className="center-column">
             <div className="top-menu-section">
-              <p className="browse-instruction">BROWSE COURSES OR COURSE CREATORS</p>
               <div className="tabs-section">
                 <button
                   className={`tab-btn ${activeTopMenu === 'courses' ? 'active' : ''}`}

@@ -34,7 +34,6 @@
 
 .community-content-outer {
   width: 100%;
-  max-width: none;
   min-width: 0;
   display: block;
   margin: 0;
@@ -52,20 +51,18 @@
   display: none; /* Chrome/Safari */
 }
 
-/* Community Three Column Layout */
+/* Community Layout - Single column, no right pane */
 .community-three-column {
-  display: flex;
+  display: block;
   width: 100%;
   min-height: 100vh;
-  gap: 0;
 }
 
 .community-center-column {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
   max-width: 650px;
-  border-right: 1px solid var(--border-color);
-  border-left: 1px solid var(--border-color);
+  border-right: none;
+  border-left: none;
   overflow-y: auto;
   height: 100vh;
 }
@@ -159,18 +156,7 @@
 }
 
 /* Responsive */
-@media (max-width: 1400px) {
-  .community-right-pane {
-    width: 140px;
-    flex: 0 0 140px;
-  }
-}
-
 @media (max-width: 1000px) {
-  .community-right-pane {
-    display: none;
-  }
-  
   .community-center-column {
     border-right: none;
     border-left: none;
