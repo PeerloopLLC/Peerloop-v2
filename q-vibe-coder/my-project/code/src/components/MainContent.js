@@ -1707,6 +1707,61 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                 }}>
                                   {course.description}
                                 </div>
+
+                                {/* About the Creator Section */}
+                                <div style={{
+                                  marginTop: 12,
+                                  padding: 12,
+                                  background: isDarkMode ? '#16181c' : '#f8fafc',
+                                  borderRadius: 12,
+                                  border: `1px solid ${isDarkMode ? '#2f3336' : '#e2e8f0'}`
+                                }}>
+                                  <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    marginBottom: 8,
+                                    color: isDarkMode ? '#71767b' : '#64748b',
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px'
+                                  }}>
+                                    👤 About the Creator
+                                  </div>
+                                  <div style={{
+                                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                    fontSize: 14,
+                                    lineHeight: '20px',
+                                    fontStyle: 'italic',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    marginBottom: 8
+                                  }}>
+                                    "{instructorData?.bio || 'Expert instructor dedicated to helping students master new skills.'}"
+                                  </div>
+                                  <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 12,
+                                    fontSize: 12,
+                                    color: isDarkMode ? '#71767b' : '#64748b'
+                                  }}>
+                                    <span>⭐ {instructorData?.stats?.averageRating || '4.8'}</span>
+                                    <span>•</span>
+                                    <span>{instructorData?.stats?.studentsTaught?.toLocaleString() || '1,000+'} students</span>
+                                    <span>•</span>
+                                    <span style={{ 
+                                      overflow: 'hidden', 
+                                      textOverflow: 'ellipsis', 
+                                      whiteSpace: 'nowrap',
+                                      flex: 1
+                                    }}>{instructorData?.title || 'Expert Instructor'}</span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           );
