@@ -6,8 +6,8 @@
   overflow-x: hidden;
   height: 100vh;
   margin-left: 0;
-  width: 650px;
-  max-width: 650px;
+  width: 810px;
+  max-width: 810px;
   min-width: 0;
   transition: background-color 0.3s ease;
   position: relative;
@@ -26,7 +26,7 @@
 .center-column {
   flex: 1;
   min-width: 0;
-  max-width: 650px;
+  max-width: 810px;
   border-right: 1px solid var(--border-color, #e2e8f0);
   border-left: 1px solid var(--border-color, #e2e8f0);
   overflow-y: auto;
@@ -36,7 +36,7 @@
 /* Browse layout - same as default now */
 .browse-layout .center-column {
   flex: 1;
-  max-width: 650px;
+  max-width: 810px;
   margin: 0;
   border-right: 1px solid var(--border-color, #e2e8f0);
 }

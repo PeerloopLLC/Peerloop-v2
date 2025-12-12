@@ -709,7 +709,7 @@ body.dark-mode .creator-badge {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-width: 320px;
-  max-width: 890px; /* 240px sidebar + 650px content */
+  max-width: 1010px; /* 200px sidebar + 810px content */
   margin: 0 auto;
   overflow-x: hidden;
   position: relative;
@@ -725,14 +725,14 @@ body.dark-mode .creator-badge {
 
 /* Main content uses remaining width */
 .app .main-content {
-  width: 650px;
+  width: 810px;
   margin-left: 0;
 }
 
 /* Adjust layout when sidebar collapses to icons */
 @media (max-width: 950px) {
   .app {
-    max-width: 738px; /* 88px collapsed sidebar + 650px content */
+    max-width: 898px; /* 88px collapsed sidebar + 810px content */
   }
 }
 

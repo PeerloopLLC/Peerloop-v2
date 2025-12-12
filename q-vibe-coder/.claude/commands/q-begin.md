@@ -1,6 +1,6 @@
 ---
 description: Start session with context refresh
-version: 2.1.2
+version: 2.1.3
 ---
 
 # Start Session
@@ -85,7 +85,32 @@ git status
 - [ ] Noted if working tree is clean or dirty
 - [ ] Noted any uncommitted changes
 
-### 3.2 Check for Uncommitted Session Work
+### 3.2 Check GitHub Remote Status (IMPORTANT)
+
+**Fetch latest info from remote (does NOT download code):**
+
+```bash
+git fetch origin 2>/dev/null
+git status -sb
+```
+
+- [ ] Command executed
+- [ ] Check if branch is ahead/behind remote
+- [ ] Note any divergence warnings
+
+**Interpret the output:**
+- `## main...origin/main` = In sync ✅
+- `## main...origin/main [ahead 3]` = You have 3 local commits not pushed
+- `## main...origin/main [behind 5]` = GitHub has 5 commits you don't have
+- `## main...origin/main [ahead 3, behind 5]` = ⚠️ DIVERGED - histories split
+
+**If diverged:** WARN the user prominently. Ask if they want to:
+- `git pull origin main` to get GitHub changes, OR
+- Continue knowing local and remote are different
+
+**DO NOT automatically pull or push.** Just inform the user.
+
+### 3.3 Check for Uncommitted Session Work
 
 ```bash
 git diff --stat HEAD 2>/dev/null || echo "No git history"
@@ -93,7 +118,7 @@ git diff --stat HEAD 2>/dev/null || echo "No git history"
 
 - [ ] Identified any uncommitted changes
 
-### 3.3 Check for Orphaned Checkpoints
+### 3.4 Check for Orphaned Checkpoints
 
 ```bash
 ls -la .q-system/checkpoints/ 2>/dev/null | tail -3 || echo "No checkpoints"
@@ -105,6 +130,7 @@ ls -la .q-system/checkpoints/ 2>/dev/null | tail -3 || echo "No checkpoints"
 ```
 Repository status:
 - Git: [clean/dirty with N uncommitted changes]
+- GitHub sync: [in sync / X ahead / X behind / ⚠️ DIVERGED]
 - Orphaned checkpoints: [list or "none"]
 ```
 
@@ -128,7 +154,12 @@ Last session: [date from filename or "First session"]
 Current status:
 - Git: [clean/dirty]
 - Uncommitted work: [yes/no]
+- GitHub sync: [✅ In sync / ⬆️ X commits to push / ⬇️ X commits to pull / ⚠️ DIVERGED]
 - Checkpoints to review: [N or "none"]
+
+[If diverged, add warning:]
+⚠️ WARNING: Your local branch and GitHub have diverged!
+   Run `git pull origin main` to get GitHub changes before starting.
 
 What would you like to work on today?
 
@@ -172,6 +203,7 @@ Before asking "What would you like to work on today?":
 - [ ] CLAUDE.md read (or noted as missing)
 - [ ] Last session notes read (or noted as first session)
 - [ ] Git status checked
-- [ ] Summary presented to user
+- [ ] GitHub remote status checked (fetch + compare)
+- [ ] Summary presented to user (including sync status)
 
 **If any item is unchecked, go back and complete it.**
