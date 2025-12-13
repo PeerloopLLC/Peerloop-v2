@@ -17,7 +17,6 @@ import {
   FaHeart,
   FaHistory,
   FaQuestionCircle,
-  FaBriefcase,
   FaMoon,
   FaSun,
   FaUsers,
@@ -84,7 +83,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
     { icon: <FaChalkboardTeacher />, label: 'Teaching', displayLabel: 'Dashboard' }, // Student-Teacher dashboard
     { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system
-    { icon: <FaBriefcase />, label: 'Job Exchange', displayLabel: 'Job Exchange' }, // Job exchange system
     { icon: <FaUser />, label: 'Profile', displayLabel: 'Profile' }, // User profile
     { icon: isDarkMode ? <FaSun /> : <FaMoon />, label: 'ToggleTheme', displayLabel: isDarkMode ? 'Light Mode' : 'Dark Mode' }, // Theme toggle
   ];
