@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './MainContent.css';
 import { FaImage, FaSmile, FaCalendar, FaMapMarkerAlt, FaGlobe, FaSearch, FaBook, FaUser, FaFilter, FaGraduationCap, FaStar, FaUsers, FaAward, FaHeart, FaComment, FaAt, FaRetweet, FaBullhorn, FaDollarSign, FaCheckCircle, FaClock } from 'react-icons/fa';
-import { AiOutlineHeart, AiOutlineBarChart } from 'react-icons/ai';
+import { AiOutlineHeart, AiOutlineBarChart, AiOutlineStar, AiOutlineTeam, AiOutlineClockCircle } from 'react-icons/ai';
 import { BiRepost } from 'react-icons/bi';
 import { BsThreeDots } from 'react-icons/bs';
 import { IoShareOutline } from 'react-icons/io5';
@@ -391,7 +391,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             padding: '12px 16px',
             cursor: 'pointer',
             fontWeight: 600,
-            fontSize: 14,
+            fontSize: 16,
             color: isDarkMode ? '#71767b' : '#64748b'
           }}
         >
@@ -422,12 +422,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                 <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.name}</h1>
                 <span style={{ background: isDarkMode ? 'rgba(29, 155, 240, 0.2)' : '#e0f2fe', color: '#1d9bf0', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 12 }}>CREATOR</span>
               </div>
-              <p style={{ margin: '2px 0 0 0', color: isDarkMode ? '#71767b' : '#536471', fontSize: 14 }}>{creator.title}</p>
+              <p style={{ margin: '2px 0 0 0', color: isDarkMode ? '#71767b' : '#536471', fontSize: 17 }}>{creator.title}</p>
               {/* Inline Stats */}
-              <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
-                <span>⭐ {creator.stats?.averageRating || '4.8'}</span>
-                <span>👥 {(creator.stats?.studentsTaught || 0).toLocaleString()} students</span>
-                <span>📚 {creator.stats?.coursesCreated || creatorCourses.length} courses</span>
+              <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 17, color: isDarkMode ? '#71767b' : '#536471', alignItems: 'center' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><AiOutlineStar /> {creator.stats?.averageRating || '4.8'}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><AiOutlineTeam /> {(creator.stats?.studentsTaught || 0).toLocaleString()} students</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><FaBook style={{ fontSize: 14 }} /> {creator.stats?.coursesCreated || creatorCourses.length} courses</span>
               </div>
             </div>
             
@@ -464,13 +464,15 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                 💬 Go to Community
               </button>
               
-              {/* Follow Button with Dropdown */}
-              <div style={{ position: 'relative' }}>
+              {/* Follow Button with Dropdown - Same pattern as Summary view */}
+              <div style={{ position: 'relative' }} onClick={e => e.stopPropagation()}>
                 <button 
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     setOpenCreatorFollowDropdown(openCreatorFollowDropdown === `detail-${creator.id}` ? null : `detail-${creator.id}`);
                   }}
+                  disabled={isFollowingLoading}
                   style={{ 
                     background: hasAnyCreatorCourseFollowed(creator.id) ? (isDarkMode ? '#2f3336' : '#eff3f4') : '#1d9bf0',
                     color: hasAnyCreatorCourseFollowed(creator.id) ? (isDarkMode ? '#e7e9ea' : '#0f1419') : '#fff',
@@ -482,7 +484,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 4,
+                    gap: 6,
                     whiteSpace: 'nowrap'
                   }}
                 >
@@ -562,7 +564,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             <p style={{ 
               margin: '0 0 12px 0', 
               color: isDarkMode ? '#e7e9ea' : '#0f1419', 
-              fontSize: 15, 
+              fontSize: 17, 
               lineHeight: 1.5 
             }}>
               {creator.bio}
@@ -577,7 +579,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  fontSize: 13, 
+                  fontSize: 17, 
                   color: isDarkMode ? '#71767b' : '#536471'
                 }}>
                   <span style={{ color: '#1d9bf0' }}>✓</span>
@@ -634,7 +636,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{course.title}</h3>
+                        <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{course.title}</h3>
                         {course.badge && (
                           <span style={{
                             background: course.badge === 'Bestseller' ? '#fbbf24' : 
@@ -654,10 +656,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                           </span>
                         )}
                       </div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
-                        <span>⭐ {course.rating} ({course.ratingCount || 0})</span>
-                        <span>👥 {course.students?.toLocaleString()}</span>
-                        <span>{course.level}</span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 15, color: isDarkMode ? '#71767b' : '#536471', alignItems: 'center' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineStar /> {course.rating} ({course.ratingCount || 0})</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineTeam /> {course.students?.toLocaleString()}</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineBarChart /> {course.level}</span>
                         <span style={{ color: '#1d9bf0', fontWeight: 700 }}>{course.price}</span>
                         <span 
                           onClick={(e) => { e.stopPropagation(); setSelectedCourse(course); }}
@@ -854,37 +856,47 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   };
 
   const handleFollowInstructor = (instructorId) => {
-    if (isFollowingLoading) return; // Prevent rapid clicking
+    if (isFollowingLoading) return;
     
     try {
       setIsFollowingLoading(true);
       
-      // Validate instructorId
-      if (!instructorId || typeof instructorId !== 'number') {
+      // Validate instructorId - accept both numbers and strings that can be parsed as numbers
+      const numericId = typeof instructorId === 'string' ? parseInt(instructorId, 10) : instructorId;
+      if (!numericId || isNaN(numericId)) {
         console.error('Invalid instructorId:', instructorId);
         return;
       }
 
       // Get instructor data
-      const instructor = getInstructorById(instructorId);
+      const instructor = getInstructorById(numericId);
       if (!instructor) {
-        console.error('Instructor not found:', instructorId);
+        console.error('Instructor not found:', numericId);
         return;
       }
 
-      const creatorCommunityId = `creator-${instructorId}`;
-      const isAlreadyFollowed = followedCommunities.some(c => c.id === creatorCommunityId);
+      const creatorCommunityId = `creator-${numericId}`;
+      const isCreatorFollowed = followedCommunities.some(c => c.id === creatorCommunityId);
       
-      if (isAlreadyFollowed) {
-        // Unfollow - remove the creator community
-        setFollowedCommunities(prev => prev.filter(c => c.id !== creatorCommunityId));
+      // Also check if any individual courses from this creator are followed
+      const creatorCourseIds = instructor.courses || [];
+      const individualCourseFollowIds = creatorCourseIds.map(cid => `course-${cid}`);
+      const hasIndividualCourseFollows = followedCommunities.some(c => individualCourseFollowIds.includes(c.id));
+      
+      // If anything is followed (creator OR individual courses), unfollow all
+      if (isCreatorFollowed || hasIndividualCourseFollows) {
+        // Unfollow - remove the creator community AND any individual course follows
+        setFollowedCommunities(prev => prev.filter(c => {
+          // Remove creator-level follow
+          if (c.id === creatorCommunityId) return false;
+          // Remove individual course follows for this creator
+          if (individualCourseFollowIds.includes(c.id)) return false;
+          return true;
+        }));
       } else {
         // Follow - add creator community (single tab for all creator's courses)
-        const creatorCommunity = getCreatorCommunity(instructorId);
+        const creatorCommunity = getCreatorCommunity(numericId);
         if (creatorCommunity) {
-          // Get the creator's course IDs to remove individual course follows
-          const creatorCourseIds = instructor.courses || [];
-          
           setFollowedCommunities(prev => {
             // Check if already exists
             if (prev.some(c => c.id === creatorCommunity.id)) return prev;
@@ -1067,6 +1079,36 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             color: textSecondary,
             fontSize: 15
           }}>
+            {/* Creator Avatar */}
+            {instructorData?.avatar ? (
+              <img 
+                src={instructorData.avatar}
+                alt={instructorData.name}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  flexShrink: 0
+                }}
+              />
+            ) : (
+              <div style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                background: `linear-gradient(135deg, #1d9bf0, #1a73e8)`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontWeight: 600,
+                fontSize: 11,
+                flexShrink: 0
+              }}>
+                {instructorData?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '??'}
+              </div>
+            )}
             <span>by <span 
               onClick={() => {
                 const fullCreatorData = getInstructorWithCourses(courseData.instructorId);
@@ -1085,12 +1127,6 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               onMouseEnter={e => e.target.style.opacity = '0.7'}
               onMouseLeave={e => e.target.style.opacity = '1'}
             >{instructorData?.name}</span></span>
-            <span>•</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ color: '#f5b50a' }}>★</span> 
-              {courseData.rating} 
-              <span style={{ color: textMuted }}>({Math.floor(courseData.students * 0.15).toLocaleString()} reviews)</span>
-            </span>
           </div>
 
           {/* Stats Row */}
@@ -1102,14 +1138,19 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             color: textSecondary,
             marginBottom: 16
           }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              👥 <strong style={{ color: textPrimary }}>{courseData.students.toLocaleString()}</strong> learners
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <AiOutlineStar style={{ fontSize: 16 }} /> 
+              <strong style={{ color: textPrimary }}>{courseData.rating}</strong>
+              <span style={{ color: textMuted }}>({Math.floor(courseData.students * 0.15).toLocaleString()} reviews)</span>
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              📊 <strong style={{ color: textPrimary }}>{courseData.level}</strong>
+              <AiOutlineTeam style={{ fontSize: 16 }} /> <strong style={{ color: textPrimary }}>{courseData.students.toLocaleString()}</strong> learners
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              ⏱️ <strong style={{ color: textPrimary }}>{courseData.duration}</strong>
+              <AiOutlineBarChart style={{ fontSize: 16 }} /> <strong style={{ color: textPrimary }}>{courseData.level}</strong>
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <AiOutlineClockCircle style={{ fontSize: 16 }} /> <strong style={{ color: textPrimary }}>{courseData.duration}</strong>
             </span>
           </div>
 
@@ -1325,21 +1366,35 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             >
               {followedInstructors.has(courseData.instructorId) ? '✓ Following' : 'Follow'}
             </button>
-            <div style={{ 
-              width: 56, 
-              height: 56, 
-              borderRadius: '50%', 
-              background: isDarkMode ? '#2f3336' : '#e2e8f0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: textPrimary,
-              fontWeight: 700,
-              fontSize: 18,
-              flexShrink: 0
-            }}>
-              {creatorInitials}
-            </div>
+            {instructorData?.avatar ? (
+              <img 
+                src={instructorData.avatar}
+                alt={instructorData.name}
+                style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  flexShrink: 0
+                }}
+              />
+            ) : (
+              <div style={{ 
+                width: 56, 
+                height: 56, 
+                borderRadius: '50%', 
+                background: isDarkMode ? '#2f3336' : '#e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: textPrimary,
+                fontWeight: 700,
+                fontSize: 18,
+                flexShrink: 0
+              }}>
+                {creatorInitials}
+              </div>
+            )}
             <div style={{ flex: 1, paddingRight: 100 }}>
               <div 
                 onClick={() => {
@@ -1369,10 +1424,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               <div style={{ color: textSecondary, fontSize: 14, lineHeight: 1.5, marginBottom: 12 }}>
                 {instructorData?.bio}
               </div>
-              <div style={{ display: 'flex', gap: 16, color: textMuted, fontSize: 13 }}>
-                <span>{instructorData?.stats?.coursesCreated || 5} courses</span>
-                <span>{(instructorData?.stats?.studentsTaught || 10000).toLocaleString()} students</span>
-                <span>⭐ {instructorData?.stats?.averageRating || 4.8} avg rating</span>
+              <div style={{ display: 'flex', gap: 16, color: textMuted, fontSize: 13, alignItems: 'center' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><FaBook style={{ fontSize: 12 }} /> {instructorData?.stats?.coursesCreated || 5} courses</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineTeam style={{ fontSize: 14 }} /> {(instructorData?.stats?.studentsTaught || 10000).toLocaleString()} students</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineStar style={{ fontSize: 14 }} /> {instructorData?.stats?.averageRating || 4.8} avg rating</span>
               </div>
             </div>
           </div>
@@ -1443,7 +1498,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                       <div style={{
                         position: 'absolute',
                         top: '100%',
-                        left: 0,
+                        right: 0,
                         marginTop: 4,
                         background: isDarkMode ? '#16181c' : '#fff',
                         border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
@@ -1529,21 +1584,17 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
             {/* Creator Content */}
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingRight: 100 }}>
-              <div style={{ 
-                width: 48, 
-                height: 48, 
-                borderRadius: '50%', 
-                background: avatarColor,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontWeight: 700,
-                fontSize: 16,
-                flexShrink: 0
-              }}>
-                {initials}
-              </div>
+              <img 
+                src={creator.avatar}
+                alt={creator.name}
+                style={{ 
+                  width: 48, 
+                  height: 48, 
+                  borderRadius: '50%', 
+                  objectFit: 'cover',
+                  flexShrink: 0
+                }}
+              />
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: 16, color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 2 }}>
                   {creator.name}
@@ -1555,9 +1606,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                   {creator.bio}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
-                  <span>{creator.stats?.studentsTaught?.toLocaleString() || 0} students</span>
-                  <span>⭐ {creator.stats?.averageRating || 0}</span>
-                  <span>{creator.stats?.coursesCreated || 0} courses</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineTeam /> {creator.stats?.studentsTaught?.toLocaleString() || 0} students</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineStar /> {creator.stats?.averageRating || 0}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><FaBook style={{ fontSize: 12 }} /> {creator.stats?.coursesCreated || 0} courses</span>
                 </div>
               </div>
             </div>
@@ -1568,42 +1619,136 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     );
   };
 
+  // Note: Enrollment flow is now rendered inside the Browse section to keep tabs visible
+
   // Show Browse when Browse is active
   if (activeMenu === 'Browse' || activeMenu === 'Browse_Reset') {
     return (
       <div className="main-content">
         <div className="three-column-layout browse-layout">
           <div className="center-column">
-            <div className="top-menu-section">
-              <div className="tabs-section">
+            <div className="top-menu-section" style={{ 
+              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+              padding: '0 12px',
+              position: 'sticky',
+              top: 0,
+              zIndex: 100,
+              background: isDarkMode ? '#000' : '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              {/* Left spacer to balance the search box on the right */}
+              <div style={{ flex: '0 0 auto', minWidth: 80, maxWidth: 200, width: 150 }} />
+              
+              {/* Centered tabs */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 0,
+                flex: '1 1 auto'
+              }}>
                 <button
-                  className={`tab-btn ${activeTopMenu === 'courses' ? 'active' : ''}`}
                   onClick={() => setActiveTopMenu('courses')}
+                  style={{
+                    flex: '0 0 auto',
+                    padding: '16px 12px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: activeTopMenu === 'courses' 
+                      ? (isDarkMode ? '#e7e9ea' : '#0f1419')
+                      : (isDarkMode ? '#71767b' : '#536471'),
+                    fontWeight: activeTopMenu === 'courses' ? 700 : 500,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    position: 'relative',
+                    borderBottom: activeTopMenu === 'courses' 
+                      ? '4px solid #1d9bf0' 
+                      : '4px solid transparent',
+                    marginBottom: -1,
+                    whiteSpace: 'nowrap'
+                  }}
                 >
-                  <FaBook />
-                  <span>COURSES</span>
+                  <FaBook style={{ fontSize: 16, flexShrink: 0 }} />
+                  <span>Course Listings</span>
                 </button>
                 <button
-                  className={`tab-btn ${activeTopMenu === 'instructors' ? 'active' : ''}`}
                   onClick={() => setActiveTopMenu('instructors')}
+                  style={{
+                    flex: '0 0 auto',
+                    padding: '16px 12px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: activeTopMenu === 'instructors' 
+                      ? (isDarkMode ? '#e7e9ea' : '#0f1419')
+                      : (isDarkMode ? '#71767b' : '#536471'),
+                    fontWeight: activeTopMenu === 'instructors' ? 700 : 500,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    position: 'relative',
+                    borderBottom: activeTopMenu === 'instructors' 
+                      ? '4px solid #1d9bf0' 
+                      : '4px solid transparent',
+                    marginBottom: -1,
+                    whiteSpace: 'nowrap'
+                  }}
                 >
-                  <FaUser />
-                  <span>CREATORS</span>
+                  <FaUser style={{ fontSize: 16, flexShrink: 0 }} />
+                  <span>Creator Profiles</span>
                 </button>
-                <div className="search-container">
-                  <FaSearch className="search-icon" />
-                  <input
-                    type="text"
-                    placeholder="Search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="search-input"
-                  />
-                </div>
+              </div>
+              
+              {/* Search box on right */}
+              <div className="search-container" style={{ 
+                flex: '0 0 auto',
+                minWidth: 80,
+                maxWidth: 200,
+                width: 150
+              }}>
+                <FaSearch className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="search-input"
+                  style={{ width: '100%' }}
+                />
               </div>
             </div>
             <div className="browse-content">
-              {activeTopMenu === 'courses' ? (
+              {/* Show Enrollment Flow when active */}
+              {showEnrollmentFlow && enrollingCourse ? (
+                <EnrollmentFlow
+                  course={enrollingCourse}
+                  instructor={getInstructorById(enrollingCourse.instructorId)}
+                  isDarkMode={isDarkMode}
+                  onClose={() => {
+                    setShowEnrollmentFlow(false);
+                    setEnrollingCourse(null);
+                  }}
+                  onComplete={(booking) => {
+                    console.log('Booking complete:', booking);
+                    setShowEnrollmentFlow(false);
+                    setEnrollingCourse(null);
+                    // Navigate to dashboard after successful booking
+                    onMenuChange('Dashboard');
+                  }}
+                />
+              ) : activeTopMenu === 'courses' ? (
                 <div className="courses-section">
                   {selectedCourse ? (
                     <div className="course-detail-view">
@@ -1620,7 +1765,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                           style={{
                             color: '#1d9bf0',
                             fontWeight: 500,
-                            fontSize: 14,
+                            fontSize: 16,
                             cursor: 'pointer',
                             transition: 'opacity 0.15s'
                           }}
@@ -1653,8 +1798,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                           return (
                             <div key={course.id} className="course-post" onClick={() => setSelectedCourse(course)} style={{ background: isDarkMode ? '#000' : '#fff', boxShadow: 'none', padding: '12px 18px', fontFamily: 'system-ui, sans-serif', fontSize: 15, lineHeight: '20px', width: '100%', marginLeft: 0, marginRight: 0, cursor: 'pointer', color: isDarkMode ? '#e7e9ea' : '#222', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                               {/* Creator Avatar */}
-                              <div 
+                              <img 
                                 className="course-creator-avatar"
+                                src={instructorData?.avatar}
+                                alt={instructorData?.name}
                                 onClick={e => { 
                                   e.stopPropagation(); 
                                   const fullCreatorData = getInstructorWithCourses(course.instructorId);
@@ -1667,25 +1814,17 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                   width: 40,
                                   height: 40,
                                   borderRadius: '50%',
-                                  background: avatarColor,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  color: '#fff',
-                                  fontSize: 14,
-                                  fontWeight: 700,
+                                  objectFit: 'cover',
                                   flexShrink: 0,
                                   cursor: 'pointer'
                                 }}
                                 title={`View ${instructorData?.name}'s profile`}
-                              >
-                                {creatorInitials}
-                              </div>
+                              />
                               <div className="post-content" style={{ padding: 0, flex: 1, minWidth: 0 }}>
                                 {/* Title, Duration, Badge, and Follow Button Row */}
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: isDarkMode ? '#e7e9ea' : '#222', flex: 1, minWidth: 0 }}>
-                                    <span style={{ fontWeight: 700, fontSize: 15, lineHeight: '20px', color: isDarkMode ? '#e7e9ea' : '#0f1419', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{course.title}</span>
+                                    <span style={{ fontWeight: 700, fontSize: 17, lineHeight: '22px', color: isDarkMode ? '#e7e9ea' : '#0f1419', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{course.title}</span>
                                     {course.badge && (
                                       <span style={{
                                         background: course.badge === 'Bestseller' ? '#fbbf24' : 
@@ -1704,7 +1843,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                         {course.badge}
                                       </span>
                                     )}
-                                    <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 15, fontWeight: 400, flexShrink: 0 }}>• {course.duration}</span>
+                                    <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 17, fontWeight: 400, flexShrink: 0 }}>• {course.duration}</span>
                                   </div>
                                   <button 
                                     onClick={e => { e.stopPropagation(); handleFollowCourse(course.id); }}
@@ -1725,7 +1864,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                     {isFollowed ? '✓ Following' : 'Follow'}
                                   </button>
                                 </div>
-                                <div style={{ fontSize: 15, lineHeight: '20px', color: isDarkMode ? '#71767b' : '#536471', fontWeight: 400, margin: '0 0 4px 0' }}>
+                                <div style={{ fontSize: 17, lineHeight: '22px', color: isDarkMode ? '#71767b' : '#536471', fontWeight: 400, margin: '0 0 4px 0' }}>
                                   Created by <span 
                                     onClick={e => { 
                                       e.stopPropagation(); 
@@ -1747,8 +1886,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                 {/* Description Row - truncated to 2 lines */}
                                 <div className="post-text" style={{ 
                                   color: isDarkMode ? '#e7e9ea' : '#0f1419', 
-                                  fontSize: 15, 
-                                  lineHeight: '20px',
+                                  fontSize: 17, 
+                                  lineHeight: '22px',
                                   display: '-webkit-box',
                                   WebkitLineClamp: 2,
                                   WebkitBoxOrient: 'vertical',
@@ -1764,12 +1903,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                   flexWrap: 'wrap', 
                                   gap: 12, 
                                   marginTop: 10,
-                                  fontSize: 13, 
+                                  fontSize: 15, 
                                   color: isDarkMode ? '#71767b' : '#536471' 
                                 }}>
-                                  <span>⭐ {course.rating} ({course.ratingCount || 0} reviews)</span>
-                                  <span>👥 {course.students?.toLocaleString()} students</span>
-                                  <span>📚 {course.level}</span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineStar /> {course.rating} ({course.ratingCount || 0} reviews)</span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineTeam /> {course.students?.toLocaleString()} students</span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineBarChart /> {course.level}</span>
                                   <span style={{ color: '#1d9bf0', fontWeight: 700 }}>{course.price}</span>
                                   <span 
                                     onClick={(e) => { e.stopPropagation(); setSelectedCourse(course); }}
@@ -1827,9 +1966,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                     fontSize: 12,
                                     color: isDarkMode ? '#71767b' : '#64748b'
                                   }}>
-                                    <span>⭐ {instructorData?.stats?.averageRating || '4.8'}</span>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}><AiOutlineStar style={{ fontSize: 11 }} /> {instructorData?.stats?.averageRating || '4.8'}</span>
                                     <span>•</span>
-                                    <span>{instructorData?.stats?.studentsTaught?.toLocaleString() || '1,000+'} students</span>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: 2 }}><AiOutlineTeam style={{ fontSize: 11 }} /> {instructorData?.stats?.studentsTaught?.toLocaleString() || '1,000+'} students</span>
                                     <span>•</span>
                                     <span style={{ 
                                       overflow: 'hidden', 
@@ -1849,7 +1988,35 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                 </div>
               ) : (
                 <div className="creators-section">
-                  {selectedInstructor ? (
+                  {/* If viewing a course from instructor profile, show course detail */}
+                  {selectedCourse ? (
+                    <div className="course-detail-view">
+                      <div style={{
+                        position: 'sticky',
+                        top: 0,
+                        background: isDarkMode ? '#000' : '#fff',
+                        padding: '12px 0',
+                        zIndex: 10,
+                        borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
+                      }}>
+                        <span 
+                          onClick={() => setSelectedCourse(null)}
+                          style={{
+                            color: '#1d9bf0',
+                            fontWeight: 500,
+                            fontSize: 16,
+                            cursor: 'pointer',
+                            transition: 'opacity 0.15s'
+                          }}
+                          onMouseEnter={e => e.target.style.opacity = '0.7'}
+                          onMouseLeave={e => e.target.style.opacity = '1'}
+                        >
+                          ← Back to {selectedInstructor?.name || 'Creator'}
+                        </span>
+                      </div>
+                      {renderCourseDetail()}
+                    </div>
+                  ) : selectedInstructor ? (
                     renderInstructorProfile()
                   ) : (
                     renderInstructorSummary()
@@ -1860,24 +2027,6 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           </div>
         </div>
         
-        {/* Enrollment Flow Modal */}
-        {showEnrollmentFlow && enrollingCourse && (
-          <EnrollmentFlow
-            course={enrollingCourse}
-            instructor={getInstructorById(enrollingCourse.instructorId)}
-            isDarkMode={isDarkMode}
-            onClose={() => {
-              setShowEnrollmentFlow(false);
-              setEnrollingCourse(null);
-            }}
-            onComplete={(booking) => {
-              console.log('Booking complete:', booking);
-              setShowEnrollmentFlow(false);
-              setEnrollingCourse(null);
-              // Could navigate to dashboard or show success message
-            }}
-          />
-        )}
       </div>
     );
   }
@@ -1933,6 +2082,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           isDarkMode={isDarkMode}
           followedCommunities={followedCommunities}
           setFollowedCommunities={setFollowedCommunities}
+          onEnroll={(course) => {
+            setEnrollingCourse(course);
+            setShowEnrollmentFlow(true);
+          }}
         />
       </div>
     );

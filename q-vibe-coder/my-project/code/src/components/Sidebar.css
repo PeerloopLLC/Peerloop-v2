@@ -522,3 +522,10 @@
     justify-content: center;
   }
 }
+
+/* Hide sidebar on mobile phones - use bottom nav instead */
+@media (max-width: 480px) {
+  .sidebar {
+    display: none !important;
+  }
+}

@@ -29,6 +29,40 @@
   --line-height-relaxed: 1.5;
 }
 
+/* ========================================
+   GLOBAL LINK HOVER STYLES
+   Add underline on hover for clickable text
+   ======================================== */
+
+/* Clickable text links - add .clickable-link class */
+.clickable-link {
+  cursor: pointer;
+  text-decoration: none;
+  transition: text-decoration 0.15s ease;
+}
+
+.clickable-link:hover {
+  text-decoration: underline;
+}
+
+/* Blue accent links */
+.clickable-link-blue {
+  color: #1d9bf0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: text-decoration 0.15s ease;
+}
+
+.clickable-link-blue:hover {
+  text-decoration: underline;
+}
+
+/* Any element with cursor pointer that looks like a link */
+[style*="cursor: pointer"][style*="color: #1d9bf0"]:hover,
+[style*="cursor: pointer"][style*="color: rgb(29, 155, 240)"]:hover {
+  text-decoration: underline;
+}
+
 /* Dark mode theme - X.com style bright white text */
 body.dark-mode {
   --bg-primary: #000000;
@@ -65,6 +99,7 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
+  min-width: 375px; /* Minimum width for standard phones */
 }
 
 body.dark-mode {
@@ -708,10 +743,10 @@ body.dark-mode .creator-badge {
   height: 100vh;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  min-width: 320px;
+  min-width: 375px; /* Minimum for standard phones */
   max-width: 1010px; /* 200px sidebar + 810px content */
   margin: 0 auto;
-  overflow-x: hidden;
+  overflow-x: auto; /* Allow horizontal scroll if window is too small */
   position: relative;
   align-items: flex-start;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -726,6 +761,7 @@ body.dark-mode .creator-badge {
 /* Main content uses remaining width */
 .app .main-content {
   width: 810px;
+  min-width: 280px; /* Minimum for mobile - allows phone sizing */
   margin-left: 0;
 }
 
@@ -740,20 +776,29 @@ body.dark-mode .creator-badge {
 @media (max-width: 1400px) {
   .app {
     width: 100%;
-    min-width: 0;
+    min-width: 375px; /* Standard phone minimum */
   }
 }
 
 @media (max-width: 768px) {
   .app {
     width: 100%;
-    min-width: 0;
+    min-width: 375px; /* Standard phone minimum */
   }
 }
 
+/* Mobile phone sizing - no sidebar, full width content */
 @media (max-width: 480px) {
   .app {
-    min-width: 280px;
+    flex-direction: column;
+  }
+  
+  .app .main-content {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    padding-bottom: 70px; /* Space for bottom nav */
   }
 }
 

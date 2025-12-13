@@ -16,7 +16,7 @@ export const instructorsDatabase = [
     id: 1,
     name: "Albert Einstein",
     title: "Theoretical Physicist & Nobel Laureate",
-    avatar: "https://via.placeholder.com/120x120/4ECDC4/ffffff?text=AE",
+    avatar: "https://i.pravatar.cc/120?img=68",
     bio: "Revolutionary physicist who developed the theory of relativity, one of the two pillars of modern physics. Nobel Prize winner and one of the most influential scientists of all time.",
     qualifications: [
       {
@@ -53,7 +53,7 @@ export const instructorsDatabase = [
     id: 2,
     name: "Jane Doe",
     title: "Leading AI Strategist at TechCorp",
-    avatar: "https://via.placeholder.com/120x120/FF6B6B/ffffff?text=JD",
+    avatar: "https://i.pravatar.cc/120?img=32",
     bio: "Leading AI strategist with 10+ years experience in product management and AI implementation. Expert in helping companies leverage AI for competitive advantage.",
     qualifications: [
       {
@@ -90,7 +90,7 @@ export const instructorsDatabase = [
     id: 3,
     name: "Prof. Maria Rodriguez",
     title: "Data Science & Analytics Specialist",
-    avatar: "https://via.placeholder.com/120x120/FFD93D/000000?text=MR",
+    avatar: "https://i.pravatar.cc/120?img=47",
     bio: "Expert in data science, statistical analysis, and business intelligence. Helps organizations make data-driven decisions through advanced analytics.",
     qualifications: [
       {
@@ -127,7 +127,7 @@ export const instructorsDatabase = [
     id: 4,
     name: "James Wilson",
     title: "Full-Stack Development & DevOps Engineer",
-    avatar: "https://via.placeholder.com/120x120/6C5CE7/ffffff?text=JW",
+    avatar: "https://i.pravatar.cc/120?img=60",
     bio: "Full-stack developer with expertise in modern web technologies and DevOps practices. Builds scalable applications and efficient deployment pipelines.",
     qualifications: [
       {
@@ -164,7 +164,7 @@ export const instructorsDatabase = [
     id: 5,
     name: "Dr. Priya Nair",
     title: "AI for Robotics Specialist",
-    avatar: "https://via.placeholder.com/120x120/00B894/ffffff?text=PN",
+    avatar: "https://i.pravatar.cc/120?img=26",
     bio: "Expert in robotics and AI integration, focusing on real-world automation and intelligent systems.",
     qualifications: [
       { id: 1, sentence: "Ph.D. in Robotics and AI from MIT (2020)" },
@@ -189,7 +189,7 @@ export const instructorsDatabase = [
     id: 6,
     name: "Prof. Elena Petrova",
     title: "AI in Healthcare Innovator",
-    avatar: "https://via.placeholder.com/120x120/0984e3/ffffff?text=EP",
+    avatar: "https://i.pravatar.cc/120?img=52",
     bio: "Pioneer in applying AI to medical diagnostics and healthcare data analysis.",
     qualifications: [
       { id: 1, sentence: "M.D., Ph.D. in Biomedical Informatics from Stanford (2017)" },
@@ -214,7 +214,7 @@ export const instructorsDatabase = [
     id: 7,
     name: "Mr. Samuel Lee",
     title: "AI Coding Bootcamp Instructor",
-    avatar: "https://via.placeholder.com/120x120/636e72/ffffff?text=SL",
+    avatar: "https://i.pravatar.cc/120?img=11",
     bio: "Specialist in teaching practical AI coding skills for beginners and professionals alike.",
     qualifications: [
       { id: 1, sentence: "M.S. in Computer Science from UC Berkeley (2015)" },
@@ -239,7 +239,7 @@ export const instructorsDatabase = [
     id: 8,
     name: "Guy Rymberg",
     title: "AI Prompting Specialist & Business AI Expert",
-    avatar: "https://via.placeholder.com/120x120/1d9bf0/ffffff?text=GR",
+    avatar: "https://i.pravatar.cc/120?img=15",
     bio: "AI teaching specialist with 15 years experience in AI and machine learning. Expert in helping professionals leverage AI prompting for competitive advantage. Has taught over 500 students the art of prompt engineering and AI communication. Passionate about the PeerLoop model of Learn → Teach → Earn.",
     qualifications: [
       { id: 1, sentence: "Ph.D. in Computer Science from MIT (2012)" },

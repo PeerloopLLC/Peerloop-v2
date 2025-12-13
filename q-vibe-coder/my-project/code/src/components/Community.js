@@ -20,6 +20,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const [isComposerFocused, setIsComposerFocused] = useState(false); // Track if composer is focused
   const [postAudience, setPostAudience] = useState('everyone'); // 'everyone' or creator id
   const [showAudienceDropdown, setShowAudienceDropdown] = useState(false); // Track audience dropdown visibility
+  const [showPostingCourseDropdown, setShowPostingCourseDropdown] = useState(false); // Track course dropdown in posting section
+  const [selectedPostingCourse, setSelectedPostingCourse] = useState(null); // Selected course to post to
   const [showInfoTooltip, setShowInfoTooltip] = useState(null); // Track which info tooltip is visible
   const [realPosts, setRealPosts] = useState([]); // Posts from Supabase
   const [isPosting, setIsPosting] = useState(false); // Loading state for posting
@@ -157,15 +159,18 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const groupedByCreator = React.useMemo(() => {
     const creatorMap = new Map();
     
+    // Only process course-type follows (not creator-type follows without courses)
     actualFollowedCommunities.forEach(community => {
       let creatorId, creatorName, courseIds;
       
       if (community.type === 'creator') {
-        // Already a creator follow
+        // Creator follow - only include if they have courseIds
+        const cIds = community.courseIds || [];
+        if (cIds.length === 0) return; // Skip creator follows with no courses
         creatorId = community.id;
         creatorName = community.name;
-        courseIds = community.courseIds || [];
-      } else {
+        courseIds = cIds;
+      } else if (community.type === 'course' || community.id?.startsWith('course-')) {
         // Individual course follow - get the creator
         const courseId = community.courseId || parseInt(community.id.replace('course-', ''));
         const course = getCourseById(courseId);
@@ -177,6 +182,9 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
         creatorId = `creator-${course.instructorId}`;
         creatorName = instructor.name;
         courseIds = [courseId];
+      } else {
+        // Unknown type, skip
+        return;
       }
       
       // Merge into existing creator entry or create new one
@@ -202,7 +210,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       }
     });
     
-    return Array.from(creatorMap.values());
+    // Only return creators that have at least one followed course
+    return Array.from(creatorMap.values()).filter(creator => creator.followedCourseIds.length > 0);
   }, [actualFollowedCommunities]);
 
   // Close dropdown when clicking outside
@@ -217,6 +226,18 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, [openCreatorDropdown]);
+
+  // Close posting course dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showPostingCourseDropdown && 
+          !event.target.closest('.posting-course-dropdown')) {
+        setShowPostingCourseDropdown(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showPostingCourseDropdown]);
 
   // Dynamically generate availableCommunities from all courses
   const allCourses = getAllCourses();
@@ -271,7 +292,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 1,
       courseId: 1,
       author: 'ProductPioneer42',
-      authorAvatar: 'https://via.placeholder.com/40x40/4ECDC4/ffffff?text=PP',
+      authorAvatar: 'https://i.pravatar.cc/40?img=1',
       authorHandle: '@ProductPioneer42',
       content: 'Just finished AI for Product Managers! Jane Doe\'s teaching style is incredible. Now I can actually talk to engineers about ML without sounding clueless 😂 #PeerLoop',
       timestamp: '2 hours ago',
@@ -283,7 +304,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 2,
       courseId: 1,
       author: 'TechPM_Sarah',
-      authorAvatar: 'https://via.placeholder.com/40x40/4ECDC4/ffffff?text=TS',
+      authorAvatar: 'https://i.pravatar.cc/40?img=5',
       authorHandle: '@TechPM_Sarah',
       content: 'Became a Student-Teacher for AI for Product Managers today! 🎉 Already have 2 students booked. The 70% commission is amazing. Thank you @JaneDoe!',
       timestamp: '5 hours ago',
@@ -297,7 +318,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 3,
       courseId: 2,
       author: 'BackendBoss99',
-      authorAvatar: 'https://via.placeholder.com/40x40/00D2FF/ffffff?text=BB',
+      authorAvatar: 'https://i.pravatar.cc/40?img=8',
       authorHandle: '@BackendBoss99',
       content: 'Node.js Backend Development is 🔥! Built my first REST API in week 2. The 1-on-1 sessions with Student-Teachers make all the difference. #LearnTeachEarn',
       timestamp: '3 hours ago',
@@ -309,7 +330,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 4,
       courseId: 2,
       author: 'CodeNewbie_Mike',
-      authorAvatar: 'https://via.placeholder.com/40x40/00D2FF/ffffff?text=CM',
+      authorAvatar: 'https://i.pravatar.cc/40?img=12',
       authorHandle: '@CodeNewbie_Mike',
       content: 'Shoutout to my Student-Teacher @BackendBoss99 for explaining Express middleware! Finally clicked after our session. PeerLoop\'s model is genius.',
       timestamp: '1 day ago',
@@ -323,7 +344,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 5,
       courseId: 3,
       author: 'CloudMaster_Pro',
-      authorAvatar: 'https://via.placeholder.com/40x40/FF9900/ffffff?text=CP',
+      authorAvatar: 'https://i.pravatar.cc/40?img=15',
       authorHandle: '@CloudMaster_Pro',
       content: 'Passed my AWS certification after taking Cloud Architecture with AWS! The serverless module was exactly what I needed. Now teaching others and earning 70%! 💰',
       timestamp: '4 hours ago',
@@ -335,7 +356,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 6,
       courseId: 3,
       author: 'DevOpsNewbie',
-      authorAvatar: 'https://via.placeholder.com/40x40/FF9900/ffffff?text=DN',
+      authorAvatar: 'https://i.pravatar.cc/40?img=18',
       authorHandle: '@DevOpsNewbie',
       content: 'Week 3 of Cloud Architecture with AWS. Lambda functions finally make sense! Booking my first 1-on-1 with a Student-Teacher tomorrow. Excited!',
       timestamp: '2 days ago',
@@ -349,7 +370,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 7,
       courseId: 4,
       author: 'NeuralNetNinja',
-      authorAvatar: 'https://via.placeholder.com/40x40/FF6B6B/ffffff?text=NN',
+      authorAvatar: 'https://i.pravatar.cc/40?img=21',
       authorHandle: '@NeuralNetNinja',
       content: 'Deep Learning Fundamentals changed my career! Built a CNN from scratch in the capstone. The peer teaching model helped me understand backpropagation 10x faster.',
       timestamp: '6 hours ago',
@@ -361,7 +382,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 8,
       courseId: 4,
       author: 'AIStudent_2024',
-      authorAvatar: 'https://via.placeholder.com/40x40/FF6B6B/ffffff?text=AS',
+      authorAvatar: 'https://i.pravatar.cc/40?img=24',
       authorHandle: '@AIStudent_2024',
       content: 'Just certified as a Student-Teacher for Deep Learning Fundamentals! Jane Doe approved my application today. Ready to help others while earning. Win-win! 🚀',
       timestamp: '1 day ago',
@@ -375,7 +396,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 9,
       courseId: 5,
       author: 'VisionCoder25',
-      authorAvatar: 'https://via.placeholder.com/40x40/9B59B6/ffffff?text=VC',
+      authorAvatar: 'https://i.pravatar.cc/40?img=27',
       authorHandle: '@VisionCoder25',
       content: 'Computer Vision with Python is incredible! Detecting objects in real-time now. The community here is so supportive. Best learning investment ever!',
       timestamp: '2 hours ago',
@@ -387,7 +408,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 10,
       courseId: 5,
       author: 'OpenCV_Fan',
-      authorAvatar: 'https://via.placeholder.com/40x40/9B59B6/ffffff?text=OF',
+      authorAvatar: 'https://i.pravatar.cc/40?img=30',
       authorHandle: '@OpenCV_Fan',
       content: 'Completed my certification for Computer Vision with Python! Already earned back $210 from 1 teaching session. Bloom\'s 2 Sigma is real! #PeerLoop',
       timestamp: '8 hours ago',
@@ -401,7 +422,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 11,
       courseId: 6,
       author: 'NLPMastermind',
-      authorAvatar: 'https://via.placeholder.com/40x40/17bf63/ffffff?text=NM',
+      authorAvatar: 'https://i.pravatar.cc/40?img=33',
       authorHandle: '@NLPMastermind',
       content: 'Built a sentiment analysis tool after completing Natural Language Processing! Jane Doe\'s curriculum is perfectly structured. Now I\'m teaching others! 🎓',
       timestamp: '3 hours ago',
@@ -413,7 +434,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 12,
       courseId: 6,
       author: 'TextMiner_Pro',
-      authorAvatar: 'https://via.placeholder.com/40x40/17bf63/ffffff?text=TM',
+      authorAvatar: 'https://i.pravatar.cc/40?img=36',
       authorHandle: '@TextMiner_Pro',
       content: 'NLP course chatbot project was amazing! My Student-Teacher explained transformers so clearly. Earned my cert and joining the teaching pool next week!',
       timestamp: '1 day ago',
@@ -427,7 +448,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 13,
       courseId: 7,
       author: 'DataDriven_Dan',
-      authorAvatar: 'https://via.placeholder.com/40x40/794BC4/ffffff?text=DD',
+      authorAvatar: 'https://i.pravatar.cc/40?img=39',
       authorHandle: '@DataDriven_Dan',
       content: 'Data Science Fundamentals by Prof. Rodriguez is fantastic! Pandas and matplotlib finally make sense. Scheduled 3 peer sessions this week. #DataScience',
       timestamp: '4 hours ago',
@@ -439,7 +460,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 14,
       courseId: 7,
       author: 'AnalyticsAce',
-      authorAvatar: 'https://via.placeholder.com/40x40/794BC4/ffffff?text=AA',
+      authorAvatar: 'https://i.pravatar.cc/40?img=42',
       authorHandle: '@AnalyticsAce',
       content: 'Became a certified Student-Teacher for Data Science Fundamentals! Made $350 in my first week teaching. PeerLoop\'s model is revolutionary! 💪',
       timestamp: '2 days ago',
@@ -453,7 +474,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 15,
       courseId: 8,
       author: 'BIDashboardPro',
-      authorAvatar: 'https://via.placeholder.com/40x40/3498DB/ffffff?text=BP',
+      authorAvatar: 'https://i.pravatar.cc/40?img=45',
       authorHandle: '@BIDashboardPro',
       content: 'BI & Analytics course transformed how I present data! Built an executive dashboard that my boss loved. Worth every penny at $450!',
       timestamp: '5 hours ago',
@@ -465,7 +486,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 16,
       courseId: 8,
       author: 'TableauNewbie',
-      authorAvatar: 'https://via.placeholder.com/40x40/3498DB/ffffff?text=TN',
+      authorAvatar: 'https://i.pravatar.cc/40?img=48',
       authorHandle: '@TableauNewbie',
       content: 'Just enrolled in Business Intelligence & Analytics. Prof. Rodriguez\'s intro video already cleared up so much! Can\'t wait for my first 1-on-1 session!',
       timestamp: '1 day ago',
@@ -479,7 +500,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 17,
       courseId: 9,
       author: 'FullStackFiona',
-      authorAvatar: 'https://via.placeholder.com/40x40/E74C3C/ffffff?text=FF',
+      authorAvatar: 'https://i.pravatar.cc/40?img=49',
       authorHandle: '@FullStackFiona',
       content: 'Full-Stack Web Development is the real deal! Deployed my first React + Node app today. James Wilson\'s course structure is perfect for beginners. 🌐',
       timestamp: '3 hours ago',
@@ -491,7 +512,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 18,
       courseId: 9,
       author: 'WebDev_Journey',
-      authorAvatar: 'https://via.placeholder.com/40x40/E74C3C/ffffff?text=WJ',
+      authorAvatar: 'https://i.pravatar.cc/40?img=51',
       authorHandle: '@WebDev_Journey',
       content: 'From zero to full-stack in 8 weeks! Now I\'m a certified Student-Teacher earning while helping others learn. PeerLoop changed my life! #LearnTeachEarn',
       timestamp: '6 hours ago',
@@ -505,7 +526,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 19,
       courseId: 10,
       author: 'DevOpsDerek',
-      authorAvatar: 'https://via.placeholder.com/40x40/4A90E2/ffffff?text=DD',
+      authorAvatar: 'https://i.pravatar.cc/40?img=52',
       authorHandle: '@DevOpsDerek',
       content: 'DevOps & CI/CD Mastery course is excellent! Set up my first Jenkins pipeline today. The Student-Teacher who helped me was incredibly patient. 🔧',
       timestamp: '4 hours ago',
@@ -517,7 +538,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 20,
       courseId: 10,
       author: 'Pipeline_Pro',
-      authorAvatar: 'https://via.placeholder.com/40x40/4A90E2/ffffff?text=PP',
+      authorAvatar: 'https://i.pravatar.cc/40?img=53',
       authorHandle: '@Pipeline_Pro',
       content: 'Certified and now teaching DevOps & CI/CD Mastery! Already made back my course fee plus $200 extra. The flywheel effect is real! 🚀',
       timestamp: '2 days ago',
@@ -531,7 +552,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 21,
       courseId: 11,
       author: 'MicroservicesMike',
-      authorAvatar: 'https://via.placeholder.com/40x40/1ABC9C/ffffff?text=MM',
+      authorAvatar: 'https://i.pravatar.cc/40?img=54',
       authorHandle: '@MicroservicesMike',
       content: 'Microservices Architecture course helped me understand distributed systems finally! Docker + Kubernetes now make sense. Thanks to my amazing Student-Teacher!',
       timestamp: '5 hours ago',
@@ -543,7 +564,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 22,
       courseId: 11,
       author: 'ContainerKing',
-      authorAvatar: 'https://via.placeholder.com/40x40/1ABC9C/ffffff?text=CK',
+      authorAvatar: 'https://i.pravatar.cc/40?img=55',
       authorHandle: '@ContainerKing',
       content: 'Week 4 of Microservices Architecture. Just built my first multi-container app! The community here is so helpful. Aiming for certification next month!',
       timestamp: '1 day ago',
@@ -557,7 +578,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 23,
       courseId: 12,
       author: 'RoboticsGeek29',
-      authorAvatar: 'https://via.placeholder.com/40x40/50C878/ffffff?text=RG',
+      authorAvatar: 'https://i.pravatar.cc/40?img=56',
       authorHandle: '@RoboticsGeek29',
       content: 'AI for Robotics Coding Lab is mind-blowing! Programmed my first path-planning algorithm. Dr. Nair\'s curriculum is cutting-edge! 🤖',
       timestamp: '3 hours ago',
@@ -569,7 +590,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 24,
       courseId: 12,
       author: 'BotBuilder_Pro',
-      authorAvatar: 'https://via.placeholder.com/40x40/50C878/ffffff?text=BB',
+      authorAvatar: 'https://i.pravatar.cc/40?img=57',
       authorHandle: '@BotBuilder_Pro',
       content: 'Just became a Student-Teacher for AI for Robotics! Teaching path planning algorithms and earning 70%. The protégé effect is real—I understand it better now! 🎓',
       timestamp: '8 hours ago',
@@ -583,7 +604,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 25,
       courseId: 13,
       author: 'MedTechInnovator',
-      authorAvatar: 'https://via.placeholder.com/40x40/E74C3C/ffffff?text=MI',
+      authorAvatar: 'https://i.pravatar.cc/40?img=58',
       authorHandle: '@MedTechInnovator',
       content: 'AI for Medical Diagnostics Coding is transforming healthcare! Built a diagnostic model that actually works. Dr. Nair is an incredible teacher! 🏥',
       timestamp: '4 hours ago',
@@ -595,7 +616,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 26,
       courseId: 13,
       author: 'HealthAI_Student',
-      authorAvatar: 'https://via.placeholder.com/40x40/E74C3C/ffffff?text=HS',
+      authorAvatar: 'https://i.pravatar.cc/40?img=59',
       authorHandle: '@HealthAI_Student',
       content: 'Completed my certification in AI for Medical Diagnostics! Already have 3 students lined up to teach. Making an impact AND earning income! #PeerLoop',
       timestamp: '1 day ago',
@@ -609,7 +630,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 27,
       courseId: 14,
       author: 'PythonPro88',
-      authorAvatar: 'https://via.placeholder.com/40x40/FFD93D/000000?text=PP',
+      authorAvatar: 'https://i.pravatar.cc/40?img=60',
       authorHandle: '@PythonPro88',
       content: 'AI Coding Bootcamp: Python Projects is exactly what I needed! Built 5 ML projects in 6 weeks. Prof. Petrova\'s teaching style is engaging! 🐍',
       timestamp: '2 hours ago',
@@ -621,7 +642,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       id: 28,
       courseId: 14,
       author: 'MLBeginner_2024',
-      authorAvatar: 'https://via.placeholder.com/40x40/FFD93D/000000?text=MB',
+      authorAvatar: 'https://i.pravatar.cc/40?img=61',
       authorHandle: '@MLBeginner_2024',
       content: 'From Python newbie to AI developer in 8 weeks! Now I\'m teaching the bootcamp and earning 70% per session. Best investment I ever made! 💪',
       timestamp: '6 hours ago',
@@ -763,10 +784,17 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       // My Creators mode: Filter based on selected creator's followed courses
       const activeCreator = groupedByCreator.find(c => c.id === selectedCreatorId);
       if (activeCreator) {
-        // Show all posts from this creator's followed courses
-        filteredFakePosts = fakePosts.filter(post => 
-          activeCreator.followedCourseIds.includes(post.courseId)
-        );
+        // If a specific course is selected in "Posting to", only show posts from that course
+        if (selectedPostingCourse) {
+          filteredFakePosts = fakePosts.filter(post => 
+            post.courseId === selectedPostingCourse.id
+          );
+        } else {
+          // Show all posts from this creator's followed courses
+          filteredFakePosts = fakePosts.filter(post => 
+            activeCreator.followedCourseIds.includes(post.courseId)
+          );
+        }
       } else {
         filteredFakePosts = [];
       }
@@ -804,7 +832,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       // Combine engagement and recency (recent + high engagement first)
       return (engagementB / (timeB + 1)) - (engagementA / (timeA + 1));
     });
-  }, [communityMode, selectedCreatorId, groupedByCreator, realPosts]);
+  }, [communityMode, selectedCreatorId, groupedByCreator, realPosts, selectedPostingCourse]);
 
   if (selectedCommunity) {
     // Get posts for this community
@@ -971,433 +999,143 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     <div className="community-content-outer">
       <div className="community-three-column">
         <div className="community-center-column">
-          {/* Community Hub / My Creators Toggle */}
+          {/* Single row with Community Hub + Creator names */}
           <div className="community-top-menu" style={{ display: 'block' }}>
             <div style={{
-              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+              display: 'flex',
+              alignItems: 'center',
               width: '100%',
-              boxSizing: 'border-box'
+              overflow: 'hidden',
+              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+              padding: '8px 0'
             }}>
-              {/* Icon Tab Toggle - X.com style underlined tabs */}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: 0,
-                width: '100%',
-                boxSizing: 'border-box'
-              }}>
-                <button
-                  onClick={() => {
-                    setCommunityMode('hub');
-                    setSelectedCreatorId(null);
-                    setPostAudience('everyone');
-                  }}
-                  style={{
-                    flex: '1 1 0',
-                    maxWidth: 200,
-                    padding: '16px 20px',
-                    border: 'none',
-                    background: 'transparent',
-                    color: communityMode === 'hub' 
-                      ? (isDarkMode ? '#e7e9ea' : '#0f1419')
-                      : (isDarkMode ? '#71767b' : '#536471'),
-                    fontWeight: communityMode === 'hub' ? 700 : 500,
-                    fontSize: 15,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    boxSizing: 'border-box',
-                    display: 'flex',
+              <button 
+                onClick={() => {
+                  if (tabsContainerRef.current) {
+                    tabsContainerRef.current.scrollBy({ left: -150, behavior: 'smooth' });
+                  }
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  cursor: 'pointer',
+                  padding: 8,
+                  flexShrink: 0
+                }}
+              >
+                <FaChevronLeft />
+              </button>
+              
+              <div 
+                ref={tabsContainerRef}
+                style={{
+                  display: 'flex',
+                  gap: 8,
+                  overflowX: 'auto',
+                  flex: 1,
+                  minWidth: 0,
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none'
+                }}
+              >
+                {/* Community Hub - always first */}
+                <div 
+                  style={{ 
+                    position: 'relative', 
+                    display: 'flex', 
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    position: 'relative',
                     borderBottom: communityMode === 'hub' 
                       ? '4px solid #1d9bf0' 
                       : '4px solid transparent',
                     marginBottom: -1
                   }}
                 >
-                  <FaHome style={{ fontSize: 18 }} />
-                  <span>Community Hub</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setCommunityMode('creators');
-                    if (groupedByCreator.length > 0 && !selectedCreatorId) {
-                      setSelectedCreatorId(groupedByCreator[0].id);
-                      setPostAudience(groupedByCreator[0].id);
-                    }
-                  }}
-                  style={{
-                    flex: '1 1 0',
-                    maxWidth: 200,
-                    padding: '16px 20px',
-                    border: 'none',
-                    background: 'transparent',
-                    color: communityMode === 'creators' 
-                      ? (isDarkMode ? '#e7e9ea' : '#0f1419')
-                      : (isDarkMode ? '#71767b' : '#536471'),
-                    fontWeight: communityMode === 'creators' ? 700 : 500,
-                    fontSize: 15,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    boxSizing: 'border-box',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    position: 'relative',
-                    borderBottom: communityMode === 'creators' 
-                      ? '4px solid #1d9bf0' 
-                      : '4px solid transparent',
-                    marginBottom: -1
-                  }}
-                >
-                  <FaUsers style={{ fontSize: 18 }} />
-                  <span>My Creators</span>
-                </button>
-              </div>
-            </div>
-            
-            {/* Creator Links - Show underneath when My Creators is selected */}
-            {communityMode === 'creators' && groupedByCreator.length > 0 && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                width: '100%',
-                overflow: 'hidden',
-                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                padding: '8px 0'
-              }}>
-                  <button 
+                  <button
                     onClick={() => {
-                      if (tabsContainerRef.current) {
-                        tabsContainerRef.current.scrollBy({ left: -150, behavior: 'smooth' });
-                      }
+                      setCommunityMode('hub');
+                      setSelectedCreatorId(null);
+                      setPostAudience('everyone');
                     }}
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: isDarkMode ? '#71767b' : '#536471',
+                      padding: '8px 16px',
+                      fontSize: 15,
+                      fontWeight: communityMode === 'hub' ? 700 : 400,
+                      color: isDarkMode ? '#fff' : '#0f1419',
                       cursor: 'pointer',
-                      padding: 8,
-                      flexShrink: 0
-                    }}
-                  >
-                    <FaChevronLeft />
-                  </button>
-                  
-                  <div 
-                    ref={tabsContainerRef}
-                    style={{
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s',
                       display: 'flex',
-                      gap: 8,
-                      overflowX: 'auto',
-                      flex: 1,
-                      minWidth: 0,
-                      scrollbarWidth: 'none',
-                      msOverflowStyle: 'none'
+                      alignItems: 'center',
+                      gap: 6
                     }}
                   >
-                  {groupedByCreator.map(creator => (
-                    <div 
-                      key={creator.id} 
-                      style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
-                      data-creator-id={creator.id}
-                    >
-                      <button
-                        onClick={() => {
-                          setSelectedCreatorId(creator.id);
-                          setPostAudience(creator.id);
-                        }}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          padding: '8px 12px 8px 16px',
-                          fontSize: 15,
-                          fontWeight: selectedCreatorId === creator.id ? 700 : 400,
-                          color: selectedCreatorId === creator.id 
-                            ? '#1d9bf0' 
-                            : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          borderBottom: selectedCreatorId === creator.id 
-                            ? '2px solid #1d9bf0' 
-                            : '2px solid transparent',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        {creator.name}
-                      </button>
-                      <span
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (openCreatorDropdown === creator.id) {
-                            setOpenCreatorDropdown(null);
-                          } else {
-                            const wrapper = e.target.closest('[data-creator-id]');
-                            if (wrapper) {
-                              const rect = wrapper.getBoundingClientRect();
-                              const dropdownWidth = 260;
-                              const viewportWidth = window.innerWidth;
-                              const margin = 16;
-                              
-                              // Always constrain: never let dropdown exceed right edge
-                              let leftPos = Math.min(rect.left, viewportWidth - dropdownWidth - margin);
-                              
-                              // Ensure it doesn't go off left edge
-                              leftPos = Math.max(margin, leftPos);
-                              
-                              setDropdownPosition({
-                                top: rect.bottom + 4,
-                                left: leftPos,
-                                useRight: false
-                              });
-                            }
-                            setOpenCreatorDropdown(creator.id);
-                          }
-                        }}
-                        style={{
-                          fontSize: 12,
-                          padding: '6px 10px 6px 4px',
-                          cursor: 'pointer',
-                          color: selectedCreatorId === creator.id 
-                            ? '#1d9bf0' 
-                            : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                          borderBottom: selectedCreatorId === creator.id 
-                            ? '2px solid #1d9bf0' 
-                            : '2px solid transparent',
-                          transition: 'color 0.2s'
-                        }}
-                      >
-                        ▼
-                      </span>
-                      
-                      {/* Dropdown menu for courses - rendered via Portal to escape transform context */}
-                      {openCreatorDropdown === creator.id && ReactDOM.createPortal(
-                        <div 
-                          style={{
-                            position: 'fixed',
-                            top: dropdownPosition.top,
-                            left: dropdownPosition.left,
-                            background: isDarkMode ? '#16181c' : '#fff',
-                            border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-                            borderRadius: 8,
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            zIndex: 1000,
-                            width: 260,
-                            maxHeight: '60vh',
-                            overflowY: 'auto'
-                          }}
-                        >
-                          {/* Header */}
-                          <div style={{
-                            padding: '10px 12px',
-                            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-                            fontWeight: 600,
-                            fontSize: 13,
-                            color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                          }}>
-                            Courses by {creator.name}
-                          </div>
-                          
-                          {/* Follow All / Unfollow All text links */}
-                          <div style={{
-                            display: 'flex',
-                            gap: 16,
-                            padding: '8px 12px',
-                            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
-                          }}>
-                            <span
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                // Follow all courses from this creator
-                                const allCourseIds = (creator.allCourses || []).map(c => c.id);
-                                actualSetFollowedCommunities(prev => {
-                                  const newFollows = [...prev];
-                                  allCourseIds.forEach(courseId => {
-                                    const courseCommunityId = `course-${courseId}`;
-                                    if (!newFollows.some(c => c.id === courseCommunityId)) {
-                                      const course = (creator.allCourses || []).find(c => c.id === courseId);
-                                      if (course) {
-                                        newFollows.push({
-                                          id: courseCommunityId,
-                                          name: course.title,
-                                          type: 'course',
-                                          courseId: course.id,
-                                          instructorId: course.instructorId
-                                        });
-                                      }
-                                    }
-                                  });
-                                  return newFollows;
-                                });
-                              }}
-                              style={{
-                                fontSize: 13,
-                                fontWeight: 500,
-                                color: '#1d9bf0',
-                                cursor: 'pointer',
-                                transition: 'opacity 0.2s'
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
-                              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-                            >
-                              Follow All
-                            </span>
-                            <span
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                console.log('Unfollow All clicked for creator:', creator.name);
-                                // Unfollow all courses from this creator
-                                const allCourseIds = (creator.allCourses || []).map(c => c.id);
-                                actualSetFollowedCommunities(prev => {
-                                  console.log('Before unfollow:', prev);
-                                  const filtered = prev.filter(c => {
-                                    // Remove creator follow
-                                    if (c.id === creator.id) return false;
-                                    // Remove individual course follows from this creator
-                                    if (c.type === 'course') {
-                                      const courseId = c.courseId || parseInt(c.id.replace('course-', ''));
-                                      if (allCourseIds.includes(courseId)) return false;
-                                    }
-                                    // Also check by course-ID format
-                                    if (c.id && c.id.startsWith('course-')) {
-                                      const courseId = parseInt(c.id.replace('course-', ''));
-                                      if (allCourseIds.includes(courseId)) return false;
-                                    }
-                                    return true;
-                                  });
-                                  console.log('After unfollow:', filtered);
-                                  return filtered;
-                                });
-                              }}
-                              style={{
-                                fontSize: 13,
-                                fontWeight: 500,
-                                color: isDarkMode ? '#71767b' : '#536471',
-                                cursor: 'pointer',
-                                transition: 'color 0.2s'
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.color = '#f4212e'}
-                              onMouseLeave={(e) => e.currentTarget.style.color = isDarkMode ? '#71767b' : '#536471'}
-                            >
-                              Unfollow All
-                            </span>
-                          </div>
-                          
-                          {/* Course list */}
-                          {(creator.allCourses || []).map(course => {
-                            if (!course) return null;
-                            const courseCommunityId = `course-${course.id}`;
-                            const isFollowed = actualFollowedCommunities.some(
-                              c => c.id === courseCommunityId || 
-                                   (c.type === 'creator' && c.courseIds?.includes(course.id))
-                            );
-                            return (
-                              <div
-                                key={course.id}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  e.preventDefault();
-                                  console.log('Course clicked:', course.title, 'isFollowed:', isFollowed);
-                                  if (isFollowed) {
-                                    // Unfollow - remove the course-specific follow
-                                    actualSetFollowedCommunities(prev => {
-                                      console.log('Unfollowing, prev:', prev);
-                                      return prev.filter(c => {
-                                        // Remove exact course match
-                                        if (c.id === courseCommunityId) return false;
-                                        // Also handle creator follow with this course
-                                        if (c.type === 'creator' && c.courseIds?.includes(course.id)) {
-                                          // Remove this course from the creator's courseIds
-                                          const newCourseIds = c.courseIds.filter(id => id !== course.id);
-                                          if (newCourseIds.length === 0) return false; // Remove entirely if no courses left
-                                          c.courseIds = newCourseIds;
-                                        }
-                                        return true;
-                                      });
-                                    });
-                                  } else {
-                                    // Follow
-                                    actualSetFollowedCommunities(prev => {
-                                      console.log('Following, prev:', prev);
-                                      if (prev.some(c => c.id === courseCommunityId)) return prev;
-                                      return [...prev, {
-                                        id: courseCommunityId,
-                                        name: course.title,
-                                        type: 'course',
-                                        courseId: course.id,
-                                        instructorId: course.instructorId
-                                      }];
-                                    });
-                                  }
-                                }}
-                                style={{
-                                  padding: '10px 12px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 10,
-                                  cursor: 'pointer',
-                                  fontSize: 14,
-                                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                                  transition: 'background 0.15s'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                              >
-                                <span style={{
-                                  width: 18,
-                                  height: 18,
-                                  borderRadius: 4,
-                                  border: isFollowed 
-                                    ? '2px solid #1d9bf0' 
-                                    : (isDarkMode ? '2px solid #71767b' : '2px solid #cfd9de'),
-                                  background: isFollowed ? '#1d9bf0' : 'transparent',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  flexShrink: 0
-                                }}>
-                                  {isFollowed && <span style={{ color: '#fff', fontSize: 12 }}>✓</span>}
-                                </span>
-                                <span style={{
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap'
-                                }}>
-                                  {course.title}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>,
-                        document.body
-                      )}
-                    </div>
-                  ))}
-                </div>
-                
-                  <button 
-                    onClick={() => {
-                      if (tabsContainerRef.current) {
-                        tabsContainerRef.current.scrollBy({ left: 150, behavior: 'smooth' });
-                      }
-                    }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: isDarkMode ? '#71767b' : '#536471',
-                      cursor: 'pointer',
-                      padding: 8,
-                      flexShrink: 0
-                    }}
-                  >
-                    <FaChevronRight />
+                    <FaHome style={{ fontSize: 14 }} />
+                    Community Hub
                   </button>
                 </div>
-              )}
+
+                {/* Creator tabs */}
+                {groupedByCreator.map(creator => (
+                  <div 
+                    key={creator.id} 
+                    style={{ 
+                      position: 'relative', 
+                      display: 'flex', 
+                      alignItems: 'center',
+                      borderBottom: communityMode === 'creators' && selectedCreatorId === creator.id 
+                        ? '4px solid #1d9bf0' 
+                        : '4px solid transparent',
+                      marginBottom: -1
+                    }}
+                    data-creator-id={creator.id}
+                  >
+                    <button
+                      onClick={() => {
+                        setCommunityMode('creators');
+                        setSelectedCreatorId(creator.id);
+                        setPostAudience(creator.id);
+                        setSelectedPostingCourse(null);
+                        setShowPostingCourseDropdown(false);
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        padding: '8px 16px',
+                        fontSize: 15,
+                        fontWeight: communityMode === 'creators' && selectedCreatorId === creator.id ? 700 : 400,
+                        color: isDarkMode ? '#fff' : '#0f1419',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {creator.name}
+                    </button>
+                  </div>
+                ))}
+              </div>
+              
+              <button 
+                onClick={() => {
+                  if (tabsContainerRef.current) {
+                    tabsContainerRef.current.scrollBy({ left: 150, behavior: 'smooth' });
+                  }
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  cursor: 'pointer',
+                  padding: 8,
+                  flexShrink: 0
+                }}
+              >
+                <FaChevronRight />
+              </button>
+            </div>
             
             {/* Hidden old tabs for reference - keeping the structure */}
             <div style={{ display: 'none' }}>
@@ -1696,25 +1434,136 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               
               {/* Composer Input Area */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                {/* Posting To Label - Simple and Clear */}
+                {/* Posting To Label - With Dropdown for My Creators mode */}
                 <div style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
                   gap: 8, 
                   marginBottom: 8,
                   fontSize: 14,
-                  color: isDarkMode ? '#71767b' : '#536471'
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  position: 'relative'
                 }}>
-                  <span>Posting to:</span>
-                  <span style={{ 
-                    fontWeight: 700, 
-                    color: '#1d9bf0'
-                  }}>
-                    {communityMode === 'hub' 
-                      ? 'Community Hub' 
-                      : (groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'Community Hub') + "'s Community"
-                    }
-                  </span>
+                  <span style={{ color: '#fff' }}>Posting to:</span>
+                  {communityMode === 'hub' ? (
+                    <>
+                      <span style={{ 
+                        fontWeight: 700, 
+                        color: '#fff'
+                      }}>
+                        All followed Creator communities
+                      </span>
+                      <span style={{ 
+                        marginLeft: 'auto', 
+                        fontSize: 13, 
+                        color: isDarkMode ? '#71767b' : '#536471',
+                        fontStyle: 'italic'
+                      }}>
+                        This displays all posts for courses followed.
+                      </span>
+                    </>
+                  ) : (
+                    <div className="posting-course-dropdown" style={{ position: 'relative' }}>
+                      <span 
+                        onClick={() => setShowPostingCourseDropdown(!showPostingCourseDropdown)}
+                        style={{ 
+                          fontWeight: 700, 
+                          color: '#fff',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4
+                        }}
+                      >
+                        {selectedPostingCourse 
+                          ? selectedPostingCourse.name 
+                          : (groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'Community') + "'s community wide posts"
+                        }
+                        <span style={{ fontSize: 10 }}>▼</span>
+                      </span>
+                      
+                      {/* Dropdown showing followed courses for this creator */}
+                      {showPostingCourseDropdown && (
+                        <div className="posting-course-dropdown" style={{
+                          position: 'absolute',
+                          top: '100%',
+                          left: 0,
+                          marginTop: 4,
+                          background: isDarkMode ? '#16181c' : '#fff',
+                          border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                          borderRadius: 8,
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                          zIndex: 1000,
+                          minWidth: 200,
+                          maxWidth: 300,
+                          maxHeight: '40vh',
+                          overflowY: 'auto'
+                        }}>
+                          {/* All Community option */}
+                          <div
+                            onClick={() => {
+                              setSelectedPostingCourse(null);
+                              setShowPostingCourseDropdown(false);
+                            }}
+                            style={{
+                              padding: '10px 12px',
+                              cursor: 'pointer',
+                              fontSize: 14,
+                              fontWeight: !selectedPostingCourse ? 600 : 400,
+                              color: !selectedPostingCourse ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                          >
+                            {(groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'Creator')}'s community wide posts
+                          </div>
+                          
+                          {/* Followed courses for this creator */}
+                          {(() => {
+                            const creator = groupedByCreator.find(c => c.id === selectedCreatorId);
+                            if (!creator) return null;
+                            // Use the pre-computed followedCourseIds from groupedByCreator
+                            const followedCourses = (creator.allCourses || []).filter(course => 
+                              creator.followedCourseIds.includes(course.id)
+                            );
+                            if (followedCourses.length === 0) {
+                              return (
+                                <div style={{
+                                  padding: '10px 12px',
+                                  fontSize: 13,
+                                  color: isDarkMode ? '#71767b' : '#536471',
+                                  fontStyle: 'italic'
+                                }}>
+                                  No courses followed yet
+                                </div>
+                              );
+                            }
+                            return followedCourses.map(course => (
+                              <div
+                                key={course.id}
+                                onClick={() => {
+                                  setSelectedPostingCourse({ id: course.id, name: course.title });
+                                  setShowPostingCourseDropdown(false);
+                                }}
+                                style={{
+                                  padding: '10px 12px',
+                                  cursor: 'pointer',
+                                  fontSize: 14,
+                                  fontWeight: selectedPostingCourse?.id === course.id ? 600 : 400,
+                                  color: selectedPostingCourse?.id === course.id ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419')
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                              >
+                                {course.title}
+                              </div>
+                            ));
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 
                 <textarea
@@ -1834,11 +1683,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 {displayedPosts.length > 0 ? (
                   displayedPosts.map(post => {
                     const course = getCourseById(post.courseId);
-                    // Generate avatar color and initials - black/gray tones
-                    const avatarColors = ['#2f3336', '#3a3f44', '#4a5056', '#5a6167', '#6a7178'];
-                    const colorIndex = post.author.charCodeAt(0) % avatarColors.length;
-                    const avatarColor = avatarColors[colorIndex];
-                    const initials = post.author.replace(/[^A-Z0-9]/gi, '').substring(0, 2).toUpperCase();
                     
                     // Handle clicking on post author to view their profile
                     const handlePostAuthorClick = () => {
@@ -1850,19 +1694,16 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     return (
                       <div key={post.id} className="post-card">
                         <div className="post-card-header">
-                          <div 
+                          <img 
                             className="post-card-avatar"
+                            src={post.authorAvatar}
+                            alt={post.author}
                             onClick={handlePostAuthorClick}
                             style={{
                               width: 40,
                               height: 40,
                               borderRadius: '50%',
-                              background: avatarColor,
-                              color: '#fff',
-                              fontWeight: 700,
-                              fontSize: 14,
-                              lineHeight: '40px',
-                              textAlign: 'center',
+                              objectFit: 'cover',
                               cursor: 'pointer',
                               transition: 'transform 0.15s, box-shadow 0.15s'
                             }}
@@ -1875,9 +1716,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                               e.currentTarget.style.boxShadow = 'none';
                             }}
                             title={`View ${post.author}'s profile`}
-                          >
-                            {initials}
-                          </div>
+                          />
                           <div className="post-card-header-info">
                             <div className="post-card-name-row">
                               <span 

@@ -6,7 +6,7 @@ import { getInstructorById, getCourseById } from '../data/database';
  * CourseDetailView Component
  * Shows detailed view of a course with back navigation
  */
-const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor }) => {
+const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll }) => {
   const [isFollowing, setIsFollowing] = useState(() => {
     return followedCommunities.some(c => c.id === `course-${course?.id}`);
   });
@@ -406,21 +406,23 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
 
           {/* CTA Buttons */}
           <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-            <button style={{
-              flex: 1,
-              background: themeColor,
-              color: '#fff',
-              border: 'none',
-              padding: '16px 24px',
-              borderRadius: 12,
-              fontSize: 16,
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8
-            }}>
+            <button 
+              onClick={() => onEnroll && onEnroll(course)}
+              style={{
+                flex: 1,
+                background: themeColor,
+                color: '#fff',
+                border: 'none',
+                padding: '16px 24px',
+                borderRadius: 12,
+                fontSize: 16,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8
+              }}>
               <FaPlay />
               Enroll Now - ${course.price}
             </button>
