@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaCalendarAlt, FaChevronLeft, FaChevronRight, FaCheck, FaTimes, FaUser, FaClock, FaCreditCard, FaArrowLeft } from 'react-icons/fa';
+import { FaCalendarAlt, FaChevronLeft, FaChevronRight, FaCheck, FaTimes, FaUser, FaClock } from 'react-icons/fa';
 
 const EnrollmentFlow = ({
   course,
@@ -8,19 +8,16 @@ const EnrollmentFlow = ({
   onClose,
   onComplete
 }) => {
+  const [step, setStep] = useState(1); // 1: confirm enroll, 2: select date, 3: select teacher/time, 4: confirmation
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date(2025, 11, 1)); // December 2025
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [expandedTeachers, setExpandedTeachers] = useState({}); // Track which teachers have expanded time slots
-  const [viewingTeacherProfile, setViewingTeacherProfile] = useState(null); // Track which teacher profile page is being viewed
-  
-  const MAX_VISIBLE_TIMES = 4; // Show this many times before "Show more"
 
   // Colors
   const bgPrimary = isDarkMode ? '#000' : '#fff';
   const bgSecondary = isDarkMode ? '#16181c' : '#f8fafc';
+  const bgCard = isDarkMode ? '#16181c' : '#fff';
   const textPrimary = isDarkMode ? '#e7e9ea' : '#0f172a';
   const textSecondary = isDarkMode ? '#71767b' : '#64748b';
   const textMuted = isDarkMode ? '#536471' : '#94a3b8';
@@ -34,13 +31,11 @@ const EnrollmentFlow = ({
       id: 1,
       name: 'Marcus Chen',
       initials: 'MC',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
       studentsTaught: 12,
       rating: 4.9,
-      bio: 'Software engineer with 5 years experience. I love breaking down complex concepts into simple steps. Patient and thorough teaching style.',
       availability: {
-        '2025-12-10': ['8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM', '8:00 PM'],
-        '2025-12-11': ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM', '7:00 PM'],
+        '2025-12-10': ['10:00 AM', '2:00 PM', '7:00 PM'],
+        '2025-12-11': ['9:00 AM', '1:00 PM', '5:00 PM'],
         '2025-12-12': ['11:00 AM', '3:00 PM'],
         '2025-12-13': ['10:00 AM', '4:00 PM', '6:00 PM'],
         '2025-12-16': ['9:00 AM', '2:00 PM'],
@@ -51,14 +46,12 @@ const EnrollmentFlow = ({
       id: 2,
       name: 'Jessica Torres',
       initials: 'JT',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
       studentsTaught: 8,
       rating: 4.8,
-      bio: 'Full-stack developer passionate about web technologies. I focus on practical, hands-on learning with real-world examples.',
       availability: {
-        '2025-12-10': ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'],
+        '2025-12-10': ['11:00 AM', '3:00 PM'],
         '2025-12-11': ['10:00 AM', '2:00 PM', '6:00 PM'],
-        '2025-12-12': ['8:00 AM', '9:00 AM', '10:00 AM', '1:00 PM', '2:00 PM', '5:00 PM', '6:00 PM', '7:00 PM'],
+        '2025-12-12': ['9:00 AM', '1:00 PM', '5:00 PM'],
         '2025-12-13': ['11:00 AM', '4:00 PM'],
         '2025-12-16': ['10:00 AM', '3:00 PM', '7:00 PM'],
         '2025-12-17': ['9:00 AM', '2:00 PM'],
@@ -68,30 +61,26 @@ const EnrollmentFlow = ({
       id: 3,
       name: 'Alex Sanders',
       initials: 'AS',
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=face',
       studentsTaught: 4,
       rating: 4.7,
-      bio: 'Recently completed this course myself! I understand the learning curve and can help you avoid common pitfalls.',
       availability: {
         '2025-12-10': ['9:00 AM', '1:00 PM', '6:00 PM'],
         '2025-12-11': ['11:00 AM', '4:00 PM'],
         '2025-12-12': ['10:00 AM', '2:00 PM', '7:00 PM'],
-        '2025-12-13': ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM', '7:00 PM'],
+        '2025-12-13': ['9:00 AM', '3:00 PM', '5:00 PM'],
         '2025-12-16': ['11:00 AM', '1:00 PM'],
-        '2025-12-17': ['8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM'],
+        '2025-12-17': ['10:00 AM', '4:00 PM', '6:00 PM'],
       }
     },
     {
       id: 4,
       name: 'Sarah Kim',
       initials: 'SK',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
       studentsTaught: 6,
       rating: 4.9,
-      bio: 'Data scientist who loves teaching. I emphasize understanding the "why" behind concepts, not just the "how".',
       availability: {
         '2025-12-10': ['2:00 PM', '5:00 PM'],
-        '2025-12-11': ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM', '7:00 PM'],
+        '2025-12-11': ['10:00 AM', '3:00 PM', '7:00 PM'],
         '2025-12-12': ['9:00 AM', '12:00 PM', '4:00 PM'],
         '2025-12-13': ['11:00 AM', '2:00 PM'],
         '2025-12-16': ['10:00 AM', '5:00 PM', '7:00 PM'],
@@ -100,7 +89,7 @@ const EnrollmentFlow = ({
     }
   ];
 
-  // Get available dates
+  // Get available dates (dates where at least one teacher has availability)
   const getAvailableDates = () => {
     const dates = new Set();
     studentTeachers.forEach(teacher => {
@@ -155,30 +144,26 @@ const EnrollmentFlow = ({
     setSelectedTime(null);
   };
 
-  const handleTeacherSelect = (teacher) => {
+  const handleTimeSelect = (teacher, time) => {
     setSelectedTeacher(teacher);
-    setSelectedTime(null);
-  };
-
-  const handleTimeSelect = (time) => {
     setSelectedTime(time);
   };
 
-  const handlePayment = () => {
-    setIsProcessing(true);
-    // Simulate payment processing, then go directly to dashboard
-    setTimeout(() => {
-      setIsProcessing(false);
-      // Complete enrollment and go to dashboard
-      if (onComplete) {
-        onComplete({
-          course,
-          teacher: selectedTeacher,
-          date: selectedDate,
-          time: selectedTime
-        });
-      }
-    }, 1500);
+  const handleEnroll = () => {
+    setStep(2);
+  };
+
+  const handleConfirmBooking = () => {
+    setStep(4);
+    // In real app, this would call an API
+    if (onComplete) {
+      onComplete({
+        course,
+        teacher: selectedTeacher,
+        date: selectedDate,
+        time: selectedTime
+      });
+    }
   };
 
   // Render calendar
@@ -192,16 +177,16 @@ const EnrollmentFlow = ({
     const headers = dayNames.map(day => (
       <div key={day} style={{
         textAlign: 'center',
+        padding: '8px 0',
         fontSize: 12,
         fontWeight: 600,
-        color: textMuted,
-        padding: '8px 0'
+        color: textSecondary
       }}>
         {day}
       </div>
     ));
 
-    // Empty cells before first day
+    // Empty cells for days before first of month
     for (let i = 0; i < firstDay; i++) {
       days.push(<div key={`empty-${i}`} />);
     }
@@ -211,31 +196,46 @@ const EnrollmentFlow = ({
       const dateStr = formatDateStr(currentMonth.getFullYear(), currentMonth.getMonth(), day);
       const isAvailable = availableDates.has(dateStr);
       const isSelected = selectedDate === dateStr;
+      const isPast = new Date(dateStr) < new Date('2025-12-09'); // Assuming today is Dec 9
 
       days.push(
         <div
           key={day}
-          onClick={() => isAvailable && handleDateSelect(dateStr)}
+          onClick={() => isAvailable && !isPast && handleDateSelect(dateStr)}
           style={{
             textAlign: 'center',
             padding: '10px 0',
-            borderRadius: 8,
-            cursor: isAvailable ? 'pointer' : 'default',
+            fontSize: 14,
+            fontWeight: isSelected ? 700 : 500,
+            color: isPast ? textMuted : isAvailable ? (isSelected ? '#fff' : textPrimary) : textMuted,
             background: isSelected ? accentBlue : 'transparent',
-            color: isSelected ? '#fff' : isAvailable ? textPrimary : textMuted,
-            fontWeight: isSelected ? 600 : 400,
-            opacity: isAvailable ? 1 : 0.4,
+            borderRadius: 8,
+            cursor: isAvailable && !isPast ? 'pointer' : 'default',
+            position: 'relative',
             transition: 'all 0.15s ease'
+          }}
+          onMouseEnter={(e) => {
+            if (isAvailable && !isPast && !isSelected) {
+              e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#e2e8f0';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isSelected) {
+              e.currentTarget.style.background = 'transparent';
+            }
           }}
         >
           {day}
-          {isAvailable && !isSelected && (
+          {isAvailable && !isPast && (
             <div style={{
+              position: 'absolute',
+              bottom: 4,
+              left: '50%',
+              transform: 'translateX(-50%)',
               width: 4,
               height: 4,
               borderRadius: '50%',
-              background: accentGreen,
-              margin: '4px auto 0'
+              background: isSelected ? '#fff' : accentBlue
             }} />
           )}
         </div>
@@ -243,12 +243,18 @@ const EnrollmentFlow = ({
     }
 
     return (
-      <div>
+      <div style={{
+        background: bgCard,
+        borderRadius: 12,
+        border: `1px solid ${borderColor}`,
+        padding: 16,
+        marginBottom: 20
+      }}>
         {/* Month navigation */}
         <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
           alignItems: 'center',
+          justifyContent: 'space-between',
           marginBottom: 16
         }}>
           <button
@@ -264,7 +270,11 @@ const EnrollmentFlow = ({
           >
             <FaChevronLeft />
           </button>
-          <span style={{ fontWeight: 600, color: textPrimary }}>
+          <span style={{
+            fontSize: 16,
+            fontWeight: 600,
+            color: textPrimary
+          }}>
             {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
           </span>
           <button
@@ -286,80 +296,514 @@ const EnrollmentFlow = ({
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(7, 1fr)',
-          gap: 2
+          gap: 4
         }}>
           {headers}
           {days}
+        </div>
+
+        {/* Legend */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
+          marginTop: 16,
+          paddingTop: 12,
+          borderTop: `1px solid ${borderColor}`,
+          fontSize: 12,
+          color: textSecondary
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              background: accentBlue
+            }} />
+            Available
+          </div>
         </div>
       </div>
     );
   };
 
-  // Render teacher profile page
-  const renderTeacherProfile = (teacher) => (
-    <div style={{ background: bgPrimary, minHeight: '100vh', width: '100%' }}>
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
-        <button onClick={() => setViewingTeacherProfile(null)} style={{
-          background: 'transparent', border: 'none', padding: '8px 0', cursor: 'pointer',
-          color: textSecondary, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, fontSize: 14
+  // Render student-teacher selection
+  const renderTeacherSelection = () => {
+    if (!selectedDate) return null;
+
+    const teachersForDate = getTeachersForDate(selectedDate);
+
+    return (
+      <div style={{ marginTop: 20 }}>
+        <div style={{
+          fontSize: 14,
+          fontWeight: 600,
+          color: textPrimary,
+          marginBottom: 12
         }}>
-          <FaArrowLeft /><span>Back to scheduling</span>
-        </button>
-        <div style={{ background: bgSecondary, borderRadius: 16, padding: 24, border: `1px solid ${borderColor}`, textAlign: 'center', marginBottom: 20 }}>
-          <div style={{ width: 100, height: 100, borderRadius: '50%', margin: '0 auto 16px', overflow: 'hidden', background: accentBlue }}>
-            {teacher.avatar ? (
-              <img src={teacher.avatar} alt={teacher.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 36, fontWeight: 700 }}>
-                {teacher.name.split(' ').map(n => n[0]).join('')}
+          {formatDisplayDate(selectedDate)}
+        </div>
+
+        <div style={{
+          fontSize: 14,
+          color: textSecondary,
+          marginBottom: 16
+        }}>
+          Available Student-Teachers:
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {teachersForDate.map(teacher => {
+            const times = teacher.availability[selectedDate] || [];
+            const isTeacherSelected = selectedTeacher?.id === teacher.id;
+
+            return (
+              <div
+                key={teacher.id}
+                style={{
+                  background: bgCard,
+                  borderRadius: 12,
+                  border: `1px solid ${isTeacherSelected ? accentBlue : borderColor}`,
+                  padding: 16,
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                {/* Teacher info row */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  marginBottom: 12
+                }}>
+                  {/* Avatar */}
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    background: accentBlue,
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 16,
+                    fontWeight: 700,
+                    flexShrink: 0
+                  }}>
+                    {teacher.initials}
+                  </div>
+
+                  {/* Name & stats */}
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontSize: 16,
+                      fontWeight: 600,
+                      color: textPrimary,
+                      marginBottom: 2
+                    }}>
+                      {teacher.name}
+                    </div>
+                    <div style={{
+                      fontSize: 13,
+                      color: textSecondary,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12
+                    }}>
+                      <span><FaUser style={{ fontSize: 10, marginRight: 4 }} />{teacher.studentsTaught} students taught</span>
+                      <span>⭐ {teacher.rating}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Time slots */}
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 8
+                }}>
+                  {times.map(time => {
+                    const isTimeSelected = isTeacherSelected && selectedTime === time;
+                    return (
+                      <button
+                        key={time}
+                        onClick={() => handleTimeSelect(teacher, time)}
+                        style={{
+                          padding: '8px 16px',
+                          borderRadius: 20,
+                          border: isTimeSelected ? 'none' : `1px solid ${borderColor}`,
+                          background: isTimeSelected ? accentBlue : 'transparent',
+                          color: isTimeSelected ? '#fff' : textPrimary,
+                          fontSize: 13,
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <FaClock style={{ fontSize: 11 }} />
+                        {time}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            )}
-          </div>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: textPrimary, marginBottom: 8 }}>{teacher.name}</h2>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 20, fontSize: 14, color: textSecondary, marginBottom: 16 }}>
-            <span>📚 {teacher.studentsTaught} students taught</span>
-            <span>⭐ {teacher.rating} rating</span>
-          </div>
+            );
+          })}
         </div>
-        <div style={{ background: bgSecondary, borderRadius: 16, padding: 24, border: `1px solid ${borderColor}`, marginBottom: 20 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: textPrimary, marginBottom: 12 }}>About</h3>
-          <p style={{ fontSize: 14, color: textSecondary, lineHeight: 1.6, margin: 0 }}>{teacher.bio}</p>
-        </div>
-        <button onClick={() => { setSelectedTeacher(teacher.id); setViewingTeacherProfile(null); }} style={{
-          width: '100%', padding: 14, borderRadius: 8, border: 'none', background: accentBlue, color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer'
-        }}>
-          Select {teacher.name.split(' ')[0]} as Your Teacher
-        </button>
       </div>
+    );
+  };
+
+  // Step 1: Enrollment confirmation
+  const renderEnrollStep = () => (
+    <div style={{ textAlign: 'center', padding: '20px 0' }}>
+      <div style={{
+        fontSize: 48,
+        marginBottom: 16
+      }}>
+        🎓
+      </div>
+      <h2 style={{
+        fontSize: 24,
+        fontWeight: 700,
+        color: textPrimary,
+        marginBottom: 8
+      }}>
+        Enroll in {course?.title}
+      </h2>
+      <p style={{
+        fontSize: 15,
+        color: textSecondary,
+        marginBottom: 24,
+        lineHeight: 1.6
+      }}>
+        Get full course access plus 1-on-1 sessions with certified Student-Teachers.
+      </p>
+
+      <div style={{
+        background: bgSecondary,
+        borderRadius: 12,
+        padding: 20,
+        marginBottom: 24,
+        textAlign: 'left'
+      }}>
+        <div style={{
+          fontSize: 13,
+          color: textSecondary,
+          marginBottom: 8
+        }}>
+          What's included:
+        </div>
+        <ul style={{
+          margin: 0,
+          paddingLeft: 20,
+          color: textPrimary,
+          fontSize: 14,
+          lineHeight: 2
+        }}>
+          <li>Full course curriculum access</li>
+          <li>1-on-1 video sessions with Student-Teachers</li>
+          <li>Path to certification & earning 70% as a teacher</li>
+          <li>Community access & support</li>
+        </ul>
+      </div>
+
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        marginBottom: 24
+      }}>
+        <span style={{
+          fontSize: 32,
+          fontWeight: 700,
+          color: textPrimary
+        }}>
+          {course?.price}
+        </span>
+        <span style={{
+          fontSize: 14,
+          color: textSecondary
+        }}>
+          one-time
+        </span>
+      </div>
+
+      <button
+        onClick={handleEnroll}
+        style={{
+          width: '100%',
+          padding: '14px 24px',
+          background: accentBlue,
+          color: '#fff',
+          border: 'none',
+          borderRadius: 8,
+          fontSize: 16,
+          fontWeight: 600,
+          cursor: 'pointer'
+        }}
+      >
+        Continue to Schedule Session
+      </button>
     </div>
   );
 
-  // If viewing a teacher profile, show the profile page
-  if (viewingTeacherProfile) {
-    return renderTeacherProfile(viewingTeacherProfile);
-  }
+  // Step 2 & 3: Date and teacher selection
+  const renderScheduleStep = () => (
+    <div>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 20
+      }}>
+        <div style={{
+          width: 32,
+          height: 32,
+          borderRadius: '50%',
+          background: accentGreen,
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 14
+        }}>
+          <FaCheck />
+        </div>
+        <span style={{
+          fontSize: 16,
+          fontWeight: 600,
+          color: textPrimary
+        }}>
+          You're enrolled! Now schedule your first session.
+        </span>
+      </div>
+
+      <div style={{
+        fontSize: 14,
+        color: textSecondary,
+        marginBottom: 12
+      }}>
+        Select a day:
+      </div>
+
+      {renderCalendar()}
+      {renderTeacherSelection()}
+
+      {selectedTeacher && selectedTime && (
+        <button
+          onClick={handleConfirmBooking}
+          style={{
+            width: '100%',
+            padding: '14px 24px',
+            background: accentBlue,
+            color: '#fff',
+            border: 'none',
+            borderRadius: 8,
+            fontSize: 16,
+            fontWeight: 600,
+            cursor: 'pointer',
+            marginTop: 20
+          }}
+        >
+          Confirm Booking
+        </button>
+      )}
+    </div>
+  );
+
+  // Step 4: Confirmation
+  const renderConfirmationStep = () => (
+    <div style={{ textAlign: 'center', padding: '20px 0' }}>
+      <div style={{
+        width: 64,
+        height: 64,
+        borderRadius: '50%',
+        background: accentGreen,
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 28,
+        margin: '0 auto 20px'
+      }}>
+        <FaCheck />
+      </div>
+
+      <h2 style={{
+        fontSize: 24,
+        fontWeight: 700,
+        color: textPrimary,
+        marginBottom: 8
+      }}>
+        You're all set!
+      </h2>
+
+      <p style={{
+        fontSize: 15,
+        color: textSecondary,
+        marginBottom: 24
+      }}>
+        Your first session is booked.
+      </p>
+
+      <div style={{
+        background: bgSecondary,
+        borderRadius: 12,
+        padding: 20,
+        textAlign: 'left',
+        marginBottom: 24
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          marginBottom: 16
+        }}>
+          <div style={{
+            width: 48,
+            height: 48,
+            borderRadius: '50%',
+            background: accentBlue,
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 16,
+            fontWeight: 700
+          }}>
+            {selectedTeacher?.initials}
+          </div>
+          <div>
+            <div style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: textPrimary
+            }}>
+              {selectedTeacher?.name}
+            </div>
+            <div style={{
+              fontSize: 13,
+              color: textSecondary
+            }}>
+              Your Student-Teacher
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+          fontSize: 14,
+          color: textPrimary
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FaCalendarAlt style={{ color: textSecondary }} />
+            {formatDisplayDate(selectedDate)}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FaClock style={{ color: textSecondary }} />
+            {selectedTime}
+          </div>
+        </div>
+      </div>
+
+      <p style={{
+        fontSize: 13,
+        color: textSecondary,
+        marginBottom: 20
+      }}>
+        A calendar invite and video link have been sent to your email.
+      </p>
+
+      <button
+        onClick={onClose}
+        style={{
+          width: '100%',
+          padding: '14px 24px',
+          background: accentBlue,
+          color: '#fff',
+          border: 'none',
+          borderRadius: 8,
+          fontSize: 16,
+          fontWeight: 600,
+          cursor: 'pointer'
+        }}
+      >
+        Go to Dashboard
+      </button>
+    </div>
+  );
 
   return (
     <div style={{
-      background: bgPrimary,
-      minHeight: '100vh',
-      width: '100%'
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      padding: 20
     }}>
-      {/* Centered container for Header + Calendar */}
       <div style={{
-        maxWidth: 450,
-        margin: '0 auto',
-        padding: '20px 20px 0 20px'
+        background: bgPrimary,
+        borderRadius: 16,
+        width: '100%',
+        maxWidth: 500,
+        maxHeight: '90vh',
+        overflow: 'auto',
+        position: 'relative'
       }}>
         {/* Header */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 12,
-          marginBottom: 24,
-          paddingBottom: 16,
-          borderBottom: `1px solid ${borderColor}`
+          justifyContent: 'space-between',
+          padding: '16px 20px',
+          borderBottom: `1px solid ${borderColor}`,
+          position: 'sticky',
+          top: 0,
+          background: bgPrimary,
+          zIndex: 10
         }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12
+          }}>
+            {step > 1 && step < 4 && (
+              <button
+                onClick={() => setStep(step - 1)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  padding: 4,
+                  cursor: 'pointer',
+                  color: textSecondary
+                }}
+              >
+                <FaChevronLeft />
+              </button>
+            )}
+            <span style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: textPrimary
+            }}>
+              {step === 1 && 'Enroll'}
+              {step === 2 && 'Schedule Session'}
+              {step === 3 && 'Schedule Session'}
+              {step === 4 && 'Confirmed'}
+            </span>
+          </div>
           <button
             onClick={onClose}
             style={{
@@ -368,298 +812,20 @@ const EnrollmentFlow = ({
               padding: 8,
               cursor: 'pointer',
               color: textSecondary,
-              display: 'flex',
-              alignItems: 'center'
+              fontSize: 18
             }}
           >
-            <FaArrowLeft />
+            <FaTimes />
           </button>
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: textPrimary }}>
-              Schedule Your Session
-            </div>
-            <div style={{ fontSize: 14, color: textSecondary }}>
-              {course?.title}
-            </div>
-          </div>
         </div>
 
-        {/* Step 1: Calendar - Centered */}
-        <div style={{
-          background: bgSecondary,
-          borderRadius: 16,
-          padding: 20,
-          marginBottom: 20,
-          border: `1px solid ${borderColor}`
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            marginBottom: 16
-          }}>
-            <FaCalendarAlt style={{ color: accentBlue }} />
-            <span style={{ fontWeight: 600, color: textPrimary }}>1. Select a Date</span>
-            {selectedDate && (
-              <span style={{ marginLeft: 'auto', color: accentGreen, fontSize: 14 }}>
-                <FaCheck />
-              </span>
-            )}
-          </div>
-          {renderCalendar()}
-          {selectedDate && (
-            <div style={{
-              marginTop: 16,
-              padding: '12px 16px',
-              background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.1)',
-              borderRadius: 8,
-              color: accentBlue,
-              fontSize: 14,
-              fontWeight: 500
-            }}>
-              Selected: {formatDisplayDate(selectedDate)}
-            </div>
-          )}
+        {/* Content */}
+        <div style={{ padding: 20 }}>
+          {step === 1 && renderEnrollStep()}
+          {(step === 2 || step === 3) && renderScheduleStep()}
+          {step === 4 && renderConfirmationStep()}
         </div>
       </div>
-
-      {/* Full-width Student-Teacher Section */}
-      <div style={{
-        padding: '0 20px 20px 20px',
-        opacity: selectedDate ? 1 : 0.5,
-        pointerEvents: selectedDate ? 'auto' : 'none'
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          marginBottom: 12,
-          maxWidth: 600,
-          margin: '0 auto 12px auto'
-        }}>
-          <FaUser style={{ color: accentBlue }} />
-          <span style={{ fontWeight: 600, color: textPrimary }}>2. Choose a Student-Teacher & Time</span>
-          {selectedTeacher && selectedTime && (
-            <span style={{ marginLeft: 'auto', color: accentGreen, fontSize: 14 }}>
-              <FaCheck />
-            </span>
-          )}
-        </div>
-
-        {selectedDate ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {getTeachersForDate(selectedDate).map(teacher => (
-              <div
-                key={teacher.id}
-                style={{
-                  borderRadius: 10,
-                  border: selectedTeacher?.id === teacher.id 
-                    ? `2px solid ${accentBlue}` 
-                    : `1px solid ${borderColor}`,
-                  background: selectedTeacher?.id === teacher.id 
-                    ? (isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.05)')
-                    : bgSecondary,
-                  overflow: 'hidden',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                {/* Teacher Info Row */}
-                <div
-                  onClick={() => handleTeacherSelect(teacher)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: 12,
-                    padding: '12px 16px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {teacher.avatar ? (
-                    <img
-                      src={teacher.avatar}
-                      alt={teacher.name}
-                      style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: '50%',
-                        objectFit: 'cover',
-                        flexShrink: 0
-                      }}
-                    />
-                  ) : (
-                    <div style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: '50%',
-                      background: `linear-gradient(135deg, ${accentBlue}, #1a73e8)`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#fff',
-                      fontWeight: 600,
-                      fontSize: 14,
-                      flexShrink: 0
-                    }}>
-                      {teacher.initials}
-                    </div>
-                  )}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2, flexWrap: 'wrap' }}>
-                      <span 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setViewingTeacherProfile(teacher);
-                        }}
-                        className="link-hover"
-                        style={{ 
-                          fontWeight: 600, 
-                          fontSize: 15, 
-                          color: textPrimary,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        {teacher.name}
-                      </span>
-                      <span 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setViewingTeacherProfile(teacher);
-                        }}
-                        className="link-hover"
-                        style={{ 
-                          fontSize: 12, 
-                          color: accentBlue, 
-                          cursor: 'pointer',
-                          fontWeight: 500
-                        }}
-                      >
-                        View Profile
-                      </span>
-                      <span style={{ fontSize: 12, color: textSecondary }}>
-                        {teacher.studentsTaught} taught • ⭐ {teacher.rating}
-                      </span>
-                    </div>
-                    
-                    {/* Short bio */}
-                    <div style={{ fontSize: 13, color: textSecondary, lineHeight: 1.4 }}>
-                      {teacher.bio.length > 80 ? teacher.bio.substring(0, 80) + '...' : teacher.bio}
-                    </div>
-                  </div>
-                  {selectedTeacher?.id === teacher.id && selectedTime && (
-                    <FaCheck style={{ color: accentGreen, fontSize: 16, flexShrink: 0 }} />
-                  )}
-                </div>
-
-                {/* Time Slots */}
-                {(() => {
-                  const allTimes = teacher.availability[selectedDate] || [];
-                  const isExpanded = expandedTeachers[teacher.id];
-                  const hasMoreTimes = allTimes.length > MAX_VISIBLE_TIMES;
-                  const visibleTimes = isExpanded ? allTimes : allTimes.slice(0, MAX_VISIBLE_TIMES);
-                  const hiddenCount = allTimes.length - MAX_VISIBLE_TIMES;
-
-                  return (
-                    <div style={{
-                      padding: '8px 16px 12px 16px',
-                      borderTop: `1px solid ${borderColor}`
-                    }}>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
-                        {visibleTimes.map(time => {
-                          const isThisTimeSelected = selectedTeacher?.id === teacher.id && selectedTime === time;
-                          return (
-                            <React.Fragment key={time}>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleTeacherSelect(teacher);
-                                  handleTimeSelect(time);
-                                }}
-                                style={{
-                                  padding: '6px 12px',
-                                  borderRadius: 6,
-                                  border: isThisTimeSelected 
-                                    ? `2px solid ${accentBlue}` 
-                                    : `1px solid ${borderColor}`,
-                                  background: isThisTimeSelected 
-                                    ? accentBlue 
-                                    : 'transparent',
-                                  color: isThisTimeSelected ? '#fff' : textPrimary,
-                                  fontWeight: 500,
-                                  fontSize: 13,
-                                  cursor: 'pointer',
-                                  transition: 'all 0.15s ease'
-                                }}
-                              >
-                                {time}
-                              </button>
-                              {isThisTimeSelected && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handlePayment();
-                                  }}
-                                  disabled={isProcessing}
-                                  style={{
-                                    padding: '6px 14px',
-                                    borderRadius: 6,
-                                    border: 'none',
-                                    background: isProcessing ? textMuted : accentGreen,
-                                    color: '#fff',
-                                    fontWeight: 600,
-                                    fontSize: 13,
-                                    cursor: isProcessing ? 'not-allowed' : 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    transition: 'all 0.15s ease'
-                                  }}
-                                >
-                                  {isProcessing ? 'Processing...' : <><FaCreditCard /> Pay Now</>}
-                                </button>
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
-                        
-                        {/* Show more/less button */}
-                        {hasMoreTimes && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setExpandedTeachers(prev => ({
-                                ...prev,
-                                [teacher.id]: !prev[teacher.id]
-                              }));
-                            }}
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: 6,
-                              border: `1px dashed ${borderColor}`,
-                              background: 'transparent',
-                              color: accentBlue,
-                              fontWeight: 500,
-                              fontSize: 13,
-                              cursor: 'pointer',
-                              transition: 'all 0.15s ease'
-                            }}
-                          >
-                            {isExpanded ? 'Less' : `+${hiddenCount}`}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div style={{ color: textMuted, textAlign: 'center', padding: 20 }}>
-            Select a date first to see available student-teachers
-          </div>
-        )}
-      </div>
-
     </div>
   );
 };

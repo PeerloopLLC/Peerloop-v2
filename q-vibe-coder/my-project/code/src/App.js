@@ -4,7 +4,6 @@ import './App.css';
 import Sidebar from './components/Sidebar';
 import CreatorSidebar from './components/CreatorSidebar';
 import MainContent from './components/MainContent';
-import BottomNav from './components/BottomNav';
 import ErrorBoundary from './components/ErrorBoundary';
 import useDeviceDetect from './hooks/useDeviceDetect';
 import Login from './components/Login';
@@ -304,24 +303,14 @@ function App() {
           device={device}
         />
 
-        {/* Bottom Navigation - Mobile Only */}
-        <BottomNav
-          onMenuChange={handleMenuChange}
-          activeMenu={activeMenu}
-          isDarkMode={isDarkMode}
-          toggleDarkMode={toggleDarkMode}
-          onLogout={handleLogout}
-        />
-
         {/* Device Debug Overlay - Click the badge to expand */}
         <div 
           className="device-debug-badge"
           onClick={() => setShowDeviceDebug(!showDeviceDebug)}
           style={{
             position: 'fixed',
-            top: '50%',
+            bottom: '10px',
             right: '10px',
-            transform: 'translateY(-50%)',
             background: device.isIOS ? '#007AFF' : device.isAndroid ? '#3DDC84' : '#6B7280',
             color: 'white',
             padding: showDeviceDebug ? '12px' : '6px 10px',

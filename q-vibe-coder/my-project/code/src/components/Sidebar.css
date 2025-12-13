@@ -1,8 +1,8 @@
 .sidebar {
-  width: 200px;
+  width: 240px;
   height: 100vh;
   border-right: 1px solid #e1e8ed;
-  padding: 0 4px;
+  padding: 0 10px;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -13,71 +13,6 @@
   transition: width 0.3s ease;
   flex-shrink: 0;
   box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-}
-
-/* Collapsed sidebar for mobile/tablet devices (non-desktop) */
-.sidebar.sidebar-collapsed {
-  width: 88px !important;
-  align-items: center;
-  flex-shrink: 0;
-  min-width: 88px;
-  max-width: 88px;
-}
-
-.sidebar.sidebar-collapsed .nav-label,
-.sidebar.sidebar-collapsed .post-btn span,
-.sidebar.sidebar-collapsed .profile-details,
-.sidebar.sidebar-collapsed .profile-menu,
-.sidebar.sidebar-collapsed .toggle-label {
-  display: none;
-}
-
-.sidebar.sidebar-collapsed .nav-icon {
-  margin-right: 0;
-}
-
-.sidebar.sidebar-collapsed .nav-tooltip.tooltip-visible {
-  display: block;
-  opacity: 1;
-}
-
-.sidebar.sidebar-collapsed .post-btn {
-  width: 50px;
-  height: 50px;
-  padding: 0;
-  border-radius: 50%;
-}
-
-.sidebar.sidebar-collapsed .sidebar-profile {
-  justify-content: center;
-}
-
-.sidebar.sidebar-collapsed .profile-avatar {
-  margin: 0;
-}
-
-.sidebar.sidebar-collapsed .logo {
-  padding: 8px !important;
-  justify-content: center !important;
-}
-
-.sidebar.sidebar-collapsed .logo img {
-  width: 40px !important;
-  height: auto !important;
-  max-height: 32px !important;
-}
-
-.sidebar.sidebar-collapsed .dark-mode-toggle {
-  width: 50px;
-  height: 50px;
-  padding: 0;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.sidebar.sidebar-collapsed .dark-mode-toggle-container {
-  display: flex;
-  justify-content: center;
 }
 
 .sidebar-header {
@@ -130,10 +65,6 @@
 
 .nav-item.active {
   font-weight: 700;
-  color: #1d9bf0;
-}
-
-.nav-item.active .nav-icon {
   color: #1d9bf0;
 }
 
@@ -287,14 +218,18 @@
   margin-left: 8px;
 }
 
-/* Collapse sidebar to icons only when viewport is too narrow for centered layout */
-@media (max-width: 950px) {
+@media (max-width: 1400px) {
   .sidebar {
     width: 88px !important;
     align-items: center;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Prevent shrinking */
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1001;
     min-width: 88px;
     max-width: 88px;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
   }
   
   .nav-label,
@@ -346,11 +281,16 @@
     width: 88px !important;
     align-items: center;
     flex-shrink: 0;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1001;
     min-width: 88px;
     max-width: 88px;
     height: 100vh;
     border-right: 1px solid #e1e8ed;
     padding: 0 10px;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
   }
   
   .nav-label,
@@ -466,25 +406,13 @@
 }
 
 .dark-mode .nav-item.active {
-  color: #1d9bf0;
+  color: #e7e9ea;
   font-weight: 700;
-}
-
-.dark-mode .nav-item.active .nav-icon {
-  color: #1d9bf0;
 }
 
 .dark-mode .nav-label {
   color: #e7e9ea;
   font-size: 20px;
-}
-
-.dark-mode .nav-item.active .nav-label {
-  color: #1d9bf0;
-}
-
-.nav-item.active .nav-label {
-  color: #1d9bf0;
 }
 
 .dark-mode .profile-name {
@@ -536,12 +464,5 @@
   .dark-mode-toggle-container {
     display: flex;
     justify-content: center;
-  }
-}
-
-/* Hide sidebar on mobile phones - use bottom nav instead */
-@media (max-width: 480px) {
-  .sidebar {
-    display: none !important;
   }
 }

@@ -20,7 +20,6 @@ import {
   FaBriefcase,
   FaMoon,
   FaSun,
-  FaTachometerAlt,
   FaUsers,
   FaChalkboardTeacher
 } from 'react-icons/fa';
@@ -83,8 +82,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
     { icon: <FaUsers />, label: 'My Community', displayLabel: 'Community' }, // Community features
     { icon: <FaSearch />, label: 'Browse', displayLabel: 'Browse' }, // Browse courses and instructors
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
-    { icon: <FaTachometerAlt />, label: 'Dashboard', displayLabel: 'Dashboard' }, // User's learning dashboard
-    { icon: <FaChalkboardTeacher />, label: 'Teaching', displayLabel: 'Teaching' }, // Student-Teacher dashboard
+    { icon: <FaChalkboardTeacher />, label: 'Teaching', displayLabel: 'Dashboard' }, // Student-Teacher dashboard
     { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system
     { icon: <FaBriefcase />, label: 'Job Exchange', displayLabel: 'Job Exchange' }, // Job exchange system
     { icon: <FaUser />, label: 'Profile', displayLabel: 'Profile' }, // User profile

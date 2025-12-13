@@ -17,16 +17,6 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Global link hover underline effect */
-.link-hover {
-  text-decoration: none;
-  transition: text-decoration 0.1s ease;
-}
-
-.link-hover:hover {
-  text-decoration: underline !important;
-}
-
 /* X.com-inspired global typography */
 h1 {
   font-size: 23px;
