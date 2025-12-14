@@ -1248,4 +1248,23 @@
   .dropdown-community-info p {
     font-size: 11px;
   }
+}
+
+/* Responsive text for Community Hub */
+.show-on-mobile {
+  display: none;
+}
+
+.hide-on-mobile {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  .show-on-mobile {
+    display: inline;
+  }
+  
+  .hide-on-mobile {
+    display: none;
+  }
 } 

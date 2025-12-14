@@ -29,6 +29,9 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const [communityMode, setCommunityMode] = useState('hub'); // 'hub' or 'creators'
   const [selectedCreatorId, setSelectedCreatorId] = useState(null); // Selected creator in My Creators mode
   const [pendingCreatorName, setPendingCreatorName] = useState(null); // Name of creator from Go to Community button (not yet followed)
+  const [isDragging, setIsDragging] = useState(false); // Track if user is dragging the tabs
+  const [dragStartX, setDragStartX] = useState(0); // Starting X position of drag
+  const [dragScrollLeft, setDragScrollLeft] = useState(0); // Starting scroll position of drag
 
   // Initialize GetStream and load posts on mount
   useEffect(() => {
@@ -1035,13 +1038,10 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     transition: 'all 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6
                   }}
                 >
-                  <FaHome style={{ fontSize: 14 }} />
-                  Community Hub
+                  <span className="hide-on-mobile">Community Hub</span>
+                  <span className="show-on-mobile">Hub</span>
                 </button>
               </div>
 
@@ -1052,15 +1052,21 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   }
                 }}
                 style={{
-                  background: 'none',
+                  background: 'transparent',
+                  backgroundColor: 'transparent',
                   border: 'none',
-                  color: isDarkMode ? '#71767b' : '#536471',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
                   cursor: 'pointer',
                   padding: 8,
-                  flexShrink: 0
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                <FaChevronLeft />
+                <FaChevronLeft style={{ fontSize: 16 }} />
               </button>
               
               <div 
@@ -1072,8 +1078,24 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   flex: 1,
                   minWidth: 0,
                   scrollbarWidth: 'none',
-                  msOverflowStyle: 'none'
+                  msOverflowStyle: 'none',
+                  cursor: isDragging ? 'grabbing' : 'grab',
+                  userSelect: 'none'
                 }}
+                onMouseDown={(e) => {
+                  setIsDragging(true);
+                  setDragStartX(e.pageX - tabsContainerRef.current.offsetLeft);
+                  setDragScrollLeft(tabsContainerRef.current.scrollLeft);
+                }}
+                onMouseMove={(e) => {
+                  if (!isDragging) return;
+                  e.preventDefault();
+                  const x = e.pageX - tabsContainerRef.current.offsetLeft;
+                  const walk = (x - dragStartX) * 1.5; // Scroll speed multiplier
+                  tabsContainerRef.current.scrollLeft = dragScrollLeft - walk;
+                }}
+                onMouseUp={() => setIsDragging(false)}
+                onMouseLeave={() => setIsDragging(false)}
               >
                 {/* Creator tabs */}
                 {groupedByCreator.map(creator => (
@@ -1154,15 +1176,21 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   }
                 }}
                 style={{
-                  background: 'none',
+                  background: 'transparent',
+                  backgroundColor: 'transparent',
                   border: 'none',
-                  color: isDarkMode ? '#71767b' : '#536471',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
                   cursor: 'pointer',
                   padding: 8,
-                  flexShrink: 0
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                <FaChevronRight />
+                <FaChevronRight style={{ fontSize: 16 }} />
               </button>
             </div>
             
@@ -1339,11 +1367,10 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   </div>
                 </div>
                 
-                {/* Filter by Courses Dropdown - Multi-select */}
+                {/* Filter by Courses Dropdown - Single-select */}
                 {(() => {
                   const availableCourses = selectedCreator.allCourses.filter(course => selectedCreator.followedCourseIds.includes(course.id));
-                  const allSelected = availableCourses.length > 0 && selectedCourseFilters.length === availableCourses.length;
-                  const noneSelected = selectedCourseFilters.length === 0;
+                  const isHubSelected = selectedCourseFilters.length === 0;
                   
                   return (
                     <div style={{
@@ -1356,7 +1383,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         color: isDarkMode ? '#71767b' : '#536471',
                         marginBottom: 8
                       }}>
-                        Filter by Courses
+                        Filter by Course
                       </div>
 
                       <div className="filter-courses-dropdown-wrapper" style={{ position: 'relative' }}>
@@ -1382,11 +1409,9 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           onMouseLeave={e => e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#cfd9de'}
                         >
                           <span>
-                            {(noneSelected || allSelected)
-                              ? 'All Courses' 
-                              : selectedCourseFilters.length === 1 
-                                ? selectedCourseFilters[0].name 
-                                : `${selectedCourseFilters.length} courses selected`}
+                            {isHubSelected
+                              ? 'Creator Community' 
+                              : selectedCourseFilters[0].name}
                           </span>
                           <FaChevronDown style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }} />
                         </button>
@@ -1411,27 +1436,17 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                               overflowY: 'auto'
                             }}
                           >
-                            {/* All Courses option - selects/deselects all */}
+                            {/* Community Hub option - shows all courses feed */}
                             <div
                               onClick={() => {
-                                if (allSelected || noneSelected) {
-                                  // If all selected or none selected, select all
-                                  const allCoursesList = availableCourses.map(c => ({ id: c.id, name: c.title }));
-                                  setSelectedCourseFilters(allCoursesList);
-                                } else {
-                                  // If some selected, select all
-                                  const allCoursesList = availableCourses.map(c => ({ id: c.id, name: c.title }));
-                                  setSelectedCourseFilters(allCoursesList);
-                                }
+                                setSelectedCourseFilters([]);
+                                setShowPostingCourseDropdown(false);
                               }}
                               style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 10,
                                 padding: '12px 14px',
                                 cursor: 'pointer',
-                                color: (allSelected || noneSelected) ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                                fontWeight: (allSelected || noneSelected) ? 600 : 400,
+                                color: isHubSelected ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                                fontWeight: isHubSelected ? 600 : 400,
                                 fontSize: 15,
                                 background: 'transparent',
                                 transition: 'background 0.15s',
@@ -1440,45 +1455,20 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                               onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
                               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
-                              <div style={{
-                                width: 18,
-                                height: 18,
-                                borderRadius: 4,
-                                border: (allSelected || noneSelected) ? '2px solid #1d9bf0' : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                                background: (allSelected || noneSelected) ? '#1d9bf0' : 'transparent',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                flexShrink: 0
-                              }}>
-                                {(allSelected || noneSelected) && <span style={{ color: '#fff', fontSize: 12 }}>✓</span>}
-                              </div>
-                              <span>All Courses</span>
+                              Creator Community
                             </div>
                             
-                            {/* Individual Courses - Multi-select */}
+                            {/* Individual Courses - Single-select */}
                             {availableCourses.map(course => {
-                              const isSelected = noneSelected || selectedCourseFilters.some(c => c.id === course.id);
+                              const isSelected = selectedCourseFilters.length === 1 && selectedCourseFilters[0].id === course.id;
                               return (
                                 <div
                                   key={course.id}
                                   onClick={() => {
-                                    if (noneSelected) {
-                                      // Currently showing all, clicking one means select only that one
-                                      setSelectedCourseFilters([{ id: course.id, name: course.title }]);
-                                    } else if (isSelected) {
-                                      // Remove from selection
-                                      const newFilters = selectedCourseFilters.filter(c => c.id !== course.id);
-                                      setSelectedCourseFilters(newFilters);
-                                    } else {
-                                      // Add to selection
-                                      setSelectedCourseFilters(prev => [...prev, { id: course.id, name: course.title }]);
-                                    }
+                                    setSelectedCourseFilters([{ id: course.id, name: course.title }]);
+                                    setShowPostingCourseDropdown(false);
                                   }}
                                   style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 10,
                                     padding: '12px 14px',
                                     cursor: 'pointer',
                                     color: isSelected ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
@@ -1490,47 +1480,10 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                                   onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
                                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                 >
-                                  <div style={{
-                                    width: 18,
-                                    height: 18,
-                                    borderRadius: 4,
-                                    border: isSelected ? '2px solid #1d9bf0' : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                                    background: isSelected ? '#1d9bf0' : 'transparent',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    flexShrink: 0
-                                  }}>
-                                    {isSelected && <span style={{ color: '#fff', fontSize: 12 }}>✓</span>}
-                                  </div>
-                                  <span>{course.title}</span>
+                                  {course.title}
                                 </div>
                               );
                             })}
-                            
-                            {/* Done button */}
-                            <div style={{
-                              padding: '10px 14px',
-                              borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                              display: 'flex',
-                              justifyContent: 'flex-end'
-                            }}>
-                              <button
-                                onClick={() => setShowPostingCourseDropdown(false)}
-                                style={{
-                                  background: '#1d9bf0',
-                                  color: '#fff',
-                                  border: 'none',
-                                  borderRadius: 6,
-                                  padding: '6px 16px',
-                                  fontSize: 14,
-                                  fontWeight: 600,
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                Done
-                              </button>
-                            </div>
                           </div>
                         )}
                       </div>
