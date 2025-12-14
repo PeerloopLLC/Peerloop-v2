@@ -416,11 +416,18 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           ← {previousBrowseContext?.type === 'course' ? 'Back to Course' : previousBrowseContext?.type === 'courseList' ? 'Back to Courses' : 'Back'}
         </button>
 
-        {/* Creator Header with Action Buttons */}
+        {/* Creator Header with Action Buttons - Floating Card */}
         <div style={{ 
-          background: isDarkMode ? '#16181c' : '#fff', 
-          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-          padding: '16px'
+          background: isDarkMode ? '#0a0a0a' : '#fff', 
+          borderRadius: 16,
+          padding: '20px',
+          margin: '12px 16px',
+          position: 'relative',
+          zIndex: 1,
+          border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+          boxShadow: isDarkMode 
+            ? '0 0 0 1px rgba(255, 255, 255, 0.05), 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 30px 60px -15px rgba(0, 0, 0, 0.6)' 
+            : '0 4px 12px rgba(0, 0, 0, 0.08)'
         }}>
           {/* Top Row: Avatar + Name + Buttons */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>

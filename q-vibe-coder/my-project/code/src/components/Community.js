@@ -1177,12 +1177,19 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
             </div>
           </div>
 
-          {/* Community Hub Welcome Section */}
+          {/* Community Hub Welcome Section - Floating Card */}
           {communityMode === 'hub' && (
             <div style={{
-              background: isDarkMode ? '#000' : '#fff',
-              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-              padding: '20px 16px'
+              background: isDarkMode ? '#111' : '#fff',
+              borderRadius: 16,
+              padding: '20px',
+              margin: '8px 16px 0 16px',
+              position: 'relative',
+              zIndex: 1,
+              border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+              boxShadow: isDarkMode
+                ? '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 10px 20px -3px rgba(0, 0, 0, 0.6), 0 20px 40px -4px rgba(0, 0, 0, 0.4)'
+                : '0 4px 12px rgba(0, 0, 0, 0.08)'
             }}>
               <div style={{
                 display: 'flex',
@@ -1230,9 +1237,16 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
             
             return (
               <div style={{
-                background: isDarkMode ? '#000' : '#fff',
-                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                padding: '16px'
+                background: isDarkMode ? '#111' : '#fff',
+                borderRadius: 16,
+                padding: '20px',
+                margin: '8px 16px 0 16px',
+                position: 'relative',
+                zIndex: 1,
+                border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+                boxShadow: isDarkMode 
+                  ? '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 10px 20px -3px rgba(0, 0, 0, 0.6), 0 20px 40px -4px rgba(0, 0, 0, 0.4)' 
+                  : '0 4px 12px rgba(0, 0, 0, 0.08)'
               }}>
                 {/* Creator Info Row */}
                 <div style={{
@@ -1333,7 +1347,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   return (
                     <div style={{
                       marginTop: 12,
-                      background: isDarkMode ? '#000' : '#fff'
+                      background: 'transparent'
                     }}>
                       <div style={{
                         fontSize: 14,
@@ -1343,7 +1357,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       }}>
                         Filter by Courses
                       </div>
-                      
+
                       <div className="filter-courses-dropdown-wrapper" style={{ position: 'relative' }}>
                         <button
                           onClick={() => setShowPostingCourseDropdown(!showPostingCourseDropdown)}
@@ -1356,7 +1370,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                             padding: '10px 14px',
                             borderRadius: 6,
                             border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                            background: isDarkMode ? '#000' : '#fff',
+                            background: isDarkMode ? '#0a0a0a' : '#fff',
                             color: isDarkMode ? '#e7e9ea' : '#0f1419',
                             fontSize: 15,
                             fontWeight: 400,
@@ -1765,15 +1779,15 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
             </div>
           </div>}
 
-          {/* Feed Content */}
-          <div className="community-feed-content" style={{ background: isDarkMode ? '#000' : '#fff' }}>
+          {/* Feed Content - slightly lighter to show card shadow */}
+          <div className="community-feed-content" style={{ background: isDarkMode ? '#050505' : '#fff' }}>
             {/* Post Box - Clean Card Design */}
-            <div 
+            <div
               className="post-composer"
               style={{
                 borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                padding: '16px',
-                background: isDarkMode ? '#000' : '#fff',
+                padding: '8px 16px 16px 16px',
+                background: 'transparent',
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
@@ -1796,7 +1810,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               <div style={{
                 border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
                 borderRadius: 8,
-                background: isDarkMode ? '#16181c' : '#fff',
+                background: isDarkMode ? '#0a0a0a' : '#fff',
                 overflow: 'hidden',
                 width: '100%',
                 boxSizing: 'border-box'
@@ -1833,7 +1847,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     alignItems: 'center',
                     padding: '8px 12px',
                     borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                    background: isDarkMode ? '#16181c' : '#f7f9f9',
+                    background: isDarkMode ? '#0a0a0a' : '#f7f9f9',
                     width: '100%',
                     boxSizing: 'border-box'
                   }}
