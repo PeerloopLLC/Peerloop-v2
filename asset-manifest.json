@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/Peerloop-v2/static/css/main.5cc154a5.css",
-    "main.js": "/Peerloop-v2/static/js/main.48a50733.js",
+    "main.css": "/Peerloop-v2/static/css/main.3cc30d84.css",
+    "main.js": "/Peerloop-v2/static/js/main.8c254403.js",
     "index.html": "/Peerloop-v2/index.html",
-    "main.5cc154a5.css.map": "/Peerloop-v2/static/css/main.5cc154a5.css.map",
-    "main.48a50733.js.map": "/Peerloop-v2/static/js/main.48a50733.js.map"
+    "main.3cc30d84.css.map": "/Peerloop-v2/static/css/main.3cc30d84.css.map",
+    "main.8c254403.js.map": "/Peerloop-v2/static/js/main.8c254403.js.map"
   },
   "entrypoints": [
-    "static/css/main.5cc154a5.css",
-    "static/js/main.48a50733.js"
+    "static/css/main.3cc30d84.css",
+    "static/js/main.8c254403.js"
   ]
 }
