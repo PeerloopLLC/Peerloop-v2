@@ -2168,6 +2168,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                       followedCommunities={followedCommunities}
                       setFollowedCommunities={setFollowedCommunities}
                       isCoursePurchased={isCoursePurchased(selectedCourse.id)}
+                      currentUser={currentUser}
                       onViewInstructor={(instructorId) => {
                         const instructor = getInstructorById(instructorId);
                         if (instructor) {
@@ -2511,6 +2512,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                       followedCommunities={followedCommunities}
                       setFollowedCommunities={setFollowedCommunities}
                       isCoursePurchased={isCoursePurchased(selectedCourse.id)}
+                      currentUser={currentUser}
                       onViewInstructor={(instructorId) => {
                         const instructor = getInstructorById(instructorId);
                         if (instructor) {
@@ -2590,6 +2592,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           followedCommunities={followedCommunities}
           setFollowedCommunities={setFollowedCommunities}
           isCoursePurchased={isCoursePurchased(viewingCourseFromCommunity?.id)}
+          currentUser={currentUser}
           onEnroll={(course) => {
             setEnrollingCourse(course);
             setShowEnrollmentFlow(true);

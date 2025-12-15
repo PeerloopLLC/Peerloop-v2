@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaStar, FaUsers, FaClock, FaPlay, FaBook, FaCertificate, FaChalkboardTeacher, FaCheck, FaPlus, FaInfinity, FaGraduationCap, FaHeart, FaComment, FaRetweet, FaShare } from 'react-icons/fa';
+import { FaStar, FaUsers, FaClock, FaPlay, FaBook, FaCertificate, FaChalkboardTeacher, FaCheck, FaPlus, FaInfinity, FaGraduationCap, FaHeart, FaComment, FaRetweet, FaShare, FaImage, FaLink, FaPaperclip } from 'react-icons/fa';
 import { getInstructorById } from '../data/database';
 import './MainContent.css';
 
@@ -7,7 +7,7 @@ import './MainContent.css';
  * CourseDetailView Component
  * Shows detailed view of a course with tabs and two-column layout
  */
-const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false }) => {
+const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser }) => {
   // Check if this specific course is being followed (within creator's followedCourseIds)
   const [isFollowing, setIsFollowing] = useState(() => {
     if (!course) return false;
@@ -15,6 +15,25 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
     return creatorFollow?.followedCourseIds?.includes(course.id) || false;
   });
   const [activeTab, setActiveTab] = useState('feed');
+  const [newPostText, setNewPostText] = useState('');
+  const [isPosting, setIsPosting] = useState(false);
+
+  // Get user initials for avatar fallback
+  const getUserInitials = () => {
+    if (!currentUser?.name) return 'U';
+    return currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  // Handle post submission
+  const handleSubmitPost = async () => {
+    if (!newPostText.trim() || isPosting) return;
+    setIsPosting(true);
+    // For now, just clear the post (would connect to backend later)
+    setTimeout(() => {
+      setNewPostText('');
+      setIsPosting(false);
+    }, 500);
+  };
 
   if (!course) {
     return (
@@ -466,6 +485,168 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
 
           {activeTab === 'feed' && (
             <div>
+              {/* Post Box */}
+              <div
+                style={{
+                  borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                  padding: '12px 16px 16px 16px',
+                  background: isDarkMode ? 'rgba(29, 155, 240, 0.03)' : 'rgba(29, 155, 240, 0.02)',
+                }}
+              >
+                <div style={{
+                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                  borderRadius: 12,
+                  background: isDarkMode ? '#0a0a0a' : '#fff',
+                  overflow: 'hidden'
+                }}>
+                  {/* Text Area with Avatar */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    padding: '12px 14px',
+                    gap: 10
+                  }}>
+                    {/* User Avatar */}
+                    {currentUser?.avatar ? (
+                      <img
+                        src={currentUser.avatar}
+                        alt={currentUser?.name || 'User'}
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          flexShrink: 0,
+                          marginTop: 2
+                        }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        background: '#1d9bf0',
+                        color: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        flexShrink: 0,
+                        marginTop: 2
+                      }}>
+                        {getUserInitials()}
+                      </div>
+                    )}
+                    <textarea
+                      value={newPostText}
+                      onChange={(e) => setNewPostText(e.target.value)}
+                      placeholder={`Share something about ${course.title}...`}
+                      style={{
+                        flex: 1,
+                        border: 'none',
+                        outline: 'none',
+                        resize: 'none',
+                        fontSize: 15,
+                        fontWeight: 400,
+                        lineHeight: 1.5,
+                        background: 'transparent',
+                        color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                        padding: 0,
+                        minHeight: 50,
+                        fontFamily: 'inherit'
+                      }}
+                    />
+                  </div>
+
+                  {/* Bottom Action Bar */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '8px 12px',
+                      borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                      background: isDarkMode ? '#16181c' : '#f7f9f9'
+                    }}
+                  >
+                    {/* Media Icons */}
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <button
+                        style={{
+                          background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
+                          border: 'none',
+                          color: '#1d9bf0',
+                          cursor: 'pointer',
+                          padding: '6px 8px',
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 16
+                        }}
+                        title="Add image"
+                      >
+                        <FaImage />
+                      </button>
+                      <button
+                        style={{
+                          background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
+                          border: 'none',
+                          color: '#1d9bf0',
+                          cursor: 'pointer',
+                          padding: '6px 8px',
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 16
+                        }}
+                        title="Add link"
+                      >
+                        <FaLink />
+                      </button>
+                      <button
+                        style={{
+                          background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
+                          border: 'none',
+                          color: '#1d9bf0',
+                          cursor: 'pointer',
+                          padding: '6px 8px',
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 16
+                        }}
+                        title="Attach file"
+                      >
+                        <FaPaperclip />
+                      </button>
+                    </div>
+
+                    {/* Post Button */}
+                    <button
+                      disabled={!newPostText.trim() || isPosting}
+                      onClick={handleSubmitPost}
+                      style={{
+                        background: '#1d9bf0',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 20,
+                        padding: '8px 20px',
+                        fontWeight: 600,
+                        fontSize: 14,
+                        cursor: (newPostText.trim() && !isPosting) ? 'pointer' : 'not-allowed',
+                        opacity: (newPostText.trim() && !isPosting) ? 1 : 0.5
+                      }}
+                    >
+                      {isPosting ? 'Posting...' : 'Post'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* Sample course feed posts */}
               {[
                 {
