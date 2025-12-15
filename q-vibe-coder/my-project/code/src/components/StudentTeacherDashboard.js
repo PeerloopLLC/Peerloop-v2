@@ -20,7 +20,8 @@ const StudentTeacherDashboard = ({ isDarkMode = true }) => {
   const stInfo = {
     name: "Alex Sanders",
     courseName: "AI Prompting Mastery",
-    initials: "AS"
+    initials: "AS",
+    avatar: "https://i.pravatar.cc/150?img=68"
   };
   
   // Navigation tabs

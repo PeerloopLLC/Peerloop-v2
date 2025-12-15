@@ -1035,13 +1035,16 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 overflow: 'hidden'
               }}>
                 <img
-                  src="https://images.unsplash.com/photo-1534430480872-3498386e7856?w=100&h=100&fit=crop&crop=center"
+                  src="https://images.unsplash.com/photo-1555921015-5532091f6026?w=100&h=100&fit=crop&crop=center"
                   alt="Town Hall"
+                  draggable="false"
+                  onDragStart={(e) => e.preventDefault()}
                   style={{
                     width: '100%',
                     height: '100%',
                     borderRadius: '50%',
-                    objectFit: 'cover'
+                    objectFit: 'cover',
+                    pointerEvents: 'none'
                   }}
                 />
               </div>
@@ -1142,11 +1145,14 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         <img
                           src={instructor.avatar}
                           alt={creator.name}
+                          draggable="false"
+                          onDragStart={(e) => e.preventDefault()}
                           style={{
                             width: '100%',
                             height: '100%',
                             borderRadius: '50%',
-                            objectFit: 'cover'
+                            objectFit: 'cover',
+                            pointerEvents: 'none'
                           }}
                         />
                       ) : (
@@ -1296,6 +1302,68 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
             </button>
           </div>
 
+          {/* Town Hall Profile Card - Shows when Town Hall is selected */}
+          {communityMode === 'hub' && (
+            <div style={{
+              background: isDarkMode ? '#0a0a0a' : '#fff',
+              borderRadius: 12,
+              padding: '12px 16px',
+              margin: '8px 16px 0 16px',
+              position: 'relative',
+              zIndex: 1,
+              border: isDarkMode ? '1px solid #2f3336' : '1px solid rgba(0, 0, 0, 0.1)',
+              boxShadow: isDarkMode
+                ? '0 0 60px 20px rgba(255, 255, 255, 0.08), 0 0 100px 40px rgba(255, 255, 255, 0.04)'
+                : '0 4px 12px rgba(0, 0, 0, 0.08)'
+            }}>
+              {/* Town Hall Info Row */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 10
+              }}>
+                {/* Avatar */}
+                <img
+                  src="https://images.unsplash.com/photo-1555921015-5532091f6026?w=100&h=100&fit=crop&crop=center"
+                  alt="Town Hall"
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    flexShrink: 0
+                  }}
+                />
+
+                {/* Town Hall Details */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: '#1d9bf0',
+                    lineHeight: 1.2
+                  }}>
+                    Town Hall
+                  </div>
+                  <div style={{
+                    fontSize: 13,
+                    color: isDarkMode ? '#71767b' : '#536471'
+                  }}>
+                    Community Discussion Hub
+                  </div>
+                  <div style={{
+                    fontSize: 13,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    marginTop: 4,
+                    lineHeight: 1.3
+                  }}>
+                    Welcome to the Town Hall — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners across all courses and creators.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Mini Creator Profile - Shows when a creator is selected */}
           {communityMode === 'creators' && selectedCreatorId && (() => {
             const selectedCreator = groupedByCreator.find(c => c.id === selectedCreatorId);
@@ -1306,22 +1374,21 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
             return (
               <div style={{
                 background: isDarkMode ? '#0a0a0a' : '#fff',
-                borderRadius: 16,
-                padding: '20px',
+                borderRadius: 12,
+                padding: '12px 16px',
                 margin: '8px 16px 0 16px',
                 position: 'relative',
                 zIndex: 1,
                 border: isDarkMode ? '1px solid #2f3336' : '1px solid rgba(0, 0, 0, 0.1)',
-                boxShadow: isDarkMode 
-                  ? '0 0 60px 20px rgba(255, 255, 255, 0.08), 0 0 100px 40px rgba(255, 255, 255, 0.04)' 
+                boxShadow: isDarkMode
+                  ? '0 0 60px 20px rgba(255, 255, 255, 0.08), 0 0 100px 40px rgba(255, 255, 255, 0.04)'
                   : '0 4px 12px rgba(0, 0, 0, 0.08)'
               }}>
                 {/* Creator Info Row */}
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-start',
-                  gap: 12,
-                  marginBottom: 12
+                  gap: 10
                 }}>
                   {/* Avatar */}
                   {instructor.avatar ? (
@@ -1329,8 +1396,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       src={instructor.avatar}
                       alt={instructor.name}
                       style={{
-                        width: 56,
-                        height: 56,
+                        width: 44,
+                        height: 44,
                         borderRadius: '50%',
                         objectFit: 'cover',
                         flexShrink: 0
@@ -1338,33 +1405,27 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     />
                   ) : (
                     <div style={{
-                      width: 56,
-                      height: 56,
+                      width: 44,
+                      height: 44,
                       borderRadius: '50%',
                       background: '#1d9bf0',
                       color: '#fff',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: 20,
+                      fontSize: 16,
                       fontWeight: 700,
                       flexShrink: 0
                     }}>
                       {instructor.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                     </div>
                   )}
-                  
+
                   {/* Creator Details */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: 12,
-                      marginBottom: 4
-                    }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
-                        <div 
+                        <div
                           onClick={() => {
                             // Store instructor info and navigate to Browse -> Creators
                             localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
@@ -1374,11 +1435,12 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                             }
                           }}
                           style={{
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: 700,
                             color: '#1d9bf0',
                             cursor: 'pointer',
-                            display: 'inline-block'
+                            display: 'inline-block',
+                            lineHeight: 1.2
                           }}
                           onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                           onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
@@ -1386,29 +1448,38 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           {instructor.name}
                         </div>
                         <div style={{
-                          fontSize: 14,
+                          fontSize: 13,
                           color: isDarkMode ? '#71767b' : '#536471'
                         }}>
                           {instructor.title}
                         </div>
                         <div style={{
-                          fontSize: 13,
+                          fontSize: 12,
                           color: isDarkMode ? '#71767b' : '#536471',
-                          marginTop: 4
+                          marginTop: 2
                         }}>
                           {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · {Math.floor(Math.random() * 200) + 20} Posts
                         </div>
                       </div>
-                    </div>
-                    
-                    {/* Bio */}
-                    <div style={{
-                      fontSize: 14,
-                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                      marginTop: 8,
-                      lineHeight: 1.4
-                    }}>
-                      {instructor.bio || `Expert instructor teaching ${selectedCreator.allCourses.length} courses`}
+                      <div
+                        onClick={() => {
+                          localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
+                          localStorage.setItem('browseActiveTopMenu', 'creators');
+                          if (onMenuChange) {
+                            onMenuChange('Browse');
+                          }
+                        }}
+                        style={{
+                          fontSize: 12,
+                          color: '#1d9bf0',
+                          cursor: 'pointer',
+                          flexShrink: 0
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                        onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                      >
+                        Go to Profile
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1417,17 +1488,19 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 {(() => {
                   const availableCourses = selectedCreator.allCourses.filter(course => selectedCreator.followedCourseIds.includes(course.id));
                   const isHubSelected = selectedCourseFilters.length === 0;
-                  
+
                   return (
                     <div style={{
-                      marginTop: 12,
-                      background: 'transparent'
+                      marginTop: 8,
+                      background: 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8
                     }}>
                       <div style={{
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: 500,
-                        color: isDarkMode ? '#71767b' : '#536471',
-                        marginBottom: 8
+                        color: isDarkMode ? '#71767b' : '#536471'
                       }}>
                         Filter by Course
                       </div>
@@ -1439,14 +1512,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            width: '100%',
-                            maxWidth: 320,
-                            padding: '10px 14px',
-                            borderRadius: 6,
+                            gap: 8,
+                            padding: '4px 10px',
+                            borderRadius: 4,
                             border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
                             background: isDarkMode ? '#0a0a0a' : '#fff',
                             color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                            fontSize: 15,
+                            fontSize: 13,
                             fontWeight: 400,
                             cursor: 'pointer',
                             transition: 'border-color 0.2s'
@@ -1456,29 +1528,28 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         >
                           <span>
                             {isHubSelected
-                              ? 'Creator Community Common Area' 
+                              ? `Town Hall for ${instructor.name}`
                               : selectedCourseFilters[0].name}
                           </span>
-                          <FaChevronDown style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }} />
+                          <FaChevronDown style={{ fontSize: 10, color: isDarkMode ? '#71767b' : '#536471' }} />
                         </button>
-                        
+
                         {/* Dropdown Menu */}
                         {showPostingCourseDropdown && (
-                          <div 
+                          <div
                             className="posting-course-dropdown"
                             style={{
                               position: 'absolute',
                               top: '100%',
                               left: 0,
-                              width: '100%',
-                              maxWidth: 320,
-                              marginTop: 4,
+                              minWidth: 200,
+                              marginTop: 2,
                               background: isDarkMode ? '#16181c' : '#fff',
                               border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                              borderRadius: 8,
+                              borderRadius: 6,
                               boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.1)',
                               zIndex: 100,
-                              maxHeight: 280,
+                              maxHeight: 200,
                               overflowY: 'auto'
                             }}
                           >
@@ -1489,11 +1560,11 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                                 setShowPostingCourseDropdown(false);
                               }}
                               style={{
-                                padding: '12px 14px',
+                                padding: '8px 12px',
                                 cursor: 'pointer',
                                 color: isHubSelected ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                                 fontWeight: isHubSelected ? 600 : 400,
-                                fontSize: 15,
+                                fontSize: 13,
                                 background: 'transparent',
                                 transition: 'background 0.15s',
                                 borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
@@ -1501,9 +1572,9 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                               onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
                               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
-                              Creator Community Common Area
+                              Town Hall for {instructor.name}
                             </div>
-                            
+
                             {/* Individual Courses - Single-select */}
                             {availableCourses.map(course => {
                               const isSelected = selectedCourseFilters.length === 1 && selectedCourseFilters[0].id === course.id;
@@ -1515,11 +1586,11 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                                     setShowPostingCourseDropdown(false);
                                   }}
                                   style={{
-                                    padding: '12px 14px',
+                                    padding: '8px 12px',
                                     cursor: 'pointer',
                                     color: isSelected ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                                     fontWeight: isSelected ? 600 : 400,
-                                    fontSize: 15,
+                                    fontSize: 13,
                                     background: 'transparent',
                                     transition: 'background 0.15s'
                                   }}
@@ -1786,127 +1857,169 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               className="post-composer"
               style={{
                 borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                padding: '8px 16px 16px 16px',
-                background: 'transparent',
+                padding: '12px 16px 16px 16px',
+                background: isDarkMode ? 'rgba(29, 155, 240, 0.03)' : 'rgba(29, 155, 240, 0.02)',
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
                 boxSizing: 'border-box'
               }}
             >
-              {/* Post Box Label */}
-              <div style={{
-                fontSize: 16,
-                fontWeight: 700,
-                color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                marginBottom: 12,
-                display: 'block',
-                width: '100%'
-              }}>
-                Post Box
-              </div>
-              
               {/* Input Card */}
               <div style={{
                 border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                borderRadius: 8,
+                borderRadius: 12,
                 background: isDarkMode ? '#0a0a0a' : '#fff',
                 overflow: 'hidden',
-                width: '100%',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                width: '100%'
               }}>
-                {/* Text Area */}
-                <textarea
-                  value={newPostText}
-                  onChange={(e) => setNewPostText(e.target.value)}
-                  onFocus={() => setIsComposerFocused(true)}
-                  placeholder="This is an informal knowledge sharing community. We support each other on this learning journey."
-                  style={{
-                    width: '100%',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontSize: 15,
-                    fontWeight: 400,
-                    lineHeight: 1.5,
-                    background: 'transparent',
-                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                    padding: '12px 14px',
-                    minHeight: 60,
-                    fontFamily: 'inherit',
-                    boxSizing: 'border-box',
-                    display: 'block'
-                  }}
-                />
-                
+                {/* Text Area with Avatar */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  padding: '12px 14px',
+                  gap: 10
+                }}>
+                  {/* User Avatar */}
+                  {currentUser?.avatar ? (
+                    <img
+                      src={currentUser.avatar}
+                      alt={currentUser.name}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        flexShrink: 0,
+                        marginTop: 2
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      background: '#1d9bf0',
+                      color: '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      flexShrink: 0,
+                      marginTop: 2
+                    }}>
+                      {getUserInitials()}
+                    </div>
+                  )}
+                  <textarea
+                    value={newPostText}
+                    onChange={(e) => setNewPostText(e.target.value)}
+                    onFocus={() => setIsComposerFocused(true)}
+                    placeholder={
+                      communityMode === 'hub'
+                        ? "What's on your mind? Share with the community..."
+                        : selectedCourseFilters.length > 0
+                          ? `Discuss ${selectedCourseFilters[0].name}...`
+                          : "Ask a question or share an insight..."
+                    }
+                    style={{
+                      flex: 1,
+                      border: 'none',
+                      outline: 'none',
+                      resize: 'none',
+                      fontSize: 15,
+                      fontWeight: 400,
+                      lineHeight: 1.5,
+                      background: 'transparent',
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                      padding: 0,
+                      minHeight: 50,
+                      fontFamily: 'inherit',
+                      boxSizing: 'border-box',
+                      display: 'block'
+                    }}
+                  />
+                </div>
+
                 {/* Bottom Action Bar */}
-                <div 
+                <div
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '8px 12px',
                     borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                    background: isDarkMode ? '#0a0a0a' : '#f7f9f9',
+                    background: isDarkMode ? '#16181c' : '#f7f9f9',
                     width: '100%',
                     boxSizing: 'border-box'
                   }}
                 >
                   {/* Media Icons */}
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    <button 
-                      style={{ 
-                        background: 'none', 
-                        border: 'none', 
-                        color: isDarkMode ? '#71767b' : '#536471', 
-                        cursor: 'pointer',
-                        padding: 4,
-                        borderRadius: 4,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 18
-                      }}
-                      title="Add image"
-                    >
-                      <FaImage />
-                    </button>
-                    <button 
-                      style={{ 
-                        background: 'none', 
-                        border: 'none', 
-                        color: isDarkMode ? '#71767b' : '#536471', 
-                        cursor: 'pointer',
-                        padding: 4,
-                        borderRadius: 4,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 18
-                      }}
-                      title="Add link"
-                    >
-                      <FaLink />
-                    </button>
-                    <button 
-                      style={{ 
-                        background: 'none', 
-                        border: 'none', 
-                        color: isDarkMode ? '#71767b' : '#536471', 
-                        cursor: 'pointer',
-                        padding: 4,
-                        borderRadius: 4,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 18
-                      }}
-                      title="Attach file"
-                    >
-                      <FaPaperclip />
-                    </button>
-                  </div>
-                  
+                  <div style={{ display: 'flex', gap: 4 }}>
+                      <button
+                        style={{
+                          background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
+                          border: 'none',
+                          color: '#1d9bf0',
+                          cursor: 'pointer',
+                          padding: '6px 8px',
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 16,
+                          transition: 'background 0.2s'
+                        }}
+                        title="Add image"
+                        onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)'}
+                        onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)'}
+                      >
+                        <FaImage />
+                      </button>
+                      <button
+                        style={{
+                          background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
+                          border: 'none',
+                          color: '#1d9bf0',
+                          cursor: 'pointer',
+                          padding: '6px 8px',
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 16,
+                          transition: 'background 0.2s'
+                        }}
+                        title="Add link"
+                        onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)'}
+                        onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)'}
+                      >
+                        <FaLink />
+                      </button>
+                      <button
+                        style={{
+                          background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
+                          border: 'none',
+                          color: '#1d9bf0',
+                          cursor: 'pointer',
+                          padding: '6px 8px',
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 16,
+                          transition: 'background 0.2s'
+                        }}
+                        title="Attach file"
+                        onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)'}
+                        onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)'}
+                      >
+                        <FaPaperclip />
+                      </button>
+                    </div>
+
                   {/* Post Button */}
                   <button
                     disabled={!newPostText.trim() || isPosting}
@@ -1915,7 +2028,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       background: '#1d9bf0',
                       color: '#fff',
                       border: 'none',
-                      borderRadius: 6,
+                      borderRadius: 20,
                       padding: '8px 20px',
                       fontWeight: 600,
                       fontSize: 14,

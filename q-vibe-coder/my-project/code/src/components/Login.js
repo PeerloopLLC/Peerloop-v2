@@ -11,7 +11,7 @@ const demoUsers = [
     email: 'alex@demo.com',
     roles: ['student', 'teacher'],
     userType: 'student_teacher',
-    avatar: null,
+    avatar: 'https://i.pravatar.cc/150?img=68',
     bio: 'Lifelong learner passionate about AI and machine learning.',
     location: 'San Francisco, CA',
     stats: { coursesCompleted: 12, coursesTeaching: 3, studentsHelped: 47, avgRating: 4.9, totalEarnings: 2340 }
@@ -23,7 +23,7 @@ const demoUsers = [
     email: 'jamie@demo.com',
     roles: ['creator', 'instructor'],
     userType: 'creator',
-    avatar: null,
+    avatar: 'https://i.pravatar.cc/150?img=47',
     bio: 'Full-stack developer and course creator with 10+ years experience.',
     location: 'New York, NY',
     stats: { coursesCompleted: 28, coursesTeaching: 8, studentsHelped: 234, avgRating: 4.95, totalEarnings: 12500 }
@@ -35,7 +35,7 @@ const demoUsers = [
     email: 'sarah@demo.com',
     roles: ['student'],
     userType: 'student',
-    avatar: null,
+    avatar: 'https://i.pravatar.cc/150?img=44',
     bio: 'New to coding, excited to learn web development!',
     location: 'Austin, TX',
     stats: { coursesCompleted: 3, coursesTeaching: 0, studentsHelped: 0, avgRating: 0, totalEarnings: 0 }
@@ -47,7 +47,7 @@ const demoUsers = [
     email: 'marcus@demo.com',
     roles: ['creator', 'instructor', 'student', 'teacher'],
     userType: 'admin',
-    avatar: null,
+    avatar: 'https://i.pravatar.cc/150?img=53',
     bio: 'Platform admin and senior instructor. Here to help!',
     location: 'Chicago, IL',
     stats: { coursesCompleted: 45, coursesTeaching: 15, studentsHelped: 890, avgRating: 4.98, totalEarnings: 45000 }

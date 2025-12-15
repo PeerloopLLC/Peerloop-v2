@@ -198,7 +198,7 @@ export const mockActivities = [
   },
   {
     id: 'act_3',
-    actor: { id: 'demo_alex', name: 'Alex Sanders', avatar: null },
+    actor: { id: 'demo_alex', name: 'Alex Sanders', avatar: 'https://i.pravatar.cc/150?img=68' },
     verb: ActivityTypes.BADGE_EARNED,
     object: { id: 'badge_1', name: 'Quick Learner', icon: '🎓' },
     time: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
@@ -206,7 +206,7 @@ export const mockActivities = [
   },
   {
     id: 'act_4',
-    actor: { id: 'demo_marcus', name: 'Marcus Johnson', avatar: null },
+    actor: { id: 'demo_marcus', name: 'Marcus Johnson', avatar: 'https://i.pravatar.cc/150?img=53' },
     verb: ActivityTypes.SESSION_COMPLETED,
     object: { id: 'session_1', name: '1-on-1 Mentoring' },
     time: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(), // 3 hours ago
@@ -214,7 +214,7 @@ export const mockActivities = [
   },
   {
     id: 'act_5',
-    actor: { id: 'demo_jamie', name: 'Jamie Chen', avatar: null },
+    actor: { id: 'demo_jamie', name: 'Jamie Chen', avatar: 'https://i.pravatar.cc/150?img=47' },
     verb: ActivityTypes.MILESTONE_REACHED,
     object: { id: 'milestone_1', name: '200 Students Helped' },
     time: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(), // 5 hours ago
@@ -222,7 +222,7 @@ export const mockActivities = [
   },
   {
     id: 'act_6',
-    actor: { id: 'demo_sarah', name: 'Sarah Miller', avatar: null },
+    actor: { id: 'demo_sarah', name: 'Sarah Miller', avatar: 'https://i.pravatar.cc/150?img=44' },
     verb: ActivityTypes.FOLLOW_USER,
     object: { id: 'demo_jamie', name: 'Jamie Chen' },
     time: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(), // 6 hours ago
@@ -230,7 +230,7 @@ export const mockActivities = [
   },
   {
     id: 'act_7',
-    actor: { id: 'demo_alex', name: 'Alex Sanders', avatar: null },
+    actor: { id: 'demo_alex', name: 'Alex Sanders', avatar: 'https://i.pravatar.cc/150?img=68' },
     verb: ActivityTypes.COURSE_ENROLLED,
     object: { id: 'course_3', name: 'Deep Learning Fundamentals' },
     time: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(), // 8 hours ago
@@ -238,7 +238,7 @@ export const mockActivities = [
   },
   {
     id: 'act_8',
-    actor: { id: 'demo_marcus', name: 'Marcus Johnson', avatar: null },
+    actor: { id: 'demo_marcus', name: 'Marcus Johnson', avatar: 'https://i.pravatar.cc/150?img=53' },
     verb: ActivityTypes.REVIEW_RECEIVED,
     object: { id: 'review_1', name: '5-star review', rating: 5 },
     time: new Date(Date.now() - 1000 * 60 * 60 * 10).toISOString(), // 10 hours ago

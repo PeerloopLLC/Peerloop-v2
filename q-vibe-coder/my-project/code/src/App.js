@@ -161,7 +161,7 @@ function App() {
     name: 'Alex Sanders',
     username: '@alexsanders',
     roles: ['student', 'teacher'], // Alex can both learn and teach
-    avatar: null, // Will use initials AS
+    avatar: 'https://i.pravatar.cc/150?img=68', // Professional male with smile
     bio: 'Lifelong learner passionate about AI and machine learning. Currently studying Deep Learning and teaching Python basics to beginners. Love helping others on their learning journey!',
     location: 'San Francisco, CA',
     website: 'https://alexsanders.dev',
@@ -187,7 +187,7 @@ function App() {
     name: 'Jamie Chen',
     username: '@jamiechen',
     roles: ['creator', 'instructor', 'student', 'teacher'], // Jamie has all roles
-    avatar: null,
+    avatar: 'https://i.pravatar.cc/150?img=47', // Professional female avatar
     bio: 'Full-stack developer and course creator with 10+ years of experience. Passionate about making tech education accessible to everyone.',
     location: 'New York, NY',
     website: 'https://jamiechen.io',
