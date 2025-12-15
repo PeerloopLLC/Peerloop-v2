@@ -1410,7 +1410,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         >
                           <span>
                             {isHubSelected
-                              ? 'Creator Community' 
+                              ? 'Creator Community Common Area' 
                               : selectedCourseFilters[0].name}
                           </span>
                           <FaChevronDown style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }} />
@@ -1455,7 +1455,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                               onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
                               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
-                              Creator Community
+                              Creator Community Common Area
                             </div>
                             
                             {/* Individual Courses - Single-select */}
