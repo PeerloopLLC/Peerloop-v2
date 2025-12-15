@@ -1423,43 +1423,28 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
 
                   {/* Creator Details */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div>
-                        <div
-                          onClick={() => {
-                            // Store instructor info and navigate to Browse -> Creators
-                            localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                            localStorage.setItem('browseActiveTopMenu', 'creators');
-                            if (onMenuChange) {
-                              onMenuChange('Browse');
-                            }
-                          }}
-                          style={{
-                            fontSize: 16,
-                            fontWeight: 700,
-                            color: '#1d9bf0',
-                            cursor: 'pointer',
-                            display: 'inline-block',
-                            lineHeight: 1.2
-                          }}
-                          onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                          onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                        >
-                          {instructor.name}
-                        </div>
-                        <div style={{
-                          fontSize: 13,
-                          color: isDarkMode ? '#71767b' : '#536471'
-                        }}>
-                          {instructor.title}
-                        </div>
-                        <div style={{
-                          fontSize: 12,
-                          color: isDarkMode ? '#71767b' : '#536471',
-                          marginTop: 2
-                        }}>
-                          {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · {Math.floor(Math.random() * 200) + 20} Posts
-                        </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div
+                        onClick={() => {
+                          // Store instructor info and navigate to Browse -> Creators
+                          localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
+                          localStorage.setItem('browseActiveTopMenu', 'creators');
+                          if (onMenuChange) {
+                            onMenuChange('Browse');
+                          }
+                        }}
+                        style={{
+                          fontSize: 16,
+                          fontWeight: 700,
+                          color: '#1d9bf0',
+                          cursor: 'pointer',
+                          display: 'inline-block',
+                          lineHeight: 1.2
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                        onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                      >
+                        {instructor.name}
                       </div>
                       <div
                         onClick={() => {
@@ -1472,14 +1457,26 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         style={{
                           fontSize: 12,
                           color: '#1d9bf0',
-                          cursor: 'pointer',
-                          flexShrink: 0
+                          cursor: 'pointer'
                         }}
                         onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                         onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                       >
                         Go to Profile
                       </div>
+                    </div>
+                    <div style={{
+                      fontSize: 13,
+                      color: isDarkMode ? '#71767b' : '#536471'
+                    }}>
+                      {instructor.title}
+                    </div>
+                    <div style={{
+                      fontSize: 12,
+                      color: isDarkMode ? '#71767b' : '#536471',
+                      marginTop: 2
+                    }}>
+                      {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · {Math.floor(Math.random() * 200) + 20} Posts
                     </div>
                   </div>
                 </div>
@@ -1491,16 +1488,14 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
 
                   return (
                     <div style={{
-                      marginTop: 8,
-                      background: 'transparent',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8
+                      marginTop: 12,
+                      background: 'transparent'
                     }}>
                       <div style={{
-                        fontSize: 12,
-                        fontWeight: 500,
-                        color: isDarkMode ? '#71767b' : '#536471'
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                        marginBottom: 6
                       }}>
                         Filter by Course
                       </div>
@@ -1512,13 +1507,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            gap: 8,
-                            padding: '4px 10px',
-                            borderRadius: 4,
+                            width: '100%',
+                            padding: '8px 12px',
+                            borderRadius: 6,
                             border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                            background: isDarkMode ? '#0a0a0a' : '#fff',
+                            background: isDarkMode ? '#2f3336' : '#f7f9f9',
                             color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                            fontSize: 13,
+                            fontSize: 14,
                             fontWeight: 400,
                             cursor: 'pointer',
                             transition: 'border-color 0.2s'
@@ -1531,7 +1526,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                               ? `Town Hall for ${instructor.name}`
                               : selectedCourseFilters[0].name}
                           </span>
-                          <FaChevronDown style={{ fontSize: 10, color: isDarkMode ? '#71767b' : '#536471' }} />
+                          <FaChevronDown style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }} />
                         </button>
 
                         {/* Dropdown Menu */}

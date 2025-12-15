@@ -239,7 +239,7 @@ export const instructorsDatabase = [
     id: 8,
     name: "Guy Rymberg",
     title: "AI Prompting Specialist & Business AI Expert",
-    avatar: "https://i.pravatar.cc/120?img=15",
+    avatar: "https://i.pravatar.cc/120?img=13",
     bio: "AI teaching specialist with 15 years experience in AI and machine learning. Expert in helping professionals leverage AI prompting for competitive advantage. Has taught over 500 students the art of prompt engineering and AI communication. Passionate about the PeerLoop model of Learn → Teach → Earn.",
     qualifications: [
       { id: 1, sentence: "Ph.D. in Computer Science from MIT (2012)" },
