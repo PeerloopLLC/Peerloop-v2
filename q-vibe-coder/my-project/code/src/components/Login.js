@@ -11,7 +11,7 @@ const demoUsers = [
     email: 'newuser@demo.com',
     roles: ['student'],
     userType: 'new_user',
-    avatar: 'https://i.pravatar.cc/150?img=65',
+    avatar: 'https://i.pravatar.cc/150?img=33',
     bio: 'Just joined PeerLoop! Excited to start learning.',
     location: '',
     stats: { coursesCompleted: 0, coursesTeaching: 0, studentsHelped: 0, avgRating: 0, totalEarnings: 0 }
@@ -79,6 +79,32 @@ const Login = ({ onLoginSuccess, onDemoLogin }) => {
   const [showNewUserLogin, setShowNewUserLogin] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [newUserData, setNewUserData] = useState(null);
+  const [selectedInterests, setSelectedInterests] = useState([]);
+
+  // Available interests for onboarding
+  const availableInterests = [
+    { id: 'vibe-coding', label: 'Vibe Coding' },
+    { id: 'ai-ml', label: 'AI & Machine Learning' },
+    { id: 'web-dev', label: 'Web Development' },
+    { id: 'python', label: 'Python' },
+    { id: 'data-science', label: 'Data Science' },
+    { id: 'mobile-dev', label: 'Mobile Development' },
+    { id: 'design', label: 'UI/UX Design' },
+    { id: 'blockchain', label: 'Blockchain' },
+    { id: 'game-dev', label: 'Game Development' },
+    { id: 'cloud', label: 'Cloud Computing' },
+    { id: 'cybersecurity', label: 'Cybersecurity' },
+    { id: 'no-code', label: 'No-Code Tools' },
+  ];
+
+  // Toggle interest selection
+  const toggleInterest = (interestId) => {
+    setSelectedInterests(prev =>
+      prev.includes(interestId)
+        ? prev.filter(id => id !== interestId)
+        : [...prev, interestId]
+    );
+  };
 
   // Handle demo user login
   const handleDemoLogin = (demoUser) => {
@@ -163,24 +189,64 @@ const Login = ({ onLoginSuccess, onDemoLogin }) => {
   if (showOnboarding) {
     return (
       <div className="login-container">
-        <div className="login-card" style={{ maxWidth: 500 }}>
+        <div className="login-card" style={{ maxWidth: 560 }}>
           <div className="login-header">
             <h1>🎓 PeerLoop</h1>
-            <p>Tell us about your interests</p>
+            <p>What do you want to learn?</p>
           </div>
 
-          <div style={{ padding: '20px 0', textAlign: 'center' }}>
-            <h2 style={{ fontSize: 24, marginBottom: 16, color: '#e7e9ea' }}>Interests</h2>
-            <p style={{ color: '#71767b', marginBottom: 24 }}>
-              This is where you'll select your learning interests.
+          <div style={{ padding: '10px 0' }}>
+            <p style={{ color: '#71767b', marginBottom: 16, textAlign: 'center' }}>
+              Select topics you're interested in. You can change these later.
             </p>
+
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '10px',
+              justifyContent: 'center',
+              marginBottom: 24
+            }}>
+              {availableInterests.map(interest => {
+                const isSelected = selectedInterests.includes(interest.id);
+                return (
+                  <button
+                    key={interest.id}
+                    onClick={() => toggleInterest(interest.id)}
+                    style={{
+                      padding: '10px 18px',
+                      borderRadius: '20px',
+                      border: isSelected ? '2px solid #1d9bf0' : '2px solid #333639',
+                      background: isSelected ? 'rgba(29, 155, 240, 0.15)' : 'transparent',
+                      color: isSelected ? '#1d9bf0' : '#e7e9ea',
+                      fontSize: '14px',
+                      fontWeight: isSelected ? '600' : '400',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {interest.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {selectedInterests.length > 0 && (
+              <p style={{ color: '#71767b', fontSize: '14px', textAlign: 'center', marginBottom: 16 }}>
+                {selectedInterests.length} topic{selectedInterests.length !== 1 ? 's' : ''} selected
+              </p>
+            )}
 
             <button
               onClick={handleOnboardingComplete}
               className="login-button"
-              style={{ marginTop: 20 }}
+              style={{
+                marginTop: 10,
+                opacity: selectedInterests.length > 0 ? 1 : 0.6
+              }}
             >
-              Continue to PeerLoop →
+              {selectedInterests.length > 0 ? 'Continue to PeerLoop →' : 'Skip for now →'}
             </button>
           </div>
         </div>

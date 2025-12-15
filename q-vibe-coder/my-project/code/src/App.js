@@ -74,10 +74,8 @@ function App() {
 
   // Handle demo login (skip auth, use mock user)
   const handleDemoLogin = (demoUser) => {
-    // If this is a new user, clear their followed communities from localStorage
-    if (demoUser.isNewUser) {
-      localStorage.removeItem('followedCommunities');
-    }
+    // Note: followedCommunities are now stored per-user in MainContent.js
+    // New users will automatically start with empty follows
 
     setCurrentUser({
       id: demoUser.id,

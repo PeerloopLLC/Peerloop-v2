@@ -651,19 +651,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     }
   ];
 
-  // Save followed communities to localStorage whenever it changes
-  useEffect(() => {
-    try {
-      localStorage.setItem('followedCommunities', JSON.stringify(actualFollowedCommunities));
-    } catch (error) {
-      console.error('Error saving followedCommunities to localStorage:', error);
-      try {
-        localStorage.setItem('followedCommunities', JSON.stringify([]));
-      } catch (fallbackError) {
-        console.error('Error saving fallback followedCommunities to localStorage:', fallbackError);
-      }
-    }
-  }, [actualFollowedCommunities]);
+  // Note: followedCommunities save is handled in MainContent.js with user-specific localStorage keys
 
   // Check scroll arrows visibility
   const checkScrollArrows = () => {
@@ -1480,7 +1468,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Filter by Courses Dropdown - Single-select */}
                 {(() => {
                   const availableCourses = selectedCreator.allCourses.filter(course => selectedCreator.followedCourseIds.includes(course.id));
@@ -1500,7 +1488,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         Filter by Course
                       </div>
 
-                      <div className="filter-courses-dropdown-wrapper" style={{ position: 'relative' }}>
+                      <div className="filter-courses-dropdown-wrapper" style={{ position: 'relative', maxWidth: 280 }}>
                         <button
                           onClick={() => setShowPostingCourseDropdown(!showPostingCourseDropdown)}
                           style={{

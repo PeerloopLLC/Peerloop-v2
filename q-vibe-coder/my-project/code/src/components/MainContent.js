@@ -125,47 +125,77 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     setViewingCourseFromCommunity(null);
     onMenuChange(previousPage);
   };
-  const [followedCommunities, setFollowedCommunities] = useState(() => {
-    // Check if this is a new user - they should start with no followed communities
-    if (currentUser?.isNewUser) {
-      localStorage.removeItem('followedCommunities');
+  // Helper function to get default follows (all creators)
+  const getDefaultFollows = () => {
+    const allInstructors = getAllInstructors();
+    return allInstructors.map(instructor => {
+      const courseIds = instructor.courses || [];
+      let totalStudents = 0;
+      courseIds.forEach(cid => {
+        const course = getCourseById(cid);
+        if (course) totalStudents += course.students;
+      });
+      return {
+        id: `creator-${instructor.id}`,
+        type: 'creator',
+        name: instructor.name,
+        instructorId: instructor.id,
+        instructorName: instructor.name,
+        courseIds: courseIds,
+        followedCourseIds: courseIds, // Follow all their courses by default
+        description: instructor.bio,
+        members: Math.floor(totalStudents * 0.8),
+        posts: Math.floor(totalStudents * 0.24),
+        avatar: instructor.avatar
+      };
+    });
+  };
+
+  // Helper function to load follows for a specific user
+  const loadFollowsForUser = (userId, isNewUser) => {
+    // New users always start with empty follows
+    if (isNewUser) {
       return [];
     }
 
-    // Load existing follow states from localStorage
+    // Load from user-specific localStorage key
     try {
-      const stored = localStorage.getItem('followedCommunities');
+      const storageKey = `followedCommunities_${userId}`;
+      const stored = localStorage.getItem(storageKey);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        // If stored data is empty array, return defaults instead
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
       }
-      // Default: Follow all creators (Jane Doe and Albert Einstein are the main ones)
-      const allInstructors = getAllInstructors();
-      const defaultFollowed = allInstructors.map(instructor => {
-        const courseIds = instructor.courses || [];
-        let totalStudents = 0;
-        courseIds.forEach(cid => {
-          const course = getCourseById(cid);
-          if (course) totalStudents += course.students;
-        });
-        return {
-          id: `creator-${instructor.id}`,
-          type: 'creator',
-          name: instructor.name,
-          instructorId: instructor.id,
-          instructorName: instructor.name,
-          courseIds: courseIds,
-          followedCourseIds: courseIds, // Follow all their courses by default
-          description: instructor.bio,
-          members: Math.floor(totalStudents * 0.8),
-          posts: Math.floor(totalStudents * 0.24),
-          avatar: instructor.avatar
-        };
-      });
-      return defaultFollowed;
+
+      // Check for old global key and migrate if it has data
+      const oldStored = localStorage.getItem('followedCommunities');
+      if (oldStored) {
+        try {
+          const oldParsed = JSON.parse(oldStored);
+          if (Array.isArray(oldParsed) && oldParsed.length > 0) {
+            // Migrate old data to new user-specific key
+            localStorage.setItem(storageKey, oldStored);
+            console.log(`Migrated followedCommunities to ${storageKey}`);
+            return oldParsed;
+          }
+        } catch (e) {
+          // Ignore parse errors from old key
+        }
+      }
+
+      // No saved data - return default follows (all creators)
+      return getDefaultFollows();
     } catch (error) {
       console.error('Error parsing followedCommunities from localStorage:', error);
-      return [];
+      return getDefaultFollows();
     }
+  };
+
+  const [followedCommunities, setFollowedCommunities] = useState(() => {
+    return loadFollowsForUser(currentUser?.id, currentUser?.isNewUser);
   });
   const [lastBrowseClick, setLastBrowseClick] = useState(0);
   const [indexedCourses, setIndexedCourses] = useState([]);
@@ -279,32 +309,29 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       initializeIndexes();
     }, []);
 
-  // When user changes to a new user, clear their followed communities
+  // When user changes, reload their follows from user-specific storage
   useEffect(() => {
-    if (currentUser?.isNewUser) {
-      localStorage.removeItem('followedCommunities');
-      setFollowedCommunities([]);
+    if (currentUser?.id) {
+      const newFollows = loadFollowsForUser(currentUser.id, currentUser.isNewUser);
+      setFollowedCommunities(newFollows);
     }
-  }, [currentUser?.isNewUser, currentUser?.id]);
+  }, [currentUser?.id]);
 
-      // When followedCommunities changes, save to localStorage
+  // When followedCommunities changes, save to user-specific localStorage key
   useEffect(() => {
+    if (!currentUser?.id) return;
+
     const saveFollowedCommunities = () => {
       try {
-        localStorage.setItem('followedCommunities', JSON.stringify(followedCommunities));
+        const storageKey = `followedCommunities_${currentUser.id}`;
+        localStorage.setItem(storageKey, JSON.stringify(followedCommunities));
       } catch (error) {
         console.error('Error saving followedCommunities to localStorage:', error);
-        // Fallback: try to save a minimal version
-        try {
-          localStorage.setItem('followedCommunities', JSON.stringify([]));
-        } catch (fallbackError) {
-          console.error('Error saving fallback followedCommunities to localStorage:', fallbackError);
-        }
       }
     };
 
     saveFollowedCommunities();
-  }, [followedCommunities]);
+  }, [followedCommunities, currentUser?.id]);
 
     // 2. For each course button (dropdown and course list), use:
     // <button className={`follow-btn ${followedCourses.has(courseObj.id) ? 'following' : ''}`} ...>
@@ -2217,7 +2244,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                     }}>
                                       {instructorData?.name}
                                     </div>
-                                    <div style={{ 
+                                    <div style={{
                                       fontSize: 13,
                                       color: isDarkMode ? '#9ca3af' : '#6b7280',
                                       display: '-webkit-box',
@@ -2229,6 +2256,52 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                                     </div>
                                   </div>
                                 </div>
+
+                                {/* Follow Creator Button */}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const creatorCommunityId = `creator-${instructorData?.id}`;
+                                    const isCurrentlyFollowed = followedCommunities.some(c => c.id === creatorCommunityId);
+
+                                    if (isCurrentlyFollowed) {
+                                      setFollowedCommunities(prev => prev.filter(c => c.id !== creatorCommunityId));
+                                    } else {
+                                      const courseIds = instructorData?.courses || [];
+                                      setFollowedCommunities(prev => [...prev, {
+                                        id: creatorCommunityId,
+                                        type: 'creator',
+                                        name: instructorData?.name,
+                                        instructorId: instructorData?.id,
+                                        instructorName: instructorData?.name,
+                                        courseIds: courseIds,
+                                        followedCourseIds: courseIds,
+                                        description: instructorData?.bio,
+                                        avatar: instructorData?.avatar
+                                      }]);
+                                    }
+                                  }}
+                                  style={{
+                                    marginTop: 12,
+                                    padding: '8px 20px',
+                                    borderRadius: 20,
+                                    background: followedCommunities.some(c => c.id === `creator-${instructorData?.id}`)
+                                      ? 'transparent'
+                                      : '#1d9bf0',
+                                    color: followedCommunities.some(c => c.id === `creator-${instructorData?.id}`)
+                                      ? '#1d9bf0'
+                                      : '#fff',
+                                    fontSize: 14,
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    border: followedCommunities.some(c => c.id === `creator-${instructorData?.id}`)
+                                      ? '1px solid #1d9bf0'
+                                      : '1px solid transparent',
+                                    transition: 'all 0.2s ease'
+                                  }}
+                                >
+                                  {followedCommunities.some(c => c.id === `creator-${instructorData?.id}`) ? 'Following' : 'Follow'}
+                                </button>
                               </div>
                             </div>
                           );
