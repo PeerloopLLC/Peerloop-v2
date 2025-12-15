@@ -263,6 +263,90 @@ export const instructorsDatabase = [
       totalReviews: 127
     },
     courses: [15] // AI Prompting Mastery
+  },
+  {
+    id: 9,
+    name: "Dr. Sarah Chen",
+    title: "AI Research Scientist & Educator",
+    avatar: "https://i.pravatar.cc/120?img=44",
+    bio: "Former Google AI researcher, now dedicated to making artificial intelligence accessible to everyone. Specializes in breaking down complex AI concepts for beginners.",
+    qualifications: [
+      { id: 1, sentence: "Ph.D. in Machine Learning from Stanford University (2018)" },
+      { id: 2, sentence: "Former AI Research Scientist at Google Brain for 5 years" },
+      { id: 3, sentence: "Author of 'AI for Everyone' bestselling book (2023)" }
+    ],
+    website: "https://drsarahchen.ai",
+    expertise: [
+      "Machine Learning Fundamentals",
+      "AI Education",
+      "Neural Networks",
+      "Python for AI",
+      "Data Science",
+      "AI Ethics"
+    ],
+    stats: {
+      studentsTaught: 8500,
+      coursesCreated: 2,
+      averageRating: 4.9,
+      totalReviews: 1200
+    },
+    courses: [16, 17] // AI for Beginners, Machine Learning Essentials
+  },
+  {
+    id: 10,
+    name: "Marcus Johnson",
+    title: "DevOps Engineer & Open Source Advocate",
+    avatar: "https://i.pravatar.cc/120?img=53",
+    bio: "10+ years in software development, passionate about automation and developer tools. Core contributor to several open source projects and GitHub expert.",
+    qualifications: [
+      { id: 1, sentence: "B.S. in Computer Science from Georgia Tech (2013)" },
+      { id: 2, sentence: "Senior DevOps Engineer at Microsoft for 6 years" },
+      { id: 3, sentence: "GitHub Star and open source maintainer" }
+    ],
+    website: "https://marcusjohnson.dev",
+    expertise: [
+      "Git & GitHub",
+      "Version Control",
+      "CI/CD Pipelines",
+      "Open Source Development",
+      "Team Collaboration",
+      "Code Review Best Practices"
+    ],
+    stats: {
+      studentsTaught: 12000,
+      coursesCreated: 2,
+      averageRating: 4.8,
+      totalReviews: 890
+    },
+    courses: [18, 19] // Introduction to GitHub, Git for Teams
+  },
+  {
+    id: 11,
+    name: "Elena Rodriguez",
+    title: "Automation Specialist & No-Code Expert",
+    avatar: "https://i.pravatar.cc/120?img=23",
+    bio: "Helping businesses automate workflows without writing code. N8N certified trainer with expertise in connecting AI tools to business processes.",
+    qualifications: [
+      { id: 1, sentence: "M.S. in Information Systems from MIT (2019)" },
+      { id: 2, sentence: "N8N Certified Expert Trainer" },
+      { id: 3, sentence: "Automation consultant for Fortune 500 companies" }
+    ],
+    website: "https://elenarodriguez.io",
+    expertise: [
+      "N8N Workflow Automation",
+      "No-Code Development",
+      "AI Integration",
+      "Business Process Automation",
+      "Zapier & Make",
+      "API Integrations"
+    ],
+    stats: {
+      studentsTaught: 5200,
+      coursesCreated: 2,
+      averageRating: 4.85,
+      totalReviews: 620
+    },
+    courses: [20, 21] // N8N Workflow Automation, No-Code AI Integration
   }
 ];
 
@@ -882,6 +966,180 @@ export const coursesDatabase = [
       "Lifetime access to materials",
       "Access to prompt library templates",
       "Discord community access"
+    ]
+  },
+  {
+    id: 16,
+    title: "AI for Beginners",
+    description: "Understand the fundamentals of artificial intelligence without any coding required. Perfect for professionals who want to understand AI concepts and their business applications.",
+    duration: "4 weeks",
+    level: "Beginner",
+    rating: 4.9,
+    ratingCount: 856,
+    students: 6200,
+    price: "$249",
+    badge: "Bestseller",
+    thumbnail: "https://via.placeholder.com/300x200/10B981/ffffff?text=AI+Basics",
+    instructorId: 9, // Dr. Sarah Chen
+    category: "AI Fundamentals",
+    tags: ["AI", "Beginner", "No-Code", "Business AI", "Fundamentals"],
+    learningObjectives: [
+      "Understand what AI is and how it works",
+      "Learn key AI terminology and concepts",
+      "Identify AI opportunities in your business",
+      "Evaluate AI tools and solutions",
+      "Make informed decisions about AI investments"
+    ],
+    curriculum: [
+      { title: "What is Artificial Intelligence?", duration: "1h 30min", description: "Introduction to AI concepts and history" },
+      { title: "Types of AI and Machine Learning", duration: "2h", description: "Understanding different AI approaches" },
+      { title: "AI in the Real World", duration: "1h 45min", description: "Case studies and practical applications" },
+      { title: "Getting Started with AI Tools", duration: "2h 15min", description: "Hands-on with popular AI platforms" }
+    ]
+  },
+  {
+    id: 17,
+    title: "Machine Learning Essentials",
+    description: "Learn the core concepts of ML algorithms and when to use them. This course bridges the gap between theory and practice for aspiring data scientists.",
+    duration: "8 weeks",
+    level: "Intermediate",
+    rating: 4.8,
+    ratingCount: 423,
+    students: 2800,
+    price: "$399",
+    badge: "Featured",
+    thumbnail: "https://via.placeholder.com/300x200/8B5CF6/ffffff?text=ML+Essentials",
+    instructorId: 9, // Dr. Sarah Chen
+    category: "Machine Learning",
+    tags: ["Machine Learning", "Python", "Algorithms", "Data Science"],
+    learningObjectives: [
+      "Master supervised and unsupervised learning",
+      "Implement common ML algorithms from scratch",
+      "Choose the right algorithm for your problem",
+      "Evaluate and improve model performance",
+      "Deploy ML models to production"
+    ],
+    curriculum: [
+      { title: "ML Foundations", duration: "2h", description: "Core concepts and mathematical foundations" },
+      { title: "Supervised Learning", duration: "3h 30min", description: "Regression, classification, and decision trees" },
+      { title: "Unsupervised Learning", duration: "2h 45min", description: "Clustering, dimensionality reduction" },
+      { title: "Model Evaluation", duration: "2h", description: "Metrics, validation, and optimization" }
+    ]
+  },
+  {
+    id: 18,
+    title: "Introduction to GitHub",
+    description: "Master version control, collaboration, and GitHub workflows. Essential skills for any developer or team working on software projects.",
+    duration: "3 weeks",
+    level: "Beginner",
+    rating: 4.8,
+    ratingCount: 1245,
+    students: 9500,
+    price: "$149",
+    badge: "Bestseller",
+    thumbnail: "https://via.placeholder.com/300x200/1F2937/ffffff?text=GitHub+101",
+    instructorId: 10, // Marcus Johnson
+    category: "Developer Tools",
+    tags: ["GitHub", "Git", "Version Control", "Collaboration", "Beginner"],
+    learningObjectives: [
+      "Set up and configure Git and GitHub",
+      "Master basic Git commands and workflows",
+      "Create and manage repositories",
+      "Collaborate with pull requests and code reviews",
+      "Use GitHub features like Issues and Projects"
+    ],
+    curriculum: [
+      { title: "Getting Started with Git", duration: "1h 30min", description: "Installation, configuration, and first commits" },
+      { title: "GitHub Fundamentals", duration: "2h", description: "Repositories, branches, and remote operations" },
+      { title: "Collaboration Workflows", duration: "2h 30min", description: "Pull requests, code reviews, and team workflows" },
+      { title: "Advanced GitHub Features", duration: "1h 45min", description: "Actions, Pages, and project management" }
+    ]
+  },
+  {
+    id: 19,
+    title: "Git for Teams",
+    description: "Advanced branching strategies and code review best practices. Learn how high-performing teams manage code at scale.",
+    duration: "5 weeks",
+    level: "Advanced",
+    rating: 4.7,
+    ratingCount: 312,
+    students: 1800,
+    price: "$299",
+    badge: "Popular",
+    thumbnail: "https://via.placeholder.com/300x200/374151/ffffff?text=Git+Teams",
+    instructorId: 10, // Marcus Johnson
+    category: "Developer Tools",
+    tags: ["Git", "Team Workflows", "Branching", "Code Review", "Advanced"],
+    learningObjectives: [
+      "Implement GitFlow and trunk-based development",
+      "Design effective branching strategies",
+      "Master merge conflict resolution",
+      "Set up CI/CD with GitHub Actions",
+      "Establish code review best practices"
+    ],
+    curriculum: [
+      { title: "Branching Strategies", duration: "2h 30min", description: "GitFlow, trunk-based, and feature flags" },
+      { title: "Advanced Merging", duration: "2h", description: "Rebasing, cherry-picking, and conflict resolution" },
+      { title: "CI/CD Integration", duration: "3h", description: "GitHub Actions and automated workflows" },
+      { title: "Team Best Practices", duration: "2h 15min", description: "Code review, documentation, and standards" }
+    ]
+  },
+  {
+    id: 20,
+    title: "N8N Workflow Automation",
+    description: "Build powerful automations connecting your favorite apps. Learn to create complex workflows without writing code using N8N.",
+    duration: "6 weeks",
+    level: "Intermediate",
+    rating: 4.85,
+    ratingCount: 389,
+    students: 3200,
+    price: "$349",
+    badge: "Featured",
+    thumbnail: "https://via.placeholder.com/300x200/EA580C/ffffff?text=N8N+Automation",
+    instructorId: 11, // Elena Rodriguez
+    category: "Automation",
+    tags: ["N8N", "Automation", "No-Code", "Workflows", "Integration"],
+    learningObjectives: [
+      "Set up and configure N8N",
+      "Build multi-step automated workflows",
+      "Connect APIs and services",
+      "Handle errors and edge cases",
+      "Deploy and monitor automations"
+    ],
+    curriculum: [
+      { title: "N8N Fundamentals", duration: "2h", description: "Installation, interface, and first workflow" },
+      { title: "Building Workflows", duration: "3h 30min", description: "Triggers, nodes, and data transformation" },
+      { title: "Advanced Integrations", duration: "3h", description: "APIs, webhooks, and custom functions" },
+      { title: "Production Deployment", duration: "2h 30min", description: "Self-hosting, monitoring, and scaling" }
+    ]
+  },
+  {
+    id: 21,
+    title: "No-Code AI Integration",
+    description: "Connect AI tools like ChatGPT to your workflows. Learn to leverage AI capabilities without programming knowledge.",
+    duration: "4 weeks",
+    level: "Intermediate",
+    rating: 4.9,
+    ratingCount: 234,
+    students: 1900,
+    price: "$299",
+    badge: "New",
+    thumbnail: "https://via.placeholder.com/300x200/F59E0B/ffffff?text=No-Code+AI",
+    instructorId: 11, // Elena Rodriguez
+    category: "AI & Automation",
+    tags: ["AI", "No-Code", "ChatGPT", "Automation", "Integration"],
+    learningObjectives: [
+      "Connect ChatGPT and other AI tools to workflows",
+      "Build AI-powered automations",
+      "Process and transform AI responses",
+      "Create intelligent business processes",
+      "Optimize AI usage and costs"
+    ],
+    curriculum: [
+      { title: "AI APIs for Non-Developers", duration: "1h 45min", description: "Understanding AI services and APIs" },
+      { title: "ChatGPT Integration", duration: "2h 30min", description: "Connecting OpenAI to your workflows" },
+      { title: "AI-Powered Workflows", duration: "3h", description: "Building intelligent automation chains" },
+      { title: "Advanced AI Patterns", duration: "2h 15min", description: "Chains, memory, and complex AI tasks" }
     ]
   }
 ];

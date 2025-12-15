@@ -999,318 +999,302 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     <div className="community-content-outer" style={{ background: isDarkMode ? '#000' : '#fff' }}>
       <div className="community-three-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
         <div className="community-center-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
-          {/* Town Hall + Creators buttons with profile pics */}
-          <div className="community-top-menu" style={{ display: 'block' }}>
-            {/* Button row */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '6px 12px',
-              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-            }}>
-              {/* Town Hall Button */}
-              <button
-                onClick={() => {
-                  setCommunityMode('hub');
-                  setSelectedCreatorId(null);
-                  setPostAudience('everyone');
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  background: communityMode === 'hub' ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#eff3f4'),
-                  border: 'none',
-                  borderRadius: 20,
-                  padding: '6px 14px',
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: communityMode === 'hub' ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <FaHome style={{ fontSize: 14 }} />
+          {/* Unified profile row with Town Hall + Creator pics */}
+          <div className="community-top-menu" style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            padding: '4px 8px',
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+          }}>
+            {/* Town Hall - Fixed/Stationary */}
+            <div
+              onClick={() => {
+                setCommunityMode('hub');
+                setSelectedCreatorId(null);
+                setPostAudience('everyone');
+              }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                cursor: 'pointer',
+                minWidth: 56,
+                flexShrink: 0,
+                marginRight: 8,
+                borderRight: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                paddingRight: 8
+              }}
+            >
+              <div style={{
+                width: 44,
+                height: 44,
+                borderRadius: '50%',
+                border: communityMode === 'hub' ? '2px solid #1d9bf0' : '2px solid transparent',
+                padding: 2,
+                marginBottom: 2,
+                overflow: 'hidden'
+              }}>
+                <img
+                  src="https://images.unsplash.com/photo-1534430480872-3498386e7856?w=100&h=100&fit=crop&crop=center"
+                  alt="Town Hall"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    objectFit: 'cover'
+                  }}
+                />
+              </div>
+              <div style={{
+                fontSize: 10,
+                fontWeight: communityMode === 'hub' ? 600 : 400,
+                color: communityMode === 'hub' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                textAlign: 'center'
+              }}>
                 Town Hall
-              </button>
-
-              {/* Creators Button */}
-              <button
-                onClick={() => {
-                  setCommunityMode('creators');
-                  // Select first creator if none selected
-                  if (!selectedCreatorId && groupedByCreator.length > 0) {
-                    setSelectedCreatorId(groupedByCreator[0].id);
-                    setPostAudience(groupedByCreator[0].id);
-                  }
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  background: communityMode === 'creators' ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#eff3f4'),
-                  border: 'none',
-                  borderRadius: 20,
-                  padding: '6px 14px',
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: communityMode === 'creators' ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <FaUsers style={{ fontSize: 14 }} />
-                Creator Communities
-              </button>
+              </div>
             </div>
 
-            {/* Creator profile pics row - only show when Creators mode is active */}
-            {communityMode === 'creators' && (
-              <div
-                ref={tabsContainerRef}
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 16,
-                  padding: '8px 12px',
-                  overflowX: 'auto',
-                  scrollbarWidth: 'none',
-                  msOverflowStyle: 'none',
-                  cursor: isDragging ? 'grabbing' : 'grab',
-                  userSelect: 'none'
-                }}
-                onMouseDown={(e) => {
-                  setIsDragging(true);
-                  setDragStartX(e.pageX - tabsContainerRef.current.offsetLeft);
-                  setDragScrollLeft(tabsContainerRef.current.scrollLeft);
-                }}
-                onMouseMove={(e) => {
-                  if (!isDragging) return;
-                  e.preventDefault();
-                  const x = e.pageX - tabsContainerRef.current.offsetLeft;
-                  const walk = (x - dragStartX) * 1.5;
-                  tabsContainerRef.current.scrollLeft = dragScrollLeft - walk;
-                }}
-                onMouseUp={() => setIsDragging(false)}
-                onMouseLeave={() => setIsDragging(false)}
-              >
-                {groupedByCreator.map(creator => {
-                  const instructor = getInstructorById(creator.instructorId);
-                  const isSelected = selectedCreatorId === creator.id;
-                  return (
-                    <div
-                      key={creator.id}
-                      data-creator-id={creator.id}
-                      onClick={() => {
-                        setSelectedCreatorId(creator.id);
-                        setPostAudience(creator.id);
-                        setSelectedCourseFilters([]);
-                        setShowPostingCourseDropdown(false);
-                      }}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        minWidth: 60,
-                        maxWidth: 70
-                      }}
-                    >
-                      {/* Profile pic */}
-                      <div style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: '50%',
-                        border: isSelected ? '2px solid #1d9bf0' : '2px solid transparent',
-                        padding: 2,
-                        marginBottom: 4
-                      }}>
-                        {instructor?.avatar ? (
-                          <img
-                            src={instructor.avatar}
-                            alt={creator.name}
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              borderRadius: '50%',
-                              objectFit: 'cover'
-                            }}
-                          />
-                        ) : (
-                          <div style={{
-                            width: '100%',
-                            height: '100%',
-                            borderRadius: '50%',
-                            background: '#1d9bf0',
-                            color: '#fff',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: 14,
-                            fontWeight: 700
-                          }}>
-                            {creator.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                          </div>
-                        )}
-                      </div>
-                      {/* Full name */}
-                      <div style={{
-                        fontSize: 11,
-                        fontWeight: isSelected ? 600 : 400,
-                        color: isSelected ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                        textAlign: 'center',
-                        lineHeight: 1.2,
-                        wordBreak: 'break-word'
-                      }}>
-                        {creator.name}
-                      </div>
-                    </div>
-                  );
-                })}
+            {/* Left scroll arrow */}
+            <button
+              onClick={() => {
+                if (tabsContainerRef.current) {
+                  tabsContainerRef.current.scrollBy({ left: -150, behavior: 'smooth' });
+                }
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '8px 4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                color: isDarkMode ? '#1d9bf0' : '#1d9bf0',
+                minWidth: 20
+              }}
+            >
+              <FaChevronLeft style={{ fontSize: 18 }} />
+            </button>
 
-                {/* Show pending creator if not in followed list */}
-                {selectedCreatorId && pendingCreatorName && !groupedByCreator.find(c => c.id === selectedCreatorId) && (
+            {/* Scrollable Creator profiles */}
+            <div
+              ref={tabsContainerRef}
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 12,
+                overflowX: 'auto',
+                flex: 1,
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                cursor: isDragging ? 'grabbing' : 'grab',
+                userSelect: 'none'
+              }}
+              onMouseDown={(e) => {
+                setIsDragging(true);
+                setDragStartX(e.pageX - tabsContainerRef.current.offsetLeft);
+                setDragScrollLeft(tabsContainerRef.current.scrollLeft);
+              }}
+              onMouseMove={(e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - tabsContainerRef.current.offsetLeft;
+                const walk = (x - dragStartX) * 1.5;
+                tabsContainerRef.current.scrollLeft = dragScrollLeft - walk;
+              }}
+              onMouseUp={() => setIsDragging(false)}
+              onMouseLeave={() => setIsDragging(false)}
+            >
+              {groupedByCreator.map(creator => {
+                const instructor = getInstructorById(creator.instructorId);
+                const isSelected = communityMode === 'creators' && selectedCreatorId === creator.id;
+                return (
                   <div
-                    data-creator-id={selectedCreatorId}
+                    key={creator.id}
+                    data-creator-id={creator.id}
+                    onClick={() => {
+                      setCommunityMode('creators');
+                      setSelectedCreatorId(creator.id);
+                      setPostAudience(creator.id);
+                      setSelectedCourseFilters([]);
+                      setShowPostingCourseDropdown(false);
+                    }}
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
                       cursor: 'pointer',
-                      minWidth: 60,
-                      maxWidth: 70,
-                      opacity: 0.7
+                      minWidth: 56,
+                      maxWidth: 64
                     }}
                   >
                     <div style={{
                       width: 44,
                       height: 44,
                       borderRadius: '50%',
-                      border: '2px solid #1d9bf0',
+                      border: isSelected ? '2px solid #1d9bf0' : '2px solid transparent',
                       padding: 2,
-                      marginBottom: 4
+                      marginBottom: 2
                     }}>
-                      <div style={{
-                        width: '100%',
-                        height: '100%',
-                        borderRadius: '50%',
-                        background: '#1d9bf0',
-                        color: '#fff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 14,
-                        fontWeight: 700
-                      }}>
-                        {pendingCreatorName.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                      </div>
+                      {instructor?.avatar ? (
+                        <img
+                          src={instructor.avatar}
+                          alt={creator.name}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: '50%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: '50%',
+                          background: '#1d9bf0',
+                          color: '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 14,
+                          fontWeight: 700
+                        }}>
+                          {creator.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                        </div>
+                      )}
                     </div>
                     <div style={{
-                      fontSize: 11,
-                      fontWeight: 600,
-                      color: '#1d9bf0',
+                      fontSize: 10,
+                      fontWeight: isSelected ? 600 : 400,
+                      color: isSelected ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                       textAlign: 'center',
                       lineHeight: 1.2,
-                      wordBreak: 'break-word'
+                      maxWidth: 64,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
                     }}>
-                      {pendingCreatorName}
+                      {creator.name}
                     </div>
                   </div>
-                )}
+                );
+              })}
 
-                {/* Find/Add button */}
+              {/* Show pending creator if not in followed list */}
+              {selectedCreatorId && pendingCreatorName && !groupedByCreator.find(c => c.id === selectedCreatorId) && (
                 <div
+                  data-creator-id={selectedCreatorId}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     cursor: 'pointer',
-                    minWidth: 60,
-                    maxWidth: 70
-                  }}
-                  onClick={() => {
-                    if (onMenuChange) {
-                      localStorage.setItem('browseActiveTopMenu', 'creators');
-                      onMenuChange('Browse');
-                    }
+                    minWidth: 56,
+                    maxWidth: 64,
+                    opacity: 0.7
                   }}
                 >
                   <div style={{
                     width: 44,
                     height: 44,
                     borderRadius: '50%',
-                    border: isDarkMode ? '2px dashed #2f3336' : '2px dashed #cfd9de',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: 4
+                    border: '2px solid #1d9bf0',
+                    padding: 2,
+                    marginBottom: 2
                   }}>
-                    <span style={{ fontSize: 20, color: isDarkMode ? '#71767b' : '#536471' }}>+</span>
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '50%',
+                      background: '#1d9bf0',
+                      color: '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 14,
+                      fontWeight: 700
+                    }}>
+                      {pendingCreatorName.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                    </div>
                   </div>
                   <div style={{
-                    fontSize: 11,
-                    fontWeight: 400,
-                    color: isDarkMode ? '#71767b' : '#536471',
-                    textAlign: 'center'
+                    fontSize: 10,
+                    fontWeight: 600,
+                    color: '#1d9bf0',
+                    textAlign: 'center',
+                    lineHeight: 1.2
                   }}>
-                    Find
+                    {pendingCreatorName}
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
 
-          {/* Community Hub Welcome Section - Floating Card */}
-          {communityMode === 'hub' && (
-            <div style={{
-              background: isDarkMode ? '#0a0a0a' : '#fff',
-              borderRadius: 16,
-              padding: '20px',
-              margin: '8px 16px 0 16px',
-              position: 'relative',
-              zIndex: 1,
-              border: isDarkMode ? '1px solid #2f3336' : '1px solid rgba(0, 0, 0, 0.1)',
-              boxShadow: isDarkMode
-                ? '0 0 60px 20px rgba(255, 255, 255, 0.08), 0 0 100px 40px rgba(255, 255, 255, 0.04)'
-                : '0 4px 12px rgba(0, 0, 0, 0.08)'
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12
-              }}>
+              {/* Find/Add button */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  minWidth: 56,
+                  maxWidth: 64
+                }}
+                onClick={() => {
+                  if (onMenuChange) {
+                    localStorage.setItem('browseActiveTopMenu', 'creators');
+                    onMenuChange('Browse');
+                  }
+                }}
+              >
                 <div style={{
-                  width: 48,
-                  height: 48,
+                  width: 44,
+                  height: 44,
                   borderRadius: '50%',
-                  background: '#1d9bf0',
+                  border: isDarkMode ? '2px dashed #2f3336' : '2px dashed #cfd9de',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  marginBottom: 2
                 }}>
-                  <FaUsers style={{ color: '#fff', fontSize: 20 }} />
+                  <span style={{ fontSize: 18, color: isDarkMode ? '#71767b' : '#536471' }}>+</span>
                 </div>
-                <div>
-                  <div style={{
-                    fontSize: 18,
-                    fontWeight: 700,
-                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                    marginBottom: 4
-                  }}>
-                    Welcome to Your Community
-                  </div>
-                  <div style={{
-                    fontSize: 14,
-                    color: isDarkMode ? '#71767b' : '#536471',
-                    lineHeight: 1.4
-                  }}>
-                    Connect with creators, share insights, and learn together. Select a creator above to see their community feed.
-                  </div>
+                <div style={{
+                  fontSize: 10,
+                  fontWeight: 400,
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  textAlign: 'center'
+                }}>
+                  Find
                 </div>
               </div>
             </div>
-          )}
+
+            {/* Right scroll arrow */}
+            <button
+              onClick={() => {
+                if (tabsContainerRef.current) {
+                  tabsContainerRef.current.scrollBy({ left: 150, behavior: 'smooth' });
+                }
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '8px 4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                color: isDarkMode ? '#1d9bf0' : '#1d9bf0',
+                minWidth: 20
+              }}
+            >
+              <FaChevronRight style={{ fontSize: 18 }} />
+            </button>
+          </div>
 
           {/* Mini Creator Profile - Shows when a creator is selected */}
           {communityMode === 'creators' && selectedCreatorId && (() => {
@@ -1405,7 +1389,14 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           fontSize: 14,
                           color: isDarkMode ? '#71767b' : '#536471'
                         }}>
-                          @{instructor.name.replace(/\s+/g, '')} · {(instructor.totalStudents || 0).toLocaleString()} students
+                          {instructor.title}
+                        </div>
+                        <div style={{
+                          fontSize: 13,
+                          color: isDarkMode ? '#71767b' : '#536471',
+                          marginTop: 4
+                        }}>
+                          {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · {Math.floor(Math.random() * 200) + 20} Posts
                         </div>
                       </div>
                     </div>
