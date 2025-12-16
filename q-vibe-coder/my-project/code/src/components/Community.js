@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './Community.css';
-import { FaUsers, FaStar, FaClock, FaPlay, FaBook, FaGraduationCap, FaHome, FaChevronLeft, FaChevronRight, FaHeart, FaComment, FaRetweet, FaBookmark, FaShare, FaChevronDown, FaInfoCircle, FaImage, FaLink, FaPaperclip } from 'react-icons/fa';
+import { FaUsers, FaStar, FaClock, FaPlay, FaBook, FaGraduationCap, FaHome, FaChevronLeft, FaChevronRight, FaHeart, FaComment, FaRetweet, FaBookmark, FaShare, FaChevronDown, FaInfoCircle, FaImage, FaLink, FaPaperclip, FaLandmark } from 'react-icons/fa';
 import { getAllCourses, getInstructorById, getCourseById } from '../data/database';
 import { createPost, getPosts, likePost } from '../services/posts';
 import { initGetStream } from '../services/getstream';
@@ -1784,7 +1784,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 flexDirection: 'column',
                 alignItems: 'center',
                 cursor: 'pointer',
-                minWidth: 56,
+                minWidth: 64,
                 flexShrink: 0,
                 marginRight: 8,
                 borderRight: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
@@ -1792,30 +1792,30 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               }}
             >
               <div style={{
-                width: 56,
-                height: 56,
+                width: 64,
+                height: 64,
                 borderRadius: '50%',
                 border: communityMode === 'hub' ? '3px solid #1d9bf0' : '3px solid transparent',
                 padding: 2,
                 marginBottom: 2,
                 overflow: 'hidden'
               }}>
-                <img
-                  src="https://images.unsplash.com/photo-1555921015-5532091f6026?w=100&h=100&fit=crop&crop=center"
-                  alt="Town Hall"
-                  draggable="false"
-                  onDragStart={(e) => e.preventDefault()}
+                <div
                   style={{
                     width: '100%',
                     height: '100%',
                     borderRadius: '50%',
-                    objectFit: 'cover',
-                    pointerEvents: 'none'
+                    background: 'linear-gradient(135deg, #1d9bf0 0%, #0d8bd9 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
-                />
+                >
+                  <FaLandmark style={{ color: '#fff', fontSize: 28 }} />
+                </div>
               </div>
               <div style={{
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: communityMode === 'hub' ? 600 : 400,
                 color: communityMode === 'hub' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                 textAlign: 'center'
@@ -1895,13 +1895,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       flexDirection: 'column',
                       alignItems: 'center',
                       cursor: 'pointer',
-                      minWidth: 56,
-                      maxWidth: 64
+                      minWidth: 64,
+                      maxWidth: 80
                     }}
                   >
                     <div style={{
-                      width: 56,
-                      height: 56,
+                      width: 64,
+                      height: 64,
                       borderRadius: '50%',
                       border: isSelected ? '3px solid #1d9bf0' : '3px solid transparent',
                       padding: 2,
@@ -1931,7 +1931,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: 700
                         }}>
                           {creator.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
@@ -1939,15 +1939,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       )}
                     </div>
                     <div style={{
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: isSelected ? 600 : 400,
                       color: isSelected ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                       textAlign: 'center',
                       lineHeight: 1.2,
-                      maxWidth: 64,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap'
+                      maxWidth: 80,
+                      wordWrap: 'break-word'
                     }}>
                       {creator.name}
                     </div>
@@ -1964,14 +1962,14 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     flexDirection: 'column',
                     alignItems: 'center',
                     cursor: 'pointer',
-                    minWidth: 56,
-                    maxWidth: 64,
+                    minWidth: 64,
+                    maxWidth: 80,
                     opacity: 0.7
                   }}
                 >
                   <div style={{
-                    width: 56,
-                    height: 56,
+                    width: 64,
+                    height: 64,
                     borderRadius: '50%',
                     border: '3px solid #1d9bf0',
                     padding: 2,
@@ -1986,18 +1984,20 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: 700
                     }}>
                       {pendingCreatorName.split(' ').map(n => n[0]).join('').substring(0, 2)}
                     </div>
                   </div>
                   <div style={{
-                    fontSize: 10,
+                    fontSize: 12,
                     fontWeight: 600,
                     color: '#1d9bf0',
                     textAlign: 'center',
-                    lineHeight: 1.2
+                    lineHeight: 1.2,
+                    maxWidth: 80,
+                    wordWrap: 'break-word'
                   }}>
                     {pendingCreatorName}
                   </div>
@@ -2011,8 +2011,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   flexDirection: 'column',
                   alignItems: 'center',
                   cursor: 'pointer',
-                  minWidth: 56,
-                  maxWidth: 64
+                  minWidth: 64,
+                  maxWidth: 80
                 }}
                 onClick={() => {
                   if (onMenuChange) {
@@ -2022,8 +2022,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 }}
               >
                 <div style={{
-                  width: 44,
-                  height: 44,
+                  width: 52,
+                  height: 52,
                   borderRadius: '50%',
                   border: isDarkMode ? '2px dashed #2f3336' : '2px dashed #cfd9de',
                   display: 'flex',
@@ -2031,10 +2031,10 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   justifyContent: 'center',
                   marginBottom: 2
                 }}>
-                  <span style={{ fontSize: 18, color: isDarkMode ? '#71767b' : '#536471' }}>+</span>
+                  <span style={{ fontSize: 20, color: isDarkMode ? '#71767b' : '#536471' }}>+</span>
                 </div>
                 <div style={{
-                  fontSize: 10,
+                  fontSize: 12,
                   fontWeight: 400,
                   color: isDarkMode ? '#71767b' : '#536471',
                   textAlign: 'center'
@@ -2071,16 +2071,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
           {/* Town Hall Profile Card - Shows when Town Hall is selected */}
           {communityMode === 'hub' && (
             <div style={{
-              background: isDarkMode ? '#0a0a0a' : '#fff',
+              background: isDarkMode ? '#1f2937' : '#f9fafb',
               borderRadius: 12,
               padding: '12px 16px',
               margin: '8px 16px 0 16px',
               position: 'relative',
               zIndex: 1,
-              border: isDarkMode ? '1px solid #2f3336' : '1px solid rgba(0, 0, 0, 0.1)',
-              boxShadow: isDarkMode
-                ? '0 0 60px 20px rgba(255, 255, 255, 0.08), 0 0 100px 40px rgba(255, 255, 255, 0.04)'
-                : '0 4px 12px rgba(0, 0, 0, 0.08)'
+              border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb'
             }}>
               {/* Town Hall Info Row */}
               <div style={{
@@ -2089,17 +2086,20 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 gap: 10
               }}>
                 {/* Avatar */}
-                <img
-                  src="https://images.unsplash.com/photo-1555921015-5532091f6026?w=100&h=100&fit=crop&crop=center"
-                  alt="Town Hall"
+                <div
                   style={{
                     width: 44,
                     height: 44,
                     borderRadius: '50%',
-                    objectFit: 'cover',
+                    background: 'linear-gradient(135deg, #1d9bf0 0%, #0d8bd9 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     flexShrink: 0
                   }}
-                />
+                >
+                  <FaLandmark style={{ color: '#fff', fontSize: 20 }} />
+                </div>
 
                 {/* Town Hall Details */}
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -2139,16 +2139,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
             
             return (
               <div style={{
-                background: isDarkMode ? '#0a0a0a' : '#fff',
+                background: isDarkMode ? '#1f2937' : '#f9fafb',
                 borderRadius: 12,
                 padding: '12px 16px',
                 margin: '8px 16px 0 16px',
                 position: 'relative',
                 zIndex: 1,
-                border: isDarkMode ? '1px solid #2f3336' : '1px solid rgba(0, 0, 0, 0.1)',
-                boxShadow: isDarkMode
-                  ? '0 0 60px 20px rgba(255, 255, 255, 0.08), 0 0 100px 40px rgba(255, 255, 255, 0.04)'
-                  : '0 4px 12px rgba(0, 0, 0, 0.08)'
+                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb'
               }}>
                 {/* Creator Info Row */}
                 <div style={{
