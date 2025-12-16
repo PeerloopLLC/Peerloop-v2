@@ -2077,7 +2077,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               margin: '8px 16px 0 16px',
               position: 'relative',
               zIndex: 1,
-              border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb'
+              border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+                boxShadow: isDarkMode ? '0 0 30px 12px #555' : 'none'
             }}>
               {/* Town Hall Info Row */}
               <div style={{
@@ -2145,7 +2146,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 margin: '8px 16px 0 16px',
                 position: 'relative',
                 zIndex: 1,
-                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb'
+                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+                boxShadow: isDarkMode ? '0 0 30px 12px #555' : 'none'
               }}>
                 {/* Creator Info Row */}
                 <div style={{
