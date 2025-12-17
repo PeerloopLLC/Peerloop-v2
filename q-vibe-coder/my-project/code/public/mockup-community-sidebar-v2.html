@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeerLoop Community - Sidebar Creators v2</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      color: #e7e9ea;
+      min-height: 100vh;
+    }
+
+    .app {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: 240px;
+      padding: 16px 12px;
+      border-right: 1px solid #2f3336;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      margin-bottom: 16px;
+    }
+
+    .logo-icon {
+      font-size: 24px;
+      color: #1d9bf0;
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 15px;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Navigation */
+    .nav-list {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 15px;
+      color: #e7e9ea;
+    }
+
+    .nav-item:hover {
+      background: #181818;
+    }
+
+    .nav-item.active {
+      font-weight: 700;
+      color: #1d9bf0;
+    }
+
+    .nav-icon {
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+    }
+
+    /* Divider */
+    .sidebar-divider {
+      height: 1px;
+      background: #2f3336;
+      margin: 8px 12px 16px;
+    }
+
+    /* Creators Section */
+    .creators-section {
+      flex: 1;
+    }
+
+    .creators-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 14px;
+      margin-bottom: 12px;
+    }
+
+    .creators-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .creator-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .creator-item:hover {
+      background: #181818;
+    }
+
+    .creator-item.active {
+      background: rgba(29, 155, 240, 0.1);
+    }
+
+    .creator-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid transparent;
+    }
+
+    .creator-item.active .creator-avatar {
+      border-color: #1d9bf0;
+    }
+
+    /* Town Hall special styling */
+    .creator-item.town-hall .creator-avatar {
+      background: #1d9bf0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border-radius: 12px;
+    }
+
+    .creator-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .creator-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #e7e9ea;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .creator-course {
+      font-size: 12px;
+      color: #71767b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .creator-unread {
+      width: 8px;
+      height: 8px;
+      background: #1d9bf0;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .browse-creators {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      color: #71767b;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 12px;
+      margin-top: 4px;
+    }
+
+    .browse-creators:hover {
+      background: #181818;
+      color: #1d9bf0;
+    }
+
+    .browse-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #2f3336;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* User Card */
+    .user-card {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+
+    .user-card:hover {
+      background: #181818;
+    }
+
+    .user-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .user-handle {
+      color: #71767b;
+      font-size: 13px;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      max-width: 650px;
+      border-right: 1px solid #2f3336;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2f3336;
+      position: sticky;
+      top: 0;
+      background: rgba(10, 10, 15, 0.9);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    /* Profile Card - Dynamic */
+    .profile-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+      border-bottom: 1px solid #2f3336;
+      transition: all 0.3s ease;
+    }
+
+    .profile-card.town-hall {
+      background: linear-gradient(135deg, rgba(29, 155, 240, 0.1) 0%, rgba(29, 155, 240, 0.02) 100%);
+    }
+
+    .profile-card.creator {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.02) 100%);
+    }
+
+    .profile-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .profile-icon.town-hall {
+      background: #1d9bf0;
+    }
+
+    .profile-icon.creator {
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile-content {
+      flex: 1;
+    }
+
+    .profile-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .profile-card.town-hall .profile-title {
+      color: #1d9bf0;
+    }
+
+    .profile-card.creator .profile-title {
+      color: #a78bfa;
+    }
+
+    .profile-subtitle {
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 8px;
+    }
+
+    .profile-desc {
+      font-size: 14px;
+      color: #a1a1aa;
+      line-height: 1.5;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .profile-stat {
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    .profile-stat strong {
+      color: #e7e9ea;
+    }
+
+    .follow-btn {
+      padding: 8px 20px;
+      background: #8b5cf6;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .follow-btn:hover {
+      background: #7c3aed;
+    }
+
+    /* Post Composer */
+    .composer {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .composer-inner {
+      display: flex;
+      gap: 12px;
+    }
+
+    .composer-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .composer-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e7e9ea;
+      font-size: 15px;
+      padding: 10px 0;
+      resize: none;
+    }
+
+    .composer-input::placeholder {
+      color: #71767b;
+    }
+
+    .composer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-left: 52px;
+    }
+
+    .composer-tools {
+      display: flex;
+      gap: 4px;
+    }
+
+    .composer-tool {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: #1d9bf0;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .composer-tool:hover {
+      background: rgba(29, 155, 240, 0.1);
+    }
+
+    .post-btn {
+      padding: 8px 20px;
+      background: #1d9bf0;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+
+    /* Posts */
+    .post {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2f3336;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .post:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .post-meta {
+      flex: 1;
+    }
+
+    .post-author-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .post-author {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .post-handle {
+      color: #71767b;
+      font-size: 14px;
+    }
+
+    .post-time {
+      color: #71767b;
+      font-size: 14px;
+    }
+
+    .post-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      background: rgba(29, 155, 240, 0.1);
+      border-radius: 4px;
+      font-size: 12px;
+      color: #1d9bf0;
+      margin-top: 4px;
+    }
+
+    .post-badge.pinned {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+    }
+
+    .post-content {
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      padding-left: 52px;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 48px;
+      padding-left: 52px;
+    }
+
+    .post-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #71767b;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .post-action:hover {
+      color: #1d9bf0;
+    }
+
+    .post-action.liked {
+      color: #f91880;
+    }
+
+    /* Mockup Note */
+    .mockup-note {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1d9bf0;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">∞</span>
+        <span class="logo-text">PeerLoop</span>
+      </div>
+
+      <ul class="nav-list">
+        <li class="nav-item active">
+          <span class="nav-icon">👥</span>
+          <span>Community</span>
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">🔍</span>
+          <span>Browse</span>
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">🔔</span>
+          <span>Notifications</span>
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">✉️</span>
+          <span>Messages</span>
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">👤</span>
+          <span>Profile</span>
+        </li>
+      </ul>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Creators Section - Town Hall always on top -->
+      <div class="creators-section">
+        <div class="creators-title">Your Creators</div>
+        <div class="creators-list">
+          <!-- Town Hall - Always First -->
+          <div class="creator-item town-hall active" onclick="selectCreator('townhall')" data-id="townhall">
+            <div class="creator-avatar">🏛️</div>
+            <div class="creator-info">
+              <div class="creator-name">Town Hall</div>
+              <div class="creator-course">Community Hub</div>
+            </div>
+          </div>
+
+          <!-- Creators -->
+          <div class="creator-item" onclick="selectCreator('einstein')" data-id="einstein">
+            <img src="https://i.pravatar.cc/36?img=68" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">Albert Einstein</div>
+              <div class="creator-course">Python, ML, AI</div>
+            </div>
+          </div>
+          <div class="creator-item" onclick="selectCreator('jane')" data-id="jane">
+            <img src="https://i.pravatar.cc/36?img=32" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">Jane Doe</div>
+              <div class="creator-course">AI for PMs, NLP</div>
+            </div>
+            <div class="creator-unread"></div>
+          </div>
+          <div class="creator-item" onclick="selectCreator('maria')" data-id="maria">
+            <img src="https://i.pravatar.cc/36?img=47" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">Prof. Maria Rodriguez</div>
+              <div class="creator-course">Data Science, BI</div>
+            </div>
+          </div>
+          <div class="creator-item" onclick="selectCreator('james')" data-id="james">
+            <img src="https://i.pravatar.cc/36?img=52" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">James Wilson</div>
+              <div class="creator-course">Full-Stack, DevOps</div>
+            </div>
+          </div>
+          <div class="creator-item" onclick="selectCreator('priya')" data-id="priya">
+            <img src="https://i.pravatar.cc/36?img=26" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">Dr. Priya Nair</div>
+              <div class="creator-course">Robotics, Medical AI</div>
+            </div>
+          </div>
+          <div class="creator-item" onclick="selectCreator('elena')" data-id="elena">
+            <img src="https://i.pravatar.cc/36?img=44" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">Prof. Elena Petrova</div>
+              <div class="creator-course">AI Ethics, Finance</div>
+            </div>
+          </div>
+          <div class="browse-creators">
+            <div class="browse-icon">+</div>
+            <span>Browse creators</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="user-card">
+        <div class="user-avatar">AS</div>
+        <div>
+          <div class="user-name">Alex Sanders</div>
+          <div class="user-handle">@alexsanders</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="header">
+        <div class="header-title">Community</div>
+      </div>
+
+      <!-- Dynamic Profile Card -->
+      <div id="profile-card" class="profile-card town-hall">
+        <div id="profile-icon" class="profile-icon town-hall">🏛️</div>
+        <div class="profile-content">
+          <div id="profile-title" class="profile-title">Town Hall</div>
+          <div id="profile-subtitle" class="profile-subtitle">Community Discussion Hub</div>
+          <div id="profile-desc" class="profile-desc">Welcome to the Town Hall — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners across all courses and creators.</div>
+          <div id="profile-stats" class="profile-stats" style="display: none;">
+            <span class="profile-stat"><strong>12</strong> courses</span>
+            <span class="profile-stat"><strong>4.9</strong> rating</span>
+            <span class="profile-stat"><strong>2.3k</strong> students</span>
+          </div>
+          <button id="follow-btn" class="follow-btn" style="display: none;">Follow</button>
+        </div>
+      </div>
+
+      <!-- Post Composer -->
+      <div class="composer">
+        <div class="composer-inner">
+          <div class="composer-avatar">AS</div>
+          <input type="text" class="composer-input" placeholder="What's on your mind? Share with the community..." />
+        </div>
+        <div class="composer-actions">
+          <div class="composer-tools">
+            <button class="composer-tool">🖼️</button>
+            <button class="composer-tool">🔗</button>
+            <button class="composer-tool">📎</button>
+          </div>
+          <button class="post-btn">Post</button>
+        </div>
+      </div>
+
+      <!-- Posts -->
+      <div id="posts-container">
+        <div class="post">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/40?img=60" class="post-avatar" />
+            <div class="post-meta">
+              <div class="post-author-row">
+                <span class="post-author">PeerLoop Team</span>
+                <span class="post-handle">@peerloop</span>
+                <span class="post-time">· 1 day ago</span>
+              </div>
+              <div class="post-badge pinned">📌 Pinned</div>
+              <div class="post-badge">Town Hall</div>
+            </div>
+          </div>
+          <div class="post-content">
+            Welcome to the Town Hall! This is your community-wide space where all PeerLoop members connect. Share your learning journey, ask questions, celebrate wins, and support fellow learners across ALL courses. Let's grow together! 🌟
+          </div>
+          <div class="post-actions">
+            <span class="post-action">💬 128</span>
+            <span class="post-action">🔄 735</span>
+            <span class="post-action liked">❤️ 2450</span>
+            <span class="post-action">🔖</span>
+            <span class="post-action">↗️</span>
+          </div>
+        </div>
+
+        <div class="post">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/40?img=60" class="post-avatar" />
+            <div class="post-meta">
+              <div class="post-author-row">
+                <span class="post-author">PeerLoop Team</span>
+                <span class="post-handle">@peerloop</span>
+                <span class="post-time">· 3 hours ago</span>
+              </div>
+              <div class="post-badge">Town Hall</div>
+            </div>
+          </div>
+          <div class="post-content">
+            New Feature: You can now follow creators for FREE Town Hall access! Purchase courses to unlock full content and become a Student-Teacher earning 70% commission. The learn-teach-earn flywheel is now even easier to join!
+          </div>
+          <div class="post-actions">
+            <span class="post-action">💬 95</span>
+            <span class="post-action">🔄 546</span>
+            <span class="post-action">❤️ 1820</span>
+            <span class="post-action">🔖</span>
+            <span class="post-action">↗️</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="mockup-note">Click creators in sidebar - profile card changes</div>
+
+  <script>
+    const creators = {
+      townhall: {
+        type: 'townhall',
+        icon: '🏛️',
+        title: 'Town Hall',
+        subtitle: 'Community Discussion Hub',
+        desc: 'Welcome to the Town Hall — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners across all courses and creators.',
+        showStats: false,
+        showFollow: false
+      },
+      einstein: {
+        type: 'creator',
+        avatar: 'https://i.pravatar.cc/56?img=68',
+        title: 'Albert Einstein',
+        subtitle: 'Python, Machine Learning, AI Fundamentals',
+        desc: 'Nobel laureate and visionary physicist bringing complex AI and ML concepts to life. Known for making the impossible understandable through elegant analogies and hands-on projects.',
+        stats: { courses: 5, rating: 4.9, students: '3.2k' },
+        showStats: true,
+        showFollow: true
+      },
+      jane: {
+        type: 'creator',
+        avatar: 'https://i.pravatar.cc/56?img=32',
+        title: 'Jane Doe',
+        subtitle: 'AI for Product Managers, NLP',
+        desc: 'Former Google PM turned educator. Specializes in bridging the gap between technical AI concepts and business applications. Perfect for non-technical professionals.',
+        stats: { courses: 3, rating: 4.8, students: '1.8k' },
+        showStats: true,
+        showFollow: true
+      },
+      maria: {
+        type: 'creator',
+        avatar: 'https://i.pravatar.cc/56?img=47',
+        title: 'Prof. Maria Rodriguez',
+        subtitle: 'Data Science, Business Intelligence',
+        desc: 'Stanford professor with 15 years in data science. Her courses transform beginners into confident data analysts ready for real-world challenges.',
+        stats: { courses: 4, rating: 4.9, students: '2.5k' },
+        showStats: true,
+        showFollow: true
+      },
+      james: {
+        type: 'creator',
+        avatar: 'https://i.pravatar.cc/56?img=52',
+        title: 'James Wilson',
+        subtitle: 'Full-Stack Development, DevOps, Microservices',
+        desc: 'Senior engineer at Netflix. Teaching modern web development with real-world production patterns. From zero to deployed in weeks, not months.',
+        stats: { courses: 6, rating: 4.7, students: '4.1k' },
+        showStats: true,
+        showFollow: true
+      },
+      priya: {
+        type: 'creator',
+        avatar: 'https://i.pravatar.cc/56?img=26',
+        title: 'Dr. Priya Nair',
+        subtitle: 'AI for Robotics, Medical AI',
+        desc: 'MIT robotics researcher pioneering AI applications in healthcare and automation. Cutting-edge curriculum for those ready to push boundaries.',
+        stats: { courses: 2, rating: 4.9, students: '890' },
+        showStats: true,
+        showFollow: true
+      },
+      elena: {
+        type: 'creator',
+        avatar: 'https://i.pravatar.cc/56?img=44',
+        title: 'Prof. Elena Petrova',
+        subtitle: 'AI Ethics, Finance AI',
+        desc: 'Harvard ethics professor exploring the intersection of AI and society. Essential learning for responsible AI practitioners and business leaders.',
+        stats: { courses: 3, rating: 4.8, students: '1.2k' },
+        showStats: true,
+        showFollow: true
+      }
+    };
+
+    function selectCreator(id) {
+      // Update active state in sidebar
+      document.querySelectorAll('.creator-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      document.querySelector(`.creator-item[data-id="${id}"]`).classList.add('active');
+
+      // Update profile card
+      const creator = creators[id];
+      const card = document.getElementById('profile-card');
+      const icon = document.getElementById('profile-icon');
+      const title = document.getElementById('profile-title');
+      const subtitle = document.getElementById('profile-subtitle');
+      const desc = document.getElementById('profile-desc');
+      const stats = document.getElementById('profile-stats');
+      const followBtn = document.getElementById('follow-btn');
+
+      // Update card class
+      card.className = 'profile-card ' + creator.type;
+
+      // Update icon
+      if (creator.type === 'townhall') {
+        icon.className = 'profile-icon town-hall';
+        icon.innerHTML = creator.icon;
+      } else {
+        icon.className = 'profile-icon creator';
+        icon.innerHTML = `<img src="${creator.avatar}" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover;" />`;
+      }
+
+      // Update text content
+      title.textContent = creator.title;
+      subtitle.textContent = creator.subtitle;
+      desc.textContent = creator.desc;
+
+      // Update stats
+      if (creator.showStats) {
+        stats.style.display = 'flex';
+        stats.innerHTML = `
+          <span class="profile-stat"><strong>${creator.stats.courses}</strong> courses</span>
+          <span class="profile-stat"><strong>${creator.stats.rating}</strong> rating</span>
+          <span class="profile-stat"><strong>${creator.stats.students}</strong> students</span>
+        `;
+      } else {
+        stats.style.display = 'none';
+      }
+
+      // Update follow button
+      followBtn.style.display = creator.showFollow ? 'inline-block' : 'none';
+    }
+  </script>
+</body>
+</html>

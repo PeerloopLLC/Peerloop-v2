@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeerLoop Community - Profile Feeds v3</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      color: #e7e9ea;
+      min-height: 100vh;
+    }
+
+    .app {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: 240px;
+      padding: 16px 12px;
+      border-right: 1px solid #2f3336;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      margin-bottom: 16px;
+    }
+
+    .logo-icon {
+      font-size: 24px;
+      color: #1d9bf0;
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 15px;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Navigation */
+    .nav-list {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 15px;
+      color: #e7e9ea;
+    }
+
+    .nav-item:hover {
+      background: #181818;
+    }
+
+    .nav-item.active {
+      font-weight: 700;
+      color: #1d9bf0;
+    }
+
+    .nav-icon {
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+    }
+
+    /* Divider */
+    .sidebar-divider {
+      height: 1px;
+      background: #2f3336;
+      margin: 8px 12px 16px;
+    }
+
+    /* Creators Section */
+    .creators-section {
+      flex: 1;
+    }
+
+    .creators-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 14px;
+      margin-bottom: 12px;
+    }
+
+    .creators-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .creator-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .creator-item:hover {
+      background: #181818;
+    }
+
+    .creator-item.active {
+      background: rgba(29, 155, 240, 0.1);
+    }
+
+    .creator-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid transparent;
+    }
+
+    .creator-item.active .creator-avatar {
+      border-color: #1d9bf0;
+    }
+
+    .creator-item.commons .creator-avatar {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border-radius: 12px;
+    }
+
+    .creator-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .creator-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #e7e9ea;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .creator-course {
+      font-size: 12px;
+      color: #71767b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .creator-unread {
+      width: 8px;
+      height: 8px;
+      background: #1d9bf0;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .browse-creators {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      color: #71767b;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 12px;
+      margin-top: 4px;
+    }
+
+    .browse-creators:hover {
+      background: #181818;
+      color: #1d9bf0;
+    }
+
+    .browse-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #2f3336;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* User Card */
+    .user-card {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+
+    .user-card:hover {
+      background: #181818;
+    }
+
+    .user-avatar-small {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .user-handle {
+      color: #71767b;
+      font-size: 13px;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      max-width: 650px;
+      border-right: 1px solid #2f3336;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2f3336;
+      position: sticky;
+      top: 0;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    /* Profile Card */
+    .profile-card {
+      padding: 20px;
+      border-bottom: 1px solid #2f3336;
+      transition: all 0.3s ease;
+    }
+
+    .profile-card.commons {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+    }
+
+    .profile-card.creator {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.02) 100%);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .profile-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .profile-icon.commons {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    }
+
+    .profile-icon img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile-content {
+      flex: 1;
+    }
+
+    .profile-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .profile-card.commons .profile-title {
+      color: #a78bfa;
+    }
+
+    .profile-card.creator .profile-title {
+      color: #a78bfa;
+    }
+
+    .profile-subtitle {
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 8px;
+    }
+
+    .profile-desc {
+      font-size: 14px;
+      color: #a1a1aa;
+      line-height: 1.5;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .profile-stat {
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    .profile-stat strong {
+      color: #e7e9ea;
+    }
+
+    .follow-btn {
+      padding: 8px 20px;
+      background: #8b5cf6;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .follow-btn:hover {
+      background: #7c3aed;
+    }
+
+    .follow-btn.following {
+      background: transparent;
+      border: 1px solid #8b5cf6;
+      color: #8b5cf6;
+    }
+
+    /* Feed Switcher */
+    .feed-switcher {
+      display: flex;
+      gap: 4px;
+      padding: 12px 20px;
+      border-bottom: 1px solid #2f3336;
+      background: rgba(10, 10, 15, 0.8);
+      overflow-x: auto;
+    }
+
+    .feed-tab {
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #71767b;
+    }
+
+    .feed-tab:hover {
+      background: #181818;
+      color: #e7e9ea;
+    }
+
+    .feed-tab.active {
+      background: #1d9bf0;
+      color: white;
+    }
+
+    .feed-tab.locked {
+      color: #3f3f46;
+      cursor: not-allowed;
+    }
+
+    .feed-tab.locked:hover {
+      background: transparent;
+      color: #3f3f46;
+    }
+
+    .lock-icon {
+      margin-left: 4px;
+      font-size: 12px;
+    }
+
+    /* Post Composer */
+    .composer {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .composer-inner {
+      display: flex;
+      gap: 12px;
+    }
+
+    .composer-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .composer-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e7e9ea;
+      font-size: 15px;
+      padding: 10px 0;
+      resize: none;
+    }
+
+    .composer-input::placeholder {
+      color: #71767b;
+    }
+
+    .composer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-left: 52px;
+    }
+
+    .composer-tools {
+      display: flex;
+      gap: 4px;
+    }
+
+    .composer-tool {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: #1d9bf0;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .composer-tool:hover {
+      background: rgba(29, 155, 240, 0.1);
+    }
+
+    .post-btn {
+      padding: 8px 20px;
+      background: #1d9bf0;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+
+    /* Posts */
+    .posts-container {
+      min-height: 400px;
+    }
+
+    .post {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2f3336;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .post:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .post-meta {
+      flex: 1;
+    }
+
+    .post-author-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .post-author {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .post-handle {
+      color: #71767b;
+      font-size: 14px;
+    }
+
+    .post-time {
+      color: #71767b;
+      font-size: 14px;
+    }
+
+    .post-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-top: 4px;
+      margin-right: 6px;
+    }
+
+    .post-badge.course {
+      background: rgba(139, 92, 246, 0.15);
+      color: #a78bfa;
+    }
+
+    .post-badge.townhall {
+      background: rgba(29, 155, 240, 0.1);
+      color: #1d9bf0;
+    }
+
+    .post-badge.question {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+    }
+
+    .post-badge.win {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+
+    .post-badge.helpful {
+      background: rgba(236, 72, 153, 0.15);
+      color: #f472b6;
+    }
+
+    .post-content {
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      padding-left: 52px;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 32px;
+      padding-left: 52px;
+    }
+
+    .post-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #71767b;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .post-action:hover {
+      color: #1d9bf0;
+    }
+
+    .post-action.liked {
+      color: #f91880;
+    }
+
+    .post-action.helpful-btn:hover {
+      color: #10b981;
+    }
+
+    /* Goodwill indicator */
+    .goodwill-earn {
+      font-size: 11px;
+      color: #10b981;
+      margin-left: 4px;
+    }
+
+    /* Right Sidebar */
+    .right-sidebar {
+      width: 300px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar-card {
+      background: #12121a;
+      border: 1px solid #2f3336;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .sidebar-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .goodwill-display {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .goodwill-points {
+      font-size: 28px;
+      font-weight: 700;
+      color: #10b981;
+    }
+
+    .goodwill-label {
+      font-size: 12px;
+      color: #71767b;
+    }
+
+    .goodwill-today {
+      font-size: 13px;
+      color: #10b981;
+    }
+
+    .goodwill-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      font-size: 13px;
+      color: #34d399;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .goodwill-action:hover {
+      background: rgba(16, 185, 129, 0.15);
+    }
+
+    .session-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      background: #1a1a24;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .session-time {
+      font-size: 12px;
+      color: #71767b;
+      min-width: 50px;
+    }
+
+    .session-info {
+      flex: 1;
+    }
+
+    .session-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: #e7e9ea;
+    }
+
+    .session-with {
+      font-size: 12px;
+      color: #71767b;
+    }
+
+    .session-countdown {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1d9bf0;
+    }
+
+    /* Mockup Note */
+    .mockup-note {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #8b5cf6;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">∞</span>
+        <span class="logo-text">PeerLoop</span>
+      </div>
+
+      <ul class="nav-list">
+        <li class="nav-item active">
+          <span class="nav-icon">👥</span>
+          <span>Community</span>
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">🔍</span>
+          <span>Browse</span>
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">✉️</span>
+          <span>Messages</span>
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">👤</span>
+          <span>Profile</span>
+        </li>
+      </ul>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Creators Section -->
+      <div class="creators-section">
+        <div class="creators-title">Your Creators</div>
+        <div class="creators-list">
+          <!-- Commons - Aggregated Feed -->
+          <div class="creator-item commons active" onclick="selectView('commons')" data-id="commons">
+            <div class="creator-avatar">🌐</div>
+            <div class="creator-info">
+              <div class="creator-name">The Commons</div>
+              <div class="creator-course">All your feeds</div>
+            </div>
+          </div>
+
+          <!-- Creators -->
+          <div class="creator-item" onclick="selectView('einstein')" data-id="einstein">
+            <img src="https://i.pravatar.cc/36?img=68" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">Albert Einstein</div>
+              <div class="creator-course">5 courses</div>
+            </div>
+            <div class="creator-unread"></div>
+          </div>
+          <div class="creator-item" onclick="selectView('jane')" data-id="jane">
+            <img src="https://i.pravatar.cc/36?img=32" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">Jane Doe</div>
+              <div class="creator-course">3 courses</div>
+            </div>
+          </div>
+          <div class="creator-item" onclick="selectView('maria')" data-id="maria">
+            <img src="https://i.pravatar.cc/36?img=47" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">Prof. Maria</div>
+              <div class="creator-course">4 courses</div>
+            </div>
+          </div>
+          <div class="browse-creators">
+            <div class="browse-icon">+</div>
+            <span>Browse creators</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="user-card">
+        <div class="user-avatar-small">AS</div>
+        <div>
+          <div class="user-name">Alex Sanders</div>
+          <div class="user-handle">@alexsanders</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="header">
+        <div class="header-title">Community</div>
+      </div>
+
+      <!-- Profile Card -->
+      <div id="profile-card" class="profile-card commons">
+        <div class="profile-header">
+          <div id="profile-icon" class="profile-icon commons">🌐</div>
+          <div class="profile-content">
+            <div id="profile-title" class="profile-title">The Commons</div>
+            <div id="profile-subtitle" class="profile-subtitle">Your personalized learning feed</div>
+            <div id="profile-desc" class="profile-desc">AI-curated content from all your communities. Questions you can answer, discussions relevant to your progress, and wins from your peers.</div>
+          </div>
+        </div>
+        <div id="profile-stats" class="profile-stats" style="display: none;"></div>
+        <button id="follow-btn" class="follow-btn" style="display: none;">Follow</button>
+      </div>
+
+      <!-- Feed Switcher (appears when viewing a creator) -->
+      <div id="feed-switcher" class="feed-switcher" style="display: none;">
+        <!-- Tabs populated by JS -->
+      </div>
+
+      <!-- Post Composer -->
+      <div class="composer">
+        <div class="composer-inner">
+          <div class="composer-avatar">AS</div>
+          <input type="text" class="composer-input" placeholder="Share with the community..." />
+        </div>
+        <div class="composer-actions">
+          <div class="composer-tools">
+            <button class="composer-tool">🖼️</button>
+            <button class="composer-tool">🔗</button>
+          </div>
+          <button class="post-btn">Post</button>
+        </div>
+      </div>
+
+      <!-- Posts Container -->
+      <div id="posts-container" class="posts-container">
+        <!-- Posts populated by JS -->
+      </div>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+      <!-- Goodwill Points -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Your Goodwill</div>
+        <div class="goodwill-display">
+          <span class="goodwill-points">1,240</span>
+          <div>
+            <div class="goodwill-label">points</div>
+            <div class="goodwill-today">+35 today</div>
+          </div>
+        </div>
+        <div class="goodwill-action">
+          💡 3 questions you could help with
+        </div>
+      </div>
+
+      <!-- Upcoming Sessions -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Your Sessions</div>
+        <div class="session-item">
+          <div class="session-time">Today</div>
+          <div class="session-info">
+            <div class="session-title">Python Module 4</div>
+            <div class="session-with">with Sarah K.</div>
+          </div>
+          <div class="session-countdown">2h 15m</div>
+        </div>
+        <div class="session-item">
+          <div class="session-time">Thu</div>
+          <div class="session-info">
+            <div class="session-title">Data Science Mod 2</div>
+            <div class="session-with">with Mike C.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Progress -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Your Progress</div>
+        <div class="session-item">
+          <div style="font-size: 20px;">🐍</div>
+          <div class="session-info">
+            <div class="session-title">Python Basics</div>
+            <div class="session-with">Module 4 of 6</div>
+          </div>
+          <div style="color: #71767b; font-size: 13px;">65%</div>
+        </div>
+        <div class="session-item">
+          <div style="font-size: 20px;">📊</div>
+          <div class="session-info">
+            <div class="session-title">Data Science</div>
+            <div class="session-with">Module 2 of 8</div>
+          </div>
+          <div style="color: #71767b; font-size: 13px;">25%</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="mockup-note">Click creators → see Town Hall + purchased course tabs</div>
+
+  <script>
+    // Data structure
+    const views = {
+      commons: {
+        type: 'commons',
+        title: 'The Commons',
+        subtitle: 'Your personalized learning feed',
+        desc: 'AI-curated content from all your communities. Questions you can answer, discussions relevant to your progress, and wins from your peers.',
+        showFeedSwitcher: false,
+        posts: [
+          { type: 'question', course: 'Python Basics', author: 'Mike Chen', avatar: 'https://i.pravatar.cc/40?img=12', handle: '@mikechen', time: '25m ago', content: 'Can someone explain decorators in simple terms? I get the syntax but not WHY we use them. Stuck on Module 3.', badge: 'question', goodwill: '+10' },
+          { type: 'helpful', course: 'Data Science', author: 'Sarah Kim', avatar: 'https://i.pravatar.cc/40?img=25', handle: '@sarahkim', time: '1h ago', content: 'For anyone struggling with pandas merge vs join - here\'s how I finally understood it: merge is like SQL JOIN, join is index-based. Once I got that, everything clicked!', badge: 'helpful', goodwill: '+15' },
+          { type: 'win', course: 'Python Basics', author: 'Alex Rivera', avatar: 'https://i.pravatar.cc/40?img=33', handle: '@alexrivera', time: '2h ago', content: '🎉 Just passed my Python certification! 3 months ago I couldn\'t write a loop. Now I\'m in the teaching pool. The peer model works!', badge: 'win' },
+          { type: 'question', course: 'AI for PMs', author: 'Jordan Lee', avatar: 'https://i.pravatar.cc/40?img=41', handle: '@jordanlee', time: '3h ago', content: 'How do you explain transformers to non-technical stakeholders? My boss wants a "simple explanation" for the board meeting.', badge: 'question', goodwill: '+10' },
+        ]
+      },
+      einstein: {
+        type: 'creator',
+        title: 'Albert Einstein',
+        subtitle: 'Python, Machine Learning, AI Fundamentals',
+        desc: 'Teaching complex concepts through elegant analogies. 5 courses, 3.2k students taught.',
+        avatar: 'https://i.pravatar.cc/56?img=68',
+        showFeedSwitcher: true,
+        tabs: [
+          { id: 'townhall', label: 'Town Hall', locked: false },
+          { id: 'python', label: 'Python Basics', locked: false },  // User purchased
+          { id: 'ml', label: 'ML Fundamentals', locked: true },     // Not purchased
+          { id: 'ai', label: 'AI Fundamentals', locked: true },     // Not purchased
+          { id: 'deep', label: 'Deep Learning', locked: true },     // Not purchased
+          { id: 'accel', label: 'AI Accelerator', locked: true },   // Not purchased
+        ],
+        feeds: {
+          townhall: [
+            { type: 'announcement', author: 'Albert Einstein', avatar: 'https://i.pravatar.cc/40?img=68', handle: '@einstein', time: '2h ago', content: 'Office hours this Friday at 3pm EST! Bring your toughest questions. All followers welcome.', badge: 'townhall' },
+            { type: 'discussion', author: 'NewbieCoder', avatar: 'https://i.pravatar.cc/40?img=15', handle: '@newbiecoder', time: '4h ago', content: 'Which course should I start with if I have zero programming experience? Python Basics or ML Fundamentals?', badge: 'townhall' },
+            { type: 'win', author: 'CodeMaster99', avatar: 'https://i.pravatar.cc/40?img=22', handle: '@codemaster99', time: '6h ago', content: 'Just enrolled in Python Basics! Excited to start this journey. Any tips from people who finished?', badge: 'townhall' },
+          ],
+          python: [
+            { type: 'question', author: 'Mike Chen', avatar: 'https://i.pravatar.cc/40?img=12', handle: '@mikechen', time: '25m ago', content: 'Module 3 decorators question: Why does @property work differently than regular decorators? The video didn\'t fully explain.', badge: 'course', goodwill: '+10' },
+            { type: 'helpful', author: 'Sarah Kim', avatar: 'https://i.pravatar.cc/40?img=25', handle: '@sarahkim', time: '1h ago', content: '@mikechen - @property is a built-in decorator that turns a method into a "getter" for a read-only attribute. Think of it as making method calls look like attribute access. Happy to hop on a quick call if you\'re still stuck!', badge: 'course', goodwill: '+20' },
+            { type: 'scheduling', author: 'TutorTom', avatar: 'https://i.pravatar.cc/40?img=18', handle: '@tutortom', time: '2h ago', content: '📅 I have a 4pm slot open today if anyone needs help with Module 3-4. Certified Student-Teacher, 4.9 rating.', badge: 'course' },
+            { type: 'win', author: 'Alex Rivera', avatar: 'https://i.pravatar.cc/40?img=33', handle: '@alexrivera', time: '5h ago', content: 'Module 4 DONE! List comprehensions finally make sense. On to Module 5! 🚀', badge: 'course' },
+          ]
+        }
+      },
+      jane: {
+        type: 'creator',
+        title: 'Jane Doe',
+        subtitle: 'AI for Product Managers, NLP, Prompt Engineering',
+        desc: 'Bridging AI and business. Former Google PM. 3 courses, 1.8k students.',
+        avatar: 'https://i.pravatar.cc/56?img=32',
+        showFeedSwitcher: true,
+        tabs: [
+          { id: 'townhall', label: 'Town Hall', locked: false },
+          { id: 'aipm', label: 'AI for PMs', locked: false },       // User purchased
+          { id: 'nlp', label: 'NLP Basics', locked: true },         // Not purchased
+          { id: 'prompt', label: 'Prompt Engineering', locked: true }, // Not purchased
+        ],
+        feeds: {
+          townhall: [
+            { type: 'announcement', author: 'Jane Doe', avatar: 'https://i.pravatar.cc/40?img=32', handle: '@janedoe', time: '1h ago', content: 'New course dropping next week: "Prompt Engineering for Business"! Follow to get notified.', badge: 'townhall' },
+            { type: 'discussion', author: 'PMNewbie', avatar: 'https://i.pravatar.cc/40?img=29', handle: '@pmnewbie', time: '3h ago', content: 'Is "AI for PMs" good for someone switching careers from marketing?', badge: 'townhall' },
+          ],
+          aipm: [
+            { type: 'question', author: 'Jordan Lee', avatar: 'https://i.pravatar.cc/40?img=41', handle: '@jordanlee', time: '3h ago', content: 'Module 2 question: How do you actually get buy-in from engineering when proposing AI features? The frameworks help but real-world is messier.', badge: 'course', goodwill: '+10' },
+            { type: 'helpful', author: 'PMPro', avatar: 'https://i.pravatar.cc/40?img=37', handle: '@pmpro', time: '4h ago', content: '@jordanlee Start with the problem, not the solution. Engineers hate "let\'s add AI" but love "here\'s a user problem AI could solve." Works every time.', badge: 'course', goodwill: '+15' },
+          ]
+        }
+      },
+      maria: {
+        type: 'creator',
+        title: 'Prof. Maria Rodriguez',
+        subtitle: 'Data Science, Business Intelligence, Analytics',
+        desc: 'Stanford professor bringing data science to everyone. 4 courses, 2.5k students.',
+        avatar: 'https://i.pravatar.cc/56?img=47',
+        showFeedSwitcher: true,
+        tabs: [
+          { id: 'townhall', label: 'Town Hall', locked: false },
+          { id: 'ds', label: 'Data Science Fund.', locked: false }, // User purchased
+          { id: 'bi', label: 'Business Intel', locked: true },
+          { id: 'stats', label: 'Statistics', locked: true },
+          { id: 'viz', label: 'Data Viz', locked: true },
+        ],
+        feeds: {
+          townhall: [
+            { type: 'announcement', author: 'Prof. Maria', avatar: 'https://i.pravatar.cc/40?img=47', handle: '@profmaria', time: '5h ago', content: 'Weekend challenge posted in Data Science! Clean a messy dataset, top 3 get featured. Open to all enrolled students.', badge: 'townhall' },
+          ],
+          ds: [
+            { type: 'question', author: 'DataNewbie', avatar: 'https://i.pravatar.cc/40?img=19', handle: '@datanewbie', time: '1h ago', content: 'Struggling with Module 2 pandas groupby. Why does .agg() sometimes need a dict and sometimes a list?', badge: 'course', goodwill: '+10' },
+            { type: 'helpful', author: 'DataDan', avatar: 'https://i.pravatar.cc/40?img=39', handle: '@datadan', time: '2h ago', content: '@datanewbie Dict when you want different functions per column, list when same functions for all. I made a cheat sheet - DM me!', badge: 'course', goodwill: '+15' },
+          ]
+        }
+      }
+    };
+
+    let currentView = 'commons';
+    let currentTab = 'townhall';
+
+    function selectView(viewId) {
+      currentView = viewId;
+      currentTab = 'townhall';
+
+      // Update sidebar active state
+      document.querySelectorAll('.creator-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      document.querySelector(`.creator-item[data-id="${viewId}"]`).classList.add('active');
+
+      const view = views[viewId];
+      const card = document.getElementById('profile-card');
+      const icon = document.getElementById('profile-icon');
+      const title = document.getElementById('profile-title');
+      const subtitle = document.getElementById('profile-subtitle');
+      const desc = document.getElementById('profile-desc');
+      const feedSwitcher = document.getElementById('feed-switcher');
+
+      // Update card class
+      card.className = 'profile-card ' + view.type;
+
+      // Update icon
+      if (view.type === 'commons') {
+        icon.className = 'profile-icon commons';
+        icon.innerHTML = '🌐';
+      } else {
+        icon.className = 'profile-icon';
+        icon.innerHTML = `<img src="${view.avatar}" />`;
+      }
+
+      // Update text
+      title.textContent = view.title;
+      subtitle.textContent = view.subtitle;
+      desc.textContent = view.desc;
+
+      // Show/hide feed switcher
+      if (view.showFeedSwitcher) {
+        feedSwitcher.style.display = 'flex';
+        feedSwitcher.innerHTML = view.tabs.map(tab => `
+          <div class="feed-tab ${tab.id === 'townhall' ? 'active' : ''} ${tab.locked ? 'locked' : ''}"
+               onclick="${tab.locked ? '' : `selectTab('${tab.id}')`}"
+               data-tab="${tab.id}">
+            ${tab.label}${tab.locked ? '<span class="lock-icon">🔒</span>' : ''}
+          </div>
+        `).join('');
+      } else {
+        feedSwitcher.style.display = 'none';
+      }
+
+      // Render posts
+      renderPosts();
+    }
+
+    function selectTab(tabId) {
+      currentTab = tabId;
+
+      // Update tab active state
+      document.querySelectorAll('.feed-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`.feed-tab[data-tab="${tabId}"]`).classList.add('active');
+
+      renderPosts();
+    }
+
+    function renderPosts() {
+      const view = views[currentView];
+      const container = document.getElementById('posts-container');
+
+      let posts;
+      if (view.type === 'commons') {
+        posts = view.posts;
+      } else {
+        posts = view.feeds[currentTab] || [];
+      }
+
+      container.innerHTML = posts.map(post => `
+        <div class="post">
+          <div class="post-header">
+            <img src="${post.avatar}" class="post-avatar" />
+            <div class="post-meta">
+              <div class="post-author-row">
+                <span class="post-author">${post.author}</span>
+                <span class="post-handle">${post.handle}</span>
+                <span class="post-time">· ${post.time}</span>
+              </div>
+              <span class="post-badge ${post.badge}">${getBadgeLabel(post.badge)}</span>
+            </div>
+          </div>
+          <div class="post-content">${post.content}</div>
+          <div class="post-actions">
+            <span class="post-action">💬 Reply</span>
+            ${post.goodwill ? `<span class="post-action helpful-btn">✋ Help<span class="goodwill-earn">${post.goodwill}</span></span>` : ''}
+            <span class="post-action">❤️ Like</span>
+            <span class="post-action">🔖 Save</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getBadgeLabel(badge) {
+      const labels = {
+        'question': '❓ Question',
+        'helpful': '✅ Helpful',
+        'win': '🎉 Win',
+        'townhall': '🏛️ Town Hall',
+        'course': '📚 Course',
+        'announcement': '📢 Announcement',
+        'discussion': '💬 Discussion',
+        'scheduling': '📅 Available'
+      };
+      return labels[badge] || badge;
+    }
+
+    // Initialize
+    selectView('commons');
+  </script>
+</body>
+</html>
