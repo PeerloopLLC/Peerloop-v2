@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerLoop Dashboard v3 - Calendar View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #e7e9ea;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            padding: 12px;
+            border-right: 1px solid #2f3336;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            color: #1d9bf0;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 15px;
+        }
+
+        .nav-item:hover {
+            background: #181818;
+        }
+
+        .nav-item.active {
+            font-weight: 700;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            opacity: 0.9;
+        }
+
+        .user-card {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        .user-card:hover {
+            background: #181818;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-handle {
+            color: #71767b;
+            font-size: 13px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 600px;
+            border-right: 1px solid #2f3336;
+            min-height: 100vh;
+        }
+
+        .header {
+            padding: 16px;
+            border-bottom: 1px solid #2f3336;
+            position: sticky;
+            top: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        /* Toggle */
+        .toggle-container {
+            display: flex;
+            background: #16181c;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            color: #71767b;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: #1d9bf0;
+            color: #fff;
+        }
+
+        .toggle-btn:not(.active):hover {
+            background: #1e1e1e;
+            color: #e7e9ea;
+        }
+
+        /* Calendar Section - Compact */
+        .calendar-section {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .calendar-title {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .calendar-nav button {
+            background: transparent;
+            border: 1px solid #2f3336;
+            color: #e7e9ea;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .calendar-nav button:hover {
+            background: #181818;
+        }
+
+        .today-btn {
+            width: auto !important;
+            padding: 0 8px;
+            font-size: 11px;
+        }
+
+        /* Calendar Grid - Compact */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 10px;
+            color: #71767b;
+            padding: 4px 0;
+            font-weight: 500;
+        }
+
+        .calendar-day {
+            height: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+            font-size: 11px;
+        }
+
+        .calendar-day:hover {
+            background: #181818;
+        }
+
+        .calendar-day.other-month {
+            color: #3a3a3a;
+        }
+
+        .calendar-day.today {
+            background: #1d3a5c;
+            font-weight: 600;
+        }
+
+        .calendar-day.selected {
+            background: #1d9bf0;
+            color: #fff;
+        }
+
+        .calendar-day.selected .dot {
+            background: #fff !important;
+        }
+
+        .day-number {
+            margin-bottom: 1px;
+        }
+
+        .dots-container {
+            display: flex;
+            gap: 2px;
+            height: 4px;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+        }
+
+        .dot.learn {
+            background: #1d9bf0;
+        }
+
+        .dot.teach {
+            background: #00ba7c;
+        }
+
+        /* Legend - Inline with header */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #2f3336;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            color: #71767b;
+        }
+
+        .legend-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.learn {
+            background: #1d9bf0;
+        }
+
+        .legend-dot.teach {
+            background: #00ba7c;
+        }
+
+        /* Sessions List */
+        .sessions-list {
+            padding: 0 16px 16px;
+        }
+
+        .day-group {
+            margin-bottom: 8px;
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0 12px;
+            position: sticky;
+            top: 85px;
+            background: #000;
+            z-index: 5;
+        }
+
+        .day-date {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .day-date.today-label {
+            color: #1d9bf0;
+        }
+
+        .day-count {
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        /* Session Card */
+        .session-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            background: #16181c;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .session-card:hover {
+            background: #1e1e1e;
+        }
+
+        .session-time {
+            min-width: 50px;
+            font-size: 13px;
+            color: #71767b;
+            padding-top: 2px;
+        }
+
+        .session-indicator {
+            width: 4px;
+            height: 100%;
+            min-height: 44px;
+            border-radius: 2px;
+        }
+
+        .session-indicator.learn {
+            background: #1d9bf0;
+        }
+
+        .session-indicator.teach {
+            background: #00ba7c;
+        }
+
+        .session-content {
+            flex: 1;
+        }
+
+        .session-type-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+
+        .session-type-badge.learn {
+            background: #1d3a5c;
+            color: #1d9bf0;
+        }
+
+        .session-type-badge.teach {
+            background: #0d3d2d;
+            color: #00ba7c;
+        }
+
+        .session-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .session-with {
+            font-size: 13px;
+            color: #71767b;
+        }
+
+        .session-action {
+            padding-top: 2px;
+        }
+
+        .join-btn {
+            background: #1d9bf0;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .join-btn:hover {
+            background: #1a8cd8;
+        }
+
+        /* Empty state */
+        .empty-day {
+            text-align: center;
+            padding: 24px;
+            color: #71767b;
+            font-size: 14px;
+        }
+
+        /* Scrollable area */
+        .scroll-area {
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+        }
+
+        /* Footer Note */
+        .mockup-note {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1d9bf0;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 100;
+        }
+
+        /* Highlight animation */
+        @keyframes highlight {
+            0% { background: #1d3a5c; }
+            100% { background: #16181c; }
+        }
+
+        .session-card.highlighted {
+            animation: highlight 1s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">&#8734;</span>
+                <span class="logo-text">PeerLoop</span>
+            </div>
+
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Community
+                </li>
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Browse
+                </li>
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    Notifications
+                </li>
+                <li class="nav-item active">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                        <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                        <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                        <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                    </svg>
+                    Dashboard
+                </li>
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Messages
+                </li>
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Profile
+                </li>
+            </ul>
+
+            <div class="user-card">
+                <div class="user-avatar">AS</div>
+                <div class="user-info">
+                    <div class="user-name">Alex Sanders</div>
+                    <div class="user-handle">@alexsanders</div>
+                </div>
+                <span style="color: #71767b;">•••</span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <div class="header-title">Dashboard</div>
+                <div class="toggle-container">
+                    <button class="toggle-btn active" onclick="setFilter('all')">All</button>
+                    <button class="toggle-btn" onclick="setFilter('learning')">Learning</button>
+                    <button class="toggle-btn" onclick="setFilter('teaching')">Teaching</button>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <div class="calendar-title">December 2025</div>
+                    <div class="calendar-nav">
+                        <button>&#8249;</button>
+                        <button class="today-btn">Today</button>
+                        <button>&#8250;</button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid">
+                    <!-- Day headers -->
+                    <div class="calendar-day-header">S</div>
+                    <div class="calendar-day-header">M</div>
+                    <div class="calendar-day-header">T</div>
+                    <div class="calendar-day-header">W</div>
+                    <div class="calendar-day-header">T</div>
+                    <div class="calendar-day-header">F</div>
+                    <div class="calendar-day-header">S</div>
+
+                    <!-- Week 1 -->
+                    <div class="calendar-day other-month"><span class="day-number">30</span></div>
+                    <div class="calendar-day" onclick="scrollToDay('dec1')"><span class="day-number">1</span></div>
+                    <div class="calendar-day"><span class="day-number">2</span></div>
+                    <div class="calendar-day"><span class="day-number">3</span></div>
+                    <div class="calendar-day"><span class="day-number">4</span></div>
+                    <div class="calendar-day"><span class="day-number">5</span></div>
+                    <div class="calendar-day"><span class="day-number">6</span></div>
+
+                    <!-- Week 2 -->
+                    <div class="calendar-day"><span class="day-number">7</span></div>
+                    <div class="calendar-day" onclick="scrollToDay('dec8')">
+                        <span class="day-number">8</span>
+                        <div class="dots-container"><span class="dot teach"></span></div>
+                    </div>
+                    <div class="calendar-day"><span class="day-number">9</span></div>
+                    <div class="calendar-day"><span class="day-number">10</span></div>
+                    <div class="calendar-day"><span class="day-number">11</span></div>
+                    <div class="calendar-day" onclick="scrollToDay('dec12')">
+                        <span class="day-number">12</span>
+                        <div class="dots-container"><span class="dot learn"></span></div>
+                    </div>
+                    <div class="calendar-day" onclick="scrollToDay('dec13')">
+                        <span class="day-number">13</span>
+                        <div class="dots-container"><span class="dot teach"></span></div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="calendar-day"><span class="day-number">14</span></div>
+                    <div class="calendar-day"><span class="day-number">15</span></div>
+                    <div class="calendar-day"><span class="day-number">16</span></div>
+                    <div class="calendar-day today selected" onclick="scrollToDay('dec17')">
+                        <span class="day-number">17</span>
+                        <div class="dots-container">
+                            <span class="dot learn"></span>
+                            <span class="dot teach"></span>
+                        </div>
+                    </div>
+                    <div class="calendar-day" onclick="scrollToDay('dec18')">
+                        <span class="day-number">18</span>
+                        <div class="dots-container"><span class="dot teach"></span></div>
+                    </div>
+                    <div class="calendar-day" onclick="scrollToDay('dec19')">
+                        <span class="day-number">19</span>
+                        <div class="dots-container"><span class="dot learn"></span></div>
+                    </div>
+                    <div class="calendar-day" onclick="scrollToDay('dec20')">
+                        <span class="day-number">20</span>
+                        <div class="dots-container"><span class="dot teach"></span></div>
+                    </div>
+
+                    <!-- Week 4 -->
+                    <div class="calendar-day"><span class="day-number">21</span></div>
+                    <div class="calendar-day" onclick="scrollToDay('dec22')">
+                        <span class="day-number">22</span>
+                        <div class="dots-container"><span class="dot learn"></span></div>
+                    </div>
+                    <div class="calendar-day"><span class="day-number">23</span></div>
+                    <div class="calendar-day"><span class="day-number">24</span></div>
+                    <div class="calendar-day"><span class="day-number">25</span></div>
+                    <div class="calendar-day"><span class="day-number">26</span></div>
+                    <div class="calendar-day"><span class="day-number">27</span></div>
+
+                    <!-- Week 5 -->
+                    <div class="calendar-day"><span class="day-number">28</span></div>
+                    <div class="calendar-day"><span class="day-number">29</span></div>
+                    <div class="calendar-day"><span class="day-number">30</span></div>
+                    <div class="calendar-day"><span class="day-number">31</span></div>
+                    <div class="calendar-day other-month"><span class="day-number">1</span></div>
+                    <div class="calendar-day other-month"><span class="day-number">2</span></div>
+                    <div class="calendar-day other-month"><span class="day-number">3</span></div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-dot learn"></span>
+                        Learning
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot teach"></span>
+                        Teaching
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions List -->
+            <div class="scroll-area">
+                <div class="sessions-list">
+
+                    <!-- Today -->
+                    <div class="day-group" id="dec17">
+                        <div class="day-header">
+                            <span class="day-date today-label">Today, Wed Dec 17</span>
+                            <span class="day-count">2 sessions</span>
+                        </div>
+
+                        <div class="session-card" data-type="learn">
+                            <div class="session-time">10am</div>
+                            <div class="session-indicator learn"></div>
+                            <div class="session-content">
+                                <span class="session-type-badge learn">Learning</span>
+                                <div class="session-title">AI Prompting Mastery</div>
+                                <div class="session-with">with Dr. Sarah Chen</div>
+                            </div>
+                            <div class="session-action">
+                                <button class="join-btn">Join</button>
+                            </div>
+                        </div>
+
+                        <div class="session-card" data-type="teach">
+                            <div class="session-time">2pm</div>
+                            <div class="session-indicator teach"></div>
+                            <div class="session-content">
+                                <span class="session-type-badge teach">Teaching</span>
+                                <div class="session-title">Python Basics</div>
+                                <div class="session-with">John Miller &middot; Module 3</div>
+                            </div>
+                            <div class="session-action">
+                                <button class="join-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tomorrow -->
+                    <div class="day-group" id="dec18">
+                        <div class="day-header">
+                            <span class="day-date">Tomorrow, Thu Dec 18</span>
+                            <span class="day-count">1 session</span>
+                        </div>
+
+                        <div class="session-card" data-type="teach">
+                            <div class="session-time">4pm</div>
+                            <div class="session-indicator teach"></div>
+                            <div class="session-content">
+                                <span class="session-type-badge teach">Teaching</span>
+                                <div class="session-title">Data Analysis Fundamentals</div>
+                                <div class="session-with">Group Session &middot; 4 students</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Friday -->
+                    <div class="day-group" id="dec19">
+                        <div class="day-header">
+                            <span class="day-date">Fri, Dec 19</span>
+                            <span class="day-count">1 session</span>
+                        </div>
+
+                        <div class="session-card" data-type="learn">
+                            <div class="session-time">3pm</div>
+                            <div class="session-indicator learn"></div>
+                            <div class="session-content">
+                                <span class="session-type-badge learn">Learning</span>
+                                <div class="session-title">Cloud Architecture with AWS</div>
+                                <div class="session-with">with Jane Doe &middot; Module 2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Saturday -->
+                    <div class="day-group" id="dec20">
+                        <div class="day-header">
+                            <span class="day-date">Sat, Dec 20</span>
+                            <span class="day-count">1 session</span>
+                        </div>
+
+                        <div class="session-card" data-type="teach">
+                            <div class="session-time">11am</div>
+                            <div class="session-indicator teach"></div>
+                            <div class="session-content">
+                                <span class="session-type-badge teach">Teaching</span>
+                                <div class="session-title">Python Basics</div>
+                                <div class="session-with">Emily Zhang &middot; Module 1</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monday Dec 22 -->
+                    <div class="day-group" id="dec22">
+                        <div class="day-header">
+                            <span class="day-date">Mon, Dec 22</span>
+                            <span class="day-count">1 session</span>
+                        </div>
+
+                        <div class="session-card" data-type="learn">
+                            <div class="session-time">10am</div>
+                            <div class="session-indicator learn"></div>
+                            <div class="session-content">
+                                <span class="session-type-badge learn">Learning</span>
+                                <div class="session-title">AI Prompting Mastery</div>
+                                <div class="session-with">with Dr. Sarah Chen &middot; Module 5</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Past sessions for scrolling demo -->
+                    <div class="day-group" id="dec13">
+                        <div class="day-header">
+                            <span class="day-date" style="color: #71767b;">Sat, Dec 13 (past)</span>
+                            <span class="day-count">1 session</span>
+                        </div>
+
+                        <div class="session-card" data-type="teach" style="opacity: 0.6;">
+                            <div class="session-time">2pm</div>
+                            <div class="session-indicator teach"></div>
+                            <div class="session-content">
+                                <span class="session-type-badge teach">Teaching</span>
+                                <div class="session-title">Data Analysis Fundamentals</div>
+                                <div class="session-with">Sarah Kim &middot; Completed</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-group" id="dec12">
+                        <div class="day-header">
+                            <span class="day-date" style="color: #71767b;">Fri, Dec 12 (past)</span>
+                            <span class="day-count">1 session</span>
+                        </div>
+
+                        <div class="session-card" data-type="learn" style="opacity: 0.6;">
+                            <div class="session-time">10am</div>
+                            <div class="session-indicator learn"></div>
+                            <div class="session-content">
+                                <span class="session-type-badge learn">Learning</span>
+                                <div class="session-title">AI Prompting Mastery</div>
+                                <div class="session-with">with Dr. Sarah Chen &middot; Completed</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-group" id="dec8">
+                        <div class="day-header">
+                            <span class="day-date" style="color: #71767b;">Mon, Dec 8 (past)</span>
+                            <span class="day-count">1 session</span>
+                        </div>
+
+                        <div class="session-card" data-type="teach" style="opacity: 0.6;">
+                            <div class="session-time">3pm</div>
+                            <div class="session-indicator teach"></div>
+                            <div class="session-content">
+                                <span class="session-type-badge teach">Teaching</span>
+                                <div class="session-title">Python Basics</div>
+                                <div class="session-with">John Miller &middot; Completed</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="mockup-note">v3 Mockup - Click calendar dots to jump to sessions</div>
+
+    <script>
+        function scrollToDay(dayId) {
+            const element = document.getElementById(dayId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                // Highlight the first session card
+                const firstCard = element.querySelector('.session-card');
+                if (firstCard) {
+                    firstCard.classList.add('highlighted');
+                    setTimeout(() => firstCard.classList.remove('highlighted'), 1000);
+                }
+            }
+
+            // Update selected day in calendar
+            document.querySelectorAll('.calendar-day').forEach(day => {
+                day.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        function setFilter(filter) {
+            // Update toggle buttons
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter sessions
+            document.querySelectorAll('.session-card').forEach(card => {
+                const type = card.dataset.type;
+                if (filter === 'all') {
+                    card.style.display = 'flex';
+                } else if (filter === 'learning' && type === 'learn') {
+                    card.style.display = 'flex';
+                } else if (filter === 'teaching' && type === 'teach') {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update day counts
+            document.querySelectorAll('.day-group').forEach(group => {
+                const visibleCards = group.querySelectorAll('.session-card[style="display: flex;"], .session-card:not([style*="display: none"])').length;
+                const countEl = group.querySelector('.day-count');
+                if (countEl) {
+                    const actualVisible = Array.from(group.querySelectorAll('.session-card')).filter(c => c.style.display !== 'none').length;
+                    countEl.textContent = actualVisible + (actualVisible === 1 ? ' session' : ' sessions');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

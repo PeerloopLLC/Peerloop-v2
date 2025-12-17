@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerLoop Dashboard v4 - Teaching Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #e7e9ea;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            padding: 12px;
+            border-right: 1px solid #2f3336;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            color: #1d9bf0;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 11px 12px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: #181818;
+        }
+
+        .nav-item.active {
+            font-weight: 700;
+        }
+
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            opacity: 0.9;
+        }
+
+        .user-card {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+        .user-card:hover {
+            background: #181818;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .user-handle {
+            color: #71767b;
+            font-size: 12px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 600px;
+            border-right: 1px solid #2f3336;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2f3336;
+            position: sticky;
+            top: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .availability-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: #0d3d2d;
+            border: 1px solid #00ba7c;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #00ba7c;
+            font-weight: 500;
+        }
+
+        .availability-toggle.unavailable {
+            background: #3d2020;
+            border-color: #f4212e;
+            color: #f4212e;
+        }
+
+        .availability-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ba7c;
+        }
+
+        .availability-toggle.unavailable .availability-dot {
+            background: #f4212e;
+        }
+
+        /* Toggle */
+        .toggle-container {
+            display: flex;
+            background: #16181c;
+            border-radius: 8px;
+            padding: 3px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 9px 16px;
+            border: none;
+            background: transparent;
+            color: #71767b;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: #1d9bf0;
+            color: #fff;
+        }
+
+        .toggle-btn:not(.active):hover {
+            background: #1e1e1e;
+            color: #e7e9ea;
+        }
+
+        /* Content Views */
+        .content-view {
+            display: none;
+        }
+
+        .content-view.active {
+            display: block;
+        }
+
+        /* Stats - Text Style */
+        .stats-text {
+            padding: 16px;
+            border-bottom: 1px solid #2f3336;
+            font-size: 15px;
+            color: #71767b;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .stat-item {
+            display: inline;
+            font-size: 15px;
+        }
+
+        .stat-num {
+            color: #e7e9ea;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .stat-num.money {
+            color: #00ba7c;
+        }
+
+        .stat-divider {
+            color: #3a3a3a;
+            margin: 0 6px;
+        }
+
+        /* Legacy Stats Row (for Learning view) */
+        .stats-row {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: #16181c;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .stat-value.money {
+            color: #00ba7c;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #71767b;
+            margin-top: 2px;
+        }
+
+        /* Alert Section */
+        .alert-section {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #f5a623;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .alert-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #1a2634;
+            border: 1px solid #1d4f7c;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+
+        .alert-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-icon {
+            font-size: 16px;
+        }
+
+        .alert-text {
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .alert-action {
+            background: #1d9bf0;
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .alert-action:hover {
+            background: #1a8cd8;
+        }
+
+        /* Calendar Section */
+        .calendar-section {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .calendar-title {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .calendar-link {
+            font-size: 12px;
+            color: #1d9bf0;
+            cursor: pointer;
+        }
+
+        .calendar-link:hover {
+            text-decoration: underline;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .calendar-nav button {
+            background: transparent;
+            border: 1px solid #2f3336;
+            color: #e7e9ea;
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 9px;
+            color: #71767b;
+            padding: 3px 0;
+        }
+
+        .calendar-day {
+            height: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .calendar-day:hover {
+            background: #181818;
+        }
+
+        .calendar-day.other-month {
+            color: #3a3a3a;
+        }
+
+        .calendar-day.today {
+            background: #1d3a5c;
+            font-weight: 600;
+        }
+
+        .dots-container {
+            display: flex;
+            gap: 2px;
+            height: 4px;
+            margin-top: 1px;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+        }
+
+        .dot.teach {
+            background: #00ba7c;
+        }
+
+        .dot.learn {
+            background: #1d9bf0;
+        }
+
+        /* Section */
+        .section {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #71767b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-link {
+            font-size: 12px;
+            color: #1d9bf0;
+            cursor: pointer;
+        }
+
+        .section-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Session Card */
+        .session-card {
+            background: #16181c;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .session-card.today {
+            border: 1px solid #1d9bf0;
+            background: #0d1a26;
+        }
+
+        .session-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .session-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .session-time {
+            font-size: 12px;
+            color: #71767b;
+            min-width: 55px;
+        }
+
+        .session-indicator {
+            width: 3px;
+            height: 36px;
+            border-radius: 2px;
+            background: #00ba7c;
+        }
+
+        .session-info {
+            flex: 1;
+        }
+
+        .session-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .session-with {
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        .session-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 68px;
+        }
+
+        .btn {
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #1d9bf0;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #1a8cd8;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #536471;
+            color: #e7e9ea;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(239, 243, 244, 0.1);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid #67070f;
+            color: #f4212e;
+        }
+
+        .btn-danger:hover {
+            background: rgba(244, 33, 46, 0.1);
+        }
+
+        /* Student Card */
+        .student-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #16181c;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+
+        .student-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .student-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .student-avatar.blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .student-avatar.pink { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .student-avatar.green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .student-avatar.orange { background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%); }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .student-course {
+            font-size: 11px;
+            color: #71767b;
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 11px;
+            border-radius: 12px;
+        }
+
+        .btn-cert {
+            background: #3d2e1a;
+            border: 1px solid #f5a623;
+            color: #f5a623;
+        }
+
+        .btn-cert:hover {
+            background: #4d3e2a;
+        }
+
+        /* Earnings Card */
+        .earnings-card {
+            background: #16181c;
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .earnings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .earnings-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .earnings-label {
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        .earnings-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .earnings-value.highlight {
+            color: #00ba7c;
+        }
+
+        .earnings-divider {
+            height: 1px;
+            background: #2f3336;
+            margin: 10px 0;
+        }
+
+        .payout-info {
+            font-size: 11px;
+            color: #71767b;
+        }
+
+        /* Scroll area */
+        .scroll-area {
+            max-height: calc(100vh - 130px);
+            overflow-y: auto;
+        }
+
+        /* Learning View Specific */
+        .course-card {
+            background: #16181c;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .course-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .course-instructor {
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #2f3336;
+            border-radius: 2px;
+            margin: 8px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #1d9bf0;
+            border-radius: 2px;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: #71767b;
+        }
+
+        /* Prominent Availability Card */
+        .availability-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #1a2a3a 0%, #16202c 100%);
+            border: 1px solid #1d9bf0;
+            border-radius: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .availability-card:hover {
+            background: linear-gradient(135deg, #1d3348 0%, #1a2a3a 100%);
+            border-color: #4db5f9;
+        }
+
+        .avail-card-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avail-card-icon {
+            font-size: 24px;
+        }
+
+        .avail-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e7e9ea;
+        }
+
+        .avail-card-desc {
+            font-size: 12px;
+            color: #71767b;
+            margin-top: 2px;
+        }
+
+        .avail-card-action {
+            color: #1d9bf0;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Weekly Availability Grid */
+        .weekly-grid {
+            background: #16181c;
+            border-radius: 10px;
+            padding: 12px;
+            overflow-x: auto;
+        }
+
+        .week-header {
+            display: grid;
+            grid-template-columns: 45px repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .day-label {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #71767b;
+            padding: 6px 0;
+        }
+
+        .time-row {
+            display: grid;
+            grid-template-columns: 45px repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .time-label {
+            font-size: 10px;
+            color: #71767b;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+        }
+
+        .slot {
+            height: 28px;
+            background: #0a0a0a;
+            border: 1px solid #2f3336;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .slot:hover {
+            border-color: #1d9bf0;
+        }
+
+        .slot.available {
+            background: #0d3d2d;
+            border-color: #00ba7c;
+        }
+
+        .slot.available:hover {
+            background: #0a2d22;
+        }
+
+        /* Mockup Note */
+        .mockup-note {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1d9bf0;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            z-index: 100;
+        }
+
+        /* Sub-page styles */
+        .sub-page {
+            display: none;
+        }
+
+        .sub-page.active {
+            display: block;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 16px;
+            color: #1d9bf0;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .back-link:hover {
+            background: #0d1a26;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+            padding: 16px;
+            border-bottom: 1px solid #2f3336;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">&#8734;</span>
+                <span class="logo-text">PeerLoop</span>
+            </div>
+
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Community
+                </li>
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Browse
+                </li>
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    Notifications
+                </li>
+                <li class="nav-item active" onclick="showMain()">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                        <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                        <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                        <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                    </svg>
+                    Dashboard
+                </li>
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Messages
+                </li>
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Profile
+                </li>
+            </ul>
+
+            <div class="user-card">
+                <div class="user-avatar">AS</div>
+                <div>
+                    <div class="user-name">Alex Sanders</div>
+                    <div class="user-handle">@alexsanders</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Main Dashboard View -->
+            <div id="main-view" class="sub-page active">
+                <div class="header">
+                    <div class="header-top">
+                        <div class="header-title">Dashboard</div>
+                        <div class="availability-toggle" onclick="toggleAvailability(this)">
+                            <span class="availability-dot"></span>
+                            <span class="availability-text">Available</span>
+                        </div>
+                    </div>
+                    <div class="toggle-container">
+                        <button class="toggle-btn" onclick="showView('learning')">Learning</button>
+                        <button class="toggle-btn active" onclick="showView('teaching')">Teaching</button>
+                    </div>
+                </div>
+
+                <div class="scroll-area">
+                    <!-- Teaching View -->
+                    <div id="teaching-view" class="content-view active">
+
+                        <!-- Stats - Text Style -->
+                        <div class="stats-text">
+                            <span class="stat-item"><strong class="stat-num money">$420</strong> pending</span>
+                            <span class="stat-divider">·</span>
+                            <span class="stat-item"><strong class="stat-num">4</strong> students</span>
+                            <span class="stat-divider">·</span>
+                            <span class="stat-item"><strong class="stat-num">8</strong> sessions this week</span>
+                        </div>
+
+                        <!-- Availability Card - Prominent -->
+                        <div class="section" style="padding-bottom: 0;">
+                            <div class="availability-card" onclick="showPage('availability')">
+                                <div class="avail-card-left">
+                                    <div class="avail-card-icon">📅</div>
+                                    <div class="avail-card-content">
+                                        <div class="avail-card-title">Weekly Availability</div>
+                                        <div class="avail-card-desc">Set when students can book sessions with you</div>
+                                    </div>
+                                </div>
+                                <div class="avail-card-action">Set Hours →</div>
+                            </div>
+                        </div>
+
+                        <!-- Action Needed -->
+                        <div class="alert-section">
+                            <div class="section-label">Action Needed</div>
+                            <div class="alert-card">
+                                <span class="alert-icon">🎓</span>
+                                <span class="alert-text">Sarah Kim ready for certification</span>
+                                <button class="alert-action" onclick="showPage('students')">Review</button>
+                            </div>
+                            <div class="alert-card">
+                                <span class="alert-icon">💬</span>
+                                <span class="alert-text">2 unread messages</span>
+                                <button class="alert-action">View</button>
+                            </div>
+                        </div>
+
+                        <!-- Today's Sessions -->
+                        <div class="section">
+                            <div class="section-header">
+                                <span class="section-title">Today's Sessions</span>
+                            </div>
+                            <div class="session-card today">
+                                <div class="session-top">
+                                    <span class="session-time">2:00 PM</span>
+                                    <div class="session-indicator"></div>
+                                    <div class="session-info">
+                                        <div class="session-title">Python Basics</div>
+                                        <div class="session-with">John Miller · Module 3</div>
+                                    </div>
+                                </div>
+                                <div class="session-actions">
+                                    <button class="btn btn-primary">Join BBB</button>
+                                    <button class="btn btn-secondary">Message</button>
+                                    <button class="btn btn-danger">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upcoming -->
+                        <div class="section">
+                            <div class="section-header">
+                                <span class="section-title">Upcoming</span>
+                            </div>
+                            <div class="session-card">
+                                <div class="session-top">
+                                    <span class="session-time">Thu 4pm</span>
+                                    <div class="session-indicator"></div>
+                                    <div class="session-info">
+                                        <div class="session-title">Data Analysis Fundamentals</div>
+                                        <div class="session-with">Group Session · 4 students</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="session-card">
+                                <div class="session-top">
+                                    <span class="session-time">Sat 11am</span>
+                                    <div class="session-indicator"></div>
+                                    <div class="session-info">
+                                        <div class="session-title">Python Basics</div>
+                                        <div class="session-with">Emily Zhang · Module 1</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- My Students -->
+                        <div class="section">
+                            <div class="section-header">
+                                <span class="section-title">My Students</span>
+                                <span class="section-link" onclick="showPage('students')">View All →</span>
+                            </div>
+                            <div class="student-card">
+                                <div class="student-avatar blue">JM</div>
+                                <div class="student-info">
+                                    <div class="student-name">John Miller</div>
+                                    <div class="student-course">Python Basics · Module 3 of 6</div>
+                                </div>
+                                <div class="student-actions">
+                                    <button class="btn btn-secondary btn-sm">Message</button>
+                                </div>
+                            </div>
+                            <div class="student-card">
+                                <div class="student-avatar pink">SK</div>
+                                <div class="student-info">
+                                    <div class="student-name">Sarah Kim</div>
+                                    <div class="student-course">Data Analysis · Complete ✓</div>
+                                </div>
+                                <div class="student-actions">
+                                    <button class="btn btn-cert btn-sm">Recommend</button>
+                                </div>
+                            </div>
+                            <div class="student-card">
+                                <div class="student-avatar green">EZ</div>
+                                <div class="student-info">
+                                    <div class="student-name">Emily Zhang</div>
+                                    <div class="student-course">Python Basics · Module 1 of 6</div>
+                                </div>
+                                <div class="student-actions">
+                                    <button class="btn btn-secondary btn-sm">Message</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings -->
+                        <div class="section">
+                            <div class="section-header">
+                                <span class="section-title">Earnings</span>
+                                <span class="section-link" onclick="showPage('earnings')">View All →</span>
+                            </div>
+                            <div class="earnings-card">
+                                <div class="earnings-row">
+                                    <span class="earnings-label">Pending Balance</span>
+                                    <span class="earnings-value highlight">$420.00</span>
+                                </div>
+                                <div class="earnings-row">
+                                    <span class="earnings-label">This Month</span>
+                                    <span class="earnings-value">$1,680.00</span>
+                                </div>
+                                <div class="earnings-row">
+                                    <span class="earnings-label">All Time</span>
+                                    <span class="earnings-value">$2,520.00</span>
+                                </div>
+                                <div class="earnings-divider"></div>
+                                <div class="payout-info">Next payout: Dec 20 · $380.00 (70%)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learning View -->
+                    <div id="learning-view" class="content-view">
+                        <div class="stats-text">
+                            <span class="stat-item"><strong class="stat-num">2</strong> in progress</span>
+                            <span class="stat-divider">·</span>
+                            <span class="stat-item"><strong class="stat-num">3</strong> completed</span>
+                            <span class="stat-divider">·</span>
+                            <span class="stat-item"><strong class="stat-num">3</strong> certificates</span>
+                        </div>
+
+                        <!-- Upcoming Learning Sessions -->
+                        <div class="section">
+                            <div class="section-header">
+                                <span class="section-title">Upcoming Sessions</span>
+                            </div>
+                            <div class="session-card">
+                                <div class="session-top">
+                                    <span class="session-time">Fri 3pm</span>
+                                    <div class="session-indicator" style="background: #1d9bf0;"></div>
+                                    <div class="session-info">
+                                        <div class="session-title">Cloud Architecture with AWS</div>
+                                        <div class="session-with">with Jane Doe · Module 2</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="session-card">
+                                <div class="session-top">
+                                    <span class="session-time">Mon 10am</span>
+                                    <div class="session-indicator" style="background: #1d9bf0;"></div>
+                                    <div class="session-info">
+                                        <div class="session-title">AI Prompting Mastery</div>
+                                        <div class="session-with">with Dr. Sarah Chen · Module 5</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Courses in Progress -->
+                        <div class="section">
+                            <div class="section-header">
+                                <span class="section-title">Courses in Progress</span>
+                            </div>
+                            <div class="course-card">
+                                <div class="course-header">
+                                    <div>
+                                        <div class="course-title">AI Prompting Mastery</div>
+                                        <div class="course-instructor">by Dr. Sarah Chen</div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm">Continue</button>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 65%;"></div>
+                                </div>
+                                <div class="progress-text">Module 4 of 6 · 65%</div>
+                            </div>
+                            <div class="course-card">
+                                <div class="course-header">
+                                    <div>
+                                        <div class="course-title">Cloud Architecture with AWS</div>
+                                        <div class="course-instructor">by Jane Doe</div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm">Continue</button>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 30%;"></div>
+                                </div>
+                                <div class="progress-text">Module 2 of 8 · 30%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Sub-page -->
+            <div id="students-page" class="sub-page">
+                <div class="back-link" onclick="showMain()">← Dashboard</div>
+                <div class="page-title">My Students</div>
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">4 Active Students</span>
+                    </div>
+                    <div class="student-card">
+                        <div class="student-avatar blue">JM</div>
+                        <div class="student-info">
+                            <div class="student-name">John Miller</div>
+                            <div class="student-course">Python Basics · Module 3 of 6 · 50%</div>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn btn-secondary btn-sm">Message</button>
+                        </div>
+                    </div>
+                    <div class="student-card">
+                        <div class="student-avatar pink">SK</div>
+                        <div class="student-info">
+                            <div class="student-name">Sarah Kim</div>
+                            <div class="student-course">Data Analysis · Complete ✓</div>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn btn-cert btn-sm">Recommend for Cert</button>
+                        </div>
+                    </div>
+                    <div class="student-card">
+                        <div class="student-avatar green">EZ</div>
+                        <div class="student-info">
+                            <div class="student-name">Emily Zhang</div>
+                            <div class="student-course">Python Basics · Module 1 of 6 · 17%</div>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn btn-secondary btn-sm">Message</button>
+                        </div>
+                    </div>
+                    <div class="student-card">
+                        <div class="student-avatar orange">MR</div>
+                        <div class="student-info">
+                            <div class="student-name">Michael Roberts</div>
+                            <div class="student-course">Data Analysis · Module 4 of 6 · 67%</div>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn btn-secondary btn-sm">Message</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings Sub-page -->
+            <div id="earnings-page" class="sub-page">
+                <div class="back-link" onclick="showMain()">← Dashboard</div>
+                <div class="page-title">Earnings</div>
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-value money">$420</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">$1,680</div>
+                        <div class="stat-label">This Month</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">$2,520</div>
+                        <div class="stat-label">All Time</div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">Payout Info</span>
+                    </div>
+                    <div class="earnings-card">
+                        <div class="earnings-row">
+                            <span class="earnings-label">Commission Rate</span>
+                            <span class="earnings-value">70%</span>
+                        </div>
+                        <div class="earnings-row">
+                            <span class="earnings-label">Next Payout Date</span>
+                            <span class="earnings-value">Dec 20, 2025</span>
+                        </div>
+                        <div class="earnings-row">
+                            <span class="earnings-label">Next Payout Amount</span>
+                            <span class="earnings-value highlight">$380.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">Recent Transactions</span>
+                    </div>
+                    <div class="earnings-card">
+                        <div class="earnings-row">
+                            <span class="earnings-label">1-on-1 · Python · John Miller</span>
+                            <span class="earnings-value highlight">+$70</span>
+                        </div>
+                        <div class="payout-info">Dec 7, 2025</div>
+                    </div>
+                    <div class="earnings-card" style="margin-top: 8px;">
+                        <div class="earnings-row">
+                            <span class="earnings-label">Group · Data Analysis · 4 students</span>
+                            <span class="earnings-value highlight">+$140</span>
+                        </div>
+                        <div class="payout-info">Dec 5, 2025</div>
+                    </div>
+                    <div class="earnings-card" style="margin-top: 8px;">
+                        <div class="earnings-row">
+                            <span class="earnings-label">1-on-1 · Python · Sarah Kim</span>
+                            <span class="earnings-value highlight">+$70</span>
+                        </div>
+                        <div class="payout-info">Dec 3, 2025</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Availability Sub-page -->
+            <div id="availability-page" class="sub-page">
+                <div class="back-link" onclick="showMain()">← Dashboard</div>
+                <div class="page-title">Set Availability</div>
+                <div class="section">
+                    <p style="color: #71767b; font-size: 13px; margin-bottom: 16px;">
+                        Click time slots to toggle availability. Students can only book during green times.
+                    </p>
+
+                    <!-- Weekly Grid -->
+                    <div class="weekly-grid">
+                        <div class="week-header">
+                            <div class="time-label"></div>
+                            <div class="day-label">Mon</div>
+                            <div class="day-label">Tue</div>
+                            <div class="day-label">Wed</div>
+                            <div class="day-label">Thu</div>
+                            <div class="day-label">Fri</div>
+                            <div class="day-label">Sat</div>
+                            <div class="day-label">Sun</div>
+                        </div>
+
+                        <!-- 8 AM -->
+                        <div class="time-row">
+                            <div class="time-label">8am</div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 9 AM -->
+                        <div class="time-row">
+                            <div class="time-label">9am</div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 10 AM -->
+                        <div class="time-row">
+                            <div class="time-label">10am</div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 11 AM -->
+                        <div class="time-row">
+                            <div class="time-label">11am</div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 12 PM -->
+                        <div class="time-row">
+                            <div class="time-label">12pm</div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 1 PM -->
+                        <div class="time-row">
+                            <div class="time-label">1pm</div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 2 PM -->
+                        <div class="time-row">
+                            <div class="time-label">2pm</div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 3 PM -->
+                        <div class="time-row">
+                            <div class="time-label">3pm</div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 4 PM -->
+                        <div class="time-row">
+                            <div class="time-label">4pm</div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 5 PM -->
+                        <div class="time-row">
+                            <div class="time-label">5pm</div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 6 PM -->
+                        <div class="time-row">
+                            <div class="time-label">6pm</div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot available" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 7 PM -->
+                        <div class="time-row">
+                            <div class="time-label">7pm</div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+
+                        <!-- 8 PM -->
+                        <div class="time-row">
+                            <div class="time-label">8pm</div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                            <div class="slot" onclick="toggleSlot(this)"></div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 16px; margin-top: 16px; justify-content: center;">
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #71767b;">
+                            <div style="width: 16px; height: 16px; background: #0d3d2d; border: 1px solid #00ba7c; border-radius: 3px;"></div>
+                            Available
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #71767b;">
+                            <div style="width: 16px; height: 16px; background: #16181c; border: 1px solid #2f3336; border-radius: 3px;"></div>
+                            Unavailable
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 16px;">Save Availability</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div class="mockup-note">v4 Mockup - Full Teaching Dashboard with Sub-pages</div>
+
+    <script>
+        function showView(view) {
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(view + '-view').classList.add('active');
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
+            document.getElementById(page + '-page').classList.add('active');
+        }
+
+        function showMain() {
+            document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
+            document.getElementById('main-view').classList.add('active');
+        }
+
+        function toggleAvailability(el) {
+            el.classList.toggle('unavailable');
+            const text = el.querySelector('.availability-text');
+            text.textContent = el.classList.contains('unavailable') ? 'Unavailable' : 'Available';
+        }
+
+        function toggleSlot(el) {
+            el.classList.toggle('available');
+        }
+    </script>
+</body>
+</html>
