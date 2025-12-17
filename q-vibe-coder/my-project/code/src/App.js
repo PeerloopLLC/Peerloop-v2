@@ -130,6 +130,9 @@ function App() {
   // Debug mode - set to true to show device info overlay
   const [showDeviceDebug, setShowDeviceDebug] = useState(false);
 
+  // Community data for sidebar (passed from Community component)
+  const [communityData, setCommunityData] = useState(null);
+
   // Apply device classes to body for CSS targeting
   useEffect(() => {
     const body = document.body;
@@ -288,25 +291,27 @@ function App() {
             device={device}
           />
         ) : (
-          <Sidebar 
-            onMenuChange={handleMenuChange} 
-            activeMenu={activeMenu} 
+          <Sidebar
+            onMenuChange={handleMenuChange}
+            activeMenu={activeMenu}
             currentUser={currentUser}
             isDarkMode={isDarkMode}
             toggleDarkMode={toggleDarkMode}
             device={device}
             onLogout={handleLogout}
+            communityData={communityData}
           />
         )}
         
         {/* Main Content Area - Displays different content based on active menu */}
-        <MainContent 
-          activeMenu={activeMenu} 
-          currentUser={currentUser} 
+        <MainContent
+          activeMenu={activeMenu}
+          currentUser={currentUser}
           onSwitchUser={toggleUser}
           onMenuChange={handleMenuChange}
           isDarkMode={isDarkMode}
           device={device}
+          onCommunityDataChange={setCommunityData}
         />
 
         {/* Bottom Navigation - Mobile Only */}

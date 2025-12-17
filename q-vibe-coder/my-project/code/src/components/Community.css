@@ -1263,8 +1263,563 @@
   .show-on-mobile {
     display: inline;
   }
-  
+
   .hide-on-mobile {
     display: none;
+  }
+}
+
+/* ========================================
+   COMMUNITY REDESIGN - V3 Layout
+   Creator sidebar + Feed switcher tabs
+   ======================================== */
+
+.community-redesign {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* When left sidebar is in main nav, remove our own */
+.community-redesign.community-no-left-sidebar {
+  max-width: 950px;
+}
+
+.community-redesign.community-no-left-sidebar .community-left-sidebar {
+  display: none;
+}
+
+/* Left Sidebar - Your Creators */
+.community-left-sidebar {
+  width: 240px;
+  padding: 16px 12px;
+  border-right: 1px solid var(--border-color, #2f3336);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.creators-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #71767b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 14px;
+  margin-bottom: 12px;
+}
+
+.creators-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.creator-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.creator-sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.creator-sidebar-item.active {
+  background: rgba(29, 155, 240, 0.1);
+}
+
+.creator-sidebar-item.commons .creator-sidebar-avatar {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border-radius: 12px;
+}
+
+.creator-sidebar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+}
+
+.creator-sidebar-item.active .creator-sidebar-avatar {
+  border-color: #1d9bf0;
+}
+
+.creator-sidebar-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.creator-sidebar-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #e7e9ea);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.creator-sidebar-course {
+  font-size: 12px;
+  color: #71767b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.creator-sidebar-unread {
+  width: 8px;
+  height: 8px;
+  background: #1d9bf0;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.browse-creators-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  color: #71767b;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.browse-creators-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #1d9bf0;
+}
+
+.browse-creators-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #2f3336;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Main Content */
+.community-main-content {
+  flex: 1;
+  max-width: 650px;
+  border-right: 1px solid var(--border-color, #2f3336);
+  min-height: 100vh;
+}
+
+.community-main-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color, #2f3336);
+  position: sticky;
+  top: 0;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+
+.community-main-header-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Sticky Header - Contains Profile Card + Feed Tabs */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-primary, #000);
+}
+
+/* Profile Card */
+.community-profile-card {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color, #2f3336);
+  transition: all 0.3s ease;
+  background: var(--bg-primary, #ffffff);
+}
+
+.community-profile-card.commons {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.08) 100%), var(--bg-primary, #ffffff);
+}
+
+.community-profile-card.creator {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%), var(--bg-primary, #ffffff);
+}
+
+.profile-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.profile-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.profile-card-icon.commons {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.profile-card-icon img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-card-content {
+  flex: 1;
+}
+
+.profile-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #a78bfa;
+}
+
+.profile-card-subtitle {
+  font-size: 13px;
+  color: #71767b;
+  margin-bottom: 8px;
+}
+
+.profile-card-desc {
+  font-size: 14px;
+  color: #a1a1aa;
+  line-height: 1.5;
+}
+
+.profile-card-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.profile-card-stat {
+  font-size: 13px;
+  color: #71767b;
+}
+
+.profile-card-stat strong {
+  color: var(--text-primary, #e7e9ea);
+}
+
+.profile-card-follow-btn {
+  padding: 8px 20px;
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background 0.2s;
+}
+
+.profile-card-follow-btn:hover {
+  background: #7c3aed;
+}
+
+.profile-card-follow-btn.following {
+  background: transparent;
+  border: 1px solid #8b5cf6;
+  color: #8b5cf6;
+}
+
+/* Feed Switcher Tabs */
+.feed-switcher-container {
+  position: relative;
+  border-bottom: 1px solid var(--border-color, #2f3336);
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.feed-switcher-scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #2f3336;
+  color: #e7e9ea;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.feed-switcher-scroll-btn:hover {
+  background: rgba(29, 155, 240, 0.2);
+  border-color: #1d9bf0;
+}
+
+.feed-switcher-scroll-btn.left {
+  left: 4px;
+}
+
+.feed-switcher-scroll-btn.right {
+  right: 4px;
+}
+
+.feed-switcher-scroll-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.feed-switcher {
+  display: flex;
+  gap: 4px;
+  padding: 12px 40px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  cursor: grab;
+  scroll-behavior: smooth;
+}
+
+.feed-switcher.grabbing {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.feed-switcher::-webkit-scrollbar {
+  display: none;
+}
+
+.feed-tab {
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #71767b;
+}
+
+.feed-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary, #e7e9ea);
+}
+
+.feed-tab.active {
+  background: #1d9bf0;
+  color: white;
+}
+
+.feed-tab.locked {
+  color: #3f3f46;
+  cursor: not-allowed;
+}
+
+.feed-tab.locked:hover {
+  background: transparent;
+  color: #3f3f46;
+}
+
+.feed-tab .lock-icon {
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+/* Post Badges */
+.post-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-right: 6px;
+}
+
+.post-badge.course {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+}
+
+.post-badge.townhall {
+  background: rgba(29, 155, 240, 0.1);
+  color: #1d9bf0;
+}
+
+.post-badge.question {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.post-badge.win {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.post-badge.helpful {
+  background: rgba(236, 72, 153, 0.15);
+  color: #f472b6;
+}
+
+/* Goodwill indicator */
+.goodwill-earn {
+  font-size: 11px;
+  color: #10b981;
+  margin-left: 4px;
+}
+
+/* Right Sidebar */
+.community-right-sidebar {
+  width: 300px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.sidebar-card {
+  background: #12121a;
+  border: 1px solid var(--border-color, #2f3336);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.sidebar-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #71767b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+/* Goodwill Card */
+.goodwill-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.goodwill-points {
+  font-size: 28px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.goodwill-label {
+  font-size: 12px;
+  color: #71767b;
+}
+
+.goodwill-today {
+  font-size: 13px;
+  color: #10b981;
+}
+
+.goodwill-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 10px;
+  font-size: 13px;
+  color: #34d399;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.goodwill-action:hover {
+  background: rgba(16, 185, 129, 0.15);
+}
+
+/* Session Items */
+.session-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #1a1a24;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.session-time {
+  font-size: 12px;
+  color: #71767b;
+  min-width: 50px;
+}
+
+.session-info {
+  flex: 1;
+}
+
+.session-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary, #e7e9ea);
+}
+
+.session-with {
+  font-size: 12px;
+  color: #71767b;
+}
+
+.session-countdown {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d9bf0;
+}
+
+/* Responsive - Hide sidebars on mobile */
+@media (max-width: 1100px) {
+  .community-right-sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .community-left-sidebar {
+    display: none;
+  }
+
+  .community-main-content {
+    max-width: 100%;
+    border-right: none;
   }
 } 

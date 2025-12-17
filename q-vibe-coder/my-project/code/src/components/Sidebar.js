@@ -35,7 +35,7 @@ import useDeviceDetect from '../hooks/useDeviceDetect';
  * @param {Function} onMenuChange - Callback function to handle menu item clicks
  * @param {string} activeMenu - The currently active menu item
  */
-const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDarkMode, onLogout }) => {
+const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDarkMode, onLogout, communityData }) => {
   // Track which tooltip is visible (by index)
   const [visibleTooltip, setVisibleTooltip] = useState(null);
   const timerRef = useRef(null);
@@ -184,8 +184,8 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
       {/* Main navigation menu */}
       <nav className="sidebar-nav">
         {menuItems.map((item, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={`nav-item ${activeMenu === item.label ? 'active' : ''}`}
             onClick={() => {
               showTooltipTemporarily(index);
@@ -202,6 +202,147 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
           </div>
         ))}
       </nav>
+
+      {/* Your Creators Section - Always visible */}
+      {communityData && !shouldCollapse && (
+        <div className="sidebar-creators-section">
+          <div className="sidebar-divider" style={{ height: 1, background: isDarkMode ? '#2f3336' : '#eff3f4', margin: '8px 12px 16px' }} />
+          <div className="creators-section-title" style={{ fontSize: 11, fontWeight: 600, color: '#71767b', textTransform: 'uppercase', letterSpacing: '0.5px', padding: '0 14px', marginBottom: 12 }}>
+            Your Creators
+          </div>
+          <div className="creators-list" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {/* The Commons */}
+            <div
+              className={`creator-sidebar-item ${communityData.communityMode === 'hub' ? 'active' : ''}`}
+              onClick={() => {
+                onMenuChange('My Community');
+                communityData.onSelectCommons();
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '10px 14px',
+                borderRadius: 12,
+                cursor: 'pointer',
+                background: communityData.communityMode === 'hub' ? 'rgba(29, 155, 240, 0.1)' : 'transparent'
+              }}
+            >
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: 12,
+                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 18,
+                border: communityData.communityMode === 'hub' ? '2px solid #1d9bf0' : '2px solid transparent'
+              }}>
+                🌐
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>The Commons</div>
+                <div style={{ fontSize: 12, color: '#71767b' }}>All communities</div>
+              </div>
+            </div>
+
+            {/* Individual Creators */}
+            {communityData.creators?.map(creator => {
+              const isActive = communityData.communityMode === 'creators' && communityData.selectedCreatorId === creator.id;
+              return (
+                <div
+                  key={creator.id}
+                  onClick={() => {
+                    // Store pending creator for Community to pick up
+                    localStorage.setItem('pendingSidebarCreator', JSON.stringify({ id: creator.id, name: creator.name }));
+                    communityData.onSelectCreator(creator);
+                    onMenuChange('My Community');
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '10px 14px',
+                    borderRadius: 12,
+                    cursor: 'pointer',
+                    background: isActive ? 'rgba(29, 155, 240, 0.1)' : 'transparent'
+                  }}
+                >
+                  {creator.instructor?.avatar ? (
+                    <img
+                      src={creator.instructor.avatar}
+                      alt={creator.name}
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        border: isActive ? '2px solid #1d9bf0' : '2px solid transparent'
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      background: '#1d9bf0',
+                      color: '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 14,
+                      fontWeight: 600,
+                      border: isActive ? '2px solid #1d9bf0' : '2px solid transparent'
+                    }}>
+                      {creator.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                    </div>
+                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: isDarkMode ? '#e7e9ea' : '#0f1419', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {creator.name}
+                    </div>
+                    <div style={{ fontSize: 12, color: '#71767b' }}>
+                      {creator.followedCourseIds?.length || 0} courses
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Browse Creators Link */}
+            <div
+              onClick={() => {
+                localStorage.setItem('browseActiveTopMenu', 'creators');
+                onMenuChange('Browse');
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '10px 14px',
+                color: '#71767b',
+                fontSize: 14,
+                cursor: 'pointer',
+                borderRadius: 12,
+                marginTop: 4
+              }}
+            >
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: isDarkMode ? '#2f3336' : '#eff3f4',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 18
+              }}>+</div>
+              <span>Browse creators</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

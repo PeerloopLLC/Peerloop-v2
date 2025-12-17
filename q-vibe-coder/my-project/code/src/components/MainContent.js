@@ -25,7 +25,7 @@ import EnrollmentFlow from './EnrollmentFlow';
 import { getAllInstructors, getInstructorWithCourses, getCourseById, getAllCourses, getInstructorById, getIndexedCourses, getIndexedInstructors } from '../data/database';
 import { UserPropType } from './PropTypes';
 
-const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDarkMode }) => {
+const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDarkMode, onCommunityDataChange }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const lastTopMenuRef = useRef('courses');
   
@@ -2146,6 +2146,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           onMenuChange={onMenuChange}
           onViewUserProfile={handleViewUserProfile}
           onViewCourse={handleViewCourseFromCommunity}
+          onCommunityDataChange={onCommunityDataChange}
         />
       </div>
     );
