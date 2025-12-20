@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeerLoop - Community First Discovery</title>
+  <style>
+    /* Reset & Base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #e7e9ea;
+      line-height: 1.5;
+    }
+
+    /* Layout */
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      border-right: 1px solid #2f3336;
+      padding: 20px;
+      position: fixed;
+      height: 100vh;
+      background: #000;
+    }
+
+    .main {
+      flex: 1;
+      margin-left: 240px;
+      max-width: 600px;
+      border-right: 1px solid #2f3336;
+    }
+
+    .right-panel {
+      width: 320px;
+      padding: 20px;
+      position: fixed;
+      right: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    /* Sidebar */
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 32px;
+      color: #00d4aa;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 18px;
+      margin-bottom: 4px;
+      transition: background 0.2s;
+    }
+
+    .nav-item:hover {
+      background: #181818;
+    }
+
+    .nav-item.active {
+      font-weight: 700;
+    }
+
+    /* Search Header */
+    .search-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2f3336;
+      position: sticky;
+      top: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #202327;
+      border-radius: 100px;
+      padding: 12px 20px;
+      gap: 12px;
+    }
+
+    .search-box input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #e7e9ea;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .search-box input::placeholder {
+      color: #71767b;
+    }
+
+    /* View Toggle */
+    .view-toggle {
+      display: flex;
+      padding: 0 20px;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .view-toggle button {
+      flex: 1;
+      padding: 16px;
+      background: none;
+      border: none;
+      color: #71767b;
+      font-size: 15px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .view-toggle button.active {
+      color: #e7e9ea;
+      font-weight: 700;
+      border-bottom-color: #00d4aa;
+    }
+
+    .view-toggle button:hover {
+      background: #080808;
+    }
+
+    /* Community Cards (Search Results) */
+    .community-card {
+      padding: 20px;
+      border-bottom: 1px solid #2f3336;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .community-card:hover {
+      background: #080808;
+    }
+
+    .community-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .community-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .community-info h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .community-info .creator {
+      color: #71767b;
+      font-size: 14px;
+    }
+
+    .community-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 12px;
+    }
+
+    .community-stats span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .community-bio {
+      font-size: 15px;
+      color: #e7e9ea;
+      margin-bottom: 16px;
+    }
+
+    .community-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #00d4aa;
+      color: #000;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: #00f5c4;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #e7e9ea;
+      border: 1px solid #536471;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(239, 243, 244, 0.1);
+      border-color: #e7e9ea;
+    }
+
+    /* Feed View (Inside Community) */
+    .feed-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2f3336;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .feed-header .back {
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .feed-header .back:hover {
+      background: #181818;
+    }
+
+    .feed-header-info h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .feed-header-info span {
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    /* Feed Tabs */
+    .feed-tabs {
+      display: flex;
+      border-bottom: 1px solid #2f3336;
+      overflow-x: auto;
+    }
+
+    .feed-tabs button {
+      padding: 16px 20px;
+      background: none;
+      border: none;
+      color: #71767b;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .feed-tabs button.active {
+      color: #e7e9ea;
+      font-weight: 700;
+      border-bottom-color: #00d4aa;
+    }
+
+    .feed-tabs button:hover {
+      background: #080808;
+    }
+
+    /* Post */
+    .post {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2f3336;
+      transition: background 0.2s;
+    }
+
+    .post:hover {
+      background: #080808;
+    }
+
+    .post-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .post-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #333;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .post-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .post-meta {
+      flex: 1;
+    }
+
+    .post-author {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .post-author strong {
+      font-size: 15px;
+    }
+
+    .post-author .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-weight: 600;
+    }
+
+    .badge-instructor {
+      background: rgba(0, 212, 170, 0.15);
+      color: #00d4aa;
+    }
+
+    .badge-student {
+      background: rgba(96, 165, 250, 0.15);
+      color: #60a5fa;
+    }
+
+    .badge-student-teacher {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+    }
+
+    .badge-creator {
+      background: rgba(168, 85, 247, 0.15);
+      color: #a855f7;
+    }
+
+    .post-author .handle {
+      color: #71767b;
+      font-size: 14px;
+    }
+
+    .post-author .time {
+      color: #71767b;
+      font-size: 14px;
+    }
+
+    .post-content {
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      padding-left: 56px;
+    }
+
+    .post-content .mention {
+      color: #00d4aa;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 48px;
+      padding-left: 56px;
+    }
+
+    .post-actions button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border: none;
+      color: #71767b;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 4px 0;
+      transition: color 0.2s;
+    }
+
+    .post-actions button:hover {
+      color: #00d4aa;
+    }
+
+    .post-actions .book-btn {
+      color: #00d4aa;
+      font-weight: 600;
+    }
+
+    /* Reply Thread */
+    .replies {
+      padding-left: 56px;
+      margin-top: 12px;
+    }
+
+    .reply {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-left: 2px solid #2f3336;
+      padding-left: 16px;
+      margin-left: 10px;
+    }
+
+    .reply-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #333;
+      flex-shrink: 0;
+    }
+
+    .reply-content {
+      flex: 1;
+    }
+
+    .reply-author {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .reply-author strong {
+      margin-right: 6px;
+    }
+
+    .reply-author .badge {
+      font-size: 10px;
+      padding: 1px 6px;
+    }
+
+    .reply-text {
+      font-size: 14px;
+      color: #e7e9ea;
+    }
+
+    /* Right Panel - Courses */
+    .panel-section {
+      margin-bottom: 24px;
+    }
+
+    .panel-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-section h3 a {
+      font-size: 13px;
+      color: #00d4aa;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .course-card {
+      background: #16181c;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 1px solid #2f3336;
+    }
+
+    .course-card:hover {
+      background: #1d1f23;
+      border-color: #3f4347;
+    }
+
+    .course-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .course-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 8px;
+    }
+
+    .course-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e7e9ea;
+    }
+
+    .course-earnback {
+      font-size: 12px;
+      color: #22c55e;
+    }
+
+    .instructor-mini {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: #16181c;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 1px solid #2f3336;
+    }
+
+    .instructor-mini:hover {
+      background: #1d1f23;
+      border-color: #3f4347;
+    }
+
+    .instructor-mini-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #333;
+    }
+
+    .instructor-mini-info {
+      flex: 1;
+    }
+
+    .instructor-mini-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .instructor-mini-rating {
+      font-size: 12px;
+      color: #fbbf24;
+    }
+
+    .instructor-mini-book {
+      font-size: 12px;
+      color: #00d4aa;
+      font-weight: 600;
+    }
+
+    /* CTA Banner */
+    .cta-banner {
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(0, 212, 170, 0.05));
+      border: 1px solid rgba(0, 212, 170, 0.3);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .cta-banner h4 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .cta-banner p {
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 16px;
+    }
+
+    /* View States */
+    .search-view, .feed-view {
+      display: none;
+    }
+
+    .search-view.active, .feed-view.active {
+      display: block;
+    }
+
+    /* Mobile */
+    @media (max-width: 1024px) {
+      .sidebar, .right-panel {
+        display: none;
+      }
+      .main {
+        margin-left: 0;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">PeerLoop</div>
+      <nav>
+        <div class="nav-item active">🔍 Explore</div>
+        <div class="nav-item">👥 Community</div>
+        <div class="nav-item">🔔 Notifications</div>
+        <div class="nav-item">📚 My Learning</div>
+        <div class="nav-item">💬 Messages</div>
+        <div class="nav-item">👤 Profile</div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- SEARCH VIEW -->
+      <div class="search-view active" id="searchView">
+        <div class="search-header">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="Search communities..." value="Python">
+          </div>
+        </div>
+
+        <div class="view-toggle">
+          <button class="active">Communities</button>
+          <button>Courses</button>
+          <button>People</button>
+        </div>
+
+        <!-- Community Results -->
+        <div class="community-card" onclick="showFeed()">
+          <div class="community-header">
+            <div class="community-avatar">🐍</div>
+            <div class="community-info">
+              <h3>Python Academy</h3>
+              <div class="creator">by Sarah Chen</div>
+            </div>
+          </div>
+          <div class="community-stats">
+            <span>👥 2,347 members</span>
+            <span>💬 156 posts this week</span>
+            <span>⭐ 4.9</span>
+          </div>
+          <div class="community-bio">
+            From zero to production Python. Learn with 1:1 instruction, then teach to earn back your tuition.
+          </div>
+          <div class="community-actions">
+            <button class="btn btn-primary" onclick="event.stopPropagation(); showFeed()">Browse Community</button>
+            <button class="btn btn-secondary">View Courses</button>
+          </div>
+        </div>
+
+        <div class="community-card">
+          <div class="community-header">
+            <div class="community-avatar">⚙️</div>
+            <div class="community-info">
+              <h3>Backend Builders</h3>
+              <div class="creator">by James Wilson</div>
+            </div>
+          </div>
+          <div class="community-stats">
+            <span>👥 1,823 members</span>
+            <span>💬 89 posts this week</span>
+            <span>⭐ 4.8</span>
+          </div>
+          <div class="community-bio">
+            Build real backend systems with Django, FastAPI, and Node. Production-ready skills from day one.
+          </div>
+          <div class="community-actions">
+            <button class="btn btn-primary">Browse Community</button>
+            <button class="btn btn-secondary">View Courses</button>
+          </div>
+        </div>
+
+        <div class="community-card">
+          <div class="community-header">
+            <div class="community-avatar">🤖</div>
+            <div class="community-info">
+              <h3>AI Practitioners</h3>
+              <div class="creator">by Dr. Elena Petrova</div>
+            </div>
+          </div>
+          <div class="community-stats">
+            <span>👥 3,102 members</span>
+            <span>💬 234 posts this week</span>
+            <span>⭐ 4.9</span>
+          </div>
+          <div class="community-bio">
+            Practical AI and ML for real-world applications. From prompting to fine-tuning to deployment.
+          </div>
+          <div class="community-actions">
+            <button class="btn btn-primary">Browse Community</button>
+            <button class="btn btn-secondary">View Courses</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEED VIEW (Inside Community) -->
+      <div class="feed-view" id="feedView">
+        <div class="feed-header">
+          <span class="back" onclick="showSearch()">←</span>
+          <div class="feed-header-info">
+            <h2>Python Academy</h2>
+            <span>by Sarah Chen · 2,347 members</span>
+          </div>
+        </div>
+
+        <div class="feed-tabs">
+          <button class="active">All Posts</button>
+          <button>Questions</button>
+          <button>Wins 🎉</button>
+          <button>Instructors</button>
+        </div>
+
+        <!-- Posts -->
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar">
+              <img src="https://i.pravatar.cc/88?img=11" alt="">
+            </div>
+            <div class="post-meta">
+              <div class="post-author">
+                <strong>Mike Chen</strong>
+                <span class="badge badge-student">📖 Student</span>
+                <span class="handle">@mikechen</span>
+                <span class="time">· 2h</span>
+              </div>
+            </div>
+          </div>
+          <div class="post-content">
+            Just finished session 3 with <span class="mention">@david_park</span>! The 1:1 format finally made decorators click. I struggled with this for months watching YouTube videos.
+            <br><br>
+            Anyone else working through closures? Would love to connect!
+          </div>
+          <div class="post-actions">
+            <button>💬 12</button>
+            <button>❤️ 34</button>
+            <button>🔗 Share</button>
+          </div>
+          <div class="replies">
+            <div class="reply">
+              <div class="reply-avatar"></div>
+              <div class="reply-content">
+                <div class="reply-author">
+                  <strong>Jenny Lee</strong>
+                  <span class="badge badge-student-teacher">⭐ Student-Teacher</span>
+                </div>
+                <div class="reply-text">I had the same struggle! David is amazing. Now I'm teaching the basics myself.</div>
+              </div>
+            </div>
+            <div class="reply">
+              <div class="reply-avatar"></div>
+              <div class="reply-content">
+                <div class="reply-author">
+                  <strong>David Park</strong>
+                  <span class="badge badge-instructor">🎓 Instructor</span>
+                </div>
+                <div class="reply-text">So glad it clicked! Happy to help anyone else with closures - DM me or book a session!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar">
+              <img src="https://i.pravatar.cc/88?img=12" alt="">
+            </div>
+            <div class="post-meta">
+              <div class="post-author">
+                <strong>David Park</strong>
+                <span class="badge badge-instructor">🎓 Instructor</span>
+                <span class="handle">@david_park</span>
+                <span class="time">· 5h</span>
+              </div>
+            </div>
+          </div>
+          <div class="post-content">
+            Quick tip for anyone stuck on list comprehensions:
+            <br><br>
+            Start by writing the for loop first, then compress it. Don't try to write the one-liner immediately.
+            <br><br>
+            <code style="background: #2f3336; padding: 2px 6px; border-radius: 4px;">result = [x*2 for x in items if x > 0]</code>
+            <br><br>
+            Becomes clearer when you see it as a normal loop first. Happy to walk through this in a session!
+          </div>
+          <div class="post-actions">
+            <button>💬 24</button>
+            <button>❤️ 89</button>
+            <button>🔗 Share</button>
+            <button class="book-btn">📅 Book David</button>
+          </div>
+        </div>
+
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar">
+              <img src="https://i.pravatar.cc/88?img=23" alt="">
+            </div>
+            <div class="post-meta">
+              <div class="post-author">
+                <strong>Jenny Lee</strong>
+                <span class="badge badge-student-teacher">⭐ Student-Teacher</span>
+                <span class="handle">@jenny_lee</span>
+                <span class="time">· 1d</span>
+              </div>
+            </div>
+          </div>
+          <div class="post-content">
+            6 weeks ago I couldn't write a function.
+            <br><br>
+            Today I taught my first student and earned $75.
+            <br><br>
+            I paid $299 for this course and I've already earned half of it back. This model actually works. 🤯
+          </div>
+          <div class="post-actions">
+            <button>💬 45</button>
+            <button>❤️ 156</button>
+            <button>🔗 Share</button>
+          </div>
+        </div>
+
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar">
+              <img src="https://i.pravatar.cc/88?img=47" alt="">
+            </div>
+            <div class="post-meta">
+              <div class="post-author">
+                <strong>Sarah Chen</strong>
+                <span class="badge badge-creator">✨ Creator</span>
+                <span class="handle">@sarahchen</span>
+                <span class="time">· 2d</span>
+              </div>
+            </div>
+          </div>
+          <div class="post-content">
+            Q: "Why 1:1 instead of group classes?"
+            <br><br>
+            A: Because I can see YOUR code, answer YOUR questions, and pace to YOUR understanding.
+            <br><br>
+            Research shows 90% knowledge retention with 1:1 tutoring vs 10% with passive video watching.
+            <br><br>
+            That's the difference.
+          </div>
+          <div class="post-actions">
+            <button>💬 67</button>
+            <button>❤️ 234</button>
+            <button>🔗 Share</button>
+          </div>
+        </div>
+
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar">
+              <img src="https://i.pravatar.cc/88?img=33" alt="">
+            </div>
+            <div class="post-meta">
+              <div class="post-author">
+                <strong>Alex Rivera</strong>
+                <span class="badge badge-student">📖 Student</span>
+                <span class="handle">@alexrivera</span>
+                <span class="time">· 3d</span>
+              </div>
+            </div>
+          </div>
+          <div class="post-content">
+            Can anyone recommend an instructor for the Advanced Python course? I'm done with Fundamentals and ready to level up!
+          </div>
+          <div class="post-actions">
+            <button>💬 18</button>
+            <button>❤️ 12</button>
+            <button>🔗 Share</button>
+          </div>
+          <div class="replies">
+            <div class="reply">
+              <div class="reply-avatar"></div>
+              <div class="reply-content">
+                <div class="reply-author">
+                  <strong>Maria Santos</strong>
+                  <span class="badge badge-instructor">🎓 Instructor</span>
+                </div>
+                <div class="reply-text">I teach Advanced! My focus is on clean code patterns and testing. DM me if you want to chat about your goals first.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Right Panel -->
+    <aside class="right-panel" id="rightPanel">
+      <div class="panel-section">
+        <h3>
+          📚 Courses
+          <a href="#">See all</a>
+        </h3>
+
+        <div class="course-card">
+          <div class="course-title">Python Fundamentals</div>
+          <div class="course-meta">
+            <span>6 sessions · 1.5hrs each</span>
+          </div>
+          <div class="course-price">$299</div>
+          <div class="course-earnback">Earn up to $150 back teaching</div>
+        </div>
+
+        <div class="course-card">
+          <div class="course-title">Advanced Python</div>
+          <div class="course-meta">
+            <span>8 sessions · 1.5hrs each</span>
+          </div>
+          <div class="course-price">$399</div>
+          <div class="course-earnback">Earn up to $200 back teaching</div>
+        </div>
+
+        <div class="course-card">
+          <div class="course-title">Python for Data Science</div>
+          <div class="course-meta">
+            <span>10 sessions · 1.5hrs each</span>
+          </div>
+          <div class="course-price">$499</div>
+          <div class="course-earnback">Earn up to $250 back teaching</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3>
+          🎓 Active Instructors
+          <a href="#">See all</a>
+        </h3>
+
+        <div class="instructor-mini">
+          <div class="instructor-mini-avatar">
+            <img src="https://i.pravatar.cc/80?img=12" style="width:100%;height:100%;border-radius:50%;">
+          </div>
+          <div class="instructor-mini-info">
+            <div class="instructor-mini-name">David Park</div>
+            <div class="instructor-mini-rating">⭐ 5.0 · 23 students</div>
+          </div>
+          <div class="instructor-mini-book">Book →</div>
+        </div>
+
+        <div class="instructor-mini">
+          <div class="instructor-mini-avatar">
+            <img src="https://i.pravatar.cc/80?img=32" style="width:100%;height:100%;border-radius:50%;">
+          </div>
+          <div class="instructor-mini-info">
+            <div class="instructor-mini-name">Maria Santos</div>
+            <div class="instructor-mini-rating">⭐ 4.9 · 15 students</div>
+          </div>
+          <div class="instructor-mini-book">Book →</div>
+        </div>
+
+        <div class="instructor-mini">
+          <div class="instructor-mini-avatar">
+            <img src="https://i.pravatar.cc/80?img=23" style="width:100%;height:100%;border-radius:50%;">
+          </div>
+          <div class="instructor-mini-info">
+            <div class="instructor-mini-name">Jenny Lee</div>
+            <div class="instructor-mini-rating">⭐ 5.0 · 4 students</div>
+          </div>
+          <div class="instructor-mini-book">Book →</div>
+        </div>
+      </div>
+
+      <div class="cta-banner">
+        <h4>Ready to start learning?</h4>
+        <p>Join the community, meet instructors, and begin your Python journey.</p>
+        <button class="btn btn-primary">View Courses</button>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    function showFeed() {
+      document.getElementById('searchView').classList.remove('active');
+      document.getElementById('feedView').classList.add('active');
+    }
+
+    function showSearch() {
+      document.getElementById('feedView').classList.remove('active');
+      document.getElementById('searchView').classList.add('active');
+    }
+  </script>
+</body>
+</html>

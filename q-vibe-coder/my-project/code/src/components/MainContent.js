@@ -22,6 +22,7 @@ import UserProfile from './UserProfile';
 import CourseDetailView from './CourseDetailView';
 import StudentTeacherDashboard from './StudentTeacherDashboard';
 import EnrollmentFlow from './EnrollmentFlow';
+import CoursePageRedesign from './CoursePageRedesign';
 import { getAllInstructors, getInstructorWithCourses, getCourseById, getAllCourses, getInstructorById, getIndexedCourses, getIndexedInstructors } from '../data/database';
 import { UserPropType } from './PropTypes';
 
@@ -2524,6 +2525,17 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     );
   }
 
+  // Show CoursePageRedesign mockup when Mockup is active
+  if (activeMenu === 'Mockup') {
+    return (
+      <div className="main-content" style={{ padding: 0 }}>
+        <CoursePageRedesign
+          isDarkMode={isDarkMode}
+          onBack={() => onMenuChange('Browse')}
+        />
+      </div>
+    );
+  }
   // Show Settings when Settings is active
   if (activeMenu === 'Settings') {
     return (

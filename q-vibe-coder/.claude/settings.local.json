@@ -1,6 +1,16 @@
 {
   "permissions": {
     "allow": [
+	"Read",
+        "Write",
+        "Edit",
+        "Glob",
+        "Grep",
+        "Bash",
+        "SlashCommand",
+        "Task",
+        "WebFetch",
+        "WebSearch"
       "Bash(cat:*)",
       "Bash(git rm:*)",
       "Bash(git check-ignore:*)",
@@ -20,5 +30,8 @@
     ],
     "deny": [],
     "ask": []
+  },
+  "enabledPlugins": {
+    "feature-dev@claude-plugins-official": true
   }
 }

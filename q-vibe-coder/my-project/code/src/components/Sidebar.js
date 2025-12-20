@@ -85,6 +85,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, isDarkMode, toggleDark
     { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system
     { icon: <FaUser />, label: 'Profile', displayLabel: 'Profile' }, // User profile
     { icon: isDarkMode ? <FaSun /> : <FaMoon />, label: 'ToggleTheme', displayLabel: isDarkMode ? 'Light Mode' : 'Dark Mode' }, // Theme toggle
+    { icon: <FaFeatherAlt />, label: 'Mockup', displayLabel: 'NEW Mockup' }, // Design mockup (temp)
   ];
 
   /**

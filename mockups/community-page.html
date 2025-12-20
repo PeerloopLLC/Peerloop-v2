@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sarah Chen's Python Community | PeerLoop</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #e7e9ea;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #2f3336;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: #1d9bf0;
+      font-size: 15px;
+      cursor: pointer;
+      padding: 8px 12px;
+      margin-left: -12px;
+      border-radius: 20px;
+      transition: background 0.2s;
+    }
+
+    .back-btn:hover {
+      background: rgba(29, 155, 240, 0.1);
+    }
+
+    .header-spacer {
+      flex: 1;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .header-logo span {
+      color: #1d9bf0;
+    }
+
+    /* Main Layout */
+    .main-layout {
+      display: flex;
+      margin-top: 56px;
+      min-height: calc(100vh - 56px);
+    }
+
+    /* Left Column - Feed */
+    .feed-column {
+      flex: 1;
+      max-width: 650px;
+      border-right: 1px solid #2f3336;
+    }
+
+    /* Community Header */
+    .community-header {
+      padding: 20px;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .community-profile {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .community-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 3px solid #1d9bf0;
+    }
+
+    .community-info {
+      flex: 1;
+    }
+
+    .community-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .community-tagline {
+      color: #71767b;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .community-stats {
+      display: flex;
+      gap: 20px;
+      font-size: 14px;
+    }
+
+    .community-stats span {
+      color: #71767b;
+    }
+
+    .community-stats strong {
+      color: #e7e9ea;
+    }
+
+    .follow-btn {
+      background: #e7e9ea;
+      color: #0f1419;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .follow-btn:hover {
+      background: #d7dbdc;
+    }
+
+    /* Feed Tabs */
+    .feed-tabs {
+      display: flex;
+      border-bottom: 1px solid #2f3336;
+      position: sticky;
+      top: 56px;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+    }
+
+    .feed-tab {
+      flex: 1;
+      text-align: center;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #71767b;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+    }
+
+    .feed-tab:hover {
+      background: rgba(255, 255, 255, 0.03);
+      color: #e7e9ea;
+    }
+
+    .feed-tab.active {
+      color: #e7e9ea;
+      font-weight: 700;
+    }
+
+    .feed-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: #1d9bf0;
+      border-radius: 2px;
+    }
+
+    /* Feed Posts */
+    .feed-posts {
+      /* Posts container */
+    }
+
+    .post {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2f3336;
+      transition: background 0.2s;
+    }
+
+    .post:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .post-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+    }
+
+    .post-content {
+      flex: 1;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .post-author {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .post-handle {
+      color: #71767b;
+      font-size: 15px;
+    }
+
+    .post-time {
+      color: #71767b;
+      font-size: 15px;
+    }
+
+    .post-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .post-badge.instructor {
+      background: rgba(29, 155, 240, 0.15);
+      color: #1d9bf0;
+    }
+
+    .post-badge.student {
+      background: rgba(0, 186, 124, 0.15);
+      color: #00ba7c;
+    }
+
+    .post-badge.student-teacher {
+      background: rgba(255, 212, 0, 0.15);
+      color: #ffd400;
+    }
+
+    .post-badge.creator {
+      background: rgba(249, 24, 128, 0.15);
+      color: #f91880;
+    }
+
+    .post-text {
+      font-size: 15px;
+      line-height: 1.5;
+      margin: 8px 0 12px;
+    }
+
+    .post-text .mention {
+      color: #1d9bf0;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 24px;
+    }
+
+    .post-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #71767b;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .post-action:hover {
+      color: #1d9bf0;
+    }
+
+    .post-action.liked {
+      color: #f91880;
+    }
+
+    .book-instructor-btn {
+      margin-left: auto;
+      background: rgba(29, 155, 240, 0.1);
+      color: #1d9bf0;
+      border: 1px solid rgba(29, 155, 240, 0.3);
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .book-instructor-btn:hover {
+      background: rgba(29, 155, 240, 0.2);
+    }
+
+    .load-more {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .load-more-btn {
+      background: none;
+      border: 1px solid #536471;
+      color: #1d9bf0;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .load-more-btn:hover {
+      background: rgba(29, 155, 240, 0.1);
+      border-color: rgba(29, 155, 240, 0.3);
+    }
+
+    /* Right Column - Sidebar */
+    .sidebar-column {
+      width: 360px;
+      padding: 20px;
+      position: fixed;
+      right: 0;
+      top: 56px;
+      bottom: 0;
+      overflow-y: auto;
+    }
+
+    /* Courses Section */
+    .sidebar-section {
+      margin-bottom: 24px;
+    }
+
+    .sidebar-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .course-card {
+      background: #16181c;
+      border: 1px solid #2f3336;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .course-card:hover {
+      border-color: #536471;
+    }
+
+    .course-card.highlighted {
+      border-color: #1d9bf0;
+      background: linear-gradient(135deg, rgba(29, 155, 240, 0.1) 0%, transparent 100%);
+    }
+
+    .course-card.highlighted .course-badge {
+      display: inline-block;
+    }
+
+    .course-badge {
+      display: none;
+      background: #1d9bf0;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .course-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .course-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 12px;
+    }
+
+    .course-price {
+      color: #00d4aa;
+      font-weight: 600;
+    }
+
+    .course-earn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #00d4aa;
+      background: rgba(0, 212, 170, 0.1);
+      padding: 6px 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .course-cta {
+      width: 100%;
+      background: #1d9bf0;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .course-cta:hover {
+      background: #1a8cd8;
+    }
+
+    .course-card:not(.highlighted) .course-cta {
+      background: transparent;
+      border: 1px solid #536471;
+      color: #e7e9ea;
+    }
+
+    .course-card:not(.highlighted) .course-cta:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Instructors Section */
+    .instructor-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #16181c;
+      border: 1px solid #2f3336;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+
+    .instructor-card:hover {
+      border-color: #536471;
+    }
+
+    .instructor-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+    }
+
+    .instructor-info {
+      flex: 1;
+    }
+
+    .instructor-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .instructor-stats {
+      font-size: 12px;
+      color: #71767b;
+    }
+
+    .instructor-available {
+      font-size: 11px;
+      color: #00ba7c;
+    }
+
+    .instructor-book {
+      background: #1d9bf0;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .instructor-book:hover {
+      background: #1a8cd8;
+    }
+
+    /* How It Works */
+    .how-it-works {
+      background: #16181c;
+      border: 1px solid #2f3336;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .how-step {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .how-step:last-child {
+      margin-bottom: 0;
+    }
+
+    .how-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #2f3336;
+      color: #71767b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .how-text {
+      font-size: 13px;
+      color: #e7e9ea;
+      line-height: 1.4;
+    }
+
+    .how-step.highlight .how-number {
+      background: #00d4aa;
+      color: #000;
+    }
+
+    .how-step.highlight .how-text {
+      color: #00d4aa;
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .sidebar-column {
+        display: none;
+      }
+      .feed-column {
+        max-width: 100%;
+        border-right: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <button class="back-btn">← Back to Search</button>
+    <div class="header-spacer"></div>
+    <div class="header-logo">
+      <span>∞</span> PeerLoop
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+    <!-- Left Column - Feed -->
+    <main class="feed-column">
+      <!-- Community Header -->
+      <div class="community-header">
+        <div class="community-profile">
+          <img src="https://i.pravatar.cc/150?img=47" alt="Sarah Chen" class="community-avatar">
+          <div class="community-info">
+            <h1 class="community-name">Sarah Chen's Python Community</h1>
+            <p class="community-tagline">Learn Python through 1:1 expert instruction</p>
+            <div class="community-stats">
+              <span><strong>342</strong> members</span>
+              <span><strong>12</strong> instructors</span>
+              <span><strong>89%</strong> recommend</span>
+            </div>
+          </div>
+          <button class="follow-btn">Follow</button>
+        </div>
+      </div>
+
+      <!-- Feed Tabs -->
+      <div class="feed-tabs">
+        <div class="feed-tab" onclick="switchTab(this)">Town Hall</div>
+        <div class="feed-tab active" onclick="switchTab(this)">Python Fundamentals</div>
+        <div class="feed-tab" onclick="switchTab(this)">Advanced</div>
+        <div class="feed-tab" onclick="switchTab(this)">Data Science</div>
+      </div>
+
+      <!-- Feed Posts -->
+      <div class="feed-posts">
+        <!-- Post 1 - Instructor -->
+        <article class="post">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/150?img=12" alt="David Park" class="post-avatar">
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="post-author">David Park</span>
+                <span class="post-handle">@david_park</span>
+                <span class="post-time">• 2h</span>
+                <span class="post-badge instructor">🎓 Instructor</span>
+              </div>
+              <p class="post-text">
+                Just wrapped a great session with <span class="mention">@mike_chen</span>. Decorators finally clicked for him after we walked through building one from scratch together. Love these breakthrough moments! 🎉
+              </p>
+              <div class="post-actions">
+                <span class="post-action">💬 12</span>
+                <span class="post-action liked">❤️ 34</span>
+                <span class="post-action">↗️</span>
+                <button class="book-instructor-btn">📅 Book David</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 2 - Student -->
+        <article class="post">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/150?img=11" alt="Mike Chen" class="post-avatar">
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="post-author">Mike Chen</span>
+                <span class="post-handle">@mike_chen</span>
+                <span class="post-time">• 3h</span>
+                <span class="post-badge student">📖 Student</span>
+              </div>
+              <p class="post-text">
+                Session 3 with <span class="mention">@david_park</span> was 🔥! The 1:1 format made decorators finally click. I spent MONTHS watching YouTube videos and never got it. 45 minutes with David and boom. This is the way.
+              </p>
+              <div class="post-actions">
+                <span class="post-action">💬 8</span>
+                <span class="post-action">❤️ 56</span>
+                <span class="post-action">↗️</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 3 - Student asking question -->
+        <article class="post">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/150?img=33" alt="Alex Rivera" class="post-avatar">
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="post-author">Alex Rivera</span>
+                <span class="post-handle">@alex_r</span>
+                <span class="post-time">• 4h</span>
+                <span class="post-badge student">📖 Student</span>
+              </div>
+              <p class="post-text">
+                Anyone else struggle with list comprehensions? Session 2 is coming up and I want to be prepared. Any tips?
+              </p>
+              <div class="post-actions">
+                <span class="post-action">💬 15</span>
+                <span class="post-action">❤️ 8</span>
+                <span class="post-action">↗️</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 4 - Instructor helping -->
+        <article class="post">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/150?img=32" alt="Maria Santos" class="post-avatar">
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="post-author">Maria Santos</span>
+                <span class="post-handle">@maria_santos</span>
+                <span class="post-time">• 4h</span>
+                <span class="post-badge instructor">🎓 Instructor</span>
+              </div>
+              <p class="post-text">
+                <span class="mention">@alex_r</span> Don't stress! List comprehensions look scary but they're just a pattern. In our 1:1 we'll build them step by step. I always start with the long form loop first, then transform it. You'll get it! 💪
+              </p>
+              <div class="post-actions">
+                <span class="post-action">💬 3</span>
+                <span class="post-action liked">❤️ 22</span>
+                <span class="post-action">↗️</span>
+                <button class="book-instructor-btn">📅 Book Maria</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 5 - Student-Teacher -->
+        <article class="post">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/150?img=23" alt="Jenny Lee" class="post-avatar">
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="post-author">Jenny Lee</span>
+                <span class="post-handle">@jenny_lee</span>
+                <span class="post-time">• 5h</span>
+                <span class="post-badge student-teacher">⭐ Student-Teacher</span>
+              </div>
+              <p class="post-text">
+                Update: I paid $299 for this course, learned Python properly with 1:1 instruction, and have already earned $150 back teaching 2 students. The model actually works. By next month I'll have made my money back AND know Python.
+              </p>
+              <div class="post-actions">
+                <span class="post-action">💬 24</span>
+                <span class="post-action liked">❤️ 156</span>
+                <span class="post-action">↗️</span>
+                <button class="book-instructor-btn">📅 Book Jenny</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 6 - Creator -->
+        <article class="post">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/150?img=47" alt="Sarah Chen" class="post-avatar">
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="post-author">Sarah Chen</span>
+                <span class="post-handle">@sarahchen</span>
+                <span class="post-time">• 1d</span>
+                <span class="post-badge creator">✨ Creator</span>
+              </div>
+              <p class="post-text">
+                FAQ: "Why 1:1 instead of group classes?"<br><br>
+                Because I can see YOUR code, answer YOUR questions, and pace to YOUR understanding. That's how you get 90% retention vs 10% for videos.<br><br>
+                Group classes are just videos with a chat window.
+              </p>
+              <div class="post-actions">
+                <span class="post-action">💬 67</span>
+                <span class="post-action liked">❤️ 234</span>
+                <span class="post-action">↗️</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div class="load-more">
+          <button class="load-more-btn">Load more posts</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right Column - Sidebar -->
+    <aside class="sidebar-column">
+      <!-- Courses Section -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">Courses</div>
+
+        <div class="course-card highlighted">
+          <span class="course-badge">★ YOU SEARCHED</span>
+          <div class="course-title">Python Fundamentals</div>
+          <div class="course-meta">
+            <span class="course-price">$299</span>
+            <span>•</span>
+            <span>6 sessions</span>
+            <span>•</span>
+            <span>⭐ 4.9</span>
+          </div>
+          <div class="course-earn">
+            💰 Earn up to $150 back by teaching
+          </div>
+          <button class="course-cta">Choose Instructor</button>
+        </div>
+
+        <div class="course-card">
+          <div class="course-title">Advanced Python</div>
+          <div class="course-meta">
+            <span class="course-price">$399</span>
+            <span>•</span>
+            <span>8 sessions</span>
+          </div>
+          <button class="course-cta">View Course</button>
+        </div>
+
+        <div class="course-card">
+          <div class="course-title">Python for Data Science</div>
+          <div class="course-meta">
+            <span class="course-price">$449</span>
+            <span>•</span>
+            <span>10 sessions</span>
+          </div>
+          <button class="course-cta">View Course</button>
+        </div>
+      </div>
+
+      <!-- Instructors Section -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">Instructors Online</div>
+
+        <div class="instructor-card">
+          <img src="https://i.pravatar.cc/150?img=12" alt="David Park" class="instructor-avatar">
+          <div class="instructor-info">
+            <div class="instructor-name">David Park</div>
+            <div class="instructor-stats">⭐ 5.0 • 23 students</div>
+            <div class="instructor-available">Available today</div>
+          </div>
+          <button class="instructor-book">Book</button>
+        </div>
+
+        <div class="instructor-card">
+          <img src="https://i.pravatar.cc/150?img=32" alt="Maria Santos" class="instructor-avatar">
+          <div class="instructor-info">
+            <div class="instructor-name">Maria Santos</div>
+            <div class="instructor-stats">⭐ 4.9 • 8 students</div>
+            <div class="instructor-available">Available tomorrow</div>
+          </div>
+          <button class="instructor-book">Book</button>
+        </div>
+
+        <div class="instructor-card">
+          <img src="https://i.pravatar.cc/150?img=23" alt="Jenny Lee" class="instructor-avatar">
+          <div class="instructor-info">
+            <div class="instructor-name">Jenny Lee</div>
+            <div class="instructor-stats">⭐ 5.0 • 3 students</div>
+            <div class="instructor-available">Available today</div>
+          </div>
+          <button class="instructor-book">Book</button>
+        </div>
+      </div>
+
+      <!-- How It Works -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">How It Works</div>
+
+        <div class="how-it-works">
+          <div class="how-step">
+            <span class="how-number">1</span>
+            <span class="how-text">Browse this feed (free)</span>
+          </div>
+          <div class="how-step">
+            <span class="how-number">2</span>
+            <span class="how-text">Pick an instructor you like</span>
+          </div>
+          <div class="how-step">
+            <span class="how-number">3</span>
+            <span class="how-text">Learn 1:1 (6 sessions)</span>
+          </div>
+          <div class="how-step">
+            <span class="how-number">4</span>
+            <span class="how-text">Pass & start teaching</span>
+          </div>
+          <div class="how-step highlight">
+            <span class="how-number">5</span>
+            <span class="how-text">Earn your money back</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    function switchTab(el) {
+      document.querySelectorAll('.feed-tab').forEach(tab => tab.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
+</body>
+</html>
