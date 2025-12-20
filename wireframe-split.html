@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireframe B: The Split World</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid #ccc;
+            padding: 16px 0;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .course-title-header {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #999;
+            background: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            border: 2px solid #333;
+            padding: 20px 24px;
+            margin: 24px 0;
+            background: #f9f9f9;
+            text-align: center;
+        }
+
+        .welcome-quote {
+            font-size: 20px;
+            font-style: italic;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .welcome-author {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Split Layout */
+        .split-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 2px;
+            margin: 24px 0;
+            border: 1px solid #ccc;
+            min-height: 600px;
+        }
+
+        /* Left Column - The Course */
+        .course-column {
+            border-right: 2px solid #333;
+            background: #fff;
+        }
+
+        .column-header {
+            padding: 16px 20px;
+            font-weight: 700;
+            font-size: 16px;
+            background: #eee;
+            border-bottom: 1px solid #ccc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .column-content {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .module-list {
+            list-style: none;
+        }
+
+        .module-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .module-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #999;
+            background: #fff;
+        }
+
+        .module-name {
+            font-size: 15px;
+        }
+
+        /* Journey Steps */
+        .journey-list {
+            list-style: none;
+        }
+
+        .journey-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+        }
+
+        .journey-number {
+            width: 28px;
+            height: 28px;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .journey-content {
+            flex: 1;
+        }
+
+        .journey-title {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .journey-desc {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .journey-arrow {
+            text-align: center;
+            color: #999;
+            padding: 4px 0;
+            padding-left: 40px;
+        }
+
+        /* Pricing */
+        .pricing-box {
+            border: 2px solid #333;
+            padding: 20px;
+            text-align: center;
+            margin-top: 24px;
+            background: #f5f5f5;
+        }
+
+        .price {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .price-note {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        /* Right Column - The Community */
+        .community-column {
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .community-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .feed-post {
+            border-bottom: 1px solid #e5e5e5;
+            padding: 16px 20px;
+            background: #fff;
+        }
+
+        .feed-post:hover {
+            background: #fafafa;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: #ddd;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .post-meta {
+            flex: 1;
+        }
+
+        .post-author-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .author-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .role-tag {
+            font-size: 11px;
+            padding: 2px 6px;
+            border: 1px solid #999;
+            background: #eee;
+        }
+
+        .role-tag.teacher {
+            background: #ccc;
+            border-color: #666;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .post-content {
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .reply-indicator {
+            margin-left: 52px;
+            padding: 12px 16px;
+            background: #f0f0f0;
+            border-left: 3px solid #ccc;
+            margin-bottom: 16px;
+        }
+
+        .reply-author {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .reply-content {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: flex;
+            gap: 24px;
+            padding: 16px 20px;
+            background: #eee;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Enroll Footer */
+        .enroll-footer {
+            padding: 20px;
+            background: #fff;
+            border-top: 2px solid #333;
+        }
+
+        .enroll-btn {
+            width: 100%;
+            padding: 16px;
+            background: #333;
+            color: #fff;
+            border: none;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+
+        .enroll-subtext {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Wireframe Label */
+        .wireframe-label {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #333;
+            color: #fff;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 1000;
+        }
+
+        .page-wrapper {
+            padding-top: 40px;
+        }
+
+        /* Divider */
+        .visual-divider {
+            width: 2px;
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-label">Wireframe B: "The Split World" - Content + Community Side-by-Side</div>
+
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="container header-inner">
+                <a href="#" class="back-link">[arrow] Back</a>
+                <div class="course-title-header">AI Prompting Mastery</div>
+                <div class="header-actions">
+                    <button class="btn btn-primary">Sign Up</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <p class="welcome-quote">
+                    "Welcome to my community. Here, students become teachers.
+                    That's not a slogan - it's how we learn best."
+                </p>
+                <p class="welcome-author">- Guy Parson, Course Creator</p>
+            </div>
+
+            <!-- Split Layout -->
+            <div class="split-layout">
+                <!-- Left: The Course -->
+                <div class="course-column">
+                    <div class="column-header">The Course</div>
+                    <div class="column-content">
+                        <div class="section-title">5 Modules</div>
+                        <ul class="module-list">
+                            <li class="module-item">
+                                <div class="module-checkbox"></div>
+                                <span class="module-name">Prompt Basics</span>
+                            </li>
+                            <li class="module-item">
+                                <div class="module-checkbox"></div>
+                                <span class="module-name">Chain of Thought</span>
+                            </li>
+                            <li class="module-item">
+                                <div class="module-checkbox"></div>
+                                <span class="module-name">Few-Shot Learning</span>
+                            </li>
+                            <li class="module-item">
+                                <div class="module-checkbox"></div>
+                                <span class="module-name">Advanced Patterns</span>
+                            </li>
+                            <li class="module-item">
+                                <div class="module-checkbox"></div>
+                                <span class="module-name">Real Projects</span>
+                            </li>
+                        </ul>
+
+                        <div class="section-title">Your Journey</div>
+                        <ul class="journey-list">
+                            <li class="journey-step">
+                                <div class="journey-number">1</div>
+                                <div class="journey-content">
+                                    <div class="journey-title">Learn</div>
+                                    <div class="journey-desc">Complete modules with 1-on-1 help</div>
+                                </div>
+                            </li>
+                            <div class="journey-arrow">[down arrow]</div>
+                            <li class="journey-step">
+                                <div class="journey-number">2</div>
+                                <div class="journey-content">
+                                    <div class="journey-title">Get Certified</div>
+                                    <div class="journey-desc">Pass assessment to prove mastery</div>
+                                </div>
+                            </li>
+                            <div class="journey-arrow">[down arrow]</div>
+                            <li class="journey-step">
+                                <div class="journey-number">3</div>
+                                <div class="journey-content">
+                                    <div class="journey-title">Teach Others</div>
+                                    <div class="journey-desc">Help new students, reinforce learning</div>
+                                </div>
+                            </li>
+                            <div class="journey-arrow">[down arrow]</div>
+                            <li class="journey-step">
+                                <div class="journey-number">4</div>
+                                <div class="journey-content">
+                                    <div class="journey-title">Earn $315/student</div>
+                                    <div class="journey-desc">70% of tuition for each student you teach</div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <div class="pricing-box">
+                            <div class="price">$450</div>
+                            <div class="price-note">One-time payment</div>
+                            <div class="price-note">Includes everything</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: The Community -->
+                <div class="community-column">
+                    <div class="column-header">The Community</div>
+
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-value">47</div>
+                            <div class="stat-label">students learning</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">student-teachers</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">certified this month</div>
+                        </div>
+                    </div>
+
+                    <div class="community-content">
+                        <div class="feed-post">
+                            <div class="post-header">
+                                <div class="avatar">S</div>
+                                <div class="post-meta">
+                                    <div class="post-author-line">
+                                        <span class="author-name">Sarah</span>
+                                        <span class="role-tag">learning</span>
+                                    </div>
+                                    <div class="post-time">2 hours ago</div>
+                                </div>
+                            </div>
+                            <p class="post-content">
+                                How do I handle edge cases in prompts? I keep getting inconsistent results when inputs are unusual.
+                            </p>
+                            <div class="post-actions">
+                                <span>[heart] 4</span>
+                                <span>[reply] 2 replies</span>
+                            </div>
+                        </div>
+
+                        <div class="reply-indicator">
+                            <div class="reply-author">Marcus (student-teacher):</div>
+                            <div class="reply-content">"Here's a pattern that works well for that - add explicit constraints..."</div>
+                        </div>
+
+                        <div class="feed-post">
+                            <div class="post-header">
+                                <div class="avatar">M</div>
+                                <div class="post-meta">
+                                    <div class="post-author-line">
+                                        <span class="author-name">Marcus</span>
+                                        <span class="role-tag teacher">student-teacher</span>
+                                    </div>
+                                    <div class="post-time">5 hours ago</div>
+                                </div>
+                            </div>
+                            <p class="post-content">
+                                Just finished a session with Jake on advanced patterns. The key insight was connecting system prompts to output structure. Game changer.
+                            </p>
+                            <div class="post-actions">
+                                <span>[heart] 15</span>
+                                <span>[reply] 4 replies</span>
+                            </div>
+                        </div>
+
+                        <div class="feed-post" style="background: #f9f9f9;">
+                            <div class="post-header">
+                                <div class="avatar">J</div>
+                                <div class="post-meta">
+                                    <div class="post-author-line">
+                                        <span class="author-name">Jake</span>
+                                        <span class="role-tag" style="background: #ddd; border-color: #666;">just certified!</span>
+                                    </div>
+                                    <div class="post-time">Yesterday</div>
+                                </div>
+                            </div>
+                            <p class="post-content">
+                                I DID IT! Passed my certification. Thanks Marcus for the prep sessions. Ready to start teaching next week - who's got questions?
+                            </p>
+                            <div class="post-actions">
+                                <span>[party] 23 congrats</span>
+                                <span>[reply] 8 replies</span>
+                            </div>
+                        </div>
+
+                        <div class="feed-post">
+                            <div class="post-header">
+                                <div class="avatar">L</div>
+                                <div class="post-meta">
+                                    <div class="post-author-line">
+                                        <span class="author-name">Lisa</span>
+                                        <span class="role-tag">learning</span>
+                                    </div>
+                                    <div class="post-time">2 days ago</div>
+                                </div>
+                            </div>
+                            <p class="post-content">
+                                Module 3 clicked for me today. The few-shot examples make so much more sense now that I understand the pattern matching concept.
+                            </p>
+                            <div class="post-actions">
+                                <span>[heart] 8</span>
+                                <span>[reply] 2 replies</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="enroll-footer">
+                        <button class="enroll-btn">Enroll Now - $450</button>
+                        <p class="enroll-subtext">Earn it back teaching 2 students.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

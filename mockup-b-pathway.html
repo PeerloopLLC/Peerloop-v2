@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeerLoop - Mockup B: The Pathway</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #141414;
+      --bg-tertiary: #1a1a1a;
+      --bg-hover: #252525;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666666;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --border: #2a2a2a;
+      --column1-width: 200px;
+      --column2-width: 280px;
+      --header-height: 60px;
+      --bottom-nav-height: 60px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    /* ==================== HEADER ==================== */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .header-logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-right: 30px;
+    }
+
+    .header-search {
+      flex: 1;
+      max-width: 400px;
+      position: relative;
+    }
+
+    .header-search input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+    }
+
+    .header-search input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .header-search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-left: auto;
+    }
+
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: background 0.2s;
+    }
+
+    .header-icon:hover {
+      background: var(--bg-hover);
+    }
+
+    .header-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    }
+
+    /* ==================== THREE COLUMN LAYOUT ==================== */
+    .three-column {
+      display: flex;
+      margin-top: var(--header-height);
+      height: calc(100vh - var(--header-height));
+    }
+
+    /* Column 1: Primary Navigation */
+    .column-1 {
+      width: var(--column1-width);
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .col1-section {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .col1-section:last-child {
+      border-bottom: none;
+    }
+
+    .col1-section-title {
+      padding: 0 16px 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .col1-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: var(--text-secondary);
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .col1-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .col1-item.active {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-left: 3px solid var(--accent);
+      padding-left: 13px;
+    }
+
+    .col1-icon {
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .col1-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f97316, #ec4899);
+      flex-shrink: 0;
+    }
+
+    .col1-badge {
+      margin-left: auto;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Column 2: Lists */
+    .column-2 {
+      width: var(--column2-width);
+      background: var(--bg-tertiary);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .col2-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg-tertiary);
+      z-index: 10;
+    }
+
+    .col2-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .col2-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Creator Card in Column 2 */
+    .creator-card {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .creator-card:hover {
+      background: var(--bg-hover);
+    }
+
+    .creator-card.active {
+      background: var(--bg-hover);
+      border-left: 3px solid var(--accent);
+    }
+
+    .creator-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .creator-card-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f97316, #ec4899);
+      flex-shrink: 0;
+    }
+
+    .creator-card-name {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .creator-card-stats {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .creator-card-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    /* Course Card in Column 2 */
+    .course-card {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .course-card:hover {
+      background: var(--bg-hover);
+    }
+
+    .course-card.active {
+      background: var(--bg-hover);
+      border-left: 3px solid var(--accent);
+    }
+
+    .course-card-title {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .course-card-price {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: auto;
+    }
+
+    .course-card-price.owned {
+      background: var(--success);
+      color: white;
+    }
+
+    .course-card-price.paid {
+      background: var(--warning);
+      color: black;
+    }
+
+    .course-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .course-card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .course-feed-btn {
+      padding: 6px 12px;
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent);
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .course-feed-btn:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+
+    .course-buy-btn {
+      padding: 6px 12px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .course-buy-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Column 3: Content */
+    .column-3 {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg-primary);
+    }
+
+    .col3-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .col3-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .col3-title-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .col3-buy-sticky {
+      padding: 8px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .col3-buy-sticky:hover {
+      background: var(--accent-hover);
+    }
+
+    .col3-content {
+      padding: 24px;
+      max-width: 600px;
+    }
+
+    /* Post composer */
+    .post-composer {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .composer-input {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .composer-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      flex-shrink: 0;
+    }
+
+    .composer-textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      resize: none;
+      min-height: 50px;
+    }
+
+    .composer-textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .composer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .composer-tools {
+      display: flex;
+      gap: 6px;
+    }
+
+    .composer-tool {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .composer-tool:hover {
+      background: var(--bg-hover);
+    }
+
+    .composer-post-btn {
+      padding: 6px 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* Feed posts */
+    .feed-post {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e, #14b8a6);
+      flex-shrink: 0;
+    }
+
+    .post-avatar.teacher {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+    }
+
+    .post-avatar.creator {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    }
+
+    .post-author-info {
+      flex: 1;
+    }
+
+    .post-author-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .post-author {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    .post-badge {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .post-badge.student {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+
+    .post-badge.student-teacher {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .post-badge.creator {
+      background: rgba(139, 92, 246, 0.2);
+      color: #8b5cf6;
+    }
+
+    .post-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .post-content {
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 20px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .post-action {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .post-action:hover {
+      color: var(--accent);
+    }
+
+    /* ==================== MOBILE: Breadcrumb Header ==================== */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      padding: 0 16px;
+      z-index: 99;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      overflow: hidden;
+    }
+
+    .breadcrumb-back {
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .breadcrumb-item {
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .breadcrumb-item.current {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .breadcrumb-sep {
+      color: var(--text-muted);
+    }
+
+    /* ==================== BOTTOM NAV (Mobile) ==================== */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-height);
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      z-index: 100;
+    }
+
+    .bottom-nav-items {
+      display: flex;
+      height: 100%;
+    }
+
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .bottom-nav-item.active {
+      color: var(--accent);
+    }
+
+    .bottom-nav-icon {
+      font-size: 1.3rem;
+    }
+
+    .bottom-nav-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+
+    /* Tablet: Column 1 collapses to icons */
+    @media (max-width: 1100px) {
+      .column-1 {
+        width: 60px;
+      }
+
+      .col1-section-title,
+      .col1-item span:not(.col1-icon),
+      .col1-badge {
+        display: none;
+      }
+
+      .col1-item {
+        justify-content: center;
+        padding: 12px;
+      }
+
+      .col1-item.active {
+        padding-left: 12px;
+      }
+
+      .col1-icon {
+        font-size: 1.3rem;
+      }
+
+      .col1-avatar {
+        width: 28px;
+        height: 28px;
+      }
+
+      .column-2 {
+        width: 260px;
+      }
+    }
+
+    /* Smaller tablet: Hide column 2, show as overlay */
+    @media (max-width: 900px) {
+      .column-1 {
+        display: none;
+      }
+
+      .column-2 {
+        width: 280px;
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .three-column {
+        margin-top: calc(var(--header-height) + 50px);
+        height: calc(100vh - var(--header-height) - 50px);
+      }
+    }
+
+    /* Mobile: Single column */
+    @media (max-width: 768px) {
+      .column-2 {
+        display: none;
+      }
+
+      .column-3 {
+        width: 100%;
+      }
+
+      .three-column {
+        margin-bottom: var(--bottom-nav-height);
+        height: calc(100vh - var(--header-height) - 50px - var(--bottom-nav-height));
+      }
+
+      .bottom-nav {
+        display: block;
+      }
+
+      .header-search {
+        display: none;
+      }
+
+      .col3-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .col3-buy-sticky {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .col3-content {
+        padding: 16px;
+      }
+    }
+
+    /* ==================== ANNOTATIONS ==================== */
+    .mockup-label {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .mockup-label strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .mockup-label {
+        bottom: 80px;
+        left: 20px;
+        right: 20px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-logo">PeerLoop</div>
+    <div class="header-search">
+      <span class="header-search-icon">&#128269;</span>
+      <input type="text" placeholder="Search courses, creators, posts...">
+    </div>
+    <div class="header-right">
+      <div class="header-icon" title="Notifications">&#128276;</div>
+      <div class="header-avatar"></div>
+    </div>
+  </header>
+
+  <!-- MOBILE BREADCRUMB HEADER -->
+  <div class="mobile-header">
+    <div class="breadcrumb">
+      <span class="breadcrumb-back">&#8592;</span>
+      <span class="breadcrumb-item">Sarah Chen</span>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-item current">Python Mastery</span>
+    </div>
+  </div>
+
+  <!-- THREE COLUMN LAYOUT -->
+  <div class="three-column">
+
+    <!-- COLUMN 1: Primary Navigation -->
+    <aside class="column-1">
+      <div class="col1-section">
+        <div class="col1-item">
+          <span class="col1-icon">&#127760;</span>
+          <span>Global Feed</span>
+        </div>
+      </div>
+
+      <div class="col1-section">
+        <div class="col1-section-title">Following</div>
+        <div class="col1-item active">
+          <div class="col1-avatar"></div>
+          <span>Sarah Chen</span>
+        </div>
+        <div class="col1-item">
+          <div class="col1-avatar" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);"></div>
+          <span>Marcus Rivera</span>
+        </div>
+        <div class="col1-item">
+          <div class="col1-avatar" style="background: linear-gradient(135deg, #22c55e, #14b8a6);"></div>
+          <span>Alex Thompson</span>
+        </div>
+      </div>
+
+      <div class="col1-section">
+        <div class="col1-section-title">Discover</div>
+        <div class="col1-item">
+          <span class="col1-icon">&#128218;</span>
+          <span>Browse</span>
+        </div>
+        <div class="col1-item">
+          <span class="col1-icon">&#128100;</span>
+          <span>Creators</span>
+        </div>
+      </div>
+
+      <div class="col1-section">
+        <div class="col1-section-title">My Stuff</div>
+        <div class="col1-item">
+          <span class="col1-icon">&#128202;</span>
+          <span>Dashboard</span>
+          <span class="col1-badge">2</span>
+        </div>
+        <div class="col1-item">
+          <span class="col1-icon">&#128100;</span>
+          <span>Profile</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- COLUMN 2: Lists (Creator Details + Courses) -->
+    <div class="column-2">
+      <div class="col2-header">
+        <div class="col2-title">Sarah Chen</div>
+        <div class="col2-subtitle">847 followers &bull; 3 courses</div>
+      </div>
+
+      <!-- Creator Info Card -->
+      <div class="creator-card active">
+        <div class="creator-card-header">
+          <div class="creator-card-avatar"></div>
+          <div>
+            <div class="creator-card-name">Community Feed</div>
+            <div class="creator-card-stats">See all community posts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses -->
+      <div class="col2-header" style="border-top: 1px solid var(--border);">
+        <div class="col2-title" style="font-size: 0.9rem;">Courses</div>
+      </div>
+
+      <div class="course-card active">
+        <div class="course-card-title">
+          Python Mastery
+          <span class="course-card-price paid">$299</span>
+        </div>
+        <div class="course-card-meta">
+          <span>47 active discussions</span>
+          <span>234 students</span>
+        </div>
+        <div class="course-card-actions">
+          <button class="course-feed-btn">&#128172; Feed</button>
+          <button class="course-buy-btn">Buy $299</button>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-card-title">
+          Data Science Basics
+          <span class="course-card-price owned">Owned</span>
+        </div>
+        <div class="course-card-meta">
+          <span>23 active discussions</span>
+          <span>189 students</span>
+        </div>
+        <div class="course-card-actions">
+          <button class="course-feed-btn">&#128172; Feed</button>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-card-title">
+          ML Fundamentals
+          <span class="course-card-price paid">$399</span>
+        </div>
+        <div class="course-card-meta">
+          <span>31 active discussions</span>
+          <span>156 students</span>
+        </div>
+        <div class="course-card-actions">
+          <button class="course-feed-btn">&#128172; Feed</button>
+          <button class="course-buy-btn">Buy $399</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: Content (Feed) -->
+    <main class="column-3">
+      <div class="col3-header">
+        <div>
+          <div class="col3-title">Python Mastery Feed</div>
+          <div class="col3-title-sub">Public course community &bull; 47 discussions this week</div>
+        </div>
+        <button class="col3-buy-sticky">&#128176; Buy Course - $299</button>
+      </div>
+
+      <div class="col3-content">
+        <!-- Post Composer -->
+        <div class="post-composer">
+          <div class="composer-input">
+            <div class="composer-avatar"></div>
+            <textarea class="composer-textarea" placeholder="Ask a question or share your progress..."></textarea>
+          </div>
+          <div class="composer-actions">
+            <div class="composer-tools">
+              <button class="composer-tool">&#128247;</button>
+              <button class="composer-tool">&#127909;</button>
+              <button class="composer-tool">&#128279;</button>
+            </div>
+            <button class="composer-post-btn">Post</button>
+          </div>
+        </div>
+
+        <!-- Feed Posts -->
+        <article class="feed-post">
+          <div class="post-header">
+            <div class="post-avatar teacher"></div>
+            <div class="post-author-info">
+              <div class="post-author-row">
+                <span class="post-author">Jenny Martinez</span>
+                <span class="post-badge student-teacher">Student-Teacher</span>
+              </div>
+              <div class="post-meta">2h ago</div>
+            </div>
+          </div>
+          <div class="post-content">
+            Just finished teaching my 5th student this week! Already earned back $150 of my $299 course fee. The flywheel is real - learning by teaching has made the concepts stick so much better.
+          </div>
+          <div class="post-actions">
+            <span class="post-action">&#128077; 24</span>
+            <span class="post-action">&#128172; 8</span>
+            <span class="post-action">&#128257; 3</span>
+            <span class="post-action">&#128278;</span>
+          </div>
+        </article>
+
+        <article class="feed-post">
+          <div class="post-header">
+            <div class="post-avatar" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);"></div>
+            <div class="post-author-info">
+              <div class="post-author-row">
+                <span class="post-author">David Kim</span>
+                <span class="post-badge student">Student</span>
+              </div>
+              <div class="post-meta">4h ago</div>
+            </div>
+          </div>
+          <div class="post-content">
+            Session 3 finally clicked for me! Decorators were confusing at first but @JennyMartinez explained it perfectly in our 1-on-1. Highly recommend booking with her if you're stuck on this module.
+          </div>
+          <div class="post-actions">
+            <span class="post-action">&#128077; 18</span>
+            <span class="post-action">&#128172; 5</span>
+            <span class="post-action">&#128257; 1</span>
+            <span class="post-action">&#128278;</span>
+          </div>
+        </article>
+
+        <article class="feed-post">
+          <div class="post-header">
+            <div class="post-avatar creator"></div>
+            <div class="post-author-info">
+              <div class="post-author-row">
+                <span class="post-author">Sarah Chen</span>
+                <span class="post-badge creator">Creator</span>
+              </div>
+              <div class="post-meta">6h ago</div>
+            </div>
+          </div>
+          <div class="post-content">
+            <strong>FAQ: "How long before I can start teaching?"</strong><br><br>
+            Most students complete the certification in 4-6 weeks studying part-time. Once certified, you can immediately start booking teaching sessions. I approve 95% of teacher applications!
+          </div>
+          <div class="post-actions">
+            <span class="post-action">&#128077; 47</span>
+            <span class="post-action">&#128172; 12</span>
+            <span class="post-action">&#128257; 8</span>
+            <span class="post-action">&#128278;</span>
+          </div>
+        </article>
+
+        <article class="feed-post">
+          <div class="post-header">
+            <div class="post-avatar" style="background: linear-gradient(135deg, #ef4444, #f97316);"></div>
+            <div class="post-author-info">
+              <div class="post-author-row">
+                <span class="post-author">Mike Chen</span>
+                <span class="post-badge student">Student</span>
+              </div>
+              <div class="post-meta">Yesterday</div>
+            </div>
+          </div>
+          <div class="post-content">
+            Quick question for anyone who's done Module 4: The async/await exercise on page 47 - is the expected output supposed to include the timestamp or not?
+          </div>
+          <div class="post-actions">
+            <span class="post-action">&#128077; 3</span>
+            <span class="post-action">&#128172; 7</span>
+            <span class="post-action">&#128257; 0</span>
+            <span class="post-action">&#128278;</span>
+          </div>
+        </article>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- BOTTOM NAV (Mobile) -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-items">
+      <div class="bottom-nav-item active">
+        <span class="bottom-nav-icon">&#127968;</span>
+        <span class="bottom-nav-label">Home</span>
+      </div>
+      <div class="bottom-nav-item">
+        <span class="bottom-nav-icon">&#128269;</span>
+        <span class="bottom-nav-label">Browse</span>
+      </div>
+      <div class="bottom-nav-item">
+        <span class="bottom-nav-icon">&#128276;</span>
+        <span class="bottom-nav-label">Activity</span>
+      </div>
+      <div class="bottom-nav-item">
+        <span class="bottom-nav-icon">&#128100;</span>
+        <span class="bottom-nav-label">Profile</span>
+      </div>
+      <div class="bottom-nav-item">
+        <span class="bottom-nav-icon">&#8226;&#8226;&#8226;</span>
+        <span class="bottom-nav-label">More</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mockup Label -->
+  <div class="mockup-label">
+    <strong>Mockup B: The Pathway</strong>
+    Three-column progressive disclosure
+  </div>
+
+</body>
+</html>

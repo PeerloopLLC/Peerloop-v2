@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerLoop - Option B: Sidebar Navigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --bg-dark: #0f172a;
+            --bg-dark-secondary: #1e293b;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --text-light: #f1f5f9;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        /* ========== LEFT SIDEBAR NAVIGATION ========== */
+        .left-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 240px;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-dark-secondary);
+            color: var(--text-light);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* User Section at Bottom */
+        .sidebar-user {
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            background: var(--bg-dark-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .user-card:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .user-menu-icon {
+            color: var(--text-muted);
+        }
+
+        /* Auth buttons for logged out state */
+        .auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .auth-btn {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .auth-btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .auth-btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .auth-btn-secondary {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .auth-btn-secondary:hover {
+            background: var(--bg-dark-secondary);
+        }
+
+        /* ========== PAGE HEADER ========== */
+        .page-header {
+            position: fixed;
+            top: 0;
+            left: 240px;
+            right: 0;
+            height: 64px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 999;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-right: 16px;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .header-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .header-btn-secondary {
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-primary);
+        }
+
+        .header-btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .header-btn-primary {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .header-btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            margin-left: 240px;
+            padding-top: 88px;
+            padding-bottom: 48px;
+            min-height: 100vh;
+        }
+
+        .content-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ========== WELCOME BANNER ========== */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            border-radius: 16px;
+            padding: 32px;
+            color: white;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 24px;
+        }
+
+        .banner-content {
+            flex: 1;
+        }
+
+        .banner-creator {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .creator-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .creator-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .creator-role {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .banner-message {
+            font-size: 17px;
+            line-height: 1.7;
+            opacity: 0.95;
+            max-width: 600px;
+        }
+
+        /* Journey Cards in Banner */
+        .banner-journey {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 280px;
+        }
+
+        .journey-card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .journey-card-icon {
+            font-size: 24px;
+        }
+
+        .journey-card-content {
+            flex: 1;
+        }
+
+        .journey-card-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .journey-card-stat {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .journey-card-arrow {
+            opacity: 0.6;
+        }
+
+        /* ========== THREE COLUMN LAYOUT ========== */
+        .three-column {
+            display: grid;
+            grid-template-columns: 280px 1fr 300px;
+            gap: 24px;
+        }
+
+        /* ========== LEFT PANEL - Course Details ========== */
+        .course-panel {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            height: fit-content;
+            position: sticky;
+            top: 88px;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .panel-content {
+            padding: 20px;
+        }
+
+        .course-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .module-list {
+            list-style: none;
+        }
+
+        .module-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .module-item:last-child {
+            border-bottom: none;
+        }
+
+        .module-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .enroll-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .price-tag {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .price-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .enroll-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .enroll-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .earn-note {
+            font-size: 13px;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        /* ========== CENTER - Feed ========== */
+        .feed-panel {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .feed-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .feed-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .feed-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .feed-tab {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .feed-tab:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .feed-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .feed-post {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .feed-post:hover {
+            background: var(--bg-secondary);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .post-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .avatar-student {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+        }
+
+        .avatar-teacher {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+        }
+
+        .avatar-certified {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: white;
+        }
+
+        .post-meta {
+            flex: 1;
+        }
+
+        .post-author-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .author-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .role-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .badge-student {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .badge-teacher {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .badge-certified {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .post-context {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .post-content {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .post-footer {
+            display: flex;
+            gap: 20px;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .post-action:hover {
+            color: var(--primary);
+        }
+
+        .load-more {
+            padding: 16px;
+            text-align: center;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .load-more:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* ========== RIGHT PANEL - Who's Here ========== */
+        .people-panel {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            height: fit-content;
+            position: sticky;
+            top: 88px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+
+        .section-label:first-child {
+            margin-top: 0;
+        }
+
+        .person-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+        }
+
+        .person-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .person-info {
+            flex: 1;
+        }
+
+        .person-name {
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .person-detail {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .book-btn {
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .book-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ========== DESIGN LABEL ========== */
+        .design-label {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--text-primary);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1001;
+            box-shadow: var(--shadow-lg);
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== LEFT SIDEBAR NAVIGATION ========== -->
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">P</div>
+            <span class="logo-text">PeerLoop</span>
+        </div>
+
+        <div class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-label">Main</div>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    Home
+                </a>
+                <a href="#" class="nav-item active">
+                    <span class="nav-icon">🔍</span>
+                    Browse Courses
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">💬</span>
+                    Community
+                    <span class="nav-badge">3</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-label">Learning</div>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📚</span>
+                    My Courses
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📅</span>
+                    Sessions
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">🏆</span>
+                    Certificates
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-label">Teaching</div>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">👥</span>
+                    My Students
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">💵</span>
+                    Earnings
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-label">Account</div>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    Settings
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">❓</span>
+                    Help
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar-user">
+            <!-- Logged Out State -->
+            <div class="auth-buttons">
+                <button class="auth-btn auth-btn-primary">Sign Up</button>
+                <button class="auth-btn auth-btn-secondary">Log In</button>
+            </div>
+
+            <!-- Logged In State (uncomment to see)
+            <div class="user-card">
+                <div class="user-avatar">JS</div>
+                <div class="user-info">
+                    <div class="user-name">John Smith</div>
+                    <div class="user-role">Student</div>
+                </div>
+                <span class="user-menu-icon">⋮</span>
+            </div>
+            -->
+        </div>
+    </nav>
+
+    <!-- ========== PAGE HEADER ========== -->
+    <header class="page-header">
+        <a href="#" class="back-btn">← Back to Browse</a>
+        <h1 class="page-title">AI Prompting Mastery</h1>
+        <div class="header-actions">
+            <button class="header-btn header-btn-secondary">Share</button>
+            <button class="header-btn header-btn-primary">Enroll Now</button>
+        </div>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <div class="banner-content">
+                    <div class="banner-creator">
+                        <div class="creator-avatar">G</div>
+                        <div class="creator-info">
+                            <h2>Guy Parson</h2>
+                            <p class="creator-role">Course Creator</p>
+                        </div>
+                    </div>
+                    <p class="banner-message">
+                        "Welcome! This community is where AI learners become teachers.
+                        Jump in, ask questions, and when you're ready, you'll help the next wave of students.
+                        That's how knowledge really sticks."
+                    </p>
+                </div>
+                <div class="banner-journey">
+                    <div class="journey-card">
+                        <span class="journey-card-icon">📚</span>
+                        <div class="journey-card-content">
+                            <div class="journey-card-title">Learn</div>
+                            <div class="journey-card-stat">47 active students</div>
+                        </div>
+                        <span class="journey-card-arrow">→</span>
+                    </div>
+                    <div class="journey-card">
+                        <span class="journey-card-icon">✅</span>
+                        <div class="journey-card-content">
+                            <div class="journey-card-title">Certify</div>
+                            <div class="journey-card-stat">12 this month</div>
+                        </div>
+                        <span class="journey-card-arrow">→</span>
+                    </div>
+                    <div class="journey-card">
+                        <span class="journey-card-icon">🎓</span>
+                        <div class="journey-card-content">
+                            <div class="journey-card-title">Teach</div>
+                            <div class="journey-card-stat">8 student-teachers</div>
+                        </div>
+                        <span class="journey-card-arrow">→</span>
+                    </div>
+                    <div class="journey-card">
+                        <span class="journey-card-icon">💰</span>
+                        <div class="journey-card-content">
+                            <div class="journey-card-title">Earn</div>
+                            <div class="journey-card-stat">$315 per student</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Three Column Layout -->
+            <div class="three-column">
+                <!-- Left: Course Details -->
+                <div class="course-panel">
+                    <div class="panel-header">Course Details</div>
+                    <div class="panel-content">
+                        <div class="course-stats">
+                            <div class="stat-box">
+                                <div class="stat-value">5</div>
+                                <div class="stat-label">Modules</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">4.9</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">47</div>
+                                <div class="stat-label">Students</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">6</div>
+                                <div class="stat-label">Weeks</div>
+                            </div>
+                        </div>
+
+                        <ul class="module-list">
+                            <li class="module-item">
+                                <div class="module-number">1</div>
+                                Prompt Basics
+                            </li>
+                            <li class="module-item">
+                                <div class="module-number">2</div>
+                                Chain of Thought
+                            </li>
+                            <li class="module-item">
+                                <div class="module-number">3</div>
+                                Few-Shot Learning
+                            </li>
+                            <li class="module-item">
+                                <div class="module-number">4</div>
+                                Advanced Patterns
+                            </li>
+                            <li class="module-item">
+                                <div class="module-number">5</div>
+                                Real Projects
+                            </li>
+                        </ul>
+
+                        <div class="enroll-section">
+                            <div class="price-tag">$450</div>
+                            <div class="price-note">One-time payment</div>
+                            <button class="enroll-btn">Enroll Now</button>
+                            <p class="earn-note">Earn it back teaching 2 students</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center: Feed -->
+                <div class="feed-panel">
+                    <div class="feed-header">
+                        <span class="feed-title">Community Feed</span>
+                        <div class="feed-tabs">
+                            <div class="feed-tab active">All</div>
+                            <div class="feed-tab">Questions</div>
+                            <div class="feed-tab">Wins</div>
+                        </div>
+                    </div>
+
+                    <div class="feed-post">
+                        <div class="post-header">
+                            <div class="post-avatar avatar-student">S</div>
+                            <div class="post-meta">
+                                <div class="post-author-line">
+                                    <span class="author-name">Sarah</span>
+                                    <span class="role-badge badge-student">Student</span>
+                                </div>
+                                <span class="post-context">Module 3 • 2 hours ago</span>
+                            </div>
+                        </div>
+                        <p class="post-content">
+                            How do I structure prompts for chain-of-thought reasoning?
+                            I've tried a few approaches but the outputs are inconsistent.
+                        </p>
+                        <div class="post-footer">
+                            <span class="post-action">❤️ 4</span>
+                            <span class="post-action">💬 3 replies</span>
+                            <span class="post-action">🔖</span>
+                        </div>
+                    </div>
+
+                    <div class="feed-post">
+                        <div class="post-header">
+                            <div class="post-avatar avatar-teacher">M</div>
+                            <div class="post-meta">
+                                <div class="post-author-line">
+                                    <span class="author-name">Marcus</span>
+                                    <span class="role-badge badge-teacher">Student-Teacher</span>
+                                </div>
+                                <span class="post-context">5 students taught • 1 hour ago</span>
+                            </div>
+                        </div>
+                        <p class="post-content">
+                            @Sarah Great question! The trick is to be explicit about the steps.
+                            Start with "Let's think through this step by step:" and then number your reasoning.
+                        </p>
+                        <div class="post-footer">
+                            <span class="post-action">❤️ 12</span>
+                            <span class="post-action">💬 Reply</span>
+                            <span class="post-action">🔖</span>
+                        </div>
+                    </div>
+
+                    <div class="feed-post">
+                        <div class="post-header">
+                            <div class="post-avatar avatar-certified">J</div>
+                            <div class="post-meta">
+                                <div class="post-author-line">
+                                    <span class="author-name">Jake</span>
+                                    <span class="role-badge badge-certified">Just Certified!</span>
+                                </div>
+                                <span class="post-context">Yesterday</span>
+                            </div>
+                        </div>
+                        <p class="post-content">
+                            I DID IT! Just passed my certification assessment with Marcus.
+                            Ready to start teaching next week. Who's got questions?
+                        </p>
+                        <div class="post-footer">
+                            <span class="post-action">🎉 23</span>
+                            <span class="post-action">💬 8 replies</span>
+                            <span class="post-action">🔖</span>
+                        </div>
+                    </div>
+
+                    <div class="feed-post">
+                        <div class="post-header">
+                            <div class="post-avatar avatar-teacher">P</div>
+                            <div class="post-meta">
+                                <div class="post-author-line">
+                                    <span class="author-name">Priya</span>
+                                    <span class="role-badge badge-teacher">Student-Teacher</span>
+                                </div>
+                                <span class="post-context">3 students taught • 2 days ago</span>
+                            </div>
+                        </div>
+                        <p class="post-content">
+                            One thing I wish someone told me when I was learning: the best prompts aren't
+                            clever, they're clear. Stop trying to be smart - just be specific.
+                        </p>
+                        <div class="post-footer">
+                            <span class="post-action">❤️ 34</span>
+                            <span class="post-action">💬 11 replies</span>
+                            <span class="post-action">🔖</span>
+                        </div>
+                    </div>
+
+                    <div class="load-more">Load more posts...</div>
+                </div>
+
+                <!-- Right: Who's Here -->
+                <div class="people-panel">
+                    <div class="panel-header">Who's Here</div>
+                    <div class="panel-content">
+                        <div class="section-label">Student-Teachers</div>
+
+                        <div class="person-row">
+                            <div class="person-avatar avatar-teacher">M</div>
+                            <div class="person-info">
+                                <div class="person-name">
+                                    <span class="status-dot"></span>
+                                    Marcus
+                                </div>
+                                <div class="person-detail">5 students taught</div>
+                            </div>
+                            <button class="book-btn">Book</button>
+                        </div>
+
+                        <div class="person-row">
+                            <div class="person-avatar avatar-teacher">P</div>
+                            <div class="person-info">
+                                <div class="person-name">
+                                    <span class="status-dot"></span>
+                                    Priya
+                                </div>
+                                <div class="person-detail">3 students taught</div>
+                            </div>
+                            <button class="book-btn">Book</button>
+                        </div>
+
+                        <div class="person-row">
+                            <div class="person-avatar avatar-teacher">J</div>
+                            <div class="person-info">
+                                <div class="person-name">Jordan</div>
+                                <div class="person-detail">2 students taught</div>
+                            </div>
+                            <button class="book-btn">Book</button>
+                        </div>
+
+                        <div class="section-label">Learning Now</div>
+
+                        <div class="person-row">
+                            <div class="person-avatar avatar-student">S</div>
+                            <div class="person-info">
+                                <div class="person-name">
+                                    <span class="status-dot"></span>
+                                    Sarah
+                                </div>
+                                <div class="person-detail">Module 3</div>
+                            </div>
+                        </div>
+
+                        <div class="person-row">
+                            <div class="person-avatar avatar-student">M</div>
+                            <div class="person-info">
+                                <div class="person-name">
+                                    <span class="status-dot"></span>
+                                    Mike
+                                </div>
+                                <div class="person-detail">Module 1</div>
+                            </div>
+                        </div>
+
+                        <div class="person-row">
+                            <div class="person-avatar avatar-certified">L</div>
+                            <div class="person-info">
+                                <div class="person-name">Lisa</div>
+                                <div class="person-detail">Certified!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="design-label">Option B: Sidebar Navigation</div>
+</body>
+</html>

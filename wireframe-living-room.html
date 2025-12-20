@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireframe C: The Living Room</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #ccc;
+            padding: 12px 24px;
+            position: sticky;
+            top: 36px;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 680px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .community-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #999;
+            background: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+
+        /* Main Feed Container */
+        .feed-container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Pinned Welcome Card */
+        .pinned-card {
+            background: #fff;
+            border: 2px solid #333;
+            margin-bottom: 24px;
+        }
+
+        .pinned-label {
+            background: #333;
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pinned-content {
+            padding: 24px;
+        }
+
+        .creator-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .creator-avatar {
+            width: 56px;
+            height: 56px;
+            background: #ddd;
+            border: 2px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .creator-info {
+            flex: 1;
+        }
+
+        .creator-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .creator-role {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .welcome-message {
+            font-size: 17px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        /* Journey Diagram inside pinned card */
+        .journey-diagram {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+        }
+
+        .journey-box {
+            flex: 1;
+            border: 1px solid #999;
+            background: #fff;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .journey-box-title {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .journey-box-stat {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .journey-arrow {
+            display: flex;
+            align-items: center;
+            color: #999;
+            font-size: 18px;
+        }
+
+        .pinned-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .action-btn-secondary {
+            border: 1px solid #999;
+            background: #fff;
+        }
+
+        .action-btn-primary {
+            border: none;
+            background: #333;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Feed Posts */
+        .feed-post {
+            background: #fff;
+            border: 1px solid #ddd;
+            margin-bottom: 16px;
+        }
+
+        .post-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .post-avatar {
+            width: 44px;
+            height: 44px;
+            background: #e0e0e0;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .post-meta {
+            flex: 1;
+        }
+
+        .post-author-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .author-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .role-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border: 1px solid #999;
+            background: #eee;
+        }
+
+        .role-badge.student-teacher {
+            background: #ccc;
+            border-color: #666;
+        }
+
+        .role-badge.certified {
+            background: #ddd;
+            border: 2px solid #666;
+        }
+
+        .author-context {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .post-body {
+            padding: 16px 20px;
+        }
+
+        .post-content {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .post-code {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 12px 16px;
+            font-family: monospace;
+            font-size: 13px;
+            margin: 12px 0;
+            color: #555;
+        }
+
+        .post-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Celebration Post */
+        .celebration-post {
+            border: 2px solid #666;
+        }
+
+        .celebration-post .post-header {
+            background: #f9f9f9;
+        }
+
+        /* Reply Count Note */
+        .reply-note {
+            font-size: 13px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Load More */
+        .load-more {
+            text-align: center;
+            padding: 24px;
+            color: #666;
+            font-size: 14px;
+            background: #fff;
+            border: 1px solid #ddd;
+        }
+
+        /* Wireframe Label */
+        .wireframe-label {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #333;
+            color: #fff;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 1000;
+        }
+
+        .page-wrapper {
+            padding-top: 36px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-label">Wireframe C: "The Living Room" - Community-First Immersion</div>
+
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-inner">
+                <a href="#" class="back-link">[arrow] Browse</a>
+                <div class="community-title">AI Prompting Mastery Community</div>
+                <div class="header-actions">
+                    <button class="btn btn-primary">Join Free</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Feed Container -->
+        <div class="feed-container">
+            <!-- Pinned Welcome Card -->
+            <div class="pinned-card">
+                <div class="pinned-label">
+                    [pin icon] WELCOME (pinned)
+                </div>
+                <div class="pinned-content">
+                    <div class="creator-header">
+                        <div class="creator-avatar">Photo</div>
+                        <div class="creator-info">
+                            <div class="creator-name">Guy Parson</div>
+                            <div class="creator-role">Creator</div>
+                        </div>
+                    </div>
+
+                    <p class="welcome-message">
+                        You're looking at something different. In this community, students become teachers.
+                        Sarah learned here, got certified, and now teaches new students. Marcus did the same.
+                        That's how knowledge really sticks - you learn, then you teach.
+                    </p>
+
+                    <div class="journey-diagram">
+                        <div class="journey-box">
+                            <div class="journey-box-title">LEARN</div>
+                            <div class="journey-box-stat">47 here</div>
+                        </div>
+                        <div class="journey-arrow">[arrow]</div>
+                        <div class="journey-box">
+                            <div class="journey-box-title">CERTIFY</div>
+                            <div class="journey-box-stat">12/mo</div>
+                        </div>
+                        <div class="journey-arrow">[arrow]</div>
+                        <div class="journey-box">
+                            <div class="journey-box-title">TEACH</div>
+                            <div class="journey-box-stat">8 active</div>
+                        </div>
+                        <div class="journey-arrow">[arrow]</div>
+                        <div class="journey-box">
+                            <div class="journey-box-title">EARN</div>
+                            <div class="journey-box-stat">$315 ea</div>
+                        </div>
+                    </div>
+
+                    <div class="pinned-actions">
+                        <button class="action-btn action-btn-secondary">View Full Course Details</button>
+                        <button class="action-btn action-btn-primary">Enroll $450</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feed Posts -->
+            <div class="feed-post">
+                <div class="post-header">
+                    <div class="post-avatar">M</div>
+                    <div class="post-meta">
+                        <div class="post-author-line">
+                            <span class="author-name">Marcus</span>
+                            <span class="role-badge student-teacher">Student-Teacher</span>
+                        </div>
+                        <div class="author-context">5 students taught</div>
+                    </div>
+                    <div class="post-time">2 hours ago</div>
+                </div>
+                <div class="post-body">
+                    <p class="post-content">
+                        Just helped Jake with chain-of-thought prompting. The trick is breaking it into steps
+                        BEFORE you start. Here's what we worked through together:
+                    </p>
+                    <div class="post-code">
+                        "Let's approach this step by step:<br>
+                        1. First, identify the core problem<br>
+                        2. List the constraints<br>
+                        3. Generate options..."
+                    </div>
+                </div>
+                <div class="post-footer">
+                    <span class="post-action">[heart] 12</span>
+                    <span class="post-action">[comment] 4 replies</span>
+                    <span class="post-action">[bookmark]</span>
+                </div>
+            </div>
+
+            <div class="feed-post">
+                <div class="post-header">
+                    <div class="post-avatar">S</div>
+                    <div class="post-meta">
+                        <div class="post-author-line">
+                            <span class="author-name">Sarah</span>
+                            <span class="role-badge">Student</span>
+                        </div>
+                        <div class="author-context">Module 4</div>
+                    </div>
+                    <div class="post-time">5 hours ago</div>
+                </div>
+                <div class="post-body">
+                    <p class="post-content">
+                        Quick question: When do you use few-shot vs zero-shot? I've been defaulting to
+                        examples but wondering if there's a rule of thumb.
+                    </p>
+                    <p class="reply-note">6 replies (2 from student-teachers)</p>
+                </div>
+                <div class="post-footer">
+                    <span class="post-action">[heart] 8</span>
+                    <span class="post-action">[comment] 6 replies</span>
+                    <span class="post-action">[bookmark]</span>
+                </div>
+            </div>
+
+            <div class="feed-post celebration-post">
+                <div class="post-header">
+                    <div class="post-avatar">J</div>
+                    <div class="post-meta">
+                        <div class="post-author-line">
+                            <span class="author-name">Jake</span>
+                            <span class="role-badge certified">Just Certified!</span>
+                        </div>
+                        <div class="author-context">Completed all 5 modules</div>
+                    </div>
+                    <div class="post-time">Yesterday</div>
+                </div>
+                <div class="post-body">
+                    <p class="post-content">
+                        I DID IT! Thanks Marcus for the final assessment. Three months ago I couldn't
+                        write a basic prompt. Now I'm certified and ready to start teaching next week.
+                        Who's got questions? I remember being stuck on Module 2 - happy to help!
+                    </p>
+                </div>
+                <div class="post-footer">
+                    <span class="post-action">[party] 23 congratulations</span>
+                    <span class="post-action">[comment] 8 replies</span>
+                    <span class="post-action">[bookmark]</span>
+                </div>
+            </div>
+
+            <div class="feed-post">
+                <div class="post-header">
+                    <div class="post-avatar">P</div>
+                    <div class="post-meta">
+                        <div class="post-author-line">
+                            <span class="author-name">Priya</span>
+                            <span class="role-badge student-teacher">Student-Teacher</span>
+                        </div>
+                        <div class="author-context">3 students taught</div>
+                    </div>
+                    <div class="post-time">2 days ago</div>
+                </div>
+                <div class="post-body">
+                    <p class="post-content">
+                        One thing I wish someone told me when I was learning: the best prompts aren't
+                        clever, they're clear. Took me until Module 4 to really internalize that.
+                        Stop trying to be smart - just be specific.
+                    </p>
+                </div>
+                <div class="post-footer">
+                    <span class="post-action">[heart] 34</span>
+                    <span class="post-action">[comment] 11 replies</span>
+                    <span class="post-action">[bookmark]</span>
+                </div>
+            </div>
+
+            <div class="feed-post">
+                <div class="post-header">
+                    <div class="post-avatar">L</div>
+                    <div class="post-meta">
+                        <div class="post-author-line">
+                            <span class="author-name">Lisa</span>
+                            <span class="role-badge">Student</span>
+                        </div>
+                        <div class="author-context">Module 2</div>
+                    </div>
+                    <div class="post-time">3 days ago</div>
+                </div>
+                <div class="post-body">
+                    <p class="post-content">
+                        Just booked my first 1-on-1 with Marcus for tomorrow. A bit nervous but
+                        excited. Is there anything I should prep beforehand?
+                    </p>
+                    <p class="reply-note">4 replies - Marcus and 2 other students responded</p>
+                </div>
+                <div class="post-footer">
+                    <span class="post-action">[heart] 6</span>
+                    <span class="post-action">[comment] 4 replies</span>
+                    <span class="post-action">[bookmark]</span>
+                </div>
+            </div>
+
+            <div class="load-more">
+                [Load more posts...]
+            </div>
+        </div>
+    </div>
+</body>
+</html>

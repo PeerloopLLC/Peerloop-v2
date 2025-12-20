@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireframe A: The Pathway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid #ccc;
+            padding: 16px 0;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #999;
+            background: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            border: 2px solid #333;
+            padding: 24px;
+            margin: 24px 0;
+            background: #f9f9f9;
+        }
+
+        .welcome-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .avatar-placeholder {
+            width: 48px;
+            height: 48px;
+            background: #ccc;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .creator-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .creator-role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .welcome-message {
+            font-size: 18px;
+            font-style: italic;
+            color: #333;
+            margin-bottom: 16px;
+            padding-left: 64px;
+        }
+
+        .welcome-actions {
+            padding-left: 64px;
+        }
+
+        /* The Pathway Section */
+        .pathway-section {
+            border: 2px solid #333;
+            padding: 24px;
+            margin: 24px 0;
+            background: #eee;
+        }
+
+        .pathway-label {
+            text-align: center;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .pathway-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .pathway-steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .pathway-step {
+            border: 2px solid #333;
+            background: #fff;
+            padding: 20px 24px;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .step-stat {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pathway-arrow {
+            font-size: 24px;
+            color: #999;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            margin: 24px 0;
+        }
+
+        /* Feed Section */
+        .feed-section {
+            border: 1px solid #ccc;
+        }
+
+        .section-header {
+            border-bottom: 1px solid #ccc;
+            padding: 16px;
+            font-weight: 600;
+            background: #f5f5f5;
+        }
+
+        .feed-post {
+            border-bottom: 1px solid #eee;
+            padding: 16px;
+        }
+
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .role-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border: 1px solid #999;
+            background: #eee;
+            text-transform: uppercase;
+        }
+
+        .role-badge.student {
+            background: #e0e0e0;
+        }
+
+        .role-badge.st-teacher {
+            background: #ccc;
+            border-color: #666;
+        }
+
+        .post-author {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .post-content {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .celebration-post {
+            background: #f9f9f9;
+        }
+
+        .celebration-post .post-content {
+            font-weight: 500;
+        }
+
+        .load-more {
+            padding: 16px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sidebar-card {
+            border: 1px solid #ccc;
+        }
+
+        .sidebar-card .section-header {
+            font-size: 14px;
+        }
+
+        .sidebar-content {
+            padding: 16px;
+        }
+
+        .person-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .person-avatar {
+            width: 32px;
+            height: 32px;
+            background: #ddd;
+            border: 1px solid #999;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .person-info {
+            flex: 1;
+        }
+
+        .person-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .person-detail {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .status-dot.active {
+            background: #666;
+        }
+
+        .status-dot.learning {
+            background: #999;
+            border: 1px solid #666;
+        }
+
+        .divider {
+            border-top: 1px solid #eee;
+            margin: 12px 0;
+        }
+
+        .section-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #999;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        /* Enroll Card */
+        .enroll-card {
+            border: 2px solid #333;
+            background: #f5f5f5;
+        }
+
+        .enroll-card .sidebar-content {
+            text-align: center;
+        }
+
+        .enroll-price {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .enroll-note {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .enroll-btn {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            color: #fff;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .enroll-subtext {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Annotations */
+        .annotation {
+            position: absolute;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 4px 8px;
+            font-size: 11px;
+            color: #856404;
+            transform: rotate(-2deg);
+        }
+
+        /* Wireframe Label */
+        .wireframe-label {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #333;
+            color: #fff;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 1000;
+        }
+
+        .page-wrapper {
+            padding-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-label">Wireframe A: "The Pathway" - Journey-Centric Layout</div>
+
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="container header-inner">
+                <a href="#" class="back-link">[arrow] Back to Browse</a>
+                <div class="header-actions">
+                    <button class="btn">Log In</button>
+                    <button class="btn btn-primary">Sign Up</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <div class="welcome-header">
+                    <div class="avatar-placeholder">Photo</div>
+                    <div>
+                        <div class="creator-name">Guy Parson</div>
+                        <div class="creator-role">Course Creator</div>
+                    </div>
+                </div>
+                <p class="welcome-message">
+                    "Welcome! This community is where AI learners become teachers.
+                    Jump in, ask questions, and when you're ready, you'll help the next wave of students."
+                </p>
+                <div class="welcome-actions">
+                    <button class="btn">View Course Details [arrow]</button>
+                </div>
+            </div>
+
+            <!-- The Pathway -->
+            <div class="pathway-section">
+                <div class="pathway-label">How It Works</div>
+                <div class="pathway-title">THE PATHWAY</div>
+                <div class="pathway-steps">
+                    <div class="pathway-step">
+                        <div class="step-title">LEARN</div>
+                        <div class="step-stat">47 active students</div>
+                    </div>
+                    <div class="pathway-arrow">[arrow]</div>
+                    <div class="pathway-step">
+                        <div class="step-title">CERTIFY</div>
+                        <div class="step-stat">12 this month</div>
+                    </div>
+                    <div class="pathway-arrow">[arrow]</div>
+                    <div class="pathway-step">
+                        <div class="step-title">TEACH</div>
+                        <div class="step-stat">8 student-teachers</div>
+                    </div>
+                    <div class="pathway-arrow">[arrow]</div>
+                    <div class="pathway-step">
+                        <div class="step-title">EARN</div>
+                        <div class="step-stat">$315 per student</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Feed -->
+                <div class="feed-section">
+                    <div class="section-header">Community Feed</div>
+
+                    <div class="feed-post">
+                        <div class="post-meta">
+                            <span class="role-badge student">Student</span>
+                            <span class="post-author">Sarah</span>
+                            <span class="post-time">2 hours ago</span>
+                        </div>
+                        <p class="post-content">
+                            How do I structure prompts for chain-of-thought reasoning?
+                            I've tried a few approaches but the outputs are inconsistent.
+                        </p>
+                        <div class="post-actions">
+                            <span>[heart] 4</span>
+                            <span>[reply] 3 replies</span>
+                        </div>
+                    </div>
+
+                    <div class="feed-post">
+                        <div class="post-meta">
+                            <span class="role-badge st-teacher">Student-Teacher</span>
+                            <span class="post-author">Marcus</span>
+                            <span class="post-time">1 hour ago</span>
+                        </div>
+                        <p class="post-content">
+                            @Sarah Great question! The trick is to be explicit about the steps.
+                            Start with "Let's think through this step by step:" and then number your reasoning...
+                        </p>
+                        <div class="post-actions">
+                            <span>[heart] 12</span>
+                            <span>[reply] Reply</span>
+                        </div>
+                    </div>
+
+                    <div class="feed-post celebration-post">
+                        <div class="post-meta">
+                            <span class="role-badge student">Just Certified!</span>
+                            <span class="post-author">Jake</span>
+                            <span class="post-time">Yesterday</span>
+                        </div>
+                        <p class="post-content">
+                            I DID IT! Just passed my certification assessment with Marcus.
+                            Ready to start teaching next week. Who's got questions?
+                        </p>
+                        <div class="post-actions">
+                            <span>[party] 23 congratulations</span>
+                            <span>[reply] 8 replies</span>
+                        </div>
+                    </div>
+
+                    <div class="feed-post">
+                        <div class="post-meta">
+                            <span class="role-badge student">Student</span>
+                            <span class="post-author">Lisa</span>
+                            <span class="post-time">2 days ago</span>
+                        </div>
+                        <p class="post-content">
+                            Module 3 was a game-changer for me. The few-shot examples
+                            really clicked once I understood the pattern matching concept.
+                        </p>
+                        <div class="post-actions">
+                            <span>[heart] 8</span>
+                            <span>[reply] 2 replies</span>
+                        </div>
+                    </div>
+
+                    <div class="load-more">[Load more posts...]</div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- Who's Here -->
+                    <div class="sidebar-card">
+                        <div class="section-header">Who's Here</div>
+                        <div class="sidebar-content">
+                            <div class="section-label">Student-Teachers</div>
+
+                            <div class="person-row">
+                                <div class="person-avatar">M</div>
+                                <div class="person-info">
+                                    <div class="person-name"><span class="status-dot active"></span>Marcus</div>
+                                    <div class="person-detail">5 students taught</div>
+                                </div>
+                            </div>
+
+                            <div class="person-row">
+                                <div class="person-avatar">P</div>
+                                <div class="person-info">
+                                    <div class="person-name"><span class="status-dot active"></span>Priya</div>
+                                    <div class="person-detail">3 students taught</div>
+                                </div>
+                            </div>
+
+                            <div class="person-row">
+                                <div class="person-avatar">J</div>
+                                <div class="person-info">
+                                    <div class="person-name">Jordan</div>
+                                    <div class="person-detail">2 students taught</div>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+                            <div class="section-label">Learning Now</div>
+
+                            <div class="person-row">
+                                <div class="person-avatar">S</div>
+                                <div class="person-info">
+                                    <div class="person-name"><span class="status-dot learning"></span>Sarah</div>
+                                    <div class="person-detail">Module 3</div>
+                                </div>
+                            </div>
+
+                            <div class="person-row">
+                                <div class="person-avatar">M</div>
+                                <div class="person-info">
+                                    <div class="person-name"><span class="status-dot learning"></span>Mike</div>
+                                    <div class="person-detail">Module 1</div>
+                                </div>
+                            </div>
+
+                            <div class="person-row">
+                                <div class="person-avatar">L</div>
+                                <div class="person-info">
+                                    <div class="person-name">Lisa</div>
+                                    <div class="person-detail">Certified!</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enroll Card -->
+                    <div class="sidebar-card enroll-card">
+                        <div class="sidebar-content">
+                            <div class="enroll-price">$450</div>
+                            <div class="enroll-note">One-time payment</div>
+                            <button class="enroll-btn">Enroll Now</button>
+                            <div class="enroll-subtext">
+                                Earn it back by teaching just 2 students
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerLoop - Option C: Hybrid Navigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        /* ========== TOP NAVIGATION (Compact) ========== */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-item {
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 8px 16px;
+            width: 320px;
+        }
+
+        .search-icon {
+            color: var(--text-muted);
+        }
+
+        .search-input {
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--bg-primary);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .auth-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .auth-btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .auth-btn-primary {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .auth-btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        /* ========== CONTENT AREA STRUCTURE ========== */
+        .app-container {
+            display: flex;
+            padding-top: 56px;
+            min-height: 100vh;
+        }
+
+        /* ========== LEFT SIDEBAR (Context Nav) ========== */
+        .context-sidebar {
+            width: 260px;
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 56px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-decoration: none;
+            padding: 8px 12px;
+            margin: -8px -12px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .course-card {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .course-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .course-card-creator {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+
+        .course-card-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+        }
+
+        .course-card-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .sidebar-nav-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-badge {
+            margin-left: auto;
+            font-size: 11px;
+            background: var(--danger);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* Enroll Button in Sidebar */
+        .sidebar-cta {
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .cta-price {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .cta-note {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .cta-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .cta-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .cta-subtext {
+            font-size: 12px;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            margin-right: 300px;
+            padding: 24px;
+            max-width: 800px;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .welcome-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .creator-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .creator-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .creator-info h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .creator-role {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .welcome-message {
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        /* Journey Steps */
+        .journey-strip {
+            display: flex;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .journey-step {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            border-right: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .journey-step:last-child {
+            border-right: none;
+        }
+
+        .journey-step:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .journey-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .journey-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .journey-stat {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Feed Tabs */
+        .feed-tabs {
+            display: flex;
+            padding: 12px 20px;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-primary);
+        }
+
+        .feed-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .feed-tab:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .feed-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Feed Posts */
+        .feed-post {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-primary);
+            transition: background 0.2s;
+        }
+
+        .feed-post:hover {
+            background: var(--bg-secondary);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .post-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .avatar-student {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+        }
+
+        .avatar-teacher {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+        }
+
+        .avatar-certified {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: white;
+        }
+
+        .post-meta {
+            flex: 1;
+        }
+
+        .post-author-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .author-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .role-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .badge-student {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .badge-teacher {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .badge-certified {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .post-context {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .post-content {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .post-footer {
+            display: flex;
+            gap: 20px;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .post-action:hover {
+            color: var(--primary);
+        }
+
+        .load-more {
+            padding: 16px;
+            text-align: center;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--bg-primary);
+            border-radius: 0 0 16px 16px;
+        }
+
+        .load-more:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* ========== RIGHT SIDEBAR (People) ========== */
+        .people-sidebar {
+            width: 300px;
+            position: fixed;
+            top: 56px;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .people-section {
+            margin-bottom: 24px;
+        }
+
+        .people-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .see-all {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .section-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            margin-top: 16px;
+        }
+
+        .section-label:first-child {
+            margin-top: 0;
+        }
+
+        .person-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .person-card:hover {
+            background: var(--bg-secondary);
+        }
+
+        .person-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 2px solid var(--bg-primary);
+        }
+
+        .person-info {
+            flex: 1;
+        }
+
+        .person-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .person-detail {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .person-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-book {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .action-book:hover {
+            background: var(--primary-hover);
+        }
+
+        .action-message {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: none;
+        }
+
+        .action-message:hover {
+            background: var(--border);
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .quick-stat {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .quick-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .quick-stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* ========== DESIGN LABEL ========== */
+        .design-label {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-primary);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1001;
+            box-shadow: var(--shadow-lg);
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== TOP NAVIGATION ========== -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="#" class="nav-logo">
+                <div class="nav-logo-icon">P</div>
+                PeerLoop
+            </a>
+            <div class="nav-menu">
+                <a href="#" class="nav-item">Home</a>
+                <a href="#" class="nav-item active">Browse</a>
+                <a href="#" class="nav-item">Community</a>
+                <a href="#" class="nav-item">Dashboard</a>
+            </div>
+        </div>
+
+        <div class="nav-center">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Search courses, topics, people...">
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <div class="nav-icon-btn">
+                🔔
+                <span class="notification-dot"></span>
+            </div>
+            <div class="nav-icon-btn">💬</div>
+            <!-- Logged out state -->
+            <button class="auth-btn auth-btn-secondary">Log In</button>
+            <button class="auth-btn auth-btn-primary">Sign Up</button>
+            <!-- Logged in state (uncomment to see):
+            <div class="user-avatar">JS</div>
+            -->
+        </div>
+    </nav>
+
+    <!-- ========== APP CONTAINER ========== -->
+    <div class="app-container">
+        <!-- ========== LEFT SIDEBAR ========== -->
+        <aside class="context-sidebar">
+            <a href="#" class="back-link">← Back to Browse</a>
+
+            <div class="course-card">
+                <div class="course-card-title">AI Prompting Mastery</div>
+                <div class="course-card-creator">by Guy Parson</div>
+                <div class="course-card-stats">
+                    <span class="course-card-stat">📚 5 modules</span>
+                    <span class="course-card-stat">⭐ 4.9</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Course</div>
+                <a href="#" class="sidebar-nav-item active">
+                    <span class="sidebar-nav-icon">💬</span>
+                    Community Feed
+                    <span class="sidebar-badge">3</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span class="sidebar-nav-icon">📋</span>
+                    Course Details
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span class="sidebar-nav-icon">📚</span>
+                    Modules
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span class="sidebar-nav-icon">👥</span>
+                    Student-Teachers
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span class="sidebar-nav-icon">❓</span>
+                    FAQ
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Your Learning</div>
+                <a href="#" class="sidebar-nav-item">
+                    <span class="sidebar-nav-icon">📅</span>
+                    My Sessions
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span class="sidebar-nav-icon">📈</span>
+                    Progress
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span class="sidebar-nav-icon">🔖</span>
+                    Saved Posts
+                </a>
+            </div>
+
+            <div class="sidebar-cta">
+                <div class="cta-price">$450</div>
+                <div class="cta-note">One-time payment</div>
+                <button class="cta-btn">Enroll Now</button>
+                <p class="cta-subtext">Earn it back teaching 2 students</p>
+            </div>
+        </aside>
+
+        <!-- ========== MAIN CONTENT ========== -->
+        <main class="main-content">
+            <div class="welcome-section">
+                <div class="welcome-header">
+                    <div class="creator-row">
+                        <div class="creator-avatar">G</div>
+                        <div class="creator-info">
+                            <h2>Guy Parson</h2>
+                            <p class="creator-role">Course Creator</p>
+                        </div>
+                    </div>
+                    <p class="welcome-message">
+                        "Welcome! This community is where AI learners become teachers.
+                        Jump in, ask questions, and when you're ready, you'll help the next wave of students.
+                        That's how knowledge really sticks."
+                    </p>
+                </div>
+
+                <div class="journey-strip">
+                    <div class="journey-step">
+                        <div class="journey-icon">📚</div>
+                        <div class="journey-title">Learn</div>
+                        <div class="journey-stat">47 students</div>
+                    </div>
+                    <div class="journey-step">
+                        <div class="journey-icon">✅</div>
+                        <div class="journey-title">Certify</div>
+                        <div class="journey-stat">12 this month</div>
+                    </div>
+                    <div class="journey-step">
+                        <div class="journey-icon">🎓</div>
+                        <div class="journey-title">Teach</div>
+                        <div class="journey-stat">8 teachers</div>
+                    </div>
+                    <div class="journey-step">
+                        <div class="journey-icon">💰</div>
+                        <div class="journey-title">Earn</div>
+                        <div class="journey-stat">$315/student</div>
+                    </div>
+                </div>
+
+                <div class="feed-tabs">
+                    <div class="feed-tab active">All Posts</div>
+                    <div class="feed-tab">Questions</div>
+                    <div class="feed-tab">Tips</div>
+                    <div class="feed-tab">Wins</div>
+                </div>
+
+                <div class="feed-post">
+                    <div class="post-header">
+                        <div class="post-avatar avatar-student">S</div>
+                        <div class="post-meta">
+                            <div class="post-author-line">
+                                <span class="author-name">Sarah</span>
+                                <span class="role-badge badge-student">Student</span>
+                            </div>
+                            <span class="post-context">Module 3 • 2 hours ago</span>
+                        </div>
+                    </div>
+                    <p class="post-content">
+                        How do I structure prompts for chain-of-thought reasoning?
+                        I've tried a few approaches but the outputs are inconsistent.
+                    </p>
+                    <div class="post-footer">
+                        <span class="post-action">❤️ 4</span>
+                        <span class="post-action">💬 3</span>
+                        <span class="post-action">🔖</span>
+                    </div>
+                </div>
+
+                <div class="feed-post">
+                    <div class="post-header">
+                        <div class="post-avatar avatar-teacher">M</div>
+                        <div class="post-meta">
+                            <div class="post-author-line">
+                                <span class="author-name">Marcus</span>
+                                <span class="role-badge badge-teacher">Student-Teacher</span>
+                            </div>
+                            <span class="post-context">5 students taught • 1 hour ago</span>
+                        </div>
+                    </div>
+                    <p class="post-content">
+                        @Sarah Great question! The trick is to be explicit about the steps.
+                        Start with "Let's think through this step by step:" then number your reasoning.
+                        Works great for complex problems.
+                    </p>
+                    <div class="post-footer">
+                        <span class="post-action">❤️ 12</span>
+                        <span class="post-action">💬 Reply</span>
+                        <span class="post-action">🔖</span>
+                    </div>
+                </div>
+
+                <div class="feed-post">
+                    <div class="post-header">
+                        <div class="post-avatar avatar-certified">J</div>
+                        <div class="post-meta">
+                            <div class="post-author-line">
+                                <span class="author-name">Jake</span>
+                                <span class="role-badge badge-certified">Just Certified!</span>
+                            </div>
+                            <span class="post-context">Completed all modules • Yesterday</span>
+                        </div>
+                    </div>
+                    <p class="post-content">
+                        I DID IT! Just passed my certification assessment with Marcus.
+                        Three months ago I couldn't write a basic prompt. Ready to start teaching next week!
+                    </p>
+                    <div class="post-footer">
+                        <span class="post-action">🎉 23</span>
+                        <span class="post-action">💬 8</span>
+                        <span class="post-action">🔖</span>
+                    </div>
+                </div>
+
+                <div class="feed-post">
+                    <div class="post-header">
+                        <div class="post-avatar avatar-teacher">P</div>
+                        <div class="post-meta">
+                            <div class="post-author-line">
+                                <span class="author-name">Priya</span>
+                                <span class="role-badge badge-teacher">Student-Teacher</span>
+                            </div>
+                            <span class="post-context">3 students taught • 2 days ago</span>
+                        </div>
+                    </div>
+                    <p class="post-content">
+                        One thing I wish someone told me: the best prompts aren't clever, they're clear.
+                        Stop trying to be smart - just be specific.
+                    </p>
+                    <div class="post-footer">
+                        <span class="post-action">❤️ 34</span>
+                        <span class="post-action">💬 11</span>
+                        <span class="post-action">🔖</span>
+                    </div>
+                </div>
+
+                <div class="load-more">Load more posts...</div>
+            </div>
+        </main>
+
+        <!-- ========== RIGHT SIDEBAR ========== -->
+        <aside class="people-sidebar">
+            <div class="quick-stats">
+                <div class="quick-stat">
+                    <div class="quick-stat-value">47</div>
+                    <div class="quick-stat-label">Students</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="quick-stat-value">8</div>
+                    <div class="quick-stat-label">Teachers</div>
+                </div>
+            </div>
+
+            <div class="people-section">
+                <div class="people-section-title">
+                    Student-Teachers
+                    <span class="see-all">See all</span>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar avatar-teacher">
+                        M
+                        <span class="online-indicator"></span>
+                    </div>
+                    <div class="person-info">
+                        <div class="person-name">Marcus</div>
+                        <div class="person-detail">5 students taught</div>
+                    </div>
+                    <button class="person-action action-book">Book</button>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar avatar-teacher">
+                        P
+                        <span class="online-indicator"></span>
+                    </div>
+                    <div class="person-info">
+                        <div class="person-name">Priya</div>
+                        <div class="person-detail">3 students taught</div>
+                    </div>
+                    <button class="person-action action-book">Book</button>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar avatar-teacher">J</div>
+                    <div class="person-info">
+                        <div class="person-name">Jordan</div>
+                        <div class="person-detail">2 students taught</div>
+                    </div>
+                    <button class="person-action action-book">Book</button>
+                </div>
+            </div>
+
+            <div class="people-section">
+                <div class="people-section-title">
+                    Learning Now
+                    <span class="see-all">See all</span>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar avatar-student">
+                        S
+                        <span class="online-indicator"></span>
+                    </div>
+                    <div class="person-info">
+                        <div class="person-name">Sarah</div>
+                        <div class="person-detail">Module 3</div>
+                    </div>
+                    <button class="person-action action-message">Chat</button>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar avatar-student">
+                        M
+                        <span class="online-indicator"></span>
+                    </div>
+                    <div class="person-info">
+                        <div class="person-name">Mike</div>
+                        <div class="person-detail">Module 1</div>
+                    </div>
+                    <button class="person-action action-message">Chat</button>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar avatar-certified">L</div>
+                    <div class="person-info">
+                        <div class="person-name">Lisa</div>
+                        <div class="person-detail">Certified!</div>
+                    </div>
+                    <button class="person-action action-message">Chat</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="design-label">Option C: Hybrid Navigation (Top + Dual Sidebars)</div>
+</body>
+</html>

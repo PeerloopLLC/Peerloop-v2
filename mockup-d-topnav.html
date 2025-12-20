@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeerLoop - Mockup D: Top Navigation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #141414;
+      --bg-tertiary: #1a1a1a;
+      --bg-hover: #252525;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666666;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --border: #2a2a2a;
+      --header-height: 60px;
+      --subnav-height: 50px;
+      --bottom-nav-height: 60px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    /* ==================== MAIN HEADER WITH TOP NAV ==================== */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 100;
+    }
+
+    .header-logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-right: 32px;
+    }
+
+    /* Primary navigation - horizontal */
+    .primary-nav {
+      display: flex;
+      gap: 4px;
+      height: 100%;
+      align-items: center;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 20px;
+      height: 100%;
+      cursor: pointer;
+      color: var(--text-secondary);
+      text-decoration: none;
+      position: relative;
+      transition: color 0.2s;
+    }
+
+    .nav-item:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+    }
+
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 3px 3px 0 0;
+    }
+
+    .nav-icon {
+      font-size: 1.4rem;
+      margin-bottom: 2px;
+    }
+
+    .nav-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      font-size: 0.65rem;
+      padding: 1px 5px;
+      background: #ef4444;
+      color: white;
+      border-radius: 8px;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    .header-search {
+      flex: 1;
+      max-width: 400px;
+      margin: 0 32px;
+      position: relative;
+    }
+
+    .header-search input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+    }
+
+    .header-search input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .header-search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: auto;
+    }
+
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: background 0.2s;
+    }
+
+    .header-icon:hover {
+      background: var(--bg-hover);
+    }
+
+    .header-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      cursor: pointer;
+    }
+
+    /* ==================== SUB-NAVIGATION (Context-specific) ==================== */
+    .subnav {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      height: var(--subnav-height);
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      z-index: 99;
+    }
+
+    .subnav-context {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-right: 20px;
+      border-right: 1px solid var(--border);
+    }
+
+    .subnav-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .subnav-creator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .subnav-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f97316, #ec4899);
+    }
+
+    .subnav-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .subnav-tabs {
+      display: flex;
+      gap: 4px;
+    }
+
+    .subnav-tab {
+      padding: 8px 16px;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .subnav-tab:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .subnav-tab.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .subnav-right {
+      margin-left: auto;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .follow-btn {
+      padding: 6px 16px;
+      background: transparent;
+      border: 1px solid var(--text-muted);
+      color: var(--text-primary);
+      border-radius: 16px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .follow-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .buy-btn {
+      padding: 6px 16px;
+      background: var(--accent);
+      border: none;
+      color: white;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .buy-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    /* ==================== MAIN CONTENT ==================== */
+    .main-content {
+      margin-top: calc(var(--header-height) + var(--subnav-height));
+      min-height: calc(100vh - var(--header-height) - var(--subnav-height));
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .content-container {
+      width: 100%;
+      max-width: 650px;
+    }
+
+    /* Course Info Banner */
+    .course-banner {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .course-info h1 {
+      font-size: 1.3rem;
+      margin-bottom: 6px;
+    }
+
+    .course-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .course-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .course-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .action-btn.primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+    }
+
+    .action-btn.primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .action-btn.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .action-btn.secondary:hover {
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Post composer */
+    .post-composer {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .composer-input {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .composer-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      flex-shrink: 0;
+    }
+
+    .composer-textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      resize: none;
+      min-height: 50px;
+    }
+
+    .composer-textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .composer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .composer-tools {
+      display: flex;
+      gap: 6px;
+    }
+
+    .composer-tool {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .composer-tool:hover {
+      background: var(--bg-hover);
+    }
+
+    .composer-post-btn {
+      padding: 8px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Feed posts */
+    .feed-post {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .post-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e, #14b8a6);
+      flex-shrink: 0;
+    }
+
+    .post-avatar.teacher {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+    }
+
+    .post-avatar.creator {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    }
+
+    .post-author-info {
+      flex: 1;
+    }
+
+    .post-author-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .post-author {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .post-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .post-badge.student {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+
+    .post-badge.student-teacher {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .post-badge.creator {
+      background: rgba(139, 92, 246, 0.2);
+      color: #8b5cf6;
+    }
+
+    .post-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .post-content {
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 24px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .post-action {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .post-action:hover {
+      color: var(--accent);
+    }
+
+    /* ==================== BOTTOM NAV (Mobile) ==================== */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-height);
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      z-index: 100;
+    }
+
+    .bottom-nav-items {
+      display: flex;
+      height: 100%;
+    }
+
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .bottom-nav-item.active {
+      color: var(--accent);
+    }
+
+    .bottom-nav-icon {
+      font-size: 1.3rem;
+    }
+
+    .bottom-nav-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+
+    /* Tablet */
+    @media (max-width: 1024px) {
+      .header-search {
+        max-width: 280px;
+        margin: 0 20px;
+      }
+
+      .nav-label {
+        display: none;
+      }
+
+      .nav-item {
+        padding: 8px 16px;
+      }
+
+      .subnav-context {
+        padding-right: 12px;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .primary-nav {
+        display: none;
+      }
+
+      .header-search {
+        display: none;
+      }
+
+      .subnav {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 12px 16px;
+        gap: 10px;
+      }
+
+      .subnav-context {
+        width: 100%;
+        border-right: none;
+        padding-right: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .subnav-tabs {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .subnav-right {
+        display: none;
+      }
+
+      .main-content {
+        margin-top: calc(var(--header-height) + 100px);
+        margin-bottom: var(--bottom-nav-height);
+        padding: 16px;
+      }
+
+      .bottom-nav {
+        display: block;
+      }
+
+      .course-banner {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .course-actions {
+        width: 100%;
+      }
+
+      .action-btn {
+        flex: 1;
+        text-align: center;
+      }
+
+      .course-stats {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+    }
+
+    /* ==================== ANNOTATIONS ==================== */
+    .mockup-label {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .mockup-label strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .mockup-label {
+        bottom: 80px;
+        left: 20px;
+        right: 20px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MAIN HEADER WITH TOP NAVIGATION -->
+  <header class="header">
+    <div class="header-logo">PeerLoop</div>
+
+    <!-- Primary Navigation - Horizontal Icons -->
+    <nav class="primary-nav">
+      <a class="nav-item" href="#">
+        <span class="nav-icon">&#127968;</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a class="nav-item active" href="#">
+        <span class="nav-icon">&#128218;</span>
+        <span class="nav-label">Browse</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">&#128172;</span>
+        <span class="nav-label">Community</span>
+        <span class="nav-badge">3</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">&#128202;</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">&#128276;</span>
+        <span class="nav-label">Alerts</span>
+        <span class="nav-badge">5</span>
+      </a>
+    </nav>
+
+    <div class="header-search">
+      <span class="header-search-icon">&#128269;</span>
+      <input type="text" placeholder="Search courses, creators, posts...">
+    </div>
+
+    <div class="header-right">
+      <div class="header-avatar"></div>
+    </div>
+  </header>
+
+  <!-- SUB-NAVIGATION (Context Bar) -->
+  <nav class="subnav">
+    <div class="subnav-context">
+      <div class="subnav-back">
+        <span>&#8592;</span>
+        <span>Back</span>
+      </div>
+      <div class="subnav-creator">
+        <div class="subnav-avatar"></div>
+        <span class="subnav-name">Sarah Chen</span>
+      </div>
+    </div>
+
+    <div class="subnav-tabs">
+      <div class="subnav-tab">Community</div>
+      <div class="subnav-tab active">Courses</div>
+      <div class="subnav-tab">About</div>
+    </div>
+
+    <div class="subnav-right">
+      <button class="follow-btn">Following</button>
+      <button class="buy-btn">&#128176; Buy $299</button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="content-container">
+
+      <!-- Course Info Banner -->
+      <div class="course-banner">
+        <div class="course-info">
+          <h1>Python Mastery</h1>
+          <div class="course-stats">
+            <div class="course-stat">&#128100; 234 students</div>
+            <div class="course-stat">&#128172; 47 discussions</div>
+            <div class="course-stat">&#127891; 18 teachers</div>
+            <div class="course-stat">&#11088; 4.9</div>
+          </div>
+        </div>
+        <div class="course-actions">
+          <button class="action-btn secondary">View Details</button>
+          <button class="action-btn primary">Buy $299</button>
+        </div>
+      </div>
+
+      <!-- Post Composer -->
+      <div class="post-composer">
+        <div class="composer-input">
+          <div class="composer-avatar"></div>
+          <textarea class="composer-textarea" placeholder="Ask a question or share your experience..."></textarea>
+        </div>
+        <div class="composer-actions">
+          <div class="composer-tools">
+            <button class="composer-tool">&#128247;</button>
+            <button class="composer-tool">&#127909;</button>
+            <button class="composer-tool">&#128279;</button>
+          </div>
+          <button class="composer-post-btn">Post</button>
+        </div>
+      </div>
+
+      <!-- Feed Posts -->
+      <article class="feed-post">
+        <div class="post-header">
+          <div class="post-avatar teacher"></div>
+          <div class="post-author-info">
+            <div class="post-author-row">
+              <span class="post-author">Jenny Martinez</span>
+              <span class="post-badge student-teacher">Student-Teacher</span>
+            </div>
+            <div class="post-meta">2h ago in Python Mastery</div>
+          </div>
+        </div>
+        <div class="post-content">
+          Just finished teaching my 5th student this week! Already earned back $150 of my $299 course fee. The flywheel is real - learning by teaching has made the concepts stick so much better. Who else is teaching?
+        </div>
+        <div class="post-actions">
+          <span class="post-action">&#128077; 24</span>
+          <span class="post-action">&#128172; 8</span>
+          <span class="post-action">&#128257; 3</span>
+          <span class="post-action">&#128278;</span>
+        </div>
+      </article>
+
+      <article class="feed-post">
+        <div class="post-header">
+          <div class="post-avatar" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);"></div>
+          <div class="post-author-info">
+            <div class="post-author-row">
+              <span class="post-author">David Kim</span>
+              <span class="post-badge student">Student</span>
+            </div>
+            <div class="post-meta">4h ago in Python Mastery</div>
+          </div>
+        </div>
+        <div class="post-content">
+          Session 3 finally clicked for me! Decorators were confusing at first but @JennyMartinez explained it perfectly in our 1-on-1. Highly recommend booking with her if you're stuck on this module.
+        </div>
+        <div class="post-actions">
+          <span class="post-action">&#128077; 18</span>
+          <span class="post-action">&#128172; 5</span>
+          <span class="post-action">&#128257; 1</span>
+          <span class="post-action">&#128278;</span>
+        </div>
+      </article>
+
+      <article class="feed-post">
+        <div class="post-header">
+          <div class="post-avatar creator"></div>
+          <div class="post-author-info">
+            <div class="post-author-row">
+              <span class="post-author">Sarah Chen</span>
+              <span class="post-badge creator">Creator</span>
+            </div>
+            <div class="post-meta">6h ago in Python Mastery</div>
+          </div>
+        </div>
+        <div class="post-content">
+          <strong>FAQ: "How long before I can start teaching?"</strong><br><br>
+          Most students complete the certification in 4-6 weeks studying part-time. Once certified, you can immediately start booking teaching sessions. I approve 95% of teacher applications!
+        </div>
+        <div class="post-actions">
+          <span class="post-action">&#128077; 47</span>
+          <span class="post-action">&#128172; 12</span>
+          <span class="post-action">&#128257; 8</span>
+          <span class="post-action">&#128278;</span>
+        </div>
+      </article>
+
+      <article class="feed-post">
+        <div class="post-header">
+          <div class="post-avatar" style="background: linear-gradient(135deg, #ef4444, #f97316);"></div>
+          <div class="post-author-info">
+            <div class="post-author-row">
+              <span class="post-author">Mike Chen</span>
+              <span class="post-badge student">Student</span>
+            </div>
+            <div class="post-meta">Yesterday in Python Mastery</div>
+          </div>
+        </div>
+        <div class="post-content">
+          Quick question for anyone who's done Module 4: The async/await exercise on page 47 - is the expected output supposed to include the timestamp or not? My results look different from the example.
+        </div>
+        <div class="post-actions">
+          <span class="post-action">&#128077; 3</span>
+          <span class="post-action">&#128172; 7</span>
+          <span class="post-action">&#128257; 0</span>
+          <span class="post-action">&#128278;</span>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- BOTTOM NAV (Mobile) -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-items">
+      <div class="bottom-nav-item">
+        <span class="bottom-nav-icon">&#127968;</span>
+        <span class="bottom-nav-label">Home</span>
+      </div>
+      <div class="bottom-nav-item active">
+        <span class="bottom-nav-icon">&#128218;</span>
+        <span class="bottom-nav-label">Browse</span>
+      </div>
+      <div class="bottom-nav-item">
+        <span class="bottom-nav-icon">&#128172;</span>
+        <span class="bottom-nav-label">Community</span>
+      </div>
+      <div class="bottom-nav-item">
+        <span class="bottom-nav-icon">&#128202;</span>
+        <span class="bottom-nav-label">Dashboard</span>
+      </div>
+      <div class="bottom-nav-item">
+        <span class="bottom-nav-icon">&#128100;</span>
+        <span class="bottom-nav-label">Profile</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mockup Label -->
+  <div class="mockup-label">
+    <strong>Mockup D: Top Navigation</strong>
+    Traditional horizontal nav pattern
+  </div>
+
+</body>
+</html>
