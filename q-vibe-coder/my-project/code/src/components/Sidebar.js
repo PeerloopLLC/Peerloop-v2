@@ -57,9 +57,9 @@ const Sidebar = ({ onMenuChange, activeMenu, isDarkMode, toggleDarkMode }) => {
    * Each item has an icon, label (for internal logic), and optional displayLabel (for UI)
    */
   const menuItems = [
+    { icon: <FaSearch />, label: 'Browse', displayLabel: 'Browse' }, // Browse courses and instructors
     { icon: <FaBook />, label: 'My Courses', displayLabel: 'My Courses' }, // User's enrolled courses
     { icon: <FaUsers />, label: 'My Community', displayLabel: 'My Communities' }, // Community features
-    { icon: <FaSearch />, label: 'Browse', displayLabel: 'Browse' }, // Browse courses and instructors
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
     { icon: <FaChalkboardTeacher />, label: 'Teaching', displayLabel: 'Dashboard' }, // Student-Teacher dashboard
     { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system

@@ -252,6 +252,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   };
 
   // Helper to check if any course from a creator is followed
+  // Check if creator is followed (regardless of course follows)
+  const isCreatorFollowed = (creatorId) => {
+    const idStr = String(creatorId);
+    return followedCommunities.some(c => c.id === idStr || c.id === `creator-${idStr}`);
+  };
+
   const hasAnyCreatorCourseFollowed = (creatorId) => {
     const creator = followedCommunities.find(c => c.id === creatorId || c.id === `creator-${creatorId}`);
     return creator && creator.followedCourseIds && creator.followedCourseIds.length > 0;
@@ -259,8 +265,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Handle following/unfollowing an instructor (creator)
   const handleFollowInstructor = (instructorId) => {
-    const creatorId = instructorId.startsWith('creator-') ? instructorId : `creator-${instructorId}`;
-    const rawId = instructorId.replace('creator-', '');
+    const idStr = String(instructorId);
+    const creatorId = idStr.startsWith('creator-') ? idStr : `creator-${idStr}`;
+    const rawId = idStr.replace('creator-', '');
     const isFollowed = followedCommunities.some(c => c.id === creatorId);
 
     if (isFollowed) {
@@ -620,6 +627,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         handleCoursePurchase={handleCoursePurchase}
         isCoursePurchased={isCoursePurchased}
         isCourseFollowed={isCourseFollowed}
+        isCreatorFollowed={isCreatorFollowed}
         hasAnyCreatorCourseFollowed={hasAnyCreatorCourseFollowed}
         handleFollowInstructor={handleFollowInstructor}
         handleFollowCourse={handleFollowCourse}

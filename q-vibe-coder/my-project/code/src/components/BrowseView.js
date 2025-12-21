@@ -46,6 +46,7 @@ const BrowseView = ({
   handleCoursePurchase,
   isCoursePurchased,
   isCourseFollowed,
+  isCreatorFollowed,
   hasAnyCreatorCourseFollowed,
   handleFollowInstructor,
   handleFollowCourse
@@ -171,7 +172,7 @@ const BrowseView = ({
               {(() => {
                 const purchasedCreatorCourses = creatorCourses.filter(course => isCoursePurchased(course.id));
                 const hasPurchasedCourses = purchasedCreatorCourses.length > 0;
-                const isFollowing = hasAnyCreatorCourseFollowed(creator.id);
+                const isFollowing = isCreatorFollowed(creator.id);
 
                 if (!hasPurchasedCourses) {
                   return (
@@ -571,7 +572,7 @@ const BrowseView = ({
                   const courses = creatorData?.courses || [];
                   const purchasedCreatorCourses = courses.filter(course => isCoursePurchased(course.id));
                   const hasPurchasedCourses = purchasedCreatorCourses.length > 0;
-                  const isFollowing = hasAnyCreatorCourseFollowed(creator.id);
+                  const isFollowing = isCreatorFollowed(creator.id);
 
                   if (!hasPurchasedCourses) {
                     return (
@@ -1324,6 +1325,7 @@ BrowseView.propTypes = {
   handleCoursePurchase: PropTypes.func.isRequired,
   isCoursePurchased: PropTypes.func.isRequired,
   isCourseFollowed: PropTypes.func.isRequired,
+  isCreatorFollowed: PropTypes.func.isRequired,
   hasAnyCreatorCourseFollowed: PropTypes.func.isRequired,
   handleFollowInstructor: PropTypes.func.isRequired,
   handleFollowCourse: PropTypes.func.isRequired
