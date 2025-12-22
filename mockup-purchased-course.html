@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchased Course Detail - PeerLoop Mockup</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e7e9ea;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .back-link {
+      color: #1d9bf0;
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Creator Profile Card */
+    .creator-card {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid #2f3336;
+    }
+
+    .creator-header {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .creator-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .creator-info {
+      flex: 1;
+    }
+
+    .creator-name {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .creator-title {
+      color: #71767b;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .creator-stats {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .creator-stat {
+      font-size: 14px;
+      color: #a0a0a0;
+    }
+
+    .creator-stat strong {
+      color: #e7e9ea;
+    }
+
+    .creator-bio {
+      color: #a0a0a0;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #2f3336;
+    }
+
+    .creator-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .follow-btn {
+      background: transparent;
+      color: #1d9bf0;
+      border: 1px solid #1d9bf0;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .follow-btn:hover {
+      background: rgba(29, 155, 240, 0.1);
+    }
+
+    .follow-btn.following {
+      background: #1d9bf0;
+      color: #fff;
+    }
+
+    /* Course Header */
+    .course-header {
+      background: #16181c;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid #2f3336;
+    }
+
+    .course-label {
+      font-size: 12px;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .course-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .enrolled-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 186, 124, 0.15);
+      color: #00ba7c;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Cards */
+    .card {
+      background: #16181c;
+      border: 1px solid #2f3336;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Upcoming Session */
+    .upcoming-session {
+      border-left: 4px solid #1d9bf0;
+    }
+
+    .session-name {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .session-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .session-detail {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e7e9ea;
+      font-size: 15px;
+    }
+
+    .session-detail .icon {
+      font-size: 18px;
+    }
+
+    .session-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #1d9bf0;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #1a8cd8;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #e7e9ea;
+      border: 1px solid #536471;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(239, 243, 244, 0.1);
+    }
+
+    /* Homework Due */
+    .homework-card {
+      border-left: 4px solid #f7931a;
+    }
+
+    .homework-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .homework-info h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .homework-info h3 .warning {
+      color: #f7931a;
+    }
+
+    .homework-info p {
+      color: #71767b;
+      font-size: 14px;
+    }
+
+    .homework-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Progress */
+    .progress-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-box {
+      background: #1e2028;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1d9bf0;
+    }
+
+    .stat-label {
+      color: #71767b;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    /* Session Timeline */
+    .timeline {
+      position: relative;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .timeline-item:last-child {
+      border-bottom: none;
+    }
+
+    .timeline-status {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .status-complete {
+      background: rgba(0, 186, 124, 0.2);
+      color: #00ba7c;
+    }
+
+    .status-upcoming {
+      background: rgba(29, 155, 240, 0.2);
+      color: #1d9bf0;
+    }
+
+    .status-locked {
+      background: #2f3336;
+      color: #71767b;
+    }
+
+    .timeline-content {
+      flex: 1;
+    }
+
+    .timeline-content h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .timeline-content p {
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    .timeline-hw {
+      text-align: right;
+    }
+
+    .hw-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .hw-submitted {
+      background: rgba(0, 186, 124, 0.15);
+      color: #00ba7c;
+    }
+
+    .hw-due {
+      background: rgba(247, 147, 26, 0.15);
+      color: #f7931a;
+    }
+
+    .hw-locked {
+      background: #2f3336;
+      color: #71767b;
+    }
+
+    /* Resources */
+    .resource-session {
+      padding: 16px 0;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .resource-session:last-child {
+      border-bottom: none;
+    }
+
+    .resource-session h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .resource-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .resource-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #1d9bf0;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 6px 12px;
+      background: rgba(29, 155, 240, 0.1);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .resource-link:hover {
+      background: rgba(29, 155, 240, 0.2);
+    }
+
+    .download-all {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    /* Help Section */
+    .help-card {
+      background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+    }
+
+    .help-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .help-text p {
+      color: #a0a0a0;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    /* Discussion */
+    .discussion-preview {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .new-posts {
+      color: #1d9bf0;
+      font-weight: 600;
+    }
+
+    /* Certificate */
+    .certificate-card {
+      background: linear-gradient(135deg, #2d1f3d 0%, #1a1a2e 100%);
+      text-align: center;
+    }
+
+    .certificate-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .certificate-text {
+      color: #a0a0a0;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .progress-bar {
+      background: #2f3336;
+      border-radius: 10px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #1d9bf0, #8b5cf6);
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+
+    .progress-text {
+      color: #71767b;
+      font-size: 13px;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .creator-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .creator-stats {
+        justify-content: center;
+      }
+
+      .creator-actions {
+        justify-content: center;
+      }
+
+      .session-details {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .homework-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .timeline-item {
+        flex-direction: column;
+      }
+
+      .timeline-hw {
+        text-align: left;
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Back Link -->
+    <a href="#" class="back-link">
+      <span>&larr;</span> Back to My Courses
+    </a>
+
+    <!-- Creator Profile Card -->
+    <div class="creator-card">
+      <div class="creator-header">
+        <div class="creator-avatar">
+          &#128105;&#8205;&#127979;
+        </div>
+        <div class="creator-info">
+          <h2 class="creator-name">Dr. Sarah Chen</h2>
+          <p class="creator-title">AI & Machine Learning Expert</p>
+          <div class="creator-stats">
+            <span class="creator-stat"><strong>4.9</strong> rating</span>
+            <span class="creator-stat"><strong>2,340</strong> students</span>
+            <span class="creator-stat"><strong>5</strong> courses</span>
+            <span class="creator-stat"><strong>12</strong> Student-Teachers</span>
+          </div>
+        </div>
+      </div>
+      <p class="creator-bio">
+        Former Google AI researcher with 15 years of experience in machine learning and neural networks.
+        Passionate about making complex AI concepts accessible to everyone. PhD from Stanford,
+        published author, and conference speaker.
+      </p>
+      <div class="creator-actions">
+        <button class="follow-btn following">&#10003; Following</button>
+        <button class="btn btn-secondary">View All Courses</button>
+        <button class="btn btn-secondary">Go to Community</button>
+      </div>
+    </div>
+
+    <!-- Course Header -->
+    <div class="course-header">
+      <p class="course-label">&#128218; Enrolled Course</p>
+      <h1 class="course-title">Introduction to Machine Learning</h1>
+      <span class="enrolled-badge">
+        <span>&#10003;</span> ENROLLED &middot; Started Dec 10, 2024
+      </span>
+    </div>
+
+    <!-- Upcoming Session -->
+    <div class="card upcoming-session">
+      <div class="card-title">
+        <span>&#128197;</span> Upcoming Session
+      </div>
+      <h3 class="session-name">Session 4: Neural Network Basics</h3>
+      <div class="session-details">
+        <div class="session-detail">
+          <span class="icon">&#128197;</span>
+          Tuesday, Dec 24 &middot; 2:00 PM EST
+        </div>
+        <div class="session-detail">
+          <span class="icon">&#128100;</span>
+          With: Dr. Sarah Chen (Creator)
+        </div>
+      </div>
+      <div class="session-actions">
+        <button class="btn btn-primary">&#9654; Join Session</button>
+        <button class="btn btn-secondary">&#128197; Add to Calendar</button>
+        <button class="btn btn-secondary">Reschedule</button>
+      </div>
+    </div>
+
+    <!-- Homework Due -->
+    <div class="card homework-card">
+      <div class="card-title">
+        <span>&#128203;</span> Homework Due
+      </div>
+      <div class="homework-item">
+        <div class="homework-info">
+          <h3>
+            <span class="warning">&#9888;</span>
+            Assignment 3: Build a Classifier
+          </h3>
+          <p>Due: Dec 23, 2024 (2 days remaining)</p>
+        </div>
+        <div class="homework-actions">
+          <button class="btn btn-secondary">View Assignment</button>
+          <button class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="card">
+      <div class="card-title">
+        <span>&#128200;</span> Your Progress
+      </div>
+      <div class="progress-stats">
+        <div class="stat-box">
+          <div class="stat-number">3/8</div>
+          <div class="stat-label">Sessions Completed</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">2/3</div>
+          <div class="stat-label">Homework Submitted</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">90%</div>
+          <div class="stat-label">Average Score</div>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-status status-complete">&#10003;</div>
+          <div class="timeline-content">
+            <h4>Session 1: Introduction to ML</h4>
+            <p>Dec 10 &middot; Completed</p>
+          </div>
+          <div class="timeline-hw">
+            <span class="hw-badge hw-submitted">HW 1: 92%</span>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-status status-complete">&#10003;</div>
+          <div class="timeline-content">
+            <h4>Session 2: Data Preparation</h4>
+            <p>Dec 14 &middot; Completed</p>
+          </div>
+          <div class="timeline-hw">
+            <span class="hw-badge hw-submitted">HW 2: 88%</span>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-status status-complete">&#10003;</div>
+          <div class="timeline-content">
+            <h4>Session 3: Regression Models</h4>
+            <p>Dec 18 &middot; Completed</p>
+          </div>
+          <div class="timeline-hw">
+            <span class="hw-badge hw-due">HW 3: Due Dec 23</span>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-status status-upcoming">&#128197;</div>
+          <div class="timeline-content">
+            <h4>Session 4: Neural Network Basics</h4>
+            <p>Dec 24 &middot; 2:00 PM EST</p>
+          </div>
+          <div class="timeline-hw">
+            <span class="hw-badge hw-locked">&#128274; After session</span>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-status status-locked">&#9675;</div>
+          <div class="timeline-content">
+            <h4>Session 5: Classification Algorithms</h4>
+            <p>Not scheduled</p>
+          </div>
+          <div class="timeline-hw"></div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-status status-locked">&#9675;</div>
+          <div class="timeline-content">
+            <h4>Session 6: Model Evaluation</h4>
+            <p>Not scheduled</p>
+          </div>
+          <div class="timeline-hw"></div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-status status-locked">&#9675;</div>
+          <div class="timeline-content">
+            <h4>Session 7: Advanced Topics</h4>
+            <p>Not scheduled</p>
+          </div>
+          <div class="timeline-hw"></div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-status status-locked">&#9675;</div>
+          <div class="timeline-content">
+            <h4>Session 8: Final Project</h4>
+            <p>Not scheduled</p>
+          </div>
+          <div class="timeline-hw"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resources -->
+    <div class="card">
+      <div class="card-title">
+        <span>&#128229;</span> Resources
+      </div>
+
+      <div class="resource-session">
+        <h4>Session 1: Introduction to ML</h4>
+        <div class="resource-links">
+          <a href="#" class="resource-link">&#127909; Recording</a>
+          <a href="#" class="resource-link">&#128196; Slides</a>
+          <a href="#" class="resource-link">&#128187; Code Files</a>
+        </div>
+      </div>
+
+      <div class="resource-session">
+        <h4>Session 2: Data Preparation</h4>
+        <div class="resource-links">
+          <a href="#" class="resource-link">&#127909; Recording</a>
+          <a href="#" class="resource-link">&#128196; Slides</a>
+          <a href="#" class="resource-link">&#128196; Cheat Sheet</a>
+        </div>
+      </div>
+
+      <div class="resource-session">
+        <h4>Session 3: Regression Models</h4>
+        <div class="resource-links">
+          <a href="#" class="resource-link">&#127909; Recording</a>
+          <a href="#" class="resource-link">&#128196; Slides</a>
+          <a href="#" class="resource-link">&#128187; Starter Code</a>
+        </div>
+      </div>
+
+      <div class="download-all">
+        <button class="btn btn-secondary">&#128229; Download All Materials</button>
+      </div>
+    </div>
+
+    <!-- Get Help -->
+    <div class="card help-card">
+      <div class="help-content">
+        <div class="help-text">
+          <div class="card-title" style="margin-bottom: 8px;">
+            <span>&#128101;</span> Need Extra Help?
+          </div>
+          <p>Book a 1-on-1 tutoring session with a Student-Teacher who completed this course</p>
+        </div>
+        <button class="btn btn-primary">Browse Student-Teachers &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Discussion -->
+    <div class="card">
+      <div class="card-title">
+        <span>&#128172;</span> Class Discussion
+      </div>
+      <div class="discussion-preview">
+        <span class="new-posts">5 new posts since Session 3</span>
+        <button class="btn btn-secondary">View Discussion &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Certificate -->
+    <div class="card certificate-card">
+      <div class="certificate-icon">&#127891;</div>
+      <div class="card-title" style="justify-content: center;">Certificate of Completion</div>
+      <p class="certificate-text">Complete 5 more sessions to earn your certificate</p>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 37.5%;"></div>
+      </div>
+      <p class="progress-text">3 of 8 sessions completed</p>
+    </div>
+
+  </div>
+</body>
+</html>
