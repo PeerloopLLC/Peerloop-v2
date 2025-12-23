@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeerLoop - Learn it. Then teach it.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #a5b4fc;
+      --secondary: #10b981;
+      --accent: #f59e0b;
+
+      --bg-base: #0a0a0f;
+      --bg-surface: #12121a;
+      --bg-elevated: #1a1a24;
+      --bg-hover: #22222e;
+
+      --text-primary: #f5f5f7;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+
+      --border: #27272a;
+      --border-light: #3f3f46;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .header-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .header-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .btn-login {
+      padding: 10px 20px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-login:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-light);
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 80px 40px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero .tagline {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--primary-light);
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .hero .subheadline {
+      font-size: 20px;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      padding: 16px 32px;
+      background: var(--primary);
+      border: none;
+      border-radius: var(--radius-md);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-secondary {
+      padding: 16px 32px;
+      background: transparent;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-elevated);
+      border-color: var(--primary);
+    }
+
+    /* Benefits Section */
+    .benefits {
+      padding: 60px 40px 80px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .benefit-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: all 0.2s;
+    }
+
+    .benefit-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .benefit-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .benefit-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .benefit-card p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Featured Courses */
+    .featured {
+      padding: 60px 40px 100px;
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .featured h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+
+    .course-tags {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .course-tag {
+      padding: 12px 24px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .course-tag:hover {
+      border-color: var(--primary);
+      background: var(--bg-elevated);
+    }
+
+    .course-tag .emoji {
+      margin-right: 8px;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 40px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer p {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero .subheadline {
+        font-size: 17px;
+      }
+
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        padding: 16px 20px;
+      }
+
+      .hero {
+        padding: 60px 20px 40px;
+      }
+
+      .benefits {
+        padding: 40px 20px 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">PeerLoop</div>
+    <div class="header-links">
+      <a href="#">Browse Courses</a>
+      <a href="#">How It Works</a>
+      <button class="btn-login">Log In</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Learn it. Then teach it.</h1>
+    <p class="tagline">Learn. Teach. Earn.</p>
+    <p class="subheadline">
+      The best way to master something is to teach it. Learn from people one step ahead,
+      then reinforce your knowledge by helping the next person.
+    </p>
+    <div class="cta-buttons">
+      <button class="btn-primary">Create Free Account</button>
+      <button class="btn-secondary">Browse Courses</button>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+  <section class="benefits">
+    <div class="benefits-grid">
+
+      <div class="benefit-card">
+        <div class="benefit-icon">🎯</div>
+        <h3>Learn from people one step ahead</h3>
+        <p>Not distant experts. Real people who just mastered what you're learning. They remember what it's like to be where you are.</p>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon">🚀</div>
+        <h3>You could be teaching tomorrow</h3>
+        <p>Finish a course, get verified, keep 70% of what you earn. Teaching locks in your knowledge and pays you for it.</p>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon">💬</div>
+        <h3>Learn with the community, not alone</h3>
+        <p>Ask questions, share wins, help peers in course feeds. Learning sticks better when you're part of a community.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Featured Courses -->
+  <section class="featured">
+    <h2>Start Learning Today</h2>
+    <div class="course-tags">
+      <div class="course-tag"><span class="emoji">🐍</span>Python</div>
+      <div class="course-tag"><span class="emoji">✨</span>Vibe Coding</div>
+      <div class="course-tag"><span class="emoji">🎨</span>Design</div>
+      <div class="course-tag"><span class="emoji">📊</span>Data Analysis</div>
+      <div class="course-tag"><span class="emoji">🤖</span>AI & ML</div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>PeerLoop — Where learners become teachers</p>
+  </footer>
+
+</body>
+</html>
