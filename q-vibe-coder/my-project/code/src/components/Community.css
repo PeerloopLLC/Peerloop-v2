@@ -1190,3 +1190,46 @@
     display: none;
   }
 } 
+/* Course Pills Styles */
+.course-pills-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.course-pills-container::-webkit-scrollbar {
+  display: none;
+}
+
+.course-pill {
+  transition: all 0.2s ease;
+}
+
+.course-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.course-pill-selected {
+  box-shadow: 0 2px 8px rgba(29, 155, 240, 0.3);
+}
+
+.dark-mode .course-pill:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .course-pill-selected {
+  box-shadow: 0 2px 8px rgba(29, 155, 240, 0.4);
+}
+
+/* Enhanced pill styling for better visibility */
+.course-pill {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+.dark-mode .course-pill {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+}
+
+.course-pill-selected {
+  box-shadow: 0 2px 8px rgba(29, 155, 240, 0.4) !important;
+}

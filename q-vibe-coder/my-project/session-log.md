@@ -447,6 +447,54 @@
 
 ---
 
+
+
+---
+
+### Session 12
+**Date:** January 10, 2026
+**Phase:** Building - Feeds UI Improvements
+
+**What we did:**
+
+- **Sidebar Community Selection:**
+  - Fixed clicking sidebar communities not switching the feed view
+  - Added custom event  for cross-component communication
+  - Town Hall and creator items in sidebar now properly switch the Feeds view
+
+- **Removed Course Filter Dropdown:**
+  - Replaced dropdown menu with horizontal scrollable pill buttons
+  - Pills show "Town Hall" (always first) + enrolled courses
+  - Clean text-only design (removed emoji icons)
+  - Enhanced pill styling: solid background, 2px border, box shadow
+
+- **Creator Avatars in Sidebar:**
+  - Sidebar now shows creator profile pictures instead of first-letter initials
+  - Falls back to initial letter if no avatar available
+
+- **Scrollable Pills with Arrows & Drag:**
+  - Added left/right arrow buttons that appear when pills overflow
+  - Implemented drag-to-scroll functionality (grab cursor, mouse drag)
+  - Smooth scrolling on arrow click (150px per click)
+  - Arrow visibility updates dynamically on scroll
+
+**Files modified:**
+- Community.js (pills, event listener, scroll functions)
+- Sidebar.js (avatar images, event dispatch)
+- Sidebar.css (avatar styling, communities list height)
+- Community.css (pill styling)
+
+**Technical notes:**
+-  for scroll container reference
+- / state for arrow visibility
+- , ,  for drag state
+- , , drag handlers for functionality
+- Arrows appear only when content overflows (multiple pills needed to test)
+
+**Next session:**
+- Test pill scrolling with enrolled courses
+- Continue feature development
+
 <!-- Add more sessions as needed -->
 
 ---

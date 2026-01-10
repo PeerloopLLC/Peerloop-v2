@@ -6,23 +6,72 @@ import useDeviceDetect from '../hooks/useDeviceDetect';
 
 /**
  * Sidebar Component
- * 
+ *
  * This component renders the left navigation sidebar with menu items and user profile.
  * It handles navigation between different sections of the application and displays
  * the current user's profile information.
- * 
+ *
  * @param {Function} onMenuChange - Callback function to handle menu item clicks
  * @param {string} activeMenu - The currently active menu item
+ * @param {Object} currentUser - Current user object with id
+ * @param {Function} onSelectCommunity - Callback when a community is selected from sidebar
  */
-const Sidebar = ({ onMenuChange, activeMenu }) => {
+const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) => {
   // Track which tooltip is visible (by index)
   const [visibleTooltip, setVisibleTooltip] = useState(null);
   const timerRef = useRef(null);
-  
+
+  // Load communities from localStorage
+  const [communities, setCommunities] = useState([]);
+
   // Detect device type - collapse sidebar on non-desktop devices
   const { isWindows, isMac, isDesktop } = useDeviceDetect();
   const isDesktopComputer = (isWindows || isMac) && isDesktop;
   const shouldCollapse = !isDesktopComputer;
+
+  // Load communities from localStorage when user changes
+  useEffect(() => {
+    const loadCommunities = () => {
+      if (!currentUser?.id) {
+        setCommunities([]);
+        return;
+      }
+      try {
+        const storageKey = `followedCommunities_${currentUser.id}`;
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            setCommunities(parsed);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading communities:', error);
+      }
+    };
+
+    loadCommunities();
+
+    // Listen for storage changes (when MainContent updates communities)
+    const handleStorageChange = (e) => {
+      if (e.key === `followedCommunities_${currentUser?.id}`) {
+        loadCommunities();
+      }
+    };
+
+    // Also listen for custom event from MainContent
+    const handleCommunitiesUpdate = () => {
+      loadCommunities();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('communitiesUpdated', handleCommunitiesUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('communitiesUpdated', handleCommunitiesUpdate);
+    };
+  }, [currentUser?.id]);
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -155,9 +204,6 @@ const Sidebar = ({ onMenuChange, activeMenu }) => {
           );
         })}
 
-        {/* Divider */}
-        <div className="nav-section-divider"></div>
-
         {/* Personal items - My Courses, Notifications, Dashboard, Messages, Profile */}
         {personalItems.map((item, index) => (
           <div
@@ -176,9 +222,6 @@ const Sidebar = ({ onMenuChange, activeMenu }) => {
           </div>
         ))}
 
-        {/* Divider */}
-        <div className="nav-section-divider"></div>
-
         {/* Footer items - How It Works */}
         {footerItems.map((item, index) => (
           <div
@@ -196,6 +239,67 @@ const Sidebar = ({ onMenuChange, activeMenu }) => {
             </span>
           </div>
         ))}
+
+        {/* MY COMMUNITIES - Scrollable list with Town Hall first */}
+        <div className="sidebar-communities-section">
+          <div className="communities-header">
+            <span className="communities-title">MY COMMUNITIES</span>
+          </div>
+          <div className="communities-list">
+            {/* Town Hall - Always first */}
+            <div
+              className="community-item town-hall-item"
+              onClick={() => {
+                // Store Town Hall selection and dispatch event
+                const townHall = { id: 'town-hall', name: 'Town Hall', type: 'hub' };
+                localStorage.setItem('pendingCommunityCreator', JSON.stringify(townHall));
+                window.dispatchEvent(new CustomEvent('communitySelected', { detail: townHall }));
+                if (onSelectCommunity) {
+                  onSelectCommunity(townHall);
+                }
+                onMenuChange('My Community');
+              }}
+            >
+              <div className="community-avatar town-hall-avatar">🏛</div>
+              <span className="community-name">Town Hall</span>
+            </div>
+
+            {/* User's followed communities */}
+            {communities.map((community) => {
+              // Extract display name - remove "creator-" prefix if present
+              const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
+              // Get first letter for avatar
+              const initial = displayName.charAt(0).toUpperCase();
+
+              return (
+                <div
+                  key={community.id}
+                  className="community-item"
+                  onClick={() => {
+                    // Store creator selection and dispatch event
+                    localStorage.setItem('pendingCommunityCreator', JSON.stringify(community));
+                    window.dispatchEvent(new CustomEvent('communitySelected', { detail: community }));
+                    if (onSelectCommunity) {
+                      onSelectCommunity(community);
+                    }
+                    onMenuChange('My Community');
+                  }}
+                >
+                  {community.avatar ? (
+                    <img
+                      src={community.avatar}
+                      alt={displayName}
+                      className="community-avatar community-avatar-img"
+                    />
+                  ) : (
+                    <div className="community-avatar">{initial}</div>
+                  )}
+                  <span className="community-name">{displayName}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </nav>
     </div>
   );
@@ -203,7 +307,9 @@ const Sidebar = ({ onMenuChange, activeMenu }) => {
 
 Sidebar.propTypes = {
   onMenuChange: PropTypes.func.isRequired,
-  activeMenu: PropTypes.string.isRequired
+  activeMenu: PropTypes.string.isRequired,
+  currentUser: PropTypes.object,
+  onSelectCommunity: PropTypes.func
 };
 
 export default Sidebar; 

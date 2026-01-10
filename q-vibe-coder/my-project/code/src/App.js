@@ -291,6 +291,14 @@ function App() {
           <Sidebar
             onMenuChange={handleMenuChange}
             activeMenu={activeMenu}
+            currentUser={currentUser}
+            onSelectCommunity={(community) => {
+              // Store selected community in localStorage for Community component to pick up
+              localStorage.setItem('pendingCommunityCreator', JSON.stringify({
+                id: community.id,
+                name: community.name
+              }));
+            }}
           />
         )}
         

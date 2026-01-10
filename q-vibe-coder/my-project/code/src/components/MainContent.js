@@ -566,6 +566,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       try {
         const storageKey = `followedCommunities_${currentUser.id}`;
         localStorage.setItem(storageKey, JSON.stringify(followedCommunities));
+        // Dispatch custom event so Sidebar can update
+        window.dispatchEvent(new Event('communitiesUpdated'));
       } catch (error) {
         console.error('Error saving followedCommunities to localStorage:', error);
       }

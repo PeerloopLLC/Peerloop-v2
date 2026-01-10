@@ -34,6 +34,14 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const [dragStartX, setDragStartX] = useState(0); // Starting X position of drag
   const [dragScrollLeft, setDragScrollLeft] = useState(0); // Starting scroll position of drag
 
+  // Pills scrolling state
+  const pillsContainerRef = useRef(null);
+  const [showPillsLeftArrow, setShowPillsLeftArrow] = useState(false);
+  const [showPillsRightArrow, setShowPillsRightArrow] = useState(false);
+  const [isPillsDragging, setIsPillsDragging] = useState(false);
+  const [pillsDragStartX, setPillsDragStartX] = useState(0);
+  const [pillsDragScrollLeft, setPillsDragScrollLeft] = useState(0);
+
   // Initialize GetStream and load posts on mount
   useEffect(() => {
     const init = async () => {
@@ -50,33 +58,72 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     init();
   }, [currentUser?.id]);
 
-  // Check for pending creator navigation from "Go to Community" button
+  // Initialize pills arrow visibility
   useEffect(() => {
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      if (pillsContainerRef.current) {
+        const { scrollWidth, clientWidth } = pillsContainerRef.current;
+        setShowPillsRightArrow(scrollWidth > clientWidth);
+        setShowPillsLeftArrow(false);
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [selectedCreatorId, communityMode]);
+
+  // Check for pending creator navigation from "Go to Community" button or sidebar selection
+  useEffect(() => {
+    const handleCommunitySelection = (creator) => {
+      // Check if Town Hall was selected
+      if (creator.type === 'hub' || creator.id === 'town-hall') {
+        setCommunityMode('hub');
+        setSelectedCreatorId(null);
+        setPostAudience('everyone');
+        setActiveTab('Home');
+        setPendingCreatorName(null);
+        setSelectedCourseFilters([]);
+      }
+      // Set to My Creators mode and select this creator
+      else if (creator.id) {
+        setCommunityMode('creators');
+        setSelectedCreatorId(creator.id);
+        setPostAudience(creator.id);
+        setActiveTab(creator.id);
+        // Store the name in case the creator isn't in groupedByCreator (not followed yet)
+        setPendingCreatorName(creator.name);
+
+        // If a specific course was passed, select it in the course filter
+        if (creator.courseId && creator.courseTitle) {
+          setSelectedCourseFilters([{ id: creator.courseId, name: creator.courseTitle }]);
+        }
+      }
+      // Clear the pending creator
+      localStorage.removeItem('pendingCommunityCreator');
+    };
+
+    // Check for pending creator on mount
     const pendingCreator = localStorage.getItem('pendingCommunityCreator');
     if (pendingCreator) {
       try {
         const creator = JSON.parse(pendingCreator);
-        // Set to My Creators mode and select this creator
-        if (creator.id) {
-          setCommunityMode('creators');
-          setSelectedCreatorId(creator.id);
-          setPostAudience(creator.id);
-          setActiveTab(creator.id);
-          // Store the name in case the creator isn't in groupedByCreator (not followed yet)
-          setPendingCreatorName(creator.name);
-
-          // If a specific course was passed, select it in the course filter
-          if (creator.courseId && creator.courseTitle) {
-            setSelectedCourseFilters([{ id: creator.courseId, name: creator.courseTitle }]);
-          }
-        }
-        // Clear the pending creator so it doesn't trigger again
-        localStorage.removeItem('pendingCommunityCreator');
+        handleCommunitySelection(creator);
       } catch (e) {
         console.error('Error parsing pending creator:', e);
         localStorage.removeItem('pendingCommunityCreator');
       }
     }
+
+    // Listen for sidebar community selection
+    const handleCommunitySelected = (event) => {
+      if (event.detail) {
+        handleCommunitySelection(event.detail);
+      }
+    };
+
+    window.addEventListener('communitySelected', handleCommunitySelected);
+    return () => {
+      window.removeEventListener('communitySelected', handleCommunitySelected);
+    };
   }, []);
 
   // Scroll to selected creator in the horizontal tabs when selectedCreatorId changes
@@ -315,6 +362,59 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
         behavior: 'smooth'
       });
       setTimeout(checkScrollArrows, 300);
+    }
+  };
+
+  // Pills scroll functions
+  const updatePillsArrows = () => {
+    if (pillsContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = pillsContainerRef.current;
+      setShowPillsLeftArrow(scrollLeft > 0);
+      setShowPillsRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  const scrollPills = (direction) => {
+    if (pillsContainerRef.current) {
+      const scrollAmount = 150;
+      pillsContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+      setTimeout(updatePillsArrows, 300);
+    }
+  };
+
+  const handlePillsMouseDown = (e) => {
+    if (!pillsContainerRef.current) return;
+    setIsPillsDragging(true);
+    setPillsDragStartX(e.pageX - pillsContainerRef.current.offsetLeft);
+    setPillsDragScrollLeft(pillsContainerRef.current.scrollLeft);
+    pillsContainerRef.current.style.cursor = 'grabbing';
+  };
+
+  const handlePillsMouseMove = (e) => {
+    if (!isPillsDragging || !pillsContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - pillsContainerRef.current.offsetLeft;
+    const walk = (x - pillsDragStartX) * 1.5;
+    pillsContainerRef.current.scrollLeft = pillsDragScrollLeft - walk;
+    updatePillsArrows();
+  };
+
+  const handlePillsMouseUp = () => {
+    setIsPillsDragging(false);
+    if (pillsContainerRef.current) {
+      pillsContainerRef.current.style.cursor = 'grab';
+    }
+  };
+
+  const handlePillsMouseLeave = () => {
+    if (isPillsDragging) {
+      setIsPillsDragging(false);
+      if (pillsContainerRef.current) {
+        pillsContainerRef.current.style.cursor = 'grab';
+      }
     }
   };
 
@@ -593,7 +693,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     </div>
                   </div>
                   <p style={{ margin: '0 0 12px 0', color: '#334155', fontSize: 15, lineHeight: 1.5 }}>{post.content}</p>
-                  <div style={{ display: 'flex', gap: 20, fontSize: 13, color: '#64748b' }}>
+                  <div style={{ display: 'flex', gap: 20, fontSize: 14, color: '#64748b' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><FaComment /> {post.replies}</span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><FaHeart /> {post.likes}</span>
                   </div>
@@ -648,308 +748,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     <div className="community-content-outer" style={{ background: isDarkMode ? '#000' : '#fff' }}>
       <div className="community-three-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
         <div className="community-center-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
-          {/* Unified profile row with Town Hall + Creator pics */}
-          <div className="community-top-menu" style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            padding: '4px 8px',
-            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-          }}>
-            {/* Town Hall - Fixed/Stationary */}
-            <div
-              onClick={() => {
-                setCommunityMode('hub');
-                setSelectedCreatorId(null);
-                setPostAudience('everyone');
-              }}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                cursor: 'pointer',
-                minWidth: 64,
-                flexShrink: 0,
-                marginRight: 8,
-                borderRight: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                paddingRight: 8
-              }}
-            >
-              <div style={{
-                width: 64,
-                height: 64,
-                borderRadius: '50%',
-                border: communityMode === 'hub' ? '3px solid #1d9bf0' : '3px solid transparent',
-                padding: 2,
-                marginBottom: 2,
-                overflow: 'hidden'
-              }}>
-                <div
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #1d9bf0 0%, #0d8bd9 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <FaLandmark style={{ color: '#fff', fontSize: 28 }} />
-                </div>
-              </div>
-              <div style={{
-                fontSize: 12,
-                fontWeight: communityMode === 'hub' ? 600 : 400,
-                color: communityMode === 'hub' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                textAlign: 'center'
-              }}>
-                Town Hall
-              </div>
-            </div>
-
-            {/* Left scroll arrow */}
-            <button
-              onClick={() => {
-                if (tabsContainerRef.current) {
-                  tabsContainerRef.current.scrollBy({ left: -150, behavior: 'smooth' });
-                }
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '8px 4px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                color: isDarkMode ? '#1d9bf0' : '#1d9bf0',
-                minWidth: 20
-              }}
-            >
-              <FaChevronLeft style={{ fontSize: 18 }} />
-            </button>
-
-            {/* Scrollable Creator profiles */}
-            <div
-              ref={tabsContainerRef}
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 12,
-                overflowX: 'auto',
-                flex: 1,
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                cursor: isDragging ? 'grabbing' : 'grab',
-                userSelect: 'none'
-              }}
-              onMouseDown={(e) => {
-                setIsDragging(true);
-                setDragStartX(e.pageX - tabsContainerRef.current.offsetLeft);
-                setDragScrollLeft(tabsContainerRef.current.scrollLeft);
-              }}
-              onMouseMove={(e) => {
-                if (!isDragging) return;
-                e.preventDefault();
-                const x = e.pageX - tabsContainerRef.current.offsetLeft;
-                const walk = (x - dragStartX) * 1.5;
-                tabsContainerRef.current.scrollLeft = dragScrollLeft - walk;
-              }}
-              onMouseUp={() => setIsDragging(false)}
-              onMouseLeave={() => setIsDragging(false)}
-            >
-              {groupedByCreator.map(creator => {
-                const instructor = getInstructorById(creator.instructorId);
-                const isSelected = communityMode === 'creators' && selectedCreatorId === creator.id;
-                return (
-                  <div
-                    key={creator.id}
-                    data-creator-id={creator.id}
-                    onClick={() => {
-                      setCommunityMode('creators');
-                      setSelectedCreatorId(creator.id);
-                      setPostAudience(creator.id);
-                      setSelectedCourseFilters([]);
-                      setShowPostingCourseDropdown(false);
-                    }}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                      minWidth: 64,
-                      maxWidth: 80
-                    }}
-                  >
-                    <div style={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: '50%',
-                      border: isSelected ? '3px solid #1d9bf0' : '3px solid transparent',
-                      padding: 2,
-                      marginBottom: 2
-                    }}>
-                      {instructor?.avatar ? (
-                        <img
-                          src={instructor.avatar}
-                          alt={creator.name}
-                          draggable="false"
-                          onDragStart={(e) => e.preventDefault()}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            borderRadius: '50%',
-                            objectFit: 'cover',
-                            pointerEvents: 'none'
-                          }}
-                        />
-                      ) : (
-                        <div style={{
-                          width: '100%',
-                          height: '100%',
-                          borderRadius: '50%',
-                          background: '#1d9bf0',
-                          color: '#fff',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 18,
-                          fontWeight: 700
-                        }}>
-                          {creator.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{
-                      fontSize: 12,
-                      fontWeight: isSelected ? 600 : 400,
-                      color: isSelected ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                      textAlign: 'center',
-                      lineHeight: 1.2,
-                      maxWidth: 80,
-                      wordWrap: 'break-word'
-                    }}>
-                      {creator.name}
-                    </div>
-                  </div>
-                );
-              })}
-
-              {/* Show pending creator if not in followed list */}
-              {selectedCreatorId && pendingCreatorName && !groupedByCreator.find(c => c.id === selectedCreatorId) && (
-                <div
-                  data-creator-id={selectedCreatorId}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    minWidth: 64,
-                    maxWidth: 80,
-                    opacity: 0.7
-                  }}
-                >
-                  <div style={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: '50%',
-                    border: '3px solid #1d9bf0',
-                    padding: 2,
-                    marginBottom: 2
-                  }}>
-                    <div style={{
-                      width: '100%',
-                      height: '100%',
-                      borderRadius: '50%',
-                      background: '#1d9bf0',
-                      color: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 18,
-                      fontWeight: 700
-                    }}>
-                      {pendingCreatorName.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                    </div>
-                  </div>
-                  <div style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: '#1d9bf0',
-                    textAlign: 'center',
-                    lineHeight: 1.2,
-                    maxWidth: 80,
-                    wordWrap: 'break-word'
-                  }}>
-                    {pendingCreatorName}
-                  </div>
-                </div>
-              )}
-
-              {/* Find/Add button */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  minWidth: 64,
-                  maxWidth: 80
-                }}
-                onClick={() => {
-                  if (onMenuChange) {
-                    localStorage.setItem('browseActiveTopMenu', 'creators');
-                    onMenuChange('Browse');
-                  }
-                }}
-              >
-                <div style={{
-                  width: 52,
-                  height: 52,
-                  borderRadius: '50%',
-                  border: isDarkMode ? '2px dashed #2f3336' : '2px dashed #cfd9de',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 2
-                }}>
-                  <span style={{ fontSize: 20, color: isDarkMode ? '#71767b' : '#536471' }}>+</span>
-                </div>
-                <div style={{
-                  fontSize: 12,
-                  fontWeight: 400,
-                  color: isDarkMode ? '#71767b' : '#536471',
-                  textAlign: 'center'
-                }}>
-                  Find
-                </div>
-              </div>
-            </div>
-
-            {/* Right scroll arrow */}
-            <button
-              onClick={() => {
-                if (tabsContainerRef.current) {
-                  tabsContainerRef.current.scrollBy({ left: 150, behavior: 'smooth' });
-                }
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '8px 4px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                color: isDarkMode ? '#1d9bf0' : '#1d9bf0',
-                minWidth: 20
-              }}
-            >
-              <FaChevronRight style={{ fontSize: 18 }} />
-            </button>
-          </div>
 
           {/* Town Hall Profile Card - Shows when Town Hall is selected */}
           {communityMode === 'hub' && (
@@ -996,13 +794,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     Town Hall
                   </div>
                   <div style={{
-                    fontSize: 13,
+                    fontSize: 14,
                     color: isDarkMode ? '#71767b' : '#536471'
                   }}>
                     Community Discussion Hub
                   </div>
                   <div style={{
-                    fontSize: 13,
+                    fontSize: 14,
                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
                     marginTop: 4,
                     lineHeight: 1.3
@@ -1127,7 +925,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       </div>
                     </div>
                     <div style={{
-                      fontSize: 13,
+                      fontSize: 14,
                       color: isDarkMode ? '#9ca3af' : '#536471'
                     }}>
                       {instructor.title}
@@ -1141,7 +939,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     </div>
                     {instructor.bio && (
                       <div style={{
-                        fontSize: 13,
+                        fontSize: 14,
                         color: isDarkMode ? '#d1d5db' : '#374151',
                         marginTop: 8,
                         lineHeight: 1.4
@@ -1152,9 +950,9 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   </div>
                 </div>
 
-                {/* Filter by Courses Dropdown - Single-select */}
+                {/* Horizontal Scrollable Course Pills */}
                 {(() => {
-                  // For pending creators, show the course they came from in the dropdown
+                  // For pending creators, show the course they came from
                   const availableCourses = effectiveCreator.allCourses.filter(course =>
                     effectiveCreator.followedCourseIds.includes(course.id)
                   );
@@ -1167,116 +965,145 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   return (
                     <div style={{
                       marginTop: 12,
-                      background: 'transparent'
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4
                     }}>
-                      <div style={{
-                        fontSize: 14,
-                        fontWeight: 600,
-                        color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                        marginBottom: 6
-                      }}>
-                        Filter by Course
-                      </div>
-
-                      <div className="filter-courses-dropdown-wrapper" style={{ position: 'relative', maxWidth: 280 }}>
+                      {/* Left Arrow */}
+                      {showPillsLeftArrow && (
                         <button
-                          onClick={() => setShowPostingCourseDropdown(!showPostingCourseDropdown)}
+                          onClick={() => scrollPills('left')}
+                          style={{
+                            background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                            border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                            borderRadius: '50%',
+                            width: 28,
+                            height: 28,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            flexShrink: 0,
+                            color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                          }}
+                        >
+                          <FaChevronLeft size={12} />
+                        </button>
+                      )}
+                      {/* Scrollable Pills Container */}
+                      <div
+                        ref={pillsContainerRef}
+                        className="course-pills-container"
+                        onScroll={updatePillsArrows}
+                        onMouseDown={handlePillsMouseDown}
+                        onMouseMove={handlePillsMouseMove}
+                        onMouseUp={handlePillsMouseUp}
+                        onMouseLeave={handlePillsMouseLeave}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          overflowX: 'auto',
+                          overflowY: 'hidden',
+                          paddingBottom: 4,
+                          scrollbarWidth: 'none',
+                          msOverflowStyle: 'none',
+                          WebkitOverflowScrolling: 'touch',
+                          cursor: 'grab',
+                          flex: 1,
+                          userSelect: 'none'
+                        }}
+                      >
+                        {/* Town Hall Pill - Always first */}
+                        <button
+                          onClick={() => setSelectedCourseFilters([])}
+                          className={`course-pill ${isHubSelected ? 'course-pill-selected' : ''}`}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'space-between',
-                            width: '100%',
-                            padding: '8px 12px',
-                            borderRadius: 6,
-                            border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                            background: isDarkMode ? '#2f3336' : '#f7f9f9',
-                            color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                            gap: 6,
+                            padding: '8px 16px',
+                            borderRadius: 20,
+                            border: isHubSelected
+                              ? '2px solid #1d9bf0'
+                              : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                            background: isHubSelected
+                              ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                              : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                            color: isHubSelected
+                              ? '#1d9bf0'
+                              : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                             fontSize: 14,
-                            fontWeight: 400,
+                            fontWeight: 600,
                             cursor: 'pointer',
-                            transition: 'border-color 0.2s'
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
+                            transition: 'all 0.2s ease'
                           }}
-                          onMouseEnter={e => e.currentTarget.style.borderColor = '#1d9bf0'}
-                          onMouseLeave={e => e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#cfd9de'}
                         >
-                          <span>
-                            {isHubSelected
-                              ? `Town Hall for ${instructor.name}`
-                              : selectedCourseFilters[0].name}
-                          </span>
-                          <FaChevronDown style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }} />
+                          Town Hall
                         </button>
 
-                        {/* Dropdown Menu */}
-                        {showPostingCourseDropdown && (
-                          <div
-                            className="posting-course-dropdown"
-                            style={{
-                              position: 'absolute',
-                              top: '100%',
-                              left: 0,
-                              minWidth: 200,
-                              marginTop: 2,
-                              background: isDarkMode ? '#16181c' : '#fff',
-                              border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                              borderRadius: 6,
-                              boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.1)',
-                              zIndex: 100,
-                              maxHeight: 200,
-                              overflowY: 'auto'
-                            }}
-                          >
-                            {/* Community Hub option - shows all courses feed */}
-                            <div
-                              onClick={() => {
-                                setSelectedCourseFilters([]);
-                                setShowPostingCourseDropdown(false);
-                              }}
+                        {/* Course Pills */}
+                        {displayCourses.map(course => {
+                          const isSelected = selectedCourseFilters.length === 1 && selectedCourseFilters[0].id === course.id;
+                          return (
+                            <button
+                              key={course.id}
+                              onClick={() => setSelectedCourseFilters([{ id: course.id, name: course.title }])}
+                              className={`course-pill ${isSelected ? 'course-pill-selected' : ''}`}
                               style={{
-                                padding: '8px 12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                padding: '8px 16px',
+                                borderRadius: 20,
+                                border: isSelected
+                                  ? '2px solid #1d9bf0'
+                                  : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                                background: isSelected
+                                  ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                                  : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                                color: isSelected
+                                  ? '#1d9bf0'
+                                  : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                                fontSize: 14,
+                                fontWeight: 600,
                                 cursor: 'pointer',
-                                color: isHubSelected ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                                fontWeight: isHubSelected ? 600 : 400,
-                                fontSize: 13,
-                                background: 'transparent',
-                                transition: 'background 0.15s',
-                                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                                transition: 'all 0.2s ease'
                               }}
-                              onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
-                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
-                              Town Hall for {instructor.name}
-                            </div>
-
-                            {/* Individual Courses - Single-select */}
-                            {displayCourses.map(course => {
-                              const isSelected = selectedCourseFilters.length === 1 && selectedCourseFilters[0].id === course.id;
-                              return (
-                                <div
-                                  key={course.id}
-                                  onClick={() => {
-                                    setSelectedCourseFilters([{ id: course.id, name: course.title }]);
-                                    setShowPostingCourseDropdown(false);
-                                  }}
-                                  style={{
-                                    padding: '8px 12px',
-                                    cursor: 'pointer',
-                                    color: isSelected ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                                    fontWeight: isSelected ? 600 : 400,
-                                    fontSize: 13,
-                                    background: 'transparent',
-                                    transition: 'background 0.15s'
-                                  }}
-                                  onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
-                                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                                >
-                                  {course.title}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
+                              {course.title}
+                            </button>
+                          );
+                        })}
                       </div>
+                      {/* Right Arrow */}
+                      {showPillsRightArrow && (
+                        <button
+                          onClick={() => scrollPills('right')}
+                          style={{
+                            background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                            border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                            borderRadius: '50%',
+                            width: 28,
+                            height: 28,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            flexShrink: 0,
+                            color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                          }}
+                        >
+                          <FaChevronRight size={12} />
+                        </button>
+                      )}
                     </div>
                   );
                 })()}
@@ -1376,7 +1203,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           style={{
                             padding: '8px 12px',
                             cursor: 'pointer',
-                            fontSize: 13,
+                            fontSize: 14,
                             color: '#dc2626',
                             fontWeight: 500
                           }}
@@ -1495,7 +1322,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       fontSize: 15,
                       fontWeight: 400,
                       lineHeight: 1.5,
-                      background: 'transparent',
+                      background: (isDarkMode ? '#2f3336' : '#f7f9f9'),
                       color: isDarkMode ? '#e7e9ea' : '#0f1419',
                       padding: 0,
                       minHeight: 50,
