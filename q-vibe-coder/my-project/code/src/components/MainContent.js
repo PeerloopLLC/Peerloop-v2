@@ -693,6 +693,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           setSelectedInstructor(fullData || instructor);
           setActiveTopMenu('creators');
           setPreviousBrowseContext({ type: 'discover' }); // Track that we came from Discover
+          // Reset enrollment flow state
+          setShowEnrollmentFlow(false);
+          setEnrollingCourse(null);
+          setViewingCourseFromCommunity(null);
           onMenuChange('Browse_Communities');
         }}
       />
