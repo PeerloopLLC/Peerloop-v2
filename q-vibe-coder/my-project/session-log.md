@@ -491,9 +491,28 @@
 - , , drag handlers for functionality
 - Arrows appear only when content overflows (multiple pills needed to test)
 
+**Session 12 Continuation:**
+
+- **Fixed Enroll Button from Discover:**
+  - EnrollmentFlow component was imported but never rendered when viewing courses from Discover
+  - Added conditional rendering in MainContent.js for EnrollmentFlow when showEnrollmentFlow && enrollingCourse
+
+- **Fixed Course Detail Navigation:**
+  - Issue: Clicking a course went straight to enrollment calendar instead of course detail page
+  - Fixed by resetting showEnrollmentFlow and enrollingCourse state in onViewCourse handler
+  - Flow now: click course -> see detail page with Enroll button -> click Enroll -> see calendar
+
+- **Fixed Creator Profile Navigation:**
+  - Issue: Clicking creator profile from Discover went to enrollment instead of profile page
+  - Fixed by resetting enrollment state in onViewCommunity handler
+  - Now correctly shows creator profile with courses listed underneath
+
+**Commits:**
+- 82228ce: Fix creator profile navigation from Discover view
+
 **Next session:**
-- Test pill scrolling with enrolled courses
 - Continue feature development
+- Test all navigation flows end-to-end
 
 <!-- Add more sessions as needed -->
 
