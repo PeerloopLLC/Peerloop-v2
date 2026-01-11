@@ -15,6 +15,7 @@ const MyCoursesView = ({
   purchasedCourses,
   indexedCourses,
   onViewCourse,
+  onViewCreatorProfile,
   isCourseFollowed,
   handleFollowCourse,
   isCreatorFollowed,
@@ -279,10 +280,15 @@ const MyCoursesView = ({
                     {/* Instructor Profile Card */}
                     <div
                       onClick={() => {
-                        // Navigate to creator profile in Browse
-                        localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                        localStorage.setItem('browseActiveTopMenu', 'creators');
-                        onMenuChange && onMenuChange('Browse');
+                        // Navigate to creator profile via callback (handles history)
+                        if (onViewCreatorProfile) {
+                          onViewCreatorProfile(instructor);
+                        } else {
+                          // Fallback to old behavior
+                          localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
+                          localStorage.setItem('browseActiveTopMenu', 'creators');
+                          onMenuChange && onMenuChange('Browse');
+                        }
                       }}
                       style={{
                         padding: 20,
@@ -362,7 +368,7 @@ const MyCoursesView = ({
                             flexShrink: 0
                           }}
                         >
-                          {isFollowing ? 'Joined' : 'Join'}
+                          {isFollowing ? 'Joined Community' : 'Join Community'}
                         </button>
                       </div>
 
@@ -594,6 +600,7 @@ MyCoursesView.propTypes = {
   purchasedCourses: PropTypes.array.isRequired,
   indexedCourses: PropTypes.array.isRequired,
   onViewCourse: PropTypes.func,
+  onViewCreatorProfile: PropTypes.func,
   isCourseFollowed: PropTypes.func,
   handleFollowCourse: PropTypes.func,
   isCreatorFollowed: PropTypes.func,

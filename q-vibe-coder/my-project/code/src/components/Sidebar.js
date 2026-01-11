@@ -287,13 +287,8 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               className={`feeds-compact-btn ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                setIsFlyoutOpen(true);
-                // First click: go to Feeds (preserve state), Second click: reset to The Commons
-                if (activeMenu === 'My Community') {
-                  handleCommunitySelect(townHall);
-                } else {
-                  onMenuChange('My Community');
-                }
+                // Toggle flyout only - don't navigate when clicking the header
+                setIsFlyoutOpen(!isFlyoutOpen);
               }}
               onMouseEnter={handleFlyoutMouseEnter}
             >
@@ -307,13 +302,8 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               className={`nav-item feeds-header ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                setIsFlyoutOpen(true);
-                // First click: go to Feeds (preserve state), Second click: reset to The Commons
-                if (activeMenu === 'My Community') {
-                  handleCommunitySelect(townHall);
-                } else {
-                  onMenuChange('My Community');
-                }
+                // Toggle flyout only - don't navigate when clicking the header
+                setIsFlyoutOpen(!isFlyoutOpen);
               }}
               onMouseEnter={handleFlyoutMouseEnter}
             >
@@ -335,10 +325,10 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                 Feeds ({allCommunities.length})
               </div>
               <div className="feeds-flyout-list">
-                {allCommunities.map((community) => {
+                {/* Show only creator communities - The Commons is already in the main sidebar */}
+                {communities.map((community) => {
                   const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
                   const initial = displayName.charAt(0).toUpperCase();
-                  const isTownHall = community.id === 'town-hall';
 
                   return (
                     <div
@@ -349,9 +339,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                         setIsFlyoutOpen(false);
                       }}
                     >
-                      {isTownHall ? (
-                        <div className="community-avatar town-hall-avatar">🏛</div>
-                      ) : community.avatar ? (
+                      {community.avatar ? (
                         <img
                           src={community.avatar}
                           alt={displayName}
@@ -376,12 +364,27 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
             onClick={() => handleCommunitySelect(townHall)}
             onMouseEnter={handleFlyoutMouseEnter}
             style={{
-              paddingLeft: 32,
+              paddingLeft: 20,
               fontSize: 13,
-              opacity: 0.9
+              opacity: 0.9,
+              position: 'relative',
+              marginTop: -4,
+              paddingTop: 6,
+              paddingBottom: 6
             }}
           >
-            <div className="nav-icon" style={{ fontSize: 14 }}>🏛</div>
+            {/* Tree connector line */}
+            <div style={{
+              position: 'absolute',
+              left: 12,
+              top: -4,
+              bottom: '50%',
+              width: 12,
+              borderLeft: '1px solid #64748b',
+              borderBottom: '1px solid #64748b',
+              borderBottomLeftRadius: 4
+            }} />
+            <div className="nav-icon" style={{ fontSize: 14, marginLeft: 8 }}>🏛</div>
             <span className="nav-label">The Commons</span>
           </div>
         )}

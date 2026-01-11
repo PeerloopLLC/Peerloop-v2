@@ -154,26 +154,29 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     }
   }, [communityMode, selectedCreatorId, pendingCreatorName]);
 
-  // Handle scroll to collapse/expand profile card
+  // Handle scroll to collapse/expand profile card with hysteresis to prevent jitter
   useEffect(() => {
+    const COLLAPSE_THRESHOLD = 100; // Collapse when scrolled past this point
+    const EXPAND_THRESHOLD = 40;    // Expand when scrolled back above this point
+
     const handleScroll = () => {
       const container = feedContainerRef.current;
       if (!container) return;
 
       const currentScrollY = container.scrollTop;
-      const scrollDelta = currentScrollY - lastScrollY.current;
 
-      // Only trigger after scrolling at least 10px to avoid jitter
-      if (Math.abs(scrollDelta) > 10) {
-        if (scrollDelta > 0 && currentScrollY > 50) {
-          // Scrolling down - collapse
-          setIsProfileCollapsed(true);
-        } else if (scrollDelta < 0) {
-          // Scrolling up - expand
-          setIsProfileCollapsed(false);
-        }
-        lastScrollY.current = currentScrollY;
+      // Use hysteresis: different thresholds for collapse vs expand
+      // This creates a "dead zone" that prevents jitter
+      if (!isProfileCollapsed && currentScrollY > COLLAPSE_THRESHOLD) {
+        // Scrolled down past collapse threshold - collapse
+        setIsProfileCollapsed(true);
+      } else if (isProfileCollapsed && currentScrollY < EXPAND_THRESHOLD) {
+        // Scrolled back up past expand threshold - expand
+        setIsProfileCollapsed(false);
       }
+      // When between thresholds, don't change state (prevents jitter)
+
+      lastScrollY.current = currentScrollY;
     };
 
     const container = feedContainerRef.current;
@@ -185,7 +188,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
         container.removeEventListener('scroll', handleScroll);
       }
     };
-  }, []);
+  }, [isProfileCollapsed]);
 
   // Reset collapsed state when changing creators
   useEffect(() => {
@@ -694,7 +697,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   cursor: 'pointer' 
                 }}
               >
-                {isCommunityFollowed(selectedCommunity.id) ? 'Joined' : 'Join'}
+                {isCommunityFollowed(selectedCommunity.id) ? 'Joined Community' : 'Join Community'}
               </button>
             </div>
 

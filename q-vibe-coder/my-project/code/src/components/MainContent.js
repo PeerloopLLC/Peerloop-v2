@@ -35,6 +35,9 @@ import { UserPropType } from './PropTypes';
 const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDarkMode }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const lastTopMenuRef = useRef('courses');
+
+  // Track if we're handling a popstate (browser back/forward) to prevent pushing duplicate history
+  const isPopstateRef = useRef(false);
   
   // Persist Browse state in localStorage so it survives menu navigation
   const [activeTopMenu, setActiveTopMenu] = useState(() => {
@@ -98,7 +101,103 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   const [viewingUserProfile, setViewingUserProfile] = useState(null); // username of user being viewed
   const [navigationHistory, setNavigationHistory] = useState([]); // track where user came from
   const [viewingCourseFromCommunity, setViewingCourseFromCommunity] = useState(null); // course being viewed from community
-  
+
+  // Browser History Management - enables browser back/forward buttons
+  useEffect(() => {
+    // Handle browser back/forward navigation
+    const handlePopState = (event) => {
+      if (event.state) {
+        isPopstateRef.current = true;
+
+        // Restore state from history
+        if (event.state.viewingCourse) {
+          setViewingCourseFromCommunity(event.state.viewingCourse);
+        } else {
+          setViewingCourseFromCommunity(null);
+        }
+
+        if (event.state.selectedInstructor) {
+          setSelectedInstructor(event.state.selectedInstructor);
+        } else {
+          setSelectedInstructor(null);
+        }
+
+        if (event.state.activeMenu) {
+          onMenuChange(event.state.activeMenu);
+        }
+
+        if (event.state.activeTopMenu) {
+          setActiveTopMenu(event.state.activeTopMenu);
+        }
+
+        // Small delay to reset the flag
+        setTimeout(() => {
+          isPopstateRef.current = false;
+        }, 50);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    // Push initial state if none exists
+    if (!window.history.state) {
+      window.history.replaceState({
+        activeMenu,
+        viewingCourse: null,
+        selectedInstructor: null,
+        activeTopMenu
+      }, '');
+    }
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []); // Only run on mount
+
+  // Push to browser history when viewing a course changes
+  useEffect(() => {
+    if (isPopstateRef.current) return; // Don't push if handling popstate
+
+    if (viewingCourseFromCommunity) {
+      window.history.pushState({
+        activeMenu,
+        viewingCourse: viewingCourseFromCommunity,
+        selectedInstructor,
+        activeTopMenu
+      }, '', '');
+    }
+  }, [viewingCourseFromCommunity]);
+
+  // Push to browser history when selected instructor changes (creator profile view)
+  useEffect(() => {
+    if (isPopstateRef.current) return; // Don't push if handling popstate
+
+    if (selectedInstructor && !viewingCourseFromCommunity) {
+      window.history.pushState({
+        activeMenu,
+        viewingCourse: null,
+        selectedInstructor,
+        activeTopMenu
+      }, '', '');
+    }
+  }, [selectedInstructor]);
+
+  // Push to browser history when activeMenu changes to main views
+  useEffect(() => {
+    if (isPopstateRef.current) return; // Don't push if handling popstate
+
+    // Only push for significant menu changes when not viewing course/instructor detail
+    const mainMenus = ['My Community', 'Discover', 'Browse', 'My Courses', 'Dashboard', 'Profile'];
+    if (mainMenus.includes(activeMenu) && !viewingCourseFromCommunity && !selectedInstructor) {
+      window.history.pushState({
+        activeMenu,
+        viewingCourse: null,
+        selectedInstructor: null,
+        activeTopMenu
+      }, '', '');
+    }
+  }, [activeMenu]);
+
   // Function to view a user's profile
   const handleViewUserProfile = (username) => {
     // Save current location to history
@@ -729,6 +828,15 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         isCreatorFollowed={isCreatorFollowed}
         handleFollowInstructor={handleFollowInstructor}
         onViewCourse={(course) => {
+          // Push current Discover state to browser history BEFORE navigating
+          // This ensures back button returns to Discover
+          window.history.pushState({
+            activeMenu: 'Discover',
+            viewingCourse: null,
+            selectedInstructor: null,
+            activeTopMenu
+          }, '', '');
+
           // Push Discover to navigation history so back button returns here
           setNavigationHistory(prev => [...prev, 'Discover']);
           // Reset enrollment flow state when viewing a new course
@@ -737,8 +845,18 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           setViewingCourseFromCommunity(course);
         }}
         onViewCommunity={(instructor) => {
+          // Push current Discover state to history BEFORE navigating
+          // This ensures back button returns to Discover
+          window.history.pushState({
+            activeMenu: 'Discover',
+            viewingCourse: null,
+            selectedInstructor: null,
+            activeTopMenu
+          }, '', '');
+
           const fullData = getInstructorWithCourses(instructor.id);
           setSelectedInstructor(fullData || instructor);
+          setSelectedCourse(null); // Clear any previously selected course
           setActiveTopMenu('creators');
           setPreviousBrowseContext({ type: 'discover' }); // Track that we came from Discover
           // Reset enrollment flow state
@@ -930,7 +1048,39 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         onMenuChange={onMenuChange}
         purchasedCourses={purchasedCourses}
         indexedCourses={indexedCourses}
-        onViewCourse={handleViewCourseFromCommunity}
+        onViewCourse={(courseId) => {
+          // Push current My Courses state to browser history BEFORE navigating
+          // This ensures back button returns to My Courses
+          window.history.pushState({
+            activeMenu: 'My Courses',
+            viewingCourse: null,
+            selectedInstructor: null,
+            activeTopMenu
+          }, '', '');
+          // Push My Courses to navigation history so back button returns here
+          setNavigationHistory(prev => [...prev, 'My Courses']);
+          // Navigate to course detail
+          handleViewCourseFromCommunity(courseId);
+        }}
+        onViewCreatorProfile={(instructor) => {
+          // Push current My Courses state to browser history BEFORE navigating
+          // This ensures back button returns to My Courses
+          window.history.pushState({
+            activeMenu: 'My Courses',
+            viewingCourse: null,
+            selectedInstructor: null,
+            activeTopMenu
+          }, '', '');
+          // Push My Courses to navigation history
+          setNavigationHistory(prev => [...prev, 'My Courses']);
+          // Navigate to creator profile
+          const fullData = getInstructorWithCourses(instructor.id);
+          setSelectedInstructor(fullData || instructor);
+          setSelectedCourse(null); // Clear any selected course so profile shows
+          setActiveTopMenu('creators');
+          setViewingCourseFromCommunity(null);
+          onMenuChange('Browse');
+        }}
         isCourseFollowed={isCourseFollowed}
         handleFollowCourse={handleFollowCourse}
         isCreatorFollowed={isCreatorFollowed}

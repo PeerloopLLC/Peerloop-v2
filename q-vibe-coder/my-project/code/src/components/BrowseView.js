@@ -222,7 +222,7 @@ const BrowseView = ({
                         whiteSpace: 'nowrap'
                       }}
                     >
-                      {isFollowing ? 'Joined' : 'Join'}
+                      {isFollowing ? 'Joined Community' : 'Join Community'}
                     </button>
                   );
                 }
@@ -251,7 +251,7 @@ const BrowseView = ({
                         whiteSpace: 'nowrap'
                       }}
                     >
-                      {isFollowing ? 'Joined' : 'Join'}
+                      {isFollowing ? 'Joined Community' : 'Join Community'}
                       <span style={{ fontSize: 10 }}>▼</span>
                     </button>
 
@@ -609,7 +609,7 @@ const BrowseView = ({
                           width: '100%'
                         }}
                       >
-                        {isFollowing ? 'Joined' : 'Join'}
+                        {isFollowing ? 'Joined Community' : 'Join Community'}
                       </button>
                     );
                   }
@@ -638,7 +638,7 @@ const BrowseView = ({
                           gap: 4
                         }}
                       >
-                        {isFollowing ? 'Joined' : 'Join'}
+                        {isFollowing ? 'Joined Community' : 'Join Community'}
                         <span style={{ fontSize: 8 }}>▼</span>
                       </button>
                       {openCreatorFollowDropdown === creator.id && (
@@ -1208,7 +1208,7 @@ const BrowseView = ({
                                   transition: 'all 0.2s ease'
                                 }}
                               >
-                                {followedCommunities.some(c => c.id === `creator-${instructorData?.id}`) ? 'Joined' : 'Join'}
+                                {followedCommunities.some(c => c.id === `creator-${instructorData?.id}`) ? 'Joined Community' : 'Join Community'}
                               </button>
                             </div>
                           </div>

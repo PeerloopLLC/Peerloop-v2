@@ -317,7 +317,10 @@ const DiscoverView = ({
                   >
                     {/* Community Header */}
                     <div
-                      onClick={() => onViewCommunity && onViewCommunity(instructor)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onViewCommunity && onViewCommunity(instructor);
+                      }}
                       style={{
                         padding: 20,
                         cursor: 'pointer',
@@ -396,7 +399,7 @@ const DiscoverView = ({
                             flexShrink: 0
                           }}
                         >
-                          {isFollowing ? 'Joined' : 'Join'}
+                          {isFollowing ? 'Joined Community' : 'Join Community'}
                         </button>
                       </div>
 
@@ -474,7 +477,10 @@ const DiscoverView = ({
 
                               {/* Course Card */}
                               <div
-                                onClick={() => onViewCourse && onViewCourse(course)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onViewCourse && onViewCourse(course);
+                                }}
                                 style={{
                                   flex: 1,
                                   padding: '12px 16px',
@@ -655,7 +661,10 @@ const DiscoverView = ({
                         }}
                       >
                         <button
-                          onClick={() => onViewCommunity && onViewCommunity(instructor)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onViewCommunity && onViewCommunity(instructor);
+                          }}
                           style={{
                             background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
                             color: '#6366f1',
