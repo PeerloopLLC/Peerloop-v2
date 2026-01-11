@@ -17,6 +17,8 @@ const DiscoverView = ({
   followedCommunities,
   setFollowedCommunities,
   isCoursePurchased,
+  isCourseFollowed,
+  handleFollowCourse,
   isCreatorFollowed,
   handleFollowInstructor,
   onViewCourse,
@@ -25,42 +27,55 @@ const DiscoverView = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
 
-  // Filter pill options
+  // Filter pill options - AI Subject categories
   const filterPills = [
     { id: 'All', label: 'All' },
-    { id: 'Live', label: 'Live' },
-    { id: 'Self-Paced', label: 'Self-Paced' },
-    { id: 'Free', label: 'Free' },
-    { id: 'Beginner', label: 'Beginner' },
-    { id: 'Advanced', label: 'Advanced' },
-    { id: 'Popular', label: 'Popular' },
-    { id: 'New', label: 'New' },
-    { id: 'Top Rated', label: 'Top Rated' }
+    { id: 'AI Fundamentals', label: 'AI Fundamentals' },
+    { id: 'Machine Learning', label: 'Machine Learning' },
+    { id: 'Generative AI', label: 'Generative AI' },
+    { id: 'Prompt Engineering', label: 'Prompt Engineering' },
+    { id: 'Data Science', label: 'Data Science' },
+    { id: 'Neural Networks', label: 'Neural Networks' },
+    { id: 'AI Applications', label: 'AI Applications' }
   ];
 
-  // Filter course based on active pill filter
+  // Filter course based on active subject filter
   const filterCourse = (course) => {
     if (activeFilter === 'All') return true;
 
-    // Mock filtering logic - in production would use real course data
+    // Check if course title or description contains the subject keywords
+    const searchText = `${course.title || ''} ${course.description || ''} ${course.tags?.join(' ') || ''}`.toLowerCase();
+
     switch (activeFilter) {
-      case 'Live':
-        return course.sessions && course.sessions > 0;
-      case 'Self-Paced':
-        return !course.sessions || course.sessions === 0;
-      case 'Free':
-        return course.price === 'Free' || course.price === '$0';
-      case 'Beginner':
-        return course.level === 'Beginner' || !course.level;
-      case 'Advanced':
-        return course.level === 'Advanced';
-      case 'Popular':
-        return course.students && course.students > 100;
-      case 'New':
-        // Mock: courses with id > 5 are "new"
-        return course.id > 5;
-      case 'Top Rated':
-        return course.rating && course.rating >= 4.5;
+      case 'AI Fundamentals':
+        return searchText.includes('fundamental') || searchText.includes('introduction') ||
+               searchText.includes('basics') || searchText.includes('beginner') ||
+               searchText.includes('ai 101') || searchText.includes('getting started');
+      case 'Machine Learning':
+        return searchText.includes('machine learning') || searchText.includes('ml') ||
+               searchText.includes('supervised') || searchText.includes('unsupervised') ||
+               searchText.includes('classification') || searchText.includes('regression');
+      case 'Generative AI':
+        return searchText.includes('generative') || searchText.includes('gpt') ||
+               searchText.includes('chatgpt') || searchText.includes('llm') ||
+               searchText.includes('large language') || searchText.includes('diffusion') ||
+               searchText.includes('midjourney') || searchText.includes('dalle');
+      case 'Prompt Engineering':
+        return searchText.includes('prompt') || searchText.includes('prompting') ||
+               searchText.includes('chain of thought') || searchText.includes('few-shot');
+      case 'Data Science':
+        return searchText.includes('data science') || searchText.includes('analytics') ||
+               searchText.includes('visualization') || searchText.includes('pandas') ||
+               searchText.includes('statistics') || searchText.includes('data analysis');
+      case 'Neural Networks':
+        return searchText.includes('neural') || searchText.includes('deep learning') ||
+               searchText.includes('cnn') || searchText.includes('rnn') ||
+               searchText.includes('transformer') || searchText.includes('pytorch') ||
+               searchText.includes('tensorflow');
+      case 'AI Applications':
+        return searchText.includes('application') || searchText.includes('project') ||
+               searchText.includes('real-world') || searchText.includes('hands-on') ||
+               searchText.includes('practical') || searchText.includes('build');
       default:
         return true;
     }
@@ -192,49 +207,68 @@ const DiscoverView = ({
             </div>
 
             {/* Filter Pills - Scrollable Row */}
-            <div style={{
-              marginTop: 16,
-              overflowX: 'auto',
-              overflowY: 'hidden',
-              whiteSpace: 'nowrap',
-              paddingBottom: 4,
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none'
-            }}>
-              <div style={{
-                display: 'inline-flex',
-                gap: 8
-              }}>
+            <div
+              className="discover-pills-scroll"
+              style={{
+                marginTop: 16,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                overflowX: 'auto',
+                overflowY: 'hidden',
+                paddingBottom: 8,
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                WebkitOverflowScrolling: 'touch',
+                cursor: 'grab'
+              }}
+            >
+              <style>{`
+                .discover-pills-scroll::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
                 {filterPills.map((pill) => {
                   const isActive = activeFilter === pill.id;
+                  const isAllPill = pill.id === 'All';
                   return (
                     <button
                       key={pill.id}
                       onClick={() => setActiveFilter(pill.id)}
                       style={{
-                        padding: '8px 16px',
+                        padding: isAllPill ? '8px 20px' : '8px 16px',
                         borderRadius: 20,
                         fontSize: 14,
-                        fontWeight: 500,
-                        border: 'none',
+                        fontWeight: isAllPill ? 700 : 500,
+                        border: isAllPill && !isActive
+                          ? '2px solid #6366f1'
+                          : 'none',
                         cursor: 'pointer',
                         transition: 'all 0.2s',
                         flexShrink: 0,
                         background: isActive
                           ? '#6366f1'
-                          : isDarkMode ? '#27272a' : '#e5e7eb',
+                          : isAllPill
+                            ? (isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)')
+                            : (isDarkMode ? '#27272a' : '#e5e7eb'),
                         color: isActive
                           ? '#fff'
-                          : isDarkMode ? '#a1a1aa' : '#6b7280'
+                          : isAllPill
+                            ? '#6366f1'
+                            : (isDarkMode ? '#a1a1aa' : '#6b7280')
                       }}
                       onMouseEnter={(e) => {
                         if (!isActive) {
-                          e.currentTarget.style.background = isDarkMode ? '#3f3f46' : '#d1d5db';
+                          e.currentTarget.style.background = isAllPill
+                            ? (isDarkMode ? 'rgba(99, 102, 241, 0.25)' : 'rgba(99, 102, 241, 0.2)')
+                            : (isDarkMode ? '#3f3f46' : '#d1d5db');
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isActive) {
-                          e.currentTarget.style.background = isDarkMode ? '#27272a' : '#e5e7eb';
+                          e.currentTarget.style.background = isAllPill
+                            ? (isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)')
+                            : (isDarkMode ? '#27272a' : '#e5e7eb');
                         }
                       }}
                     >
@@ -242,7 +276,6 @@ const DiscoverView = ({
                     </button>
                   );
                 })}
-              </div>
             </div>
 
             {searchQuery && (
@@ -363,7 +396,7 @@ const DiscoverView = ({
                             flexShrink: 0
                           }}
                         >
-                          {isFollowing ? 'Following' : 'Follow'}
+                          {isFollowing ? 'Joined' : 'Join'}
                         </button>
                       </div>
 
@@ -492,14 +525,92 @@ const DiscoverView = ({
                                     {highlightMatch(course.title, searchQuery)}
                                   </div>
 
-                                  <div style={{
-                                    fontSize: 14,
-                                    fontWeight: 700,
-                                    color: '#10b981',
-                                    flexShrink: 0
-                                  }}>
-                                    {course.price}
-                                  </div>
+                                  {(() => {
+                                    const isPurchased = isCoursePurchased && isCoursePurchased(course.id);
+                                    const isFollowed = isCourseFollowed && isCourseFollowed(course.id);
+
+                                    if (isPurchased) {
+                                      return (
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (handleFollowCourse) {
+                                              handleFollowCourse(course.id, course);
+                                            }
+                                          }}
+                                          style={{
+                                            padding: '4px 10px',
+                                            borderRadius: 12,
+                                            background: isFollowed
+                                              ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+                                              : (isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)'),
+                                            color: isFollowed ? '#10b981' : '#6366f1',
+                                            fontSize: 11,
+                                            fontWeight: 600,
+                                            whiteSpace: 'nowrap',
+                                            flexShrink: 0,
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s'
+                                          }}
+                                          onMouseEnter={(e) => {
+                                            if (isFollowed) {
+                                              e.currentTarget.style.background = isDarkMode ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)';
+                                              e.currentTarget.style.color = '#ef4444';
+                                              e.currentTarget.textContent = 'Unfollow';
+                                            } else {
+                                              e.currentTarget.style.background = '#6366f1';
+                                              e.currentTarget.style.color = '#fff';
+                                            }
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            if (isFollowed) {
+                                              e.currentTarget.style.background = isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)';
+                                              e.currentTarget.style.color = '#10b981';
+                                              e.currentTarget.textContent = 'Followed';
+                                            } else {
+                                              e.currentTarget.style.background = isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)';
+                                              e.currentTarget.style.color = '#6366f1';
+                                            }
+                                          }}
+                                        >
+                                          {isFollowed ? 'Followed' : 'Follow'}
+                                        </button>
+                                      );
+                                    } else {
+                                      return (
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (onViewCourse) {
+                                              onViewCourse(course);
+                                            }
+                                          }}
+                                          style={{
+                                            padding: '4px 12px',
+                                            borderRadius: 12,
+                                            background: '#10b981',
+                                            color: '#fff',
+                                            fontSize: 11,
+                                            fontWeight: 600,
+                                            whiteSpace: 'nowrap',
+                                            flexShrink: 0,
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s'
+                                          }}
+                                          onMouseEnter={(e) => {
+                                            e.currentTarget.style.background = '#059669';
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            e.currentTarget.style.background = '#10b981';
+                                          }}
+                                        >
+                                          Enroll for {course.price}
+                                        </button>
+                                      );
+                                    }
+                                  })()}
                                 </div>
 
                                 {/* Course Description */}
@@ -533,32 +644,43 @@ const DiscoverView = ({
                       </div>
                     )}
 
-                    {/* See All Link */}
+                    {/* See All Button */}
                     {totalCourses > matchingCourses.length && (
                       <div
-                        onClick={() => onViewCommunity && onViewCommunity(instructor)}
                         style={{
                           paddingLeft: 80,
                           paddingRight: 20,
                           paddingBottom: 16,
                           paddingTop: matchingCourses.length > 0 ? 0 : 8,
-                          color: '#6366f1',
-                          fontSize: 14,
-                          fontWeight: 500,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.textDecoration = 'underline';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.textDecoration = 'none';
                         }}
                       >
-                        See all {totalCourses} courses →
+                        <button
+                          onClick={() => onViewCommunity && onViewCommunity(instructor)}
+                          style={{
+                            background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
+                            color: '#6366f1',
+                            border: '2px solid #6366f1',
+                            borderRadius: 20,
+                            padding: '8px 16px',
+                            fontSize: 13,
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#6366f1';
+                            e.currentTarget.style.color = '#fff';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)';
+                            e.currentTarget.style.color = '#6366f1';
+                          }}
+                        >
+                          See all {totalCourses} courses →
+                        </button>
                       </div>
                     )}
                   </div>
@@ -581,6 +703,8 @@ DiscoverView.propTypes = {
   followedCommunities: PropTypes.array.isRequired,
   setFollowedCommunities: PropTypes.func.isRequired,
   isCoursePurchased: PropTypes.func.isRequired,
+  isCourseFollowed: PropTypes.func,
+  handleFollowCourse: PropTypes.func,
   isCreatorFollowed: PropTypes.func.isRequired,
   handleFollowInstructor: PropTypes.func.isRequired,
   onViewCourse: PropTypes.func,

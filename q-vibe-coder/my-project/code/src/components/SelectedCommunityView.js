@@ -94,7 +94,7 @@ const SelectedCommunityView = ({
                 cursor: 'pointer'
               }}
             >
-              {isFollowed ? '✓ Joined' : 'Join Community'}
+              {isFollowed ? 'Joined' : 'Join'}
             </button>
           </div>
 

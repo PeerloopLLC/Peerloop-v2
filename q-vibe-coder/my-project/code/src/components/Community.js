@@ -7,7 +7,7 @@ import { createPost, getPosts, likePost } from '../services/posts';
 import { initGetStream } from '../services/getstream';
 import { fakePosts } from '../data/communityPosts';
 
-const Community = ({ followedCommunities = [], setFollowedCommunities = null, isDarkMode = false, currentUser = null, onMenuChange = null, onViewUserProfile = null, onViewCourse = null }) => {
+const Community = ({ followedCommunities = [], setFollowedCommunities = null, isDarkMode = false, currentUser = null, onMenuChange = null, onViewUserProfile = null, onViewCourse = null, onViewCreatorProfile = null }) => {
   const [selectedCommunity, setSelectedCommunity] = useState(null);
   const [activeTab, setActiveTab] = useState('Home'); // 'Home' or community id
   const [isFollowingLoading, setIsFollowingLoading] = useState(false);
@@ -41,6 +41,11 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const [isPillsDragging, setIsPillsDragging] = useState(false);
   const [pillsDragStartX, setPillsDragStartX] = useState(0);
   const [pillsDragScrollLeft, setPillsDragScrollLeft] = useState(0);
+
+  // Collapsible profile card state
+  const [isProfileCollapsed, setIsProfileCollapsed] = useState(false);
+  const lastScrollY = useRef(0);
+  const feedContainerRef = useRef(null);
 
   // Initialize GetStream and load posts on mount
   useEffect(() => {
@@ -148,6 +153,45 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       }, 150);
     }
   }, [communityMode, selectedCreatorId, pendingCreatorName]);
+
+  // Handle scroll to collapse/expand profile card
+  useEffect(() => {
+    const handleScroll = () => {
+      const container = feedContainerRef.current;
+      if (!container) return;
+
+      const currentScrollY = container.scrollTop;
+      const scrollDelta = currentScrollY - lastScrollY.current;
+
+      // Only trigger after scrolling at least 10px to avoid jitter
+      if (Math.abs(scrollDelta) > 10) {
+        if (scrollDelta > 0 && currentScrollY > 50) {
+          // Scrolling down - collapse
+          setIsProfileCollapsed(true);
+        } else if (scrollDelta < 0) {
+          // Scrolling up - expand
+          setIsProfileCollapsed(false);
+        }
+        lastScrollY.current = currentScrollY;
+      }
+    };
+
+    const container = feedContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
+
+  // Reset collapsed state when changing creators
+  useEffect(() => {
+    setIsProfileCollapsed(false);
+    lastScrollY.current = 0;
+  }, [selectedCreatorId]);
 
   // Handle posting a new message
   const handleSubmitPost = async () => {
@@ -650,7 +694,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   cursor: 'pointer' 
                 }}
               >
-                {isCommunityFollowed(selectedCommunity.id) ? '✓ Joined' : 'Join Community'}
+                {isCommunityFollowed(selectedCommunity.id) ? 'Joined' : 'Join'}
               </button>
             </div>
 
@@ -747,7 +791,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   return (
     <div className="community-content-outer" style={{ background: isDarkMode ? '#000' : '#fff' }}>
       <div className="community-three-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
-        <div className="community-center-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
+        <div ref={feedContainerRef} className="community-center-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
 
           {/* Town Hall Profile Card - Shows when Town Hall is selected */}
           {communityMode === 'hub' && (
@@ -756,10 +800,11 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               borderRadius: 12,
               padding: '12px 16px',
               margin: '8px 16px 0 16px',
-              position: 'relative',
-              zIndex: 1,
+              position: 'sticky',
+              top: 0,
+              zIndex: 10,
               border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-                boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : 'none'
+              boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.1)'
             }}>
               {/* Town Hall Info Row */}
               <div style={{
@@ -773,7 +818,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     width: 44,
                     height: 44,
                     borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #1d9bf0 0%, #0d8bd9 100%)',
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -788,10 +833,10 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   <div style={{
                     fontSize: 16,
                     fontWeight: 700,
-                    color: '#1d9bf0',
+                    color: '#10b981',
                     lineHeight: 1.2
                   }}>
-                    Town Hall
+                    The Commons
                   </div>
                   <div style={{
                     fontSize: 14,
@@ -805,7 +850,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     marginTop: 4,
                     lineHeight: 1.3
                   }}>
-                    Welcome to the Town Hall — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners across all courses and communities.
+                    Welcome to The Commons — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners across all courses and communities.
                   </div>
                 </div>
               </div>
@@ -836,139 +881,176 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               <div style={{
                 background: isDarkMode ? '#1f2937' : '#f9fafb',
                 borderRadius: 12,
-                padding: '12px 16px',
+                padding: isProfileCollapsed ? '8px 16px' : '12px 16px',
                 margin: '8px 16px 0 16px',
-                position: 'relative',
-                zIndex: 1,
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
                 border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-                boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : 'none'
+                boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'padding 0.2s ease'
               }}>
-                {/* Creator Info Row */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10
-                }}>
-                  {/* Avatar */}
-                  {instructor.avatar ? (
-                    <img
-                      src={instructor.avatar}
-                      alt={instructor.name}
-                      style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: '50%',
-                        objectFit: 'cover',
-                        flexShrink: 0
+                {/* Collapsed View - Just name and pills */}
+                {isProfileCollapsed ? (
+                  <div>
+                    <div
+                      onClick={() => {
+                        localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
+                        localStorage.setItem('browseActiveTopMenu', 'creators');
+                        if (onMenuChange) {
+                          onMenuChange('Browse');
+                        }
                       }}
-                    />
-                  ) : (
-                    <div style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: '50%',
-                      background: '#1d9bf0',
-                      color: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 16,
-                      fontWeight: 700,
-                      flexShrink: 0
-                    }}>
-                      {instructor.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 700,
+                        color: '#1d9bf0',
+                        cursor: 'pointer',
+                        display: 'inline-block',
+                        marginBottom: 8
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                      onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                    >
+                      {instructor.name}
                     </div>
-                  )}
-
-                  {/* Creator Details */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div
-                        onClick={() => {
-                          // Store instructor info and navigate to Browse -> Creators
-                          localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                          localStorage.setItem('browseActiveTopMenu', 'creators');
-                          if (onMenuChange) {
-                            onMenuChange('Browse');
-                          }
-                        }}
-                        style={{
+                  </div>
+                ) : (
+                  /* Expanded View - Full card */
+                  <>
+                    {/* Creator Info Row */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10
+                    }}>
+                      {/* Avatar */}
+                      {instructor.avatar ? (
+                        <img
+                          src={instructor.avatar}
+                          alt={instructor.name}
+                          style={{
+                            width: 44,
+                            height: 44,
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            flexShrink: 0
+                          }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: 44,
+                          height: 44,
+                          borderRadius: '50%',
+                          background: '#1d9bf0',
+                          color: '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           fontSize: 16,
                           fontWeight: 700,
-                          color: '#1d9bf0',
-                          cursor: 'pointer',
-                          display: 'inline-block',
-                          lineHeight: 1.2
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                        onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                      >
-                        {instructor.name}
-                      </div>
-                      <div
-                        onClick={() => {
-                          localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                          localStorage.setItem('browseActiveTopMenu', 'creators');
-                          if (onMenuChange) {
-                            onMenuChange('Browse');
-                          }
-                        }}
-                        style={{
-                          fontSize: 12,
-                          color: '#1d9bf0',
-                          cursor: 'pointer'
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                        onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                      >
-                        Go to Profile
-                      </div>
-                    </div>
-                    <div style={{
-                      fontSize: 14,
-                      color: isDarkMode ? '#9ca3af' : '#536471'
-                    }}>
-                      {instructor.title}
-                    </div>
-                    <div style={{
-                      fontSize: 12,
-                      color: isDarkMode ? '#9ca3af' : '#536471',
-                      marginTop: 2
-                    }}>
-                      {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · {Math.floor(Math.random() * 200) + 20} Posts
-                    </div>
-                    {instructor.bio && (
-                      <div style={{
-                        fontSize: 14,
-                        color: isDarkMode ? '#d1d5db' : '#374151',
-                        marginTop: 8,
-                        lineHeight: 1.4
-                      }}>
-                        {instructor.bio.length > 150 ? instructor.bio.substring(0, 150) + '...' : instructor.bio}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                          flexShrink: 0
+                        }}>
+                          {instructor.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                        </div>
+                      )}
 
-                {/* Horizontal Scrollable Course Pills */}
+                      {/* Creator Details */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div
+                            onClick={() => {
+                              // Store instructor info and navigate to Browse -> Creators
+                              localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
+                              localStorage.setItem('browseActiveTopMenu', 'creators');
+                              if (onMenuChange) {
+                                onMenuChange('Browse');
+                              }
+                            }}
+                            style={{
+                              fontSize: 16,
+                              fontWeight: 700,
+                              color: '#1d9bf0',
+                              cursor: 'pointer',
+                              display: 'inline-block',
+                              lineHeight: 1.2
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                            onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                          >
+                            {instructor.name}
+                          </div>
+                          <div
+                            onClick={() => {
+                              localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
+                              localStorage.setItem('browseActiveTopMenu', 'creators');
+                              if (onMenuChange) {
+                                onMenuChange('Browse');
+                              }
+                            }}
+                            style={{
+                              fontSize: 12,
+                              color: '#1d9bf0',
+                              cursor: 'pointer'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                            onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                          >
+                            Go to Profile
+                          </div>
+                        </div>
+                        <div style={{
+                          fontSize: 14,
+                          color: isDarkMode ? '#9ca3af' : '#536471'
+                        }}>
+                          {instructor.title}
+                        </div>
+                        <div style={{
+                          fontSize: 12,
+                          color: isDarkMode ? '#9ca3af' : '#536471',
+                          marginTop: 2
+                        }}>
+                          {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · {Math.floor(Math.random() * 200) + 20} Posts
+                        </div>
+                        {instructor.bio && (
+                          <div style={{
+                            fontSize: 14,
+                            color: isDarkMode ? '#d1d5db' : '#374151',
+                            marginTop: 8,
+                            lineHeight: 1.4
+                          }}>
+                            {instructor.bio.length > 150 ? instructor.bio.substring(0, 150) + '...' : instructor.bio}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Horizontal Scrollable Course Pills - Always visible */}
                 {(() => {
-                  // For pending creators, show the course they came from
-                  const availableCourses = effectiveCreator.allCourses.filter(course =>
-                    effectiveCreator.followedCourseIds.includes(course.id)
+                  // Show only purchased courses as pills
+                  const allCourses = effectiveCreator.allCourses || [];
+                  const followedCourseIds = effectiveCreator.followedCourseIds || [];
+
+                  // Only show purchased courses as individual pills
+                  const purchasedCourses = allCourses.filter(course =>
+                    followedCourseIds.includes(course.id)
                   );
-                  // If no followed courses but we have selectedCourseFilters (from pending navigation), add those
-                  const displayCourses = availableCourses.length > 0
-                    ? availableCourses
-                    : selectedCourseFilters.map(f => ({ id: f.id, title: f.name }));
+
+                  // Check if there are more courses to view
+                  const hasMoreCourses = allCourses.length > 0;
+
                   const isHubSelected = selectedCourseFilters.length === 0;
 
                   return (
                     <div style={{
-                      marginTop: 12,
+                      marginTop: isProfileCollapsed ? 0 : 12,
                       position: 'relative',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 4
+                      gap: 4,
+                      transition: 'margin-top 0.2s ease'
                     }}>
                       {/* Left Arrow */}
                       {showPillsLeftArrow && (
@@ -1016,7 +1098,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           userSelect: 'none'
                         }}
                       >
-                        {/* Town Hall Pill - Always first */}
+                        {/* Main Hall Pill - Always first */}
                         <button
                           onClick={() => setSelectedCourseFilters([])}
                           className={`course-pill ${isHubSelected ? 'course-pill-selected' : ''}`}
@@ -1043,17 +1125,20 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                             transition: 'all 0.2s ease'
                           }}
                         >
-                          Town Hall
+                          Main Hall
                         </button>
 
-                        {/* Course Pills */}
-                        {displayCourses.map(course => {
+                        {/* Course Pills - Only purchased courses */}
+                        {purchasedCourses.map(course => {
                           const isSelected = selectedCourseFilters.length === 1 && selectedCourseFilters[0].id === course.id;
                           return (
                             <button
                               key={course.id}
-                              onClick={() => setSelectedCourseFilters([{ id: course.id, name: course.title }])}
+                              onClick={() => {
+                                setSelectedCourseFilters([{ id: course.id, name: course.title }]);
+                              }}
                               className={`course-pill ${isSelected ? 'course-pill-selected' : ''}`}
+                              title={course.title}
                               style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -1081,6 +1166,38 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                             </button>
                           );
                         })}
+
+                        {/* View All Courses Pill */}
+                        {hasMoreCourses && (
+                          <button
+                            onClick={() => {
+                              // Navigate to creator profile to see all courses
+                              if (onViewCreatorProfile) {
+                                onViewCreatorProfile(effectiveCreator);
+                              }
+                            }}
+                            className="course-pill"
+                            title="View all courses from this creator"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              padding: '8px 16px',
+                              borderRadius: 20,
+                              border: '2px solid #6366f1',
+                              background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
+                              color: '#6366f1',
+                              fontSize: 14,
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                              flexShrink: 0,
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            View all courses
+                          </button>
+                        )}
                       </div>
                       {/* Right Arrow */}
                       {showPillsRightArrow && (
@@ -1595,7 +1712,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         <h2>No Posts Yet</h2>
                         <p>
                           {communityMode === 'hub'
-                            ? 'Welcome to the Town Hall! This is where the community connects. Be the first to share something!'
+                            ? 'Welcome to The Commons! This is where the community connects. Be the first to share something!'
                             : 'No posts in this community yet. Be the first to share!'}
                         </p>
                       </>

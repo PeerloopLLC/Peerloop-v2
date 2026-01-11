@@ -92,7 +92,7 @@ const PurchasedCourseDetail = ({
                 className={`pcd-follow-btn ${isFollowing ? 'following' : ''}`}
                 onClick={() => onFollowCreator && onFollowCreator(instructor.id)}
               >
-                {isFollowing ? '✓ Joined' : 'Join'}
+                {isFollowing ? 'Joined' : 'Join'}
               </button>
               <button
                 className="pcd-btn-secondary"

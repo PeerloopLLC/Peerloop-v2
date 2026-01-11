@@ -14,7 +14,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
     const creatorFollow = followedCommunities.find(c => c.instructorId === course.instructorId);
     return creatorFollow?.followedCourseIds?.includes(course.id) || false;
   });
-  const [activeTab, setActiveTab] = useState('feed');
+  const [activeTab, setActiveTab] = useState('overview');
   const [newPostText, setNewPostText] = useState('');
   const [isPosting, setIsPosting] = useState(false);
 
@@ -123,8 +123,8 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
   };
 
   const tabs = [
-    { id: 'feed', label: 'Course Feed' },
     { id: 'overview', label: 'Overview' },
+    { id: 'feed', label: 'Course Feed' },
     { id: 'curriculum', label: 'Curriculum' },
     { id: 'reviews', label: 'Reviews' }
   ];
@@ -208,7 +208,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
               <button 
                 onClick={() => onEnroll && onEnroll(course)}
                 style={{
-                  background: '#f97316',
+                  background: '#10b981',
                   color: '#fff',
                   border: 'none',
                   padding: '12px 28px',
@@ -241,7 +241,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
                   gap: 6
                 }}
               >
-                {isFollowing ? <><FaCheck /> Joined</> : <><FaPlus /> Join</>}
+                {isFollowing ? <><FaCheck /> Unfollow</> : <><FaPlus /> Follow</>}
               </button>
             )}
           </div>
@@ -497,7 +497,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
                   <button
                     onClick={() => onEnroll && onEnroll(course)}
                     style={{
-                      background: '#f97316',
+                      background: '#10b981',
                       color: '#fff',
                       border: 'none',
                       padding: '12px 28px',

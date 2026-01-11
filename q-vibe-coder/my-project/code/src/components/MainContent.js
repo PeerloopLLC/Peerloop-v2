@@ -159,8 +159,32 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     });
   };
 
+  // Helper function to get all communities for Sarah (hard coded full access)
+  const getSarahFullAccess = () => {
+    const allInstructors = getAllInstructors();
+    const allCourses = getAllCourses();
+
+    return allInstructors.map(instructor => {
+      const instructorCourses = allCourses.filter(c => c.instructorId === instructor.id);
+      return {
+        id: `creator-${instructor.id}`,
+        type: 'creator', // Required for Community.js to recognize this as a creator follow
+        name: instructor.name,
+        avatar: instructor.avatar,
+        instructorId: instructor.id,
+        followedCourseIds: instructorCourses.map(c => c.id),
+        isFullCreatorFollow: true
+      };
+    });
+  };
+
   // Helper function to load follows for a specific user
   const loadFollowsForUser = (userId, isNewUser) => {
+    // Sarah (demo_sarah) gets full access to all communities
+    if (userId === 'demo_sarah') {
+      return getSarahFullAccess();
+    }
+
     // New users always start with empty follows
     if (isNewUser) {
       return [];
@@ -222,6 +246,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Purchased courses - courses the user has bought (enables course-level follow/unfollow)
   const [purchasedCourses, setPurchasedCourses] = useState(() => {
+    // Sarah (demo_sarah) gets all courses purchased
+    if (currentUser?.id === 'demo_sarah') {
+      return getAllCourses().map(c => c.id);
+    }
     if (currentUser?.isNewUser) return [];
     try {
       const storageKey = `purchasedCourses_${currentUser?.id}`;
@@ -242,6 +270,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // Reload purchased courses when user changes
   React.useEffect(() => {
     if (!currentUser?.id) return;
+
+    // Sarah (demo_sarah) gets all courses purchased
+    if (currentUser.id === 'demo_sarah') {
+      setPurchasedCourses(getAllCourses().map(c => c.id));
+      return;
+    }
 
     try {
       const storageKey = `purchasedCourses_${currentUser.id}`;
@@ -267,9 +301,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     }
   }, [currentUser?.id, currentUser?.isNewUser]);
 
-  // Save purchased courses to localStorage
+  // Save purchased courses to localStorage (skip for Sarah - hard coded)
   React.useEffect(() => {
-    if (currentUser?.id && purchasedCourses.length > 0) {
+    if (currentUser?.id && purchasedCourses.length > 0 && currentUser.id !== 'demo_sarah') {
       localStorage.setItem(`purchasedCourses_${currentUser.id}`, JSON.stringify(purchasedCourses));
     }
   }, [purchasedCourses, currentUser?.id]);
@@ -446,7 +480,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     }, [activeMenu]);
 
     // Handle Browse_Courses and Browse_Communities from sidebar navigation
-    // Don't reset selectedInstructor if coming from Discover with a specific instructor
+    // Don't reset selectedInstructor if coming from Discover or Feeds with a specific instructor
     React.useEffect(() => {
       if (activeMenu === 'Browse_Courses') {
         setSelectedInstructor(null);
@@ -454,8 +488,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         setActiveTopMenu('courses');
         setSearchQuery('');
       } else if (activeMenu === 'Browse_Communities') {
-        // Only reset if NOT coming from Discover with a specific instructor
-        if (previousBrowseContext?.type !== 'discover') {
+        // Only reset if NOT coming from Discover or Feeds with a specific instructor
+        if (previousBrowseContext?.type !== 'discover' && previousBrowseContext?.type !== 'feeds') {
           setSelectedInstructor(null);
           setSelectedCourse(null);
         }
@@ -490,6 +524,13 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             localStorage.removeItem('pendingBrowseInstructor');
           }
         }
+      }
+    }, [activeMenu]);
+
+    // Reset course viewing state when navigating to Feeds (My Community)
+    React.useEffect(() => {
+      if (activeMenu === 'My Community') {
+        setViewingCourseFromCommunity(null);
       }
     }, [activeMenu]);
 
@@ -561,6 +602,11 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // When followedCommunities changes, save to user-specific localStorage key
   useEffect(() => {
     if (!currentUser?.id) return;
+    // Skip saving for Sarah - her data is hard coded
+    if (currentUser.id === 'demo_sarah') {
+      window.dispatchEvent(new Event('communitiesUpdated'));
+      return;
+    }
 
     const saveFollowedCommunities = () => {
       try {
@@ -678,6 +724,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         followedCommunities={followedCommunities}
         setFollowedCommunities={setFollowedCommunities}
         isCoursePurchased={isCoursePurchased}
+        isCourseFollowed={isCourseFollowed}
+        handleFollowCourse={handleFollowCourse}
         isCreatorFollowed={isCreatorFollowed}
         handleFollowInstructor={handleFollowInstructor}
         onViewCourse={(course) => {
@@ -883,6 +931,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         purchasedCourses={purchasedCourses}
         indexedCourses={indexedCourses}
         onViewCourse={handleViewCourseFromCommunity}
+        isCourseFollowed={isCourseFollowed}
+        handleFollowCourse={handleFollowCourse}
+        isCreatorFollowed={isCreatorFollowed}
+        handleFollowInstructor={handleFollowInstructor}
       />
     );
   }
@@ -964,6 +1016,16 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           onMenuChange={onMenuChange}
           onViewUserProfile={handleViewUserProfile}
           onViewCourse={handleViewCourseFromCommunity}
+          onViewCreatorProfile={(creator) => {
+            // Navigate to creator profile in Browse with back navigation to Feeds
+            const instructorId = creator.instructorId || creator.id?.replace('creator-', '');
+            const fullData = getInstructorWithCourses(instructorId);
+            setSelectedInstructor(fullData || creator);
+            setActiveTopMenu('creators');
+            setPreviousBrowseContext({ type: 'feeds' }); // Prevent selectedInstructor reset
+            setNavigationHistory(prev => [...prev, 'My Community']);
+            onMenuChange('Browse_Communities');
+          }}
         />
       </div>
     );

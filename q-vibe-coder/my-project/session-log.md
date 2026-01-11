@@ -514,6 +514,34 @@
 - Continue feature development
 - Test all navigation flows end-to-end
 
+---
+
+### Session 13
+**Date:** January 11, 2026
+**Phase:** Building - UI Polish
+
+**What we did:**
+
+- **Flyout Popup Improvements:**
+  - Reduced flyout auto-close delay from 3s → 2s → 1s
+  - Fixed flyout to stay open while mouse is hovering over it
+  - Flyout now only starts close timer when mouse leaves the feeds section entirely
+  - Refactored timer logic: `startFlyoutCloseTimer()` and `clearFlyoutCloseTimer()` functions
+  - Added `onMouseLeave` handler to feeds-section div
+
+**Files modified:**
+- Sidebar.js (flyout timer logic, hover behavior)
+
+**Technical notes:**
+- `FLYOUT_INACTIVITY_TIMEOUT = 1000` (1 second)
+- `handleFlyoutMouseEnter` clears timer (keeps flyout open)
+- `handleFlyoutMouseLeave` starts close timer
+- Timer only runs when mouse is outside the entire feeds-section area
+
+**Next session:**
+- Continue feature development
+- Address pending task: Fix Sarah's full access loading
+
 <!-- Add more sessions as needed -->
 
 ---

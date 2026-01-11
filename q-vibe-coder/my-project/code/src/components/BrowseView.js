@@ -74,6 +74,11 @@ const BrowseView = ({
                 setSelectedInstructor(null);
                 setPreviousBrowseContext(null);
                 if (onMenuChange) onMenuChange('Discover');
+              } else if (previousBrowseContext?.type === 'feeds') {
+                // Navigate back to Feeds
+                setSelectedInstructor(null);
+                setPreviousBrowseContext(null);
+                if (onMenuChange) onMenuChange('My Community');
               } else if (previousBrowseContext?.type === 'course' && previousBrowseContext.course) {
                 setSelectedInstructor(null);
                 setSelectedCourse(previousBrowseContext.course);
@@ -112,7 +117,7 @@ const BrowseView = ({
             }}
           >
             <span style={{ fontSize: 18 }}>←</span>
-            {previousBrowseContext?.type === 'course' ? 'Back to Course' : previousBrowseContext?.type === 'courseList' ? 'Back to Courses' : previousBrowseContext?.type === 'discover' ? 'Back to Discover' : 'Back'}
+            {previousBrowseContext?.type === 'course' ? 'Back to Course' : previousBrowseContext?.type === 'courseList' ? 'Back to Courses' : previousBrowseContext?.type === 'discover' ? 'Back to Discover' : previousBrowseContext?.type === 'feeds' ? 'Back to Feeds' : 'Back'}
           </button>
         </div>
 
@@ -217,7 +222,7 @@ const BrowseView = ({
                         whiteSpace: 'nowrap'
                       }}
                     >
-                      {isFollowing ? '✓ Joined' : 'Join'}
+                      {isFollowing ? 'Joined' : 'Join'}
                     </button>
                   );
                 }
@@ -246,7 +251,7 @@ const BrowseView = ({
                         whiteSpace: 'nowrap'
                       }}
                     >
-                      {isFollowing ? '✓ Joined' : 'Join'}
+                      {isFollowing ? 'Joined' : 'Join'}
                       <span style={{ fontSize: 10 }}>▼</span>
                     </button>
 
@@ -440,52 +445,35 @@ const BrowseView = ({
                     {isCoursePurchased(course.id) ? (
                       <>
                         <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            localStorage.setItem('pendingCommunityCreator', JSON.stringify({
-                              id: `creator-${creator.id}`,
-                              name: creator.name,
-                              courseId: course.id,
-                              courseTitle: course.title
-                            }));
-                            if (onMenuChange) onMenuChange('My Community');
-                          }}
                           style={{
-                            color: '#fff',
-                            fontWeight: 500,
-                            fontSize: 13,
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                            transition: 'opacity 0.15s ease'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.opacity = '0.7';
-                            e.currentTarget.style.textDecoration = 'underline';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.opacity = '1';
-                            e.currentTarget.style.textDecoration = 'none';
+                            background: isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)',
+                            color: '#10b981',
+                            padding: '4px 12px',
+                            borderRadius: 12,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            whiteSpace: 'nowrap'
                           }}
                         >
-                          Go to Community
+                          Enrolled
                         </span>
-                      <button
-                        onClick={e => { e.stopPropagation(); handleFollowCourse(course.id); }}
-                        disabled={isFollowingLoading}
-                        style={{
-                          background: isFollowed ? 'transparent' : '#1d9bf0',
-                          color: isFollowed ? (isDarkMode ? '#e7e9ea' : '#0f1419') : '#fff',
-                          border: isFollowed ? (isDarkMode ? '1px solid #536471' : '1px solid #cfd9de') : 'none',
-                          padding: '6px 16px',
-                          borderRadius: 20,
-                          fontWeight: 700,
-                          fontSize: 13,
-                          cursor: 'pointer',
-                          flexShrink: 0
-                        }}
-                      >
-                        {isFollowed ? 'Joined' : 'Join'}
-                      </button>
+                        <button
+                          onClick={e => { e.stopPropagation(); handleFollowCourse(course.id); }}
+                          disabled={isFollowingLoading}
+                          style={{
+                            background: isFollowed ? 'transparent' : '#1d9bf0',
+                            color: isFollowed ? (isDarkMode ? '#e7e9ea' : '#0f1419') : '#fff',
+                            border: isFollowed ? (isDarkMode ? '1px solid #536471' : '1px solid #cfd9de') : 'none',
+                            padding: '6px 16px',
+                            borderRadius: 20,
+                            fontWeight: 700,
+                            fontSize: 13,
+                            cursor: 'pointer',
+                            flexShrink: 0
+                          }}
+                        >
+                          {isFollowed ? 'Unfollow' : 'Follow'}
+                        </button>
                       </>
                     ) : (
                       <button
@@ -495,7 +483,7 @@ const BrowseView = ({
                           setShowEnrollmentFlow(true);
                         }}
                         style={{
-                          background: '#f97316',
+                          background: '#10b981',
                           color: '#fff',
                           border: 'none',
                           padding: '6px 16px',
@@ -621,7 +609,7 @@ const BrowseView = ({
                           width: '100%'
                         }}
                       >
-                        {isFollowing ? '✓ Joined' : 'Join'}
+                        {isFollowing ? 'Joined' : 'Join'}
                       </button>
                     );
                   }
@@ -650,7 +638,7 @@ const BrowseView = ({
                           gap: 4
                         }}
                       >
-                        {isFollowing ? '✓ Joined' : 'Join'}
+                        {isFollowing ? 'Joined' : 'Join'}
                         <span style={{ fontSize: 8 }}>▼</span>
                       </button>
                       {openCreatorFollowDropdown === creator.id && (

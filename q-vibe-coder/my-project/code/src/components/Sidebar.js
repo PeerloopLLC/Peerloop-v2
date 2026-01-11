@@ -24,10 +24,70 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
   // Load communities from localStorage
   const [communities, setCommunities] = useState([]);
 
+  // Track if communities list is expanded (Show More)
+  const [isCommunitiesExpanded, setIsCommunitiesExpanded] = useState(false);
+
+  // Track if flyout is open
+  const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
+
+  // Timer for auto-closing flyout after inactivity
+  const flyoutInactivityTimerRef = useRef(null);
+  const FLYOUT_INACTIVITY_TIMEOUT = 1000; // 1 second
+
+  // Number of communities to always show (just The Commons)
+  const VISIBLE_COMMUNITY_COUNT = 1;
+
   // Detect device type - collapse sidebar on non-desktop devices
   const { isWindows, isMac, isDesktop } = useDeviceDetect();
   const isDesktopComputer = (isWindows || isMac) && isDesktop;
   const shouldCollapse = !isDesktopComputer;
+
+  // Start the flyout close timer
+  const startFlyoutCloseTimer = () => {
+    if (flyoutInactivityTimerRef.current) {
+      clearTimeout(flyoutInactivityTimerRef.current);
+    }
+    flyoutInactivityTimerRef.current = setTimeout(() => {
+      setIsFlyoutOpen(false);
+    }, FLYOUT_INACTIVITY_TIMEOUT);
+  };
+
+  // Clear the flyout close timer (keeps flyout open)
+  const clearFlyoutCloseTimer = () => {
+    if (flyoutInactivityTimerRef.current) {
+      clearTimeout(flyoutInactivityTimerRef.current);
+      flyoutInactivityTimerRef.current = null;
+    }
+  };
+
+  // Flyout hover handler (desktop only - opens on hover)
+  const handleFlyoutMouseEnter = () => {
+    if (isDesktopComputer) {
+      setIsFlyoutOpen(true);
+      clearFlyoutCloseTimer(); // Keep open while hovering
+    }
+  };
+
+  // Handle mouse leaving the flyout area - start close timer
+  const handleFlyoutMouseLeave = () => {
+    startFlyoutCloseTimer();
+  };
+
+  // Close flyout when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (isFlyoutOpen && !e.target.closest('.feeds-section')) {
+        setIsFlyoutOpen(false);
+        if (flyoutInactivityTimerRef.current) {
+          clearTimeout(flyoutInactivityTimerRef.current);
+        }
+      }
+    };
+    if (isFlyoutOpen) {
+      document.addEventListener('click', handleClickOutside);
+    }
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isFlyoutOpen]);
 
   // Load communities from localStorage when user changes
   useEffect(() => {
@@ -73,11 +133,14 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
     };
   }, [currentUser?.id]);
 
-  // Cleanup timer on unmount
+  // Cleanup timers on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
+      }
+      if (flyoutInactivityTimerRef.current) {
+        clearTimeout(flyoutInactivityTimerRef.current);
       }
     };
   }, []);
@@ -87,14 +150,17 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
    * @param {number} index - The index of the menu item
    */
   const showTooltipTemporarily = (index) => {
+    // Only show tooltips in collapsed mode (labels are hidden)
+    if (!shouldCollapse) return;
+
     // Clear any existing timer
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
-    
+
     // Show the tooltip
     setVisibleTooltip(index);
-    
+
     // Hide after half a second
     timerRef.current = setTimeout(() => {
       setVisibleTooltip(null);
@@ -116,9 +182,9 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
    */
   const personalItems = [
     { icon: <FaBook />, label: 'My Courses', displayLabel: 'My Courses' }, // User's enrolled courses
+    { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
     { icon: <FaChalkboardTeacher />, label: 'Dashboard', displayLabel: 'Dashboard' }, // User dashboard (varies by role)
-    { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system
     { icon: <FaUser />, label: 'Profile', displayLabel: 'Profile' }, // User profile
   ];
 
@@ -147,6 +213,33 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
       onMenuChange(label);
     }
   };
+
+  /**
+   * Toggle communities list expanded/collapsed state
+   */
+  const toggleCommunitiesExpanded = (e) => {
+    e.stopPropagation();
+    setIsCommunitiesExpanded(!isCommunitiesExpanded);
+  };
+
+  /**
+   * Handle community selection from the Feeds sub-menu
+   */
+  const handleCommunitySelect = (community) => {
+    localStorage.setItem('pendingCommunityCreator', JSON.stringify(community));
+    window.dispatchEvent(new CustomEvent('communitySelected', { detail: community }));
+    if (onSelectCommunity) {
+      onSelectCommunity(community);
+    }
+    onMenuChange('My Community');
+  };
+
+  // Calculate visible and hidden communities
+  const townHall = { id: 'town-hall', name: 'The Commons', type: 'hub' };
+  const allCommunities = [townHall, ...communities];
+  const visibleCommunities = allCommunities.slice(0, VISIBLE_COMMUNITY_COUNT);
+  const hiddenCommunities = allCommunities.slice(VISIBLE_COMMUNITY_COUNT);
+  const hiddenCount = hiddenCommunities.length;
 
   return (
     <div className={`sidebar ${shouldCollapse ? 'sidebar-collapsed' : ''}`}>
@@ -181,28 +274,132 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
       
       {/* Main navigation menu */}
       <nav className="sidebar-nav">
-        {/* Primary items - Feeds, Discover */}
-        {primaryItems.map((item, index) => {
-          const isActive =
-            (item.label === 'Feeds' && activeMenu === 'My Community') ||
-            (item.label === 'Discover' && activeMenu === 'Discover');
-          return (
+        {/* Feeds Section with scrollable communities */}
+        <div
+          className="feeds-section"
+          onMouseEnter={handleFlyoutMouseEnter}
+          onMouseLeave={handleFlyoutMouseLeave}
+        >
+          {/* Feeds header - works for both collapsed and expanded sidebar */}
+          {shouldCollapse ? (
+            /* Collapsed sidebar: Compact feed button */
             <div
-              key={index}
-              className={`nav-item ${isActive ? 'active' : ''}`}
-              onClick={() => {
-                showTooltipTemporarily(index);
-                handleMenuClick(item.label);
+              className={`feeds-compact-btn ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFlyoutOpen(true);
+                // First click: go to Feeds (preserve state), Second click: reset to The Commons
+                if (activeMenu === 'My Community') {
+                  handleCommunitySelect(townHall);
+                } else {
+                  onMenuChange('My Community');
+                }
               }}
+              onMouseEnter={handleFlyoutMouseEnter}
             >
-              <div className="nav-icon">{item.icon}</div>
-              <span className="nav-label">{item.displayLabel || item.label}</span>
-              <span className={`nav-tooltip ${visibleTooltip === index ? 'tooltip-visible' : ''}`}>
-                {item.displayLabel || item.label}
+              <div className="feeds-compact-main-icon"><FaUsers /></div>
+              <div className="feeds-compact-count">{allCommunities.length}</div>
+              <div className={`feeds-compact-arrow ${isFlyoutOpen ? 'open' : ''}`}>▶</div>
+            </div>
+          ) : (
+            /* Expanded sidebar: Feeds header with popup */
+            <div
+              className={`nav-item feeds-header ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFlyoutOpen(true);
+                // First click: go to Feeds (preserve state), Second click: reset to The Commons
+                if (activeMenu === 'My Community') {
+                  handleCommunitySelect(townHall);
+                } else {
+                  onMenuChange('My Community');
+                }
+              }}
+              onMouseEnter={handleFlyoutMouseEnter}
+            >
+              <div className="nav-icon"><FaUsers /></div>
+              <span className="nav-label">Feeds ({allCommunities.length})</span>
+              <span className={`feeds-arrow ${isFlyoutOpen ? 'expanded' : ''}`}>
+                ▼
               </span>
             </div>
-          );
-        })}
+          )}
+
+          {/* Flyout popup panel - works for both collapsed and expanded sidebar */}
+          {isFlyoutOpen && (
+            <div
+              className={`feeds-flyout ${shouldCollapse ? 'feeds-flyout-collapsed' : 'feeds-flyout-expanded'}`}
+              onMouseEnter={handleFlyoutMouseEnter}
+            >
+              <div className="feeds-flyout-header">
+                Feeds ({allCommunities.length})
+              </div>
+              <div className="feeds-flyout-list">
+                {allCommunities.map((community) => {
+                  const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
+                  const initial = displayName.charAt(0).toUpperCase();
+                  const isTownHall = community.id === 'town-hall';
+
+                  return (
+                    <div
+                      key={community.id}
+                      className="feeds-flyout-item"
+                      onClick={() => {
+                        handleCommunitySelect(community);
+                        setIsFlyoutOpen(false);
+                      }}
+                    >
+                      {isTownHall ? (
+                        <div className="community-avatar town-hall-avatar">🏛</div>
+                      ) : community.avatar ? (
+                        <img
+                          src={community.avatar}
+                          alt={displayName}
+                          className="community-avatar community-avatar-img"
+                        />
+                      ) : (
+                        <div className="community-avatar">{initial}</div>
+                      )}
+                      <span className="community-name">{displayName}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* The Commons sub-item - always visible under Feeds */}
+        {!shouldCollapse && (
+          <div
+            className="nav-item nav-sub-item"
+            onClick={() => handleCommunitySelect(townHall)}
+            onMouseEnter={handleFlyoutMouseEnter}
+            style={{
+              paddingLeft: 32,
+              fontSize: 13,
+              opacity: 0.9
+            }}
+          >
+            <div className="nav-icon" style={{ fontSize: 14 }}>🏛</div>
+            <span className="nav-label">The Commons</span>
+          </div>
+        )}
+
+        {/* Discover item */}
+        <div
+          className={`nav-item ${activeMenu === 'Discover' ? 'active' : ''}`}
+          onClick={() => {
+            showTooltipTemporarily(1);
+            handleMenuClick('Discover');
+          }}
+        >
+          <div className="nav-icon"><FaSearch /></div>
+          <span className="nav-label">Discover</span>
+          <span className={`nav-tooltip ${visibleTooltip === 1 ? 'tooltip-visible' : ''}`}>
+            Discover
+          </span>
+        </div>
 
         {/* Personal items - My Courses, Notifications, Dashboard, Messages, Profile */}
         {personalItems.map((item, index) => (
@@ -240,66 +437,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           </div>
         ))}
 
-        {/* MY COMMUNITIES - Scrollable list with Town Hall first */}
-        <div className="sidebar-communities-section">
-          <div className="communities-header">
-            <span className="communities-title">MY COMMUNITIES</span>
-          </div>
-          <div className="communities-list">
-            {/* Town Hall - Always first */}
-            <div
-              className="community-item town-hall-item"
-              onClick={() => {
-                // Store Town Hall selection and dispatch event
-                const townHall = { id: 'town-hall', name: 'Town Hall', type: 'hub' };
-                localStorage.setItem('pendingCommunityCreator', JSON.stringify(townHall));
-                window.dispatchEvent(new CustomEvent('communitySelected', { detail: townHall }));
-                if (onSelectCommunity) {
-                  onSelectCommunity(townHall);
-                }
-                onMenuChange('My Community');
-              }}
-            >
-              <div className="community-avatar town-hall-avatar">🏛</div>
-              <span className="community-name">Town Hall</span>
-            </div>
-
-            {/* User's followed communities */}
-            {communities.map((community) => {
-              // Extract display name - remove "creator-" prefix if present
-              const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
-              // Get first letter for avatar
-              const initial = displayName.charAt(0).toUpperCase();
-
-              return (
-                <div
-                  key={community.id}
-                  className="community-item"
-                  onClick={() => {
-                    // Store creator selection and dispatch event
-                    localStorage.setItem('pendingCommunityCreator', JSON.stringify(community));
-                    window.dispatchEvent(new CustomEvent('communitySelected', { detail: community }));
-                    if (onSelectCommunity) {
-                      onSelectCommunity(community);
-                    }
-                    onMenuChange('My Community');
-                  }}
-                >
-                  {community.avatar ? (
-                    <img
-                      src={community.avatar}
-                      alt={displayName}
-                      className="community-avatar community-avatar-img"
-                    />
-                  ) : (
-                    <div className="community-avatar">{initial}</div>
-                  )}
-                  <span className="community-name">{displayName}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </nav>
     </div>
   );

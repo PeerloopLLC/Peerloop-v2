@@ -3,7 +3,7 @@ import { FaLandmark } from 'react-icons/fa';
 
 /**
  * TownHallCard Component
- * Profile card shown when Town Hall is selected in hub mode
+ * Profile card shown when The Commons is selected in hub mode
  *
  * @param {boolean} isDarkMode - Dark mode flag
  */
@@ -19,7 +19,7 @@ const TownHallCard = ({ isDarkMode = false }) => {
       border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
       boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : 'none'
     }}>
-      {/* Town Hall Info Row */}
+      {/* The Commons Info Row */}
       <div style={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -41,7 +41,7 @@ const TownHallCard = ({ isDarkMode = false }) => {
           <FaLandmark style={{ color: '#fff', fontSize: 20 }} />
         </div>
 
-        {/* Town Hall Details */}
+        {/* The Commons Details */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             fontSize: 16,
@@ -49,7 +49,7 @@ const TownHallCard = ({ isDarkMode = false }) => {
             color: '#1d9bf0',
             lineHeight: 1.2
           }}>
-            Town Hall
+            The Commons
           </div>
           <div style={{
             fontSize: 13,
@@ -63,7 +63,7 @@ const TownHallCard = ({ isDarkMode = false }) => {
             marginTop: 4,
             lineHeight: 1.3
           }}>
-            Welcome to the Town Hall — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners across all courses and communities.
+            Welcome to The Commons — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners across all courses and communities.
           </div>
         </div>
       </div>
