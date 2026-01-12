@@ -108,11 +108,15 @@ const Login = ({ onLoginSuccess, onDemoLogin }) => {
 
   // Handle demo user login
   const handleDemoLogin = (demoUser) => {
-    // Special handling for New User - show login form first
+    // New User goes directly to app (skip login form and interest selection)
     if (demoUser.id === 'demo_new') {
-      setNewUserData(demoUser);
-      setShowNewUserLogin(true);
-      setShowDemoUsers(false);
+      const newUser = {
+        ...demoUser,
+        followedCommunities: [],
+        isNewUser: true,
+        interests: []
+      };
+      onDemoLogin(newUser);
       return;
     }
     onDemoLogin(demoUser);

@@ -701,11 +701,6 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // When followedCommunities changes, save to user-specific localStorage key
   useEffect(() => {
     if (!currentUser?.id) return;
-    // Skip saving for Sarah - her data is hard coded
-    if (currentUser.id === 'demo_sarah') {
-      window.dispatchEvent(new Event('communitiesUpdated'));
-      return;
-    }
 
     const saveFollowedCommunities = () => {
       try {
@@ -1078,6 +1073,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           setSelectedInstructor(fullData || instructor);
           setSelectedCourse(null); // Clear any selected course so profile shows
           setActiveTopMenu('creators');
+          setPreviousBrowseContext({ type: 'my-courses' }); // Track that we came from My Courses
           setViewingCourseFromCommunity(null);
           onMenuChange('Browse');
         }}
@@ -1171,6 +1167,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             const instructorId = creator.instructorId || creator.id?.replace('creator-', '');
             const fullData = getInstructorWithCourses(instructorId);
             setSelectedInstructor(fullData || creator);
+            setSelectedCourse(null); // Clear any selected course so profile shows
             setActiveTopMenu('creators');
             setPreviousBrowseContext({ type: 'feeds' }); // Prevent selectedInstructor reset
             setNavigationHistory(prev => [...prev, 'My Community']);

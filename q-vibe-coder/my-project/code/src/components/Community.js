@@ -154,27 +154,26 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     }
   }, [communityMode, selectedCreatorId, pendingCreatorName]);
 
-  // Handle scroll to collapse/expand profile card with hysteresis to prevent jitter
+  // Handle scroll to collapse/expand profile card based on scroll direction
   useEffect(() => {
     const COLLAPSE_THRESHOLD = 100; // Collapse when scrolled past this point
-    const EXPAND_THRESHOLD = 40;    // Expand when scrolled back above this point
 
     const handleScroll = () => {
       const container = feedContainerRef.current;
       if (!container) return;
 
       const currentScrollY = container.scrollTop;
+      const previousScrollY = lastScrollY.current;
+      const isScrollingUp = currentScrollY < previousScrollY;
 
-      // Use hysteresis: different thresholds for collapse vs expand
-      // This creates a "dead zone" that prevents jitter
+      // Collapse: when scrolled down past threshold
       if (!isProfileCollapsed && currentScrollY > COLLAPSE_THRESHOLD) {
-        // Scrolled down past collapse threshold - collapse
         setIsProfileCollapsed(true);
-      } else if (isProfileCollapsed && currentScrollY < EXPAND_THRESHOLD) {
-        // Scrolled back up past expand threshold - expand
+      }
+      // Expand: immediately when scrolling UP (direction change)
+      else if (isProfileCollapsed && isScrollingUp) {
         setIsProfileCollapsed(false);
       }
-      // When between thresholds, don't change state (prevents jitter)
 
       lastScrollY.current = currentScrollY;
     };
@@ -684,17 +683,17 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: '#1e293b' }}>{selectedCommunity.name}</h1>
                 <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: 14 }}>{selectedCommunity.topic}</p>
               </div>
-              <button 
+              <button
                 onClick={() => handleFollowCommunity(selectedCommunity.id)}
-                style={{ 
-                  background: isCommunityFollowed(selectedCommunity.id) ? '#e2e8f0' : '#3b82f6',
-                  color: isCommunityFollowed(selectedCommunity.id) ? '#64748b' : '#fff',
-                  border: 'none', 
-                  padding: '10px 24px', 
-                  borderRadius: 8, 
-                  fontWeight: 600, 
-                  fontSize: 14, 
-                  cursor: 'pointer' 
+                style={{
+                  background: '#1d9bf0',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 24px',
+                  borderRadius: 8,
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: 'pointer'
                 }}
               >
                 {isCommunityFollowed(selectedCommunity.id) ? 'Joined Community' : 'Join Community'}
@@ -1556,6 +1555,83 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               </div>
             </div>
             
+            {/* Welcome Post - Only for new users */}
+            {currentUser?.isNewUser && communityMode === 'hub' && (
+              <div
+                className="welcome-post-card"
+                style={{
+                  background: isDarkMode ? '#16181c' : '#fff',
+                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #e1e8ed',
+                  borderRadius: 12,
+                  margin: '12px 16px',
+                  padding: '20px',
+                  display: 'flex',
+                  gap: 20,
+                  position: 'sticky',
+                  top: 100,
+                  zIndex: 9,
+                  boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)'
+                }}
+              >
+                {/* Video Placeholder - Left Side */}
+                <div style={{
+                  width: 240,
+                  height: 160,
+                  flexShrink: 0,
+                  background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                  borderRadius: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: isDarkMode ? '1px solid #3f4448' : '1px solid #e1e8ed',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? '#3f4448' : '#eff3f4'}
+                onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                    <FaPlay style={{ fontSize: 32, color: '#1d9bf0', opacity: 0.8 }} />
+                    <span style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }}>Watch video</span>
+                  </div>
+                </div>
+
+                {/* Content - Right Side */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
+                  <h1 style={{ fontSize: 28, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: 0 }}>
+                    Welcome to PeerLoop
+                  </h1>
+                  <p style={{ fontSize: 17, color: isDarkMode ? '#71767b' : '#536471', margin: 0, fontWeight: 500 }}>
+                    A peer-to-peer knowledge sharing community
+                  </p>
+                  <p style={{ fontSize: 16, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '6px 0 0 0', lineHeight: 1.6 }}>
+                    Learn from people who've been where you are. Teach what you've mastered.
+                    Follow creators, take courses, and share your own knowledge when you're ready.
+                  </p>
+                  <button
+                    onClick={() => onMenuChange && onMenuChange('Discover')}
+                    style={{
+                      background: '#1d9bf0',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 9999,
+                      padding: '12px 28px',
+                      fontSize: 15,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      marginTop: 8,
+                      alignSelf: 'flex-start'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#1a8cd8'}
+                    onMouseLeave={e => e.currentTarget.style.background = '#1d9bf0'}
+                  >
+                    Start Exploring →
+                  </button>
+                </div>
+              </div>
+            )}
+
             {(groupedByCreator.length > 0 || realPosts.length > 0 || communityMode === 'hub' || (communityMode === 'creators' && selectedCreatorId)) ? (
               <div className="posts-feed">
                 {displayedPosts.length > 0 ? (

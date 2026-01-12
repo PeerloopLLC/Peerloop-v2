@@ -911,13 +911,13 @@
 }
 
 .follow-btn.following {
-  background: #e2e8f0;
-  color: #64748b;
+  background: #1d9bf0;
+  color: #fff;
 }
 
 .follow-btn.following:hover {
-  background: #fecaca;
-  color: #dc2626;
+  background: #ef4444;
+  color: #fff;
 }
 
 .follow-btn:focus {

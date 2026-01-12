@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { FaSearch, FaBook } from 'react-icons/fa';
+import { FaSearch, FaBook, FaPlay } from 'react-icons/fa';
 import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
 import { getInstructorWithCourses } from '../data/database';
 
@@ -292,6 +292,83 @@ const DiscoverView = ({
             )}
           </div>
 
+          {/* Welcome Post - Only for new users */}
+          {currentUser?.isNewUser && (
+            <div
+              className="welcome-post-card"
+              style={{
+                background: isDarkMode ? '#16181c' : '#fff',
+                border: isDarkMode ? '1px solid #2f3336' : '1px solid #e1e8ed',
+                borderRadius: 12,
+                margin: '12px 16px',
+                padding: '20px',
+                display: 'flex',
+                gap: 20,
+                position: 'sticky',
+                top: 0,
+                zIndex: 9,
+                boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)'
+              }}
+            >
+              {/* Video Placeholder - Left Side */}
+              <div style={{
+                width: 240,
+                height: 160,
+                flexShrink: 0,
+                background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                borderRadius: 10,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: isDarkMode ? '1px solid #3f4448' : '1px solid #e1e8ed',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? '#3f4448' : '#eff3f4'}
+              onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <FaPlay style={{ fontSize: 32, color: '#1d9bf0', opacity: 0.8 }} />
+                  <span style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }}>Watch video</span>
+                </div>
+              </div>
+
+              {/* Content - Right Side */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
+                <h1 style={{ fontSize: 28, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: 0 }}>
+                  Welcome to PeerLoop
+                </h1>
+                <p style={{ fontSize: 17, color: isDarkMode ? '#71767b' : '#536471', margin: 0, fontWeight: 500 }}>
+                  A peer-to-peer knowledge sharing community
+                </p>
+                <p style={{ fontSize: 16, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '6px 0 0 0', lineHeight: 1.6 }}>
+                  Learn from people who've been where you are. Teach what you've mastered.
+                  Follow creators, take courses, and share your own knowledge when you're ready.
+                </p>
+                <button
+                  onClick={() => onMenuChange && onMenuChange('My Community')}
+                  style={{
+                    background: '#1d9bf0',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 9999,
+                    padding: '12px 28px',
+                    fontSize: 15,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    marginTop: 8,
+                    alignSelf: 'flex-start'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#1a8cd8'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#1d9bf0'}
+                >
+                  Start Exploring →
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Results */}
           <div style={{ padding: '0' }}>
             {searchResults.length === 0 ? (
@@ -389,9 +466,9 @@ const DiscoverView = ({
                           style={{
                             padding: '8px 20px',
                             borderRadius: 20,
-                            background: isFollowing ? 'transparent' : '#6366f1',
-                            color: isFollowing ? '#6366f1' : '#fff',
-                            border: isFollowing ? '1px solid #6366f1' : 'none',
+                            background: isFollowing ? '#64748b' : '#1d9bf0',
+                            color: '#fff',
+                            border: 'none',
                             fontSize: 14,
                             fontWeight: 600,
                             cursor: 'pointer',
@@ -545,13 +622,11 @@ const DiscoverView = ({
                                             }
                                           }}
                                           style={{
-                                            padding: '4px 10px',
-                                            borderRadius: 12,
-                                            background: isFollowed
-                                              ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
-                                              : (isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)'),
-                                            color: isFollowed ? '#10b981' : '#6366f1',
-                                            fontSize: 11,
+                                            padding: '8px 16px',
+                                            borderRadius: 16,
+                                            background: '#1d9bf0',
+                                            color: '#fff',
+                                            fontSize: 14,
                                             fontWeight: 600,
                                             whiteSpace: 'nowrap',
                                             flexShrink: 0,
@@ -561,22 +636,16 @@ const DiscoverView = ({
                                           }}
                                           onMouseEnter={(e) => {
                                             if (isFollowed) {
-                                              e.currentTarget.style.background = isDarkMode ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)';
-                                              e.currentTarget.style.color = '#ef4444';
+                                              e.currentTarget.style.background = '#ef4444';
                                               e.currentTarget.textContent = 'Unfollow';
                                             } else {
-                                              e.currentTarget.style.background = '#6366f1';
-                                              e.currentTarget.style.color = '#fff';
+                                              e.currentTarget.style.background = '#1a8cd8';
                                             }
                                           }}
                                           onMouseLeave={(e) => {
+                                            e.currentTarget.style.background = '#1d9bf0';
                                             if (isFollowed) {
-                                              e.currentTarget.style.background = isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)';
-                                              e.currentTarget.style.color = '#10b981';
                                               e.currentTarget.textContent = 'Followed';
-                                            } else {
-                                              e.currentTarget.style.background = isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)';
-                                              e.currentTarget.style.color = '#6366f1';
                                             }
                                           }}
                                         >

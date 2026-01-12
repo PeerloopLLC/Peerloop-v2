@@ -3,9 +3,10 @@
   --bg-primary: #ffffff;
   --bg-secondary: #f7f9f9;
   --bg-tertiary: #eff3f4;
-  --text-primary: #0f1419;
-  --text-secondary: #536471;
-  --text-muted: #71767b;
+  --text-darkness: #374151; /* Adjustable via Profile settings - default level 3 */
+  --text-primary: var(--text-darkness, #0f1419);
+  --text-secondary: var(--text-darkness, #536471);
+  --text-muted: var(--text-darkness, #71767b);
   --border-color: #eff3f4;
   --accent-color: #1d9bf0;
   --accent-hover: #1a8cd8;

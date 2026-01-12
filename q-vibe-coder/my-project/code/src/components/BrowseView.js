@@ -79,6 +79,11 @@ const BrowseView = ({
                 setSelectedInstructor(null);
                 setPreviousBrowseContext(null);
                 if (onMenuChange) onMenuChange('My Community');
+              } else if (previousBrowseContext?.type === 'my-courses') {
+                // Navigate back to My Courses
+                setSelectedInstructor(null);
+                setPreviousBrowseContext(null);
+                if (onMenuChange) onMenuChange('My Courses');
               } else if (previousBrowseContext?.type === 'course' && previousBrowseContext.course) {
                 setSelectedInstructor(null);
                 setSelectedCourse(previousBrowseContext.course);
@@ -117,7 +122,7 @@ const BrowseView = ({
             }}
           >
             <span style={{ fontSize: 18 }}>←</span>
-            {previousBrowseContext?.type === 'course' ? 'Back to Course' : previousBrowseContext?.type === 'courseList' ? 'Back to Courses' : previousBrowseContext?.type === 'discover' ? 'Back to Discover' : previousBrowseContext?.type === 'feeds' ? 'Back to Feeds' : 'Back'}
+            {previousBrowseContext?.type === 'course' ? 'Back to Course' : previousBrowseContext?.type === 'courseList' ? 'Back to Courses' : previousBrowseContext?.type === 'discover' ? 'Back to Discover' : previousBrowseContext?.type === 'feeds' ? 'Back to Feeds' : previousBrowseContext?.type === 'my-courses' ? 'Back to My Courses' : 'Back'}
           </button>
         </div>
 
@@ -211,8 +216,8 @@ const BrowseView = ({
                       }}
                       disabled={isFollowingLoading}
                       style={{
-                        background: isFollowing ? (isDarkMode ? '#2f3336' : '#eff3f4') : '#1d9bf0',
-                        color: isFollowing ? (isDarkMode ? '#e7e9ea' : '#0f1419') : '#fff',
+                        background: isFollowing ? '#64748b' : '#1d9bf0',
+                        color: '#fff',
                         border: 'none',
                         padding: '8px 16px',
                         borderRadius: 20,
@@ -237,8 +242,8 @@ const BrowseView = ({
                       }}
                       disabled={isFollowingLoading}
                       style={{
-                        background: isFollowing ? (isDarkMode ? '#2f3336' : '#eff3f4') : '#1d9bf0',
-                        color: isFollowing ? (isDarkMode ? '#e7e9ea' : '#0f1419') : '#fff',
+                        background: isFollowing ? '#64748b' : '#1d9bf0',
+                        color: '#fff',
                         border: 'none',
                         padding: '8px 16px',
                         borderRadius: 20,

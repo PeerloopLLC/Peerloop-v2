@@ -157,7 +157,7 @@
   transition: background-color 0.2s, color 0.2s;
   font-size: 18px;
   font-weight: 400;
-  color: #536471;
+  color: var(--text-darkness, #536471);
   position: relative;
 }
 
@@ -186,6 +186,7 @@
 
 .nav-label {
   font-size: 18px;
+  color: var(--text-darkness, inherit);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -301,7 +302,7 @@
 .profile-name {
   font-weight: 700;
   font-size: 15px;
-  color: #000000;
+  color: var(--text-darkness, #000000);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -309,7 +310,7 @@
 }
 
 .profile-handle {
-  color: #536471;
+  color: var(--text-darkness, #536471);
   font-size: 15px;
   white-space: nowrap;
   overflow: hidden;
@@ -318,7 +319,7 @@
 }
 
 .profile-menu {
-  color: #536471;
+  color: var(--text-darkness, #536471);
   width: 20px;
   height: 20px;
   display: flex;
@@ -608,7 +609,7 @@
 .communities-title {
   font-size: 11px;
   font-weight: 700;
-  color: #536471;
+  color: var(--text-darkness, #536471);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -672,7 +673,7 @@
 .community-name {
   font-size: 14px;
   font-weight: 500;
-  color: #0f1419;
+  color: var(--text-darkness, #0f1419);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -757,6 +758,30 @@
 
 .feeds-arrow.expanded {
   transform: rotate(180deg);
+}
+
+/* Stacked up/down arrow toggle (like Skool) */
+.feeds-arrow-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: auto;
+  padding: 0 8px;
+  opacity: 0.6;
+  cursor: pointer;
+  line-height: 0.55;
+  font-size: 22px;
+}
+
+.feeds-arrow-toggle:hover {
+  opacity: 1;
+}
+
+.feeds-arrow-toggle .arrow-up,
+.feeds-arrow-toggle .arrow-down {
+  display: block;
+  height: 12px;
+  line-height: 12px;
 }
 
 /* Sub navigation - communities nested under Feeds */
@@ -1026,7 +1051,7 @@
 }
 
 .feeds-flyout-list {
-  max-height: 300px;
+  max-height: 70vh;
   overflow-y: auto;
   padding: 8px 0;
 }
@@ -1101,7 +1126,7 @@
 .feeds-flyout-item .community-name {
   font-size: 14px;
   font-weight: 500;
-  color: #0f1419;
+  color: var(--text-darkness, #0f1419);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

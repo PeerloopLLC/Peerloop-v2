@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Profile.css';
 import {
   FaUserEdit,
@@ -33,6 +33,34 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
     website: 'https://einstein-archive.org',
     avatar: 'https://via.placeholder.com/120x120/FFD700/000000?text=AE'
   });
+
+  // Text darkness level for light mode (1-5, where 1 is lightest, 5 is darkest)
+  const [textDarkness, setTextDarkness] = useState(() => {
+    const saved = localStorage.getItem('textDarknessLevel');
+    return saved ? parseInt(saved, 10) : 3; // Default to level 3 (medium)
+  });
+
+  // Text darkness color mapping (1=light, 7=pure black)
+  const darknessColors = {
+    1: '#6b7280', // Light gray
+    2: '#4b5563', // Medium gray
+    3: '#374151', // Dark gray
+    4: '#1f2937', // Very dark gray
+    5: '#111827', // Near black
+    6: '#0a0a0a', // Almost black
+    7: '#000000'  // Pure black
+  };
+
+  // Apply text darkness CSS variable when it changes (only in light mode)
+  useEffect(() => {
+    localStorage.setItem('textDarknessLevel', textDarkness.toString());
+    document.documentElement.style.setProperty('--text-darkness', darknessColors[textDarkness]);
+  }, [textDarkness]);
+
+  // Apply on mount
+  useEffect(() => {
+    document.documentElement.style.setProperty('--text-darkness', darknessColors[textDarkness]);
+  }, []);
 
   const profileSections = [
     { id: 'overview', label: 'Overview', icon: <FaUserEdit /> },
@@ -333,6 +361,53 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
               Switch to {isDarkMode ? 'Light' : 'Dark'}
             </button>
           </div>
+          
+          {/* Text Darkness control - only shown in Light Mode */}
+          {!isDarkMode && (
+            <div className="setting-item text-darkness-item">
+              <div style={{ marginBottom: '8px' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '16px' }}>Aa</span>
+                  Text Darkness (Light Mode)
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                {[1, 2, 3, 4, 5, 6, 7].map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => setTextDarkness(level)}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      border: textDarkness === level ? '2px solid #1d9bf0' : '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      background: textDarkness === level ? '#e0f2fe' : '#fff',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: textDarkness === level ? '700' : '500',
+                      color: darknessColors[level],
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                fontSize: '11px', 
+                color: '#9ca3af',
+                marginTop: '4px',
+                paddingLeft: '4px',
+                paddingRight: '4px'
+              }}>
+                <span>Light</span>
+                <span>Dark</span>
+              </div>
+            </div>
+          )}
+
           <div className="setting-item">
             <span>Show progress bars</span>
             <input type="checkbox" defaultChecked />

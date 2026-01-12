@@ -33,6 +33,11 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
   // Timer for auto-closing flyout after inactivity
   const flyoutInactivityTimerRef = useRef(null);
   const FLYOUT_INACTIVITY_TIMEOUT = 1000; // 1 second
+  
+  // Grace period - flyout stays open for 1 second after opening regardless of mouse position
+  const isInGracePeriodRef = useRef(false);
+  const gracePeriodTimerRef = useRef(null);
+  const GRACE_PERIOD_DURATION = 1000; // 1 second grace period
 
   // Number of communities to always show (just The Commons)
   const VISIBLE_COMMUNITY_COUNT = 1;
@@ -42,8 +47,11 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
   const isDesktopComputer = (isWindows || isMac) && isDesktop;
   const shouldCollapse = !isDesktopComputer;
 
-  // Start the flyout close timer
+  // Start the flyout close timer (only if not in grace period)
   const startFlyoutCloseTimer = () => {
+    // Don't start close timer during grace period
+    if (isInGracePeriodRef.current) return;
+    
     if (flyoutInactivityTimerRef.current) {
       clearTimeout(flyoutInactivityTimerRef.current);
     }
@@ -58,6 +66,19 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
       clearTimeout(flyoutInactivityTimerRef.current);
       flyoutInactivityTimerRef.current = null;
     }
+  };
+  
+  // Start grace period when flyout opens
+  const startGracePeriod = () => {
+    isInGracePeriodRef.current = true;
+    if (gracePeriodTimerRef.current) {
+      clearTimeout(gracePeriodTimerRef.current);
+    }
+    gracePeriodTimerRef.current = setTimeout(() => {
+      isInGracePeriodRef.current = false;
+      // After grace period, start close timer (will be cancelled if hovering)
+      startFlyoutCloseTimer();
+    }, GRACE_PERIOD_DURATION);
   };
 
   // Flyout hover handler (desktop only - opens on hover)
@@ -76,7 +97,8 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
   // Close flyout when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (isFlyoutOpen && !e.target.closest('.feeds-section')) {
+      // Don't close if clicking on feeds-section or The Commons sub-item
+      if (isFlyoutOpen && !e.target.closest('.feeds-section') && !e.target.closest('.nav-sub-item')) {
         setIsFlyoutOpen(false);
         if (flyoutInactivityTimerRef.current) {
           clearTimeout(flyoutInactivityTimerRef.current);
@@ -141,6 +163,9 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
       }
       if (flyoutInactivityTimerRef.current) {
         clearTimeout(flyoutInactivityTimerRef.current);
+      }
+      if (gracePeriodTimerRef.current) {
+        clearTimeout(gracePeriodTimerRef.current);
       }
     };
   }, []);
@@ -241,6 +266,9 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
   const hiddenCommunities = allCommunities.slice(VISIBLE_COMMUNITY_COUNT);
   const hiddenCount = hiddenCommunities.length;
 
+  // Flyout only works when user has followed at least one community
+  const hasFollowedCommunities = communities.length > 0;
+
   return (
     <div className={`sidebar ${shouldCollapse ? 'sidebar-collapsed' : ''}`}>
       {/* Header section with logo */}
@@ -277,41 +305,64 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
         {/* Feeds Section with scrollable communities */}
         <div
           className="feeds-section"
-          onMouseEnter={handleFlyoutMouseEnter}
-          onMouseLeave={handleFlyoutMouseLeave}
         >
           {/* Feeds header - works for both collapsed and expanded sidebar */}
           {shouldCollapse ? (
             /* Collapsed sidebar: Compact feed button */
             <div
-              className={`feeds-compact-btn ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''}`}
+              className={`feeds-compact-btn ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities ? 'no-flyout' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                // Toggle flyout only - don't navigate when clicking the header
-                setIsFlyoutOpen(!isFlyoutOpen);
+                // Navigate to The Commons
+                handleCommunitySelect(townHall);
+                // Only toggle flyout if user has followed communities
+                if (hasFollowedCommunities) {
+                  const willOpen = !isFlyoutOpen;
+                  setIsFlyoutOpen(willOpen);
+                  if (willOpen) {
+                    startGracePeriod();
+                  } else {
+                    clearFlyoutCloseTimer();
+                  }
+                }
               }}
-              onMouseEnter={handleFlyoutMouseEnter}
+              onMouseEnter={() => hasFollowedCommunities && clearFlyoutCloseTimer()}
+              onMouseLeave={() => hasFollowedCommunities && isFlyoutOpen && startFlyoutCloseTimer()}
             >
               <div className="feeds-compact-main-icon"><FaUsers /></div>
               <div className="feeds-compact-count">{allCommunities.length}</div>
-              <div className={`feeds-compact-arrow ${isFlyoutOpen ? 'open' : ''}`}>▶</div>
+              {hasFollowedCommunities && <div className="feeds-compact-arrow">{isFlyoutOpen ? '◀' : '▶'}</div>}
             </div>
           ) : (
             /* Expanded sidebar: Feeds header with popup */
             <div
-              className={`nav-item feeds-header ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''}`}
+              className={`nav-item feeds-header ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities ? 'no-flyout' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                // Toggle flyout only - don't navigate when clicking the header
-                setIsFlyoutOpen(!isFlyoutOpen);
+                // Navigate to The Commons
+                handleCommunitySelect(townHall);
+                // Only toggle flyout if user has followed communities
+                if (hasFollowedCommunities) {
+                  const willOpen = !isFlyoutOpen;
+                  setIsFlyoutOpen(willOpen);
+                  if (willOpen) {
+                    startGracePeriod();
+                  } else {
+                    clearFlyoutCloseTimer();
+                  }
+                }
               }}
-              onMouseEnter={handleFlyoutMouseEnter}
+              onMouseEnter={() => hasFollowedCommunities && clearFlyoutCloseTimer()}
+              onMouseLeave={() => hasFollowedCommunities && isFlyoutOpen && startFlyoutCloseTimer()}
             >
               <div className="nav-icon"><FaUsers /></div>
               <span className="nav-label">Feeds ({allCommunities.length})</span>
-              <span className={`feeds-arrow ${isFlyoutOpen ? 'expanded' : ''}`}>
-                ▼
-              </span>
+              {hasFollowedCommunities && (
+                <span className="feeds-arrow-toggle">
+                  <span className="arrow-up">▴</span>
+                  <span className="arrow-down">▾</span>
+                </span>
+              )}
             </div>
           )}
 
@@ -319,13 +370,25 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           {isFlyoutOpen && (
             <div
               className={`feeds-flyout ${shouldCollapse ? 'feeds-flyout-collapsed' : 'feeds-flyout-expanded'}`}
-              onMouseEnter={handleFlyoutMouseEnter}
+              onMouseEnter={clearFlyoutCloseTimer}
+              onMouseLeave={startFlyoutCloseTimer}
             >
               <div className="feeds-flyout-header">
                 Feeds ({allCommunities.length})
               </div>
               <div className="feeds-flyout-list">
-                {/* Show only creator communities - The Commons is already in the main sidebar */}
+                {/* The Commons - always first in the list */}
+                <div
+                  className="feeds-flyout-item"
+                  onClick={() => {
+                    handleCommunitySelect(townHall);
+                    setIsFlyoutOpen(false);
+                  }}
+                >
+                  <div className="community-avatar" style={{ background: '#64748b', fontSize: '14px' }}>🏛</div>
+                  <span className="community-name">The Commons</span>
+                </div>
+                {/* Creator communities */}
                 {communities.map((community) => {
                   const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
                   const initial = displayName.charAt(0).toUpperCase();
@@ -357,38 +420,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           )}
         </div>
 
-        {/* The Commons sub-item - always visible under Feeds */}
-        {!shouldCollapse && (
-          <div
-            className="nav-item nav-sub-item"
-            onClick={() => handleCommunitySelect(townHall)}
-            onMouseEnter={handleFlyoutMouseEnter}
-            style={{
-              paddingLeft: 20,
-              fontSize: 13,
-              opacity: 0.9,
-              position: 'relative',
-              marginTop: -4,
-              paddingTop: 6,
-              paddingBottom: 6
-            }}
-          >
-            {/* Tree connector line */}
-            <div style={{
-              position: 'absolute',
-              left: 12,
-              top: -4,
-              bottom: '50%',
-              width: 12,
-              borderLeft: '1px solid #64748b',
-              borderBottom: '1px solid #64748b',
-              borderBottomLeftRadius: 4
-            }} />
-            <div className="nav-icon" style={{ fontSize: 14, marginLeft: 8 }}>🏛</div>
-            <span className="nav-label">The Commons</span>
-          </div>
-        )}
-
         {/* Discover item */}
         <div
           className={`nav-item ${activeMenu === 'Discover' ? 'active' : ''}`}
@@ -396,6 +427,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
             showTooltipTemporarily(1);
             handleMenuClick('Discover');
           }}
+          onMouseEnter={() => isFlyoutOpen && !isInGracePeriodRef.current && setIsFlyoutOpen(false)}
         >
           <div className="nav-icon"><FaSearch /></div>
           <span className="nav-label">Discover</span>
@@ -413,6 +445,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               showTooltipTemporarily(index + primaryItems.length);
               handleMenuClick(item.label);
             }}
+            onMouseEnter={() => isFlyoutOpen && !isInGracePeriodRef.current && setIsFlyoutOpen(false)}
           >
             <div className="nav-icon">{item.icon}</div>
             <span className="nav-label">{item.displayLabel || item.label}</span>
@@ -431,6 +464,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               showTooltipTemporarily(index + primaryItems.length + personalItems.length);
               handleMenuClick(item.label);
             }}
+            onMouseEnter={() => isFlyoutOpen && !isInGracePeriodRef.current && setIsFlyoutOpen(false)}
           >
             <div className="nav-icon">{item.icon}</div>
             <span className="nav-label">{item.displayLabel || item.label}</span>
@@ -439,6 +473,52 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
             </span>
           </div>
         ))}
+
+        {/* Divider line */}
+        <div className="nav-section-divider" />
+
+        {/* Scrollable Communities Section */}
+        <div 
+          className="sidebar-communities-section"
+          onMouseEnter={() => isFlyoutOpen && !isInGracePeriodRef.current && setIsFlyoutOpen(false)}
+        >
+          <div className="communities-header">
+            <span className="communities-title">My Feeds</span>
+          </div>
+          <div className="communities-list">
+            {/* The Commons - always first */}
+            <div
+              className="community-item"
+              onClick={() => handleCommunitySelect(townHall)}
+            >
+              <div className="community-avatar town-hall-avatar">🏛</div>
+              <span className="community-name">The Commons</span>
+            </div>
+            {/* Followed creator communities */}
+            {communities.map((community) => {
+              const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
+              const initial = displayName.charAt(0).toUpperCase();
+              return (
+                <div
+                  key={community.id}
+                  className="community-item"
+                  onClick={() => handleCommunitySelect(community)}
+                >
+                  {community.avatar ? (
+                    <img
+                      src={community.avatar}
+                      alt={displayName}
+                      className="community-avatar community-avatar-img"
+                    />
+                  ) : (
+                    <div className="community-avatar">{initial}</div>
+                  )}
+                  <span className="community-name">{displayName}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
       </nav>
     </div>
