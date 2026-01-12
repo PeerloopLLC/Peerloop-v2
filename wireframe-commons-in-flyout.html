@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe: Commons in Flyout</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #e2e8f0;
+      padding: 40px;
+      min-height: 100vh;
+    }
+    h1 {
+      color: #1d9bf0;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+    .subtitle {
+      color: #94a3b8;
+      margin-bottom: 40px;
+      font-size: 14px;
+    }
+    .comparison {
+      display: flex;
+      gap: 60px;
+      flex-wrap: wrap;
+    }
+    .version {
+      flex: 1;
+      min-width: 300px;
+    }
+    .version h2 {
+      font-size: 16px;
+      color: #94a3b8;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .version h2.proposed {
+      color: #22c55e;
+    }
+
+    /* Sidebar mockup */
+    .sidebar-mock {
+      width: 220px;
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 16px 0;
+      position: relative;
+    }
+    .logo {
+      text-align: center;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .logo-icon {
+      font-size: 28px;
+      color: #1d9bf0;
+    }
+    .logo-text {
+      font-size: 9px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .nav-item.active {
+      background: rgba(29, 155, 240, 0.1);
+    }
+    .nav-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+    .nav-label {
+      font-size: 15px;
+    }
+
+    /* Sub-item (The Commons in current) */
+    .nav-sub-item {
+      padding-left: 32px;
+      font-size: 13px;
+      opacity: 0.9;
+      position: relative;
+    }
+    .tree-line {
+      position: absolute;
+      left: 20px;
+      top: -8px;
+      width: 12px;
+      height: 20px;
+      border-left: 1px solid #64748b;
+      border-bottom: 1px solid #64748b;
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Flyout popup */
+    .flyout {
+      position: absolute;
+      left: 230px;
+      top: 80px;
+      width: 200px;
+      background: #1e293b;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      padding: 8px 0;
+      z-index: 10;
+    }
+    .flyout-header {
+      padding: 12px 16px 8px;
+      font-size: 13px;
+      color: #94a3b8;
+      border-bottom: 1px solid #334155;
+      margin-bottom: 4px;
+    }
+    .flyout-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+    .flyout-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .flyout-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #3b82f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .flyout-avatar.commons {
+      background: #64748b;
+      font-size: 14px;
+    }
+    .flyout-name {
+      font-size: 14px;
+    }
+
+    /* Removed indicator */
+    .removed {
+      text-decoration: line-through;
+      opacity: 0.4;
+    }
+    .removed-label {
+      background: #ef4444;
+      color: white;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+      text-transform: uppercase;
+    }
+    .new-label {
+      background: #22c55e;
+      color: white;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+      text-transform: uppercase;
+    }
+
+    /* Arrow indicator */
+    .feeds-arrow {
+      margin-left: auto;
+      font-size: 10px;
+      color: #64748b;
+    }
+
+    /* Notes */
+    .notes {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      border-left: 3px solid #1d9bf0;
+    }
+    .notes h3 {
+      font-size: 14px;
+      color: #1d9bf0;
+      margin-bottom: 12px;
+    }
+    .notes ul {
+      list-style: none;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .notes li {
+      padding: 4px 0;
+      padding-left: 16px;
+      position: relative;
+    }
+    .notes li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <h1>Wireframe: Move Commons to Flyout</h1>
+  <p class="subtitle">Remove "The Commons" from sidebar listing, add it to the flyout popup instead</p>
+
+  <div class="comparison">
+    <!-- CURRENT -->
+    <div class="version">
+      <h2>Current</h2>
+      <div class="sidebar-mock">
+        <div class="logo">
+          <div class="logo-icon">∞</div>
+          <div class="logo-text">PeerLoop</div>
+        </div>
+
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (4)</span>
+          <span class="feeds-arrow">▾</span>
+        </div>
+
+        <!-- The Commons sub-item (CURRENT - to be removed) -->
+        <div class="nav-item nav-sub-item">
+          <div class="tree-line"></div>
+          <div class="nav-icon">🏛</div>
+          <span class="nav-label">The Commons</span>
+          <span class="removed-label">Remove</span>
+        </div>
+
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+
+        <div class="nav-item">
+          <div class="nav-icon">📚</div>
+          <span class="nav-label">My Courses</span>
+        </div>
+
+        <!-- Flyout (current - no Commons) -->
+        <div class="flyout">
+          <div class="flyout-header">Feeds (4)</div>
+          <div class="flyout-item">
+            <div class="flyout-avatar">S</div>
+            <span class="flyout-name">Sarah Chen</span>
+          </div>
+          <div class="flyout-item">
+            <div class="flyout-avatar" style="background:#8b5cf6">M</div>
+            <span class="flyout-name">Marcus Johnson</span>
+          </div>
+          <div class="flyout-item">
+            <div class="flyout-avatar" style="background:#ec4899">E</div>
+            <span class="flyout-name">Elena Rodriguez</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROPOSED -->
+    <div class="version">
+      <h2 class="proposed">Proposed</h2>
+      <div class="sidebar-mock">
+        <div class="logo">
+          <div class="logo-icon">∞</div>
+          <div class="logo-text">PeerLoop</div>
+        </div>
+
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (4)</span>
+          <span class="feeds-arrow">▾</span>
+        </div>
+
+        <!-- No sub-item - cleaner! -->
+
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+
+        <div class="nav-item">
+          <div class="nav-icon">📚</div>
+          <span class="nav-label">My Courses</span>
+        </div>
+
+        <!-- Flyout (proposed - with Commons at top) -->
+        <div class="flyout">
+          <div class="flyout-header">Feeds (4)</div>
+          <!-- Commons added to flyout -->
+          <div class="flyout-item">
+            <div class="flyout-avatar commons">🏛</div>
+            <span class="flyout-name">The Commons</span>
+            <span class="new-label">Added</span>
+          </div>
+          <div class="flyout-item">
+            <div class="flyout-avatar">S</div>
+            <span class="flyout-name">Sarah Chen</span>
+          </div>
+          <div class="flyout-item">
+            <div class="flyout-avatar" style="background:#8b5cf6">M</div>
+            <span class="flyout-name">Marcus Johnson</span>
+          </div>
+          <div class="flyout-item">
+            <div class="flyout-avatar" style="background:#ec4899">E</div>
+            <span class="flyout-name">Elena Rodriguez</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h3>Changes Summary</h3>
+    <ul>
+      <li>Remove "The Commons" sub-item from below Feeds in sidebar</li>
+      <li>Add "The Commons" as first item in flyout popup</li>
+      <li>Cleaner sidebar with less visual clutter (no tree connector line)</li>
+      <li>All feeds/communities in one place (the flyout)</li>
+      <li>Clicking "Feeds" still navigates to The Commons by default</li>
+    </ul>
+  </div>
+</body>
+</html>
