@@ -166,7 +166,7 @@ const DiscoverView = ({
               marginBottom: 16,
               color: isDarkMode ? '#f5f5f7' : '#111827'
             }}>
-              Discover
+              Discover Communities and Courses
             </h1>
 
             {/* Search Bar */}
@@ -441,7 +441,7 @@ const DiscoverView = ({
                             color: isDarkMode ? '#f5f5f7' : '#111827',
                             marginBottom: 4
                           }}>
-                            {highlightMatch(instructor.name, searchQuery)}
+                            {highlightMatch(instructor.name, searchQuery)} Community
                           </div>
                           <div style={{
                             fontSize: 14,
@@ -466,7 +466,7 @@ const DiscoverView = ({
                           style={{
                             padding: '8px 20px',
                             borderRadius: 20,
-                            background: isFollowing ? '#64748b' : '#1d9bf0',
+                            background: '#1d9bf0',
                             color: '#fff',
                             border: 'none',
                             fontSize: 14,
@@ -637,7 +637,7 @@ const DiscoverView = ({
                                           onMouseEnter={(e) => {
                                             if (isFollowed) {
                                               e.currentTarget.style.background = '#ef4444';
-                                              e.currentTarget.textContent = 'Unfollow';
+                                              e.currentTarget.textContent = 'Unfollow Course';
                                             } else {
                                               e.currentTarget.style.background = '#1a8cd8';
                                             }
@@ -645,11 +645,11 @@ const DiscoverView = ({
                                           onMouseLeave={(e) => {
                                             e.currentTarget.style.background = '#1d9bf0';
                                             if (isFollowed) {
-                                              e.currentTarget.textContent = 'Followed';
+                                              e.currentTarget.textContent = 'Following Course';
                                             }
                                           }}
                                         >
-                                          {isFollowed ? 'Followed' : 'Follow'}
+                                          {isFollowed ? 'Following Course' : 'Follow Course'}
                                         </button>
                                       );
                                     } else {

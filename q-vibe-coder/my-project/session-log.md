@@ -542,6 +542,50 @@
 - Continue feature development
 - Address pending task: Fix Sarah's full access loading
 
+---
+
+### Session 14
+**Date:** January 12, 2026
+**Phase:** Building - Community Navigation Enhancements
+
+**What we did:**
+
+- **Added Scroll Functionality to Community Navigation Pills:**
+  - Issue: When user has many followed communities, the pills row would overflow but there was no way to scroll to see all of them
+  - Added state variables for scroll position and drag tracking (`communityPillsRef`, `showCommunityPillsLeftArrow`, `showCommunityPillsRightArrow`, etc.)
+  - Added useEffect to initialize arrow visibility on mount
+  - Added scroll functions: `updateCommunityPillsArrows()`, `scrollCommunityPills(direction)`
+  - Added drag handlers: `handleCommunityPillsMouseDown/Move/Up/Leave`
+  - Updated pills container with ref, onScroll, and mouse event handlers
+  - Added left/right arrow buttons that appear conditionally when content overflows
+  - Now users can click arrows or drag to scroll through all community pills
+
+- **Researched 3rd Navigation Toggle Option:**
+  - User wants a dropdown selector within the community profile card (in addition to existing Pills and Dropdown modes)
+  - Researched how other platforms handle community/workspace switching:
+    - Discord: Server name at top is clickable dropdown
+    - Slack: Workspace name in header with prominent dropdown indicator
+    - Twitter/X: Avatar + name click reveals account switcher
+  - Provided 10 wireframe options across two rounds:
+    - First round (5 options): Avatar with chevron overlay, ring indicator, swap icon, stacked avatars, inline chevron
+    - Second round (5 options - MORE OBVIOUS): Big clickable avatar box, avatar with button below, full-width selector bar, avatar+name as one big button, floating action button style
+  - User prefers bigger/more obvious options
+  - Recommended: Option C (Full Width Selector Bar) or Option D (Avatar + Name as Big Button)
+
+**Files modified:**
+- Community.js (added community pills scroll functionality - state, useEffect, scroll functions, render updates)
+
+**Technical notes:**
+- Community pills scroll uses same pattern as existing course pills scroll
+- Arrow buttons appear at 28px circular with chevron icons
+- Scroll amount: 150px per click with smooth behavior
+- Drag scrolling multiplier: 1.5x for responsive feel
+
+**Next session:**
+- Implement chosen navigation toggle option (profile card dropdown)
+- User to decide between Option C (full-width bar) or Option D (avatar+name button)
+- Test and polish the new navigation mode
+
 <!-- Add more sessions as needed -->
 
 ---

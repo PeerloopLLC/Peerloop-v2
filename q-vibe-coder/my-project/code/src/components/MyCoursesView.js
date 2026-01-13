@@ -358,7 +358,7 @@ const MyCoursesView = ({
                           style={{
                             padding: '8px 20px',
                             borderRadius: 20,
-                            background: isFollowing ? '#64748b' : '#1d9bf0',
+                            background: '#1d9bf0',
                             color: '#fff',
                             border: 'none',
                             fontSize: 14,
@@ -512,7 +512,7 @@ const MyCoursesView = ({
                                   style={{
                                     padding: '4px 12px',
                                     borderRadius: 12,
-                                    background: isFollowed ? '#64748b' : '#1d9bf0',
+                                    background: '#1d9bf0',
                                     color: '#fff',
                                     border: 'none',
                                     fontSize: 12,
@@ -521,7 +521,7 @@ const MyCoursesView = ({
                                     flexShrink: 0
                                   }}
                                 >
-                                  {isFollowed ? 'Unfollow' : 'Follow'}
+                                  {isFollowed ? 'Unfollow Course' : 'Follow Course'}
                                 </button>
                               </div>
 

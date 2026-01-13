@@ -196,7 +196,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
    * Primary menu items (top section)
    */
   const primaryItems = [
-    { icon: <FaUsers />, label: 'Feeds', displayLabel: 'Feeds' }, // Feeds (was My Communities)
+    { icon: <FaUsers />, label: 'Feeds', displayLabel: 'My Feeds' }, // Feeds (was My Communities)
     { icon: <FaSearch />, label: 'Discover', displayLabel: 'Discover' }, // Discover (unified search for communities & courses)
     // Courses menu item removed - functionality still available via Discover
     // { icon: <FaBook />, label: 'Courses', displayLabel: 'Courses' }, // Browse courses
@@ -269,6 +269,42 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
   // Flyout only works when user has followed at least one community
   const hasFollowedCommunities = communities.length > 0;
 
+  // Community navigation style preference from Profile settings
+  const [communityNavStyle, setCommunityNavStyle] = useState(() => {
+    const saved = localStorage.getItem('communityNavStyle');
+    return saved || 'pills'; // Default to pills
+  });
+
+  // Listen for community nav style changes from Profile settings
+  useEffect(() => {
+    // Handle changes from other tabs
+    const handleStorageChange = (e) => {
+      if (e.key === 'communityNavStyle') {
+        const newStyle = e.newValue || 'pills';
+        setCommunityNavStyle(newStyle);
+        // Close flyout if switching to pills mode
+        if (newStyle === 'pills') {
+          setIsFlyoutOpen(false);
+        }
+      }
+    };
+    // Handle changes from same tab (custom event from Profile)
+    const handleNavStyleChange = (e) => {
+      const newStyle = e.detail || 'pills';
+      setCommunityNavStyle(newStyle);
+      // Close flyout if switching to pills mode
+      if (newStyle === 'pills') {
+        setIsFlyoutOpen(false);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('communityNavStyleChanged', handleNavStyleChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('communityNavStyleChanged', handleNavStyleChange);
+    };
+  }, []);
+
   return (
     <div className={`sidebar ${shouldCollapse ? 'sidebar-collapsed' : ''}`}>
       {/* Header section with logo */}
@@ -310,13 +346,13 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           {shouldCollapse ? (
             /* Collapsed sidebar: Compact feed button */
             <div
-              className={`feeds-compact-btn ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities ? 'no-flyout' : ''}`}
+              className={`feeds-compact-btn ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities || communityNavStyle === 'pills' ? 'no-flyout' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
                 // Navigate to The Commons
                 handleCommunitySelect(townHall);
-                // Only toggle flyout if user has followed communities
-                if (hasFollowedCommunities) {
+                // Only toggle flyout if user has followed communities AND dropdown mode is enabled
+                if (hasFollowedCommunities && communityNavStyle === 'dropdown') {
                   const willOpen = !isFlyoutOpen;
                   setIsFlyoutOpen(willOpen);
                   if (willOpen) {
@@ -326,23 +362,23 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                   }
                 }
               }}
-              onMouseEnter={() => hasFollowedCommunities && clearFlyoutCloseTimer()}
-              onMouseLeave={() => hasFollowedCommunities && isFlyoutOpen && startFlyoutCloseTimer()}
+              onMouseEnter={() => hasFollowedCommunities && communityNavStyle === 'dropdown' && clearFlyoutCloseTimer()}
+              onMouseLeave={() => hasFollowedCommunities && communityNavStyle === 'dropdown' && isFlyoutOpen && startFlyoutCloseTimer()}
             >
               <div className="feeds-compact-main-icon"><FaUsers /></div>
               <div className="feeds-compact-count">{allCommunities.length}</div>
-              {hasFollowedCommunities && <div className="feeds-compact-arrow">{isFlyoutOpen ? '◀' : '▶'}</div>}
+              {hasFollowedCommunities && communityNavStyle === 'dropdown' && <div className="feeds-compact-arrow">{isFlyoutOpen ? '◀' : '▶'}</div>}
             </div>
           ) : (
             /* Expanded sidebar: Feeds header with popup */
             <div
-              className={`nav-item feeds-header ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities ? 'no-flyout' : ''}`}
+              className={`nav-item feeds-header ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities || communityNavStyle === 'pills' ? 'no-flyout' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
                 // Navigate to The Commons
                 handleCommunitySelect(townHall);
-                // Only toggle flyout if user has followed communities
-                if (hasFollowedCommunities) {
+                // Only toggle flyout if user has followed communities AND dropdown mode is enabled
+                if (hasFollowedCommunities && communityNavStyle === 'dropdown') {
                   const willOpen = !isFlyoutOpen;
                   setIsFlyoutOpen(willOpen);
                   if (willOpen) {
@@ -352,12 +388,12 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                   }
                 }
               }}
-              onMouseEnter={() => hasFollowedCommunities && clearFlyoutCloseTimer()}
-              onMouseLeave={() => hasFollowedCommunities && isFlyoutOpen && startFlyoutCloseTimer()}
+              onMouseEnter={() => hasFollowedCommunities && communityNavStyle === 'dropdown' && clearFlyoutCloseTimer()}
+              onMouseLeave={() => hasFollowedCommunities && communityNavStyle === 'dropdown' && isFlyoutOpen && startFlyoutCloseTimer()}
             >
               <div className="nav-icon"><FaUsers /></div>
-              <span className="nav-label">Feeds ({allCommunities.length})</span>
-              {hasFollowedCommunities && (
+              <span className="nav-label">My Feeds ({allCommunities.length})</span>
+              {hasFollowedCommunities && communityNavStyle === 'dropdown' && (
                 <span className="feeds-arrow-toggle">
                   <span className="arrow-up">▴</span>
                   <span className="arrow-down">▾</span>
@@ -366,15 +402,15 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
             </div>
           )}
 
-          {/* Flyout popup panel - works for both collapsed and expanded sidebar */}
-          {isFlyoutOpen && (
+          {/* Flyout popup panel - only shown in dropdown mode */}
+          {isFlyoutOpen && communityNavStyle === 'dropdown' && (
             <div
               className={`feeds-flyout ${shouldCollapse ? 'feeds-flyout-collapsed' : 'feeds-flyout-expanded'}`}
               onMouseEnter={clearFlyoutCloseTimer}
               onMouseLeave={startFlyoutCloseTimer}
             >
               <div className="feeds-flyout-header">
-                Feeds ({allCommunities.length})
+                My Feeds ({allCommunities.length})
               </div>
               <div className="feeds-flyout-list">
                 {/* The Commons - always first in the list */}
@@ -411,7 +447,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                       ) : (
                         <div className="community-avatar">{initial}</div>
                       )}
-                      <span className="community-name">{displayName}</span>
+                      <span className="community-name">{displayName} Community</span>
                     </div>
                   );
                 })}
@@ -478,7 +514,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
         <div className="nav-section-divider" />
 
         {/* Scrollable Communities Section */}
-        <div 
+        <div
           className="sidebar-communities-section"
           onMouseEnter={() => isFlyoutOpen && !isInGracePeriodRef.current && setIsFlyoutOpen(false)}
         >
@@ -513,7 +549,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                   ) : (
                     <div className="community-avatar">{initial}</div>
                   )}
-                  <span className="community-name">{displayName}</span>
+                  <span className="community-name">{displayName} Community</span>
                 </div>
               );
             })}

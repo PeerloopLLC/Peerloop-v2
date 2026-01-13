@@ -34,13 +34,27 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const [dragStartX, setDragStartX] = useState(0); // Starting X position of drag
   const [dragScrollLeft, setDragScrollLeft] = useState(0); // Starting scroll position of drag
 
-  // Pills scrolling state
+  // Community navigation style preference from Profile settings
+  const [communityNavStyle, setCommunityNavStyle] = useState(() => {
+    const saved = localStorage.getItem('communityNavStyle');
+    return saved || 'pills'; // Default to pills
+  });
+
+  // Pills scrolling state (course pills within a creator's community)
   const pillsContainerRef = useRef(null);
   const [showPillsLeftArrow, setShowPillsLeftArrow] = useState(false);
   const [showPillsRightArrow, setShowPillsRightArrow] = useState(false);
   const [isPillsDragging, setIsPillsDragging] = useState(false);
   const [pillsDragStartX, setPillsDragStartX] = useState(0);
   const [pillsDragScrollLeft, setPillsDragScrollLeft] = useState(0);
+
+  // Community navigation pills scrolling state (top-level community selector)
+  const communityPillsRef = useRef(null);
+  const [showCommunityPillsLeftArrow, setShowCommunityPillsLeftArrow] = useState(false);
+  const [showCommunityPillsRightArrow, setShowCommunityPillsRightArrow] = useState(false);
+  const [isCommunityPillsDragging, setIsCommunityPillsDragging] = useState(false);
+  const [communityPillsDragStartX, setCommunityPillsDragStartX] = useState(0);
+  const [communityPillsDragScrollLeft, setCommunityPillsDragScrollLeft] = useState(0);
 
   // Collapsible profile card state
   const [isProfileCollapsed, setIsProfileCollapsed] = useState(false);
@@ -63,7 +77,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     init();
   }, [currentUser?.id]);
 
-  // Initialize pills arrow visibility
+  // Initialize pills arrow visibility (course pills within creator)
   useEffect(() => {
     // Small delay to ensure DOM is ready
     const timer = setTimeout(() => {
@@ -75,6 +89,38 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     }, 100);
     return () => clearTimeout(timer);
   }, [selectedCreatorId, communityMode]);
+
+  // Initialize community pills arrow visibility (top-level navigation)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (communityPillsRef.current) {
+        const { scrollWidth, clientWidth } = communityPillsRef.current;
+        setShowCommunityPillsRightArrow(scrollWidth > clientWidth);
+        setShowCommunityPillsLeftArrow(false);
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [communityNavStyle, followedCommunities]);
+
+  // Listen for community nav style changes from Profile settings
+  useEffect(() => {
+    // Handle changes from other tabs
+    const handleStorageChange = (e) => {
+      if (e.key === 'communityNavStyle') {
+        setCommunityNavStyle(e.newValue || 'pills');
+      }
+    };
+    // Handle changes from same tab (custom event from Profile)
+    const handleNavStyleChange = (e) => {
+      setCommunityNavStyle(e.detail || 'pills');
+    };
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('communityNavStyleChanged', handleNavStyleChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('communityNavStyleChanged', handleNavStyleChange);
+    };
+  }, []);
 
   // Check for pending creator navigation from "Go to Community" button or sidebar selection
   useEffect(() => {
@@ -464,6 +510,59 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     }
   };
 
+  // Community navigation pills scroll functions
+  const updateCommunityPillsArrows = () => {
+    if (communityPillsRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = communityPillsRef.current;
+      setShowCommunityPillsLeftArrow(scrollLeft > 0);
+      setShowCommunityPillsRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  const scrollCommunityPills = (direction) => {
+    if (communityPillsRef.current) {
+      const scrollAmount = 150;
+      communityPillsRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+      setTimeout(updateCommunityPillsArrows, 300);
+    }
+  };
+
+  const handleCommunityPillsMouseDown = (e) => {
+    if (!communityPillsRef.current) return;
+    setIsCommunityPillsDragging(true);
+    setCommunityPillsDragStartX(e.pageX - communityPillsRef.current.offsetLeft);
+    setCommunityPillsDragScrollLeft(communityPillsRef.current.scrollLeft);
+    communityPillsRef.current.style.cursor = 'grabbing';
+  };
+
+  const handleCommunityPillsMouseMove = (e) => {
+    if (!isCommunityPillsDragging || !communityPillsRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - communityPillsRef.current.offsetLeft;
+    const walk = (x - communityPillsDragStartX) * 1.5;
+    communityPillsRef.current.scrollLeft = communityPillsDragScrollLeft - walk;
+    updateCommunityPillsArrows();
+  };
+
+  const handleCommunityPillsMouseUp = () => {
+    setIsCommunityPillsDragging(false);
+    if (communityPillsRef.current) {
+      communityPillsRef.current.style.cursor = 'grab';
+    }
+  };
+
+  const handleCommunityPillsMouseLeave = () => {
+    if (isCommunityPillsDragging) {
+      setIsCommunityPillsDragging(false);
+      if (communityPillsRef.current) {
+        communityPillsRef.current.style.cursor = 'grab';
+      }
+    }
+  };
+
   const handleCommunityClick = (community) => {
     setSelectedCommunity(community);
   };
@@ -479,11 +578,15 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       setSelectedCourseFilters([]);
       setOpenCreatorDropdown(null);
     }
-    // Auto-set post audience to the selected creator (or 'everyone' for Home)
+    // Auto-set post audience and switch community mode
     if (tabId === 'Home') {
+      setCommunityMode('hub');
+      setSelectedCreatorId(null);
       setPostAudience('everyone');
     } else {
       // tabId is the creator id when clicking a creator tab
+      setCommunityMode('creators');
+      setSelectedCreatorId(tabId);
       setPostAudience(tabId);
     }
   };
@@ -795,6 +898,157 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       <div className="community-three-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
         <div ref={feedContainerRef} className="community-center-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
 
+          {/* Horizontal tabs for switching between communities - AT THE VERY TOP */}
+          {communityNavStyle === 'pills' && (
+          <div className="community-tabs-section" style={{
+            padding: '12px 16px',
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+            background: isDarkMode ? '#000' : '#fff',
+            position: 'sticky',
+            top: 0,
+            zIndex: 20
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}>
+              {/* Left Arrow */}
+              {showCommunityPillsLeftArrow && (
+                <button
+                  onClick={() => scrollCommunityPills('left')}
+                  style={{
+                    background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                    border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                    borderRadius: '50%',
+                    width: 28,
+                    height: 28,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  <FaChevronLeft size={12} />
+                </button>
+              )}
+              {/* Scrollable Community Pills Container */}
+              <div
+                ref={communityPillsRef}
+                onScroll={updateCommunityPillsArrows}
+                onMouseDown={handleCommunityPillsMouseDown}
+                onMouseMove={handleCommunityPillsMouseMove}
+                onMouseUp={handleCommunityPillsMouseUp}
+                onMouseLeave={handleCommunityPillsMouseLeave}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  overflowX: 'auto',
+                  overflowY: 'hidden',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch',
+                  cursor: 'grab',
+                  flex: 1,
+                  userSelect: 'none'
+                }}
+              >
+                {/* The Commons Pill */}
+                <button
+                  onClick={() => handleTabClick('Home')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '8px 16px',
+                    borderRadius: 20,
+                    border: communityMode === 'hub'
+                      ? '2px solid #1d9bf0'
+                      : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                    background: communityMode === 'hub'
+                      ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                      : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                    color: communityMode === 'hub'
+                      ? '#1d9bf0'
+                      : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <FaLandmark size={14} />
+                  <span>The Commons</span>
+                </button>
+
+                {/* Creator Pills */}
+                {groupedByCreator.map(creator => {
+                  const isSelected = communityMode === 'creators' && selectedCreatorId === creator.id;
+                  return (
+                    <button
+                      key={creator.id}
+                      onClick={() => handleTabClick(creator.id)}
+                      title={`${creator.name} Community - ${creator.followedCourseIds.length} course(s) joined`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: '8px 16px',
+                        borderRadius: 20,
+                        border: isSelected
+                          ? '2px solid #1d9bf0'
+                          : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                        background: isSelected
+                          ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                          : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                        color: isSelected
+                          ? '#1d9bf0'
+                          : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <span>{creator.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {/* Right Arrow */}
+              {showCommunityPillsRightArrow && (
+                <button
+                  onClick={() => scrollCommunityPills('right')}
+                  style={{
+                    background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                    border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                    borderRadius: '50%',
+                    width: 28,
+                    height: 28,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  <FaChevronRight size={12} />
+                </button>
+              )}
+            </div>
+          </div>
+          )}
+
           {/* Town Hall Profile Card - Shows when Town Hall is selected */}
           {communityMode === 'hub' && (
             <div style={{
@@ -803,7 +1057,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               padding: '12px 16px',
               margin: '8px 16px 0 16px',
               position: 'sticky',
-              top: 0,
+              top: communityNavStyle === 'pills' ? 57 : 0,
               zIndex: 10,
               border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
               boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.1)'
@@ -886,7 +1140,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 padding: isProfileCollapsed ? '8px 16px' : '12px 16px',
                 margin: '8px 16px 0 16px',
                 position: 'sticky',
-                top: 0,
+                top: communityNavStyle === 'pills' ? 57 : 0,
                 zIndex: 10,
                 border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
                 boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.1)',
@@ -914,7 +1168,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                       onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                     >
-                      {instructor.name}
+                      {instructor.name} Community
                     </div>
                   </div>
                 ) : (
@@ -980,7 +1234,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                             onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                             onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                           >
-                            {instructor.name}
+                            {instructor.name} Community
                           </div>
                           <div
                             onClick={() => {
@@ -1000,6 +1254,42 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           >
                             Go to Profile
                           </div>
+                          {/* Spacer to push View All Courses to the right */}
+                          <div style={{ flex: 1 }} />
+                          {/* View All Courses Button - Top Right */}
+                          <button
+                            onClick={() => {
+                              if (onViewCreatorProfile) {
+                                onViewCreatorProfile(effectiveCreator);
+                              }
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              padding: '6px 14px',
+                              borderRadius: 16,
+                              border: '2px solid #6366f1',
+                              background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
+                              color: '#6366f1',
+                              fontSize: 13,
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                              flexShrink: 0,
+                              transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = '#6366f1';
+                              e.currentTarget.style.color = '#fff';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)';
+                              e.currentTarget.style.color = '#6366f1';
+                            }}
+                          >
+                            View All Courses
+                          </button>
                         </div>
                         <div style={{
                           fontSize: 14,
@@ -1169,37 +1459,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           );
                         })}
 
-                        {/* View All Courses Pill */}
-                        {hasMoreCourses && (
-                          <button
-                            onClick={() => {
-                              // Navigate to creator profile to see all courses
-                              if (onViewCreatorProfile) {
-                                onViewCreatorProfile(effectiveCreator);
-                              }
-                            }}
-                            className="course-pill"
-                            title="View all courses from this creator"
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              padding: '8px 16px',
-                              borderRadius: 20,
-                              border: '2px solid #6366f1',
-                              background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
-                              color: '#6366f1',
-                              fontSize: 14,
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                              flexShrink: 0,
-                              transition: 'all 0.2s ease'
-                            }}
-                          >
-                            View all courses
-                          </button>
-                        )}
+                        {/* View All Courses button moved to top right of profile card */}
                       </div>
                       {/* Right Arrow */}
                       {showPillsRightArrow && (
@@ -1229,135 +1489,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               </div>
             );
           })()}
-
-          {/* REMOVED: Old tabs code - replaced with toggle above */}
-          {false && <div className="old-tabs-removed">
-            <div className="community-tabs-wrapper">
-              {showLeftArrow && (
-                <button 
-                  className="tab-scroll-arrow left"
-                  onClick={() => scrollTabs('left')}
-                  aria-label="Scroll tabs left"
-                >
-                  <FaChevronLeft />
-                </button>
-              )}
-              
-              <div 
-                className="community-tabs-scroll-old"
-                onScroll={checkScrollArrows}
-              >
-                <button
-                  className={`community-tab-btn ${activeTab === 'Home' ? 'active' : ''}`}
-                  onClick={() => handleTabClick('Home')}
-                >
-                  <FaHome />
-                  <span>Home</span>
-                </button>
-                
-                {groupedByCreator.map(creator => (
-                  <div key={creator.id} className="community-tab-wrapper">
-                    <button
-                      className={`community-tab-btn ${activeTab === creator.id ? 'active' : ''}`}
-                      onClick={() => {
-                        if (activeTab !== creator.id) {
-                          handleTabClick(creator.id);
-                          setSelectedCourseFilters([]);
-                        }
-                        setOpenCreatorDropdown(null);
-                      }}
-                      title={`${creator.name} - ${creator.followedCourseIds.length} course(s) joined`}
-                    >
-                      <span>{creator.name.length > 15 ? creator.name.substring(0, 13) + '...' : creator.name}</span>
-                      <span 
-                        style={{ fontSize: 10, marginLeft: 4, padding: '4px', cursor: 'pointer' }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (openCreatorDropdown === creator.id) {
-                            setOpenCreatorDropdown(null);
-                          } else {
-                            const button = e.target.closest('.community-tab-btn');
-                            if (button) {
-                              const rect = button.getBoundingClientRect();
-                              const dropdownWidth = 280;
-                              const viewportWidth = window.innerWidth;
-                              const margin = 16;
-                              
-                              // Always constrain: never let dropdown exceed right edge
-                              let leftPos = Math.min(rect.left, viewportWidth - dropdownWidth - margin);
-                              
-                              // Ensure it doesn't go off left edge
-                              leftPos = Math.max(margin, leftPos);
-                              
-                              setDropdownPosition({
-                                top: rect.bottom + 4,
-                                left: leftPos,
-                                useRight: false
-                              });
-                            }
-                            setOpenCreatorDropdown(creator.id);
-                          }
-                        }}
-                      >▼</span>
-                    </button>
-                    
-                    {/* Minimalist dropdown - rendered via Portal to escape transform context */}
-                    {openCreatorDropdown === creator.id && ReactDOM.createPortal(
-                      <div 
-                        className="community-tab-dropdown"
-                        style={{
-                          position: 'fixed',
-                          top: dropdownPosition.top,
-                          left: dropdownPosition.left,
-                          background: isDarkMode ? '#16181c' : '#fff',
-                          border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-                          borderRadius: 8,
-                          boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.4)' : '0 2px 12px rgba(0,0,0,0.1)',
-                          zIndex: 99999,
-                          width: 280,
-                          padding: '4px 0'
-                        }}>
-                        {/* Unfollow Creator option */}
-                        <div
-                          style={{
-                            padding: '8px 12px',
-                            cursor: 'pointer',
-                            fontSize: 14,
-                            color: '#dc2626',
-                            fontWeight: 500
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            // Remove this creator from followedCommunities
-                            actualSetFollowedCommunities(prev =>
-                              prev.filter(c => c.id !== creator.id)
-                            );
-                            setOpenCreatorDropdown(null);
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
-                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                        >
-                          Leave Community
-                        </div>
-                      </div>,
-                      document.body
-                    )}
-                  </div>
-                ))}
-              </div>
-              
-              {showRightArrow && (
-                <button 
-                  className="tab-scroll-arrow right"
-                  onClick={() => scrollTabs('right')}
-                  aria-label="Scroll tabs right"
-                >
-                  <FaChevronRight />
-                </button>
-              )}
-            </div>
-          </div>}
 
           {/* Feed Content - slightly lighter to show card shadow */}
           <div className="community-feed-content" style={{ background: isDarkMode ? '#050505' : '#fff' }}>

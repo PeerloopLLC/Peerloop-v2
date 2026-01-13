@@ -49,7 +49,8 @@ const BrowseView = ({
   isCreatorFollowed,
   hasAnyCreatorCourseFollowed,
   handleFollowInstructor,
-  handleFollowCourse
+  handleFollowCourse,
+  onRestoreCourseView
 }) => {
   // Render instructor profile detail view
   const renderInstructorProfile = () => {
@@ -85,10 +86,12 @@ const BrowseView = ({
                 setPreviousBrowseContext(null);
                 if (onMenuChange) onMenuChange('My Courses');
               } else if (previousBrowseContext?.type === 'course' && previousBrowseContext.course) {
+                // Restore the course view in MainContent (PurchasedCourseDetail)
                 setSelectedInstructor(null);
-                setSelectedCourse(previousBrowseContext.course);
-                setActiveTopMenu('courses');
                 setPreviousBrowseContext(null);
+                if (onRestoreCourseView) {
+                  onRestoreCourseView(previousBrowseContext.course);
+                }
               } else if (previousBrowseContext?.type === 'courseList') {
                 setSelectedInstructor(null);
                 setActiveTopMenu('courses');
@@ -154,7 +157,7 @@ const BrowseView = ({
             />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.name}</h1>
+                <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.name} Community</h1>
                 <span style={{ background: isDarkMode ? 'rgba(29, 155, 240, 0.2)' : '#e0f2fe', color: '#1d9bf0', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 12 }}>COMMUNITY</span>
               </div>
               <p style={{ margin: '2px 0 0 0', color: isDarkMode ? '#71767b' : '#536471', fontSize: 17 }}>{creator.title}</p>
@@ -216,7 +219,7 @@ const BrowseView = ({
                       }}
                       disabled={isFollowingLoading}
                       style={{
-                        background: isFollowing ? '#64748b' : '#1d9bf0',
+                        background: '#1d9bf0',
                         color: '#fff',
                         border: 'none',
                         padding: '8px 16px',
@@ -242,7 +245,7 @@ const BrowseView = ({
                       }}
                       disabled={isFollowingLoading}
                       style={{
-                        background: isFollowing ? '#64748b' : '#1d9bf0',
+                        background: '#1d9bf0',
                         color: '#fff',
                         border: 'none',
                         padding: '8px 16px',
@@ -1297,7 +1300,8 @@ BrowseView.propTypes = {
   isCreatorFollowed: PropTypes.func.isRequired,
   hasAnyCreatorCourseFollowed: PropTypes.func.isRequired,
   handleFollowInstructor: PropTypes.func.isRequired,
-  handleFollowCourse: PropTypes.func.isRequired
+  handleFollowCourse: PropTypes.func.isRequired,
+  onRestoreCourseView: PropTypes.func
 };
 
 export default BrowseView;

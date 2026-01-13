@@ -18,7 +18,8 @@ import {
   FaClock,
   FaStar,
   FaMoon,
-  FaSun
+  FaSun,
+  FaUsers
 } from 'react-icons/fa';
 
 const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDarkMode }) => {
@@ -40,6 +41,12 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
     return saved ? parseInt(saved, 10) : 3; // Default to level 3 (medium)
   });
 
+  // Community navigation style preference: 'pills' (top bar) or 'dropdown' (sidebar flyout)
+  const [communityNavStyle, setCommunityNavStyle] = useState(() => {
+    const saved = localStorage.getItem('communityNavStyle');
+    return saved || 'pills'; // Default to pills
+  });
+
   // Text darkness color mapping (1=light, 7=pure black)
   const darknessColors = {
     1: '#6b7280', // Light gray
@@ -56,6 +63,13 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
     localStorage.setItem('textDarknessLevel', textDarkness.toString());
     document.documentElement.style.setProperty('--text-darkness', darknessColors[textDarkness]);
   }, [textDarkness]);
+
+  // Save community navigation preference when it changes
+  useEffect(() => {
+    localStorage.setItem('communityNavStyle', communityNavStyle);
+    // Dispatch custom event so other components in same tab can update
+    window.dispatchEvent(new CustomEvent('communityNavStyleChanged', { detail: communityNavStyle }));
+  }, [communityNavStyle]);
 
   // Apply on mount
   useEffect(() => {
@@ -407,6 +421,51 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
               </div>
             </div>
           )}
+
+          {/* Community Navigation Style */}
+          <div className="setting-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FaUsers style={{ color: '#1d9bf0' }} />
+              Community Navigation
+            </span>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+              <button
+                onClick={() => setCommunityNavStyle('pills')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  border: communityNavStyle === 'pills' ? '2px solid #1d9bf0' : '1px solid #d1d5db',
+                  background: communityNavStyle === 'pills' ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : '#e0f2fe') : (isDarkMode ? '#2f3336' : '#fff'),
+                  color: communityNavStyle === 'pills' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                Pills (Top Bar)
+              </button>
+              <button
+                onClick={() => setCommunityNavStyle('dropdown')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  border: communityNavStyle === 'dropdown' ? '2px solid #1d9bf0' : '1px solid #d1d5db',
+                  background: communityNavStyle === 'dropdown' ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : '#e0f2fe') : (isDarkMode ? '#2f3336' : '#fff'),
+                  color: communityNavStyle === 'dropdown' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                Dropdown (Sidebar)
+              </button>
+            </div>
+            <span style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
+              Choose how to switch between communities in the Community view
+            </span>
+          </div>
 
           <div className="setting-item">
             <span>Show progress bars</span>

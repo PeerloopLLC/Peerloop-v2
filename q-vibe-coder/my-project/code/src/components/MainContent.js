@@ -258,12 +258,15 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     });
   };
 
-  // Helper function to get all communities for Sarah (hard coded full access)
-  const getSarahFullAccess = () => {
+  // Helper function to get Sarah's default communities (only 2 to start)
+  const getSarahDefaultCommunities = () => {
     const allInstructors = getAllInstructors();
     const allCourses = getAllCourses();
 
-    return allInstructors.map(instructor => {
+    // Sarah only starts with 2 communities joined (first 2 instructors)
+    const sarahInstructors = allInstructors.slice(0, 2);
+
+    return sarahInstructors.map(instructor => {
       const instructorCourses = allCourses.filter(c => c.instructorId === instructor.id);
       return {
         id: `creator-${instructor.id}`,
@@ -279,9 +282,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Helper function to load follows for a specific user
   const loadFollowsForUser = (userId, isNewUser) => {
-    // Sarah (demo_sarah) gets full access to all communities
+    // Sarah (demo_sarah) starts with only 2 communities joined
     if (userId === 'demo_sarah') {
-      return getSarahFullAccess();
+      return getSarahDefaultCommunities();
     }
 
     // New users always start with empty follows
@@ -345,9 +348,11 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Purchased courses - courses the user has bought (enables course-level follow/unfollow)
   const [purchasedCourses, setPurchasedCourses] = useState(() => {
-    // Sarah (demo_sarah) gets all courses purchased
+    // Sarah (demo_sarah) gets courses from her 2 followed instructors
     if (currentUser?.id === 'demo_sarah') {
-      return getAllCourses().map(c => c.id);
+      const allInstructors = getAllInstructors();
+      const sarahInstructorIds = allInstructors.slice(0, 2).map(i => i.id);
+      return getAllCourses().filter(c => sarahInstructorIds.includes(c.instructorId)).map(c => c.id);
     }
     if (currentUser?.isNewUser) return [];
     try {
@@ -370,9 +375,11 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   React.useEffect(() => {
     if (!currentUser?.id) return;
 
-    // Sarah (demo_sarah) gets all courses purchased
+    // Sarah (demo_sarah) gets courses from her 2 followed instructors
     if (currentUser.id === 'demo_sarah') {
-      setPurchasedCourses(getAllCourses().map(c => c.id));
+      const allInstructors = getAllInstructors();
+      const sarahInstructorIds = allInstructors.slice(0, 2).map(i => i.id);
+      setPurchasedCourses(getAllCourses().filter(c => sarahInstructorIds.includes(c.instructorId)).map(c => c.id));
       return;
     }
 
@@ -904,6 +911,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         hasAnyCreatorCourseFollowed={hasAnyCreatorCourseFollowed}
         handleFollowInstructor={handleFollowInstructor}
         handleFollowCourse={handleFollowCourse}
+        onRestoreCourseView={(course) => {
+          // Restore course view when navigating back from creator profile
+          // Need to exit Browse mode so MainContent shows PurchasedCourseDetail
+          setViewingCourseFromCommunity(course);
+          onMenuChange('Discover'); // Exit Browse mode - course view will take precedence
+        }}
       />
     );
   }
@@ -969,7 +982,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             isCreatorFollowed={isCreatorFollowed}
             onFollowCreator={handleFollowInstructor}
             onViewCreatorProfile={(instructor) => {
-              // Navigate to creator profile in Browse
+              // Navigate to creator profile in Browse, remembering the course for back navigation
+              setPreviousBrowseContext({ type: 'course', course: viewingCourseFromCommunity });
               setSelectedInstructor(instructor);
               setActiveTopMenu('creators');
               setViewingCourseFromCommunity(null);
