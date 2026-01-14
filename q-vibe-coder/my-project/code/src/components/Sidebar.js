@@ -391,7 +391,8 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               {hasFollowedCommunities && (communityNavStyle === 'dropdown' || communityNavStyle === 'slideout') && <div className="feeds-compact-arrow">{isFlyoutOpen ? '◀' : '▶'}</div>}
             </div>
           ) : (
-            /* Expanded sidebar: Feeds header with popup */
+            /* Expanded sidebar: Feeds group with shared background */
+            <div className="feeds-group">
             <div
               className={`nav-item feeds-header ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities || (communityNavStyle === 'pills' || communityNavStyle === 'selector') ? 'no-flyout' : ''}`}
               onClick={(e) => {
@@ -423,10 +424,8 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                 </span>
               )}
             </div>
-          )}
 
-          {/* Selected community sub-item - always visible under My Feeds */}
-          {!shouldCollapse && (
+            {/* Selected community sub-item with arrow prefix */}
             <div
               className="selected-community-item"
               onClick={(e) => {
@@ -435,9 +434,8 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                 handleCommunitySelect(selectedCommunity);
               }}
             >
-              <div className="selected-community-connector"></div>
               {selectedCommunity.id === 'town-hall' ? (
-                <div className="selected-community-avatar commons">🏛</div>
+                <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=100&h=100&fit=crop" alt="The Commons" className="selected-community-avatar selected-community-avatar-img" />
               ) : selectedCommunity.avatar ? (
                 <img
                   src={selectedCommunity.avatar}
@@ -449,11 +447,13 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                   {(selectedCommunity.name || 'C').charAt(0).toUpperCase()}
                 </div>
               )}
+              <span className="selected-community-arrow">↳</span>
               <span className="selected-community-name">
                 {selectedCommunity.id === 'town-hall'
                   ? 'The Commons'
                   : `${selectedCommunity.name || 'Community'}`}
               </span>
+            </div>
             </div>
           )}
 
@@ -474,7 +474,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                     setIsFlyoutOpen(false);
                   }}
                 >
-                  <div className="community-avatar" style={{ background: '#64748b', fontSize: '14px' }}>🏛</div>
+                  <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" className="community-avatar community-avatar-img" />
                   <span className="community-name">The Commons</span>
                 </div>
                 {/* Creator communities */}
@@ -571,7 +571,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           className="sidebar-communities-section"
         >
           <div className="communities-header">
-            <span className="communities-title">My Feeds</span>
+            <span className="communities-title">Feeds</span>
           </div>
           <div className="communities-list">
             {/* The Commons - always first */}
@@ -579,7 +579,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               className="community-item"
               onClick={() => { setIsFlyoutOpen(false); handleCommunitySelect(townHall); }}
             >
-              <div className="community-avatar town-hall-avatar">🏛</div>
+              <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" className="community-avatar community-avatar-img" />
               <span className="community-name">The Commons</span>
             </div>
             {/* Followed creator communities */}

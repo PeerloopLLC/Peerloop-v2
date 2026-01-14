@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaSearch } from 'react-icons/fa';
 import './FeedsSlideoutPanel.css';
 
 /**
@@ -14,7 +14,9 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
   const [communities, setCommunities] = useState([]);
   const [sidebarRight, setSidebarRight] = useState(240); // Default to 240px
   const [sidebarLeft, setSidebarLeft] = useState(0); // For mask positioning
+  const [searchQuery, setSearchQuery] = useState('');
   const panelRef = useRef(null);
+  const searchInputRef = useRef(null);
 
   // Calculate sidebar position dynamically (accounts for app centering)
   useEffect(() => {
@@ -72,6 +74,18 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
     window.addEventListener('toggleSlideoutPanel', handleToggle);
     return () => window.removeEventListener('toggleSlideoutPanel', handleToggle);
   }, []);
+
+  // Clear search when panel closes, focus search when panel opens
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery('');
+    } else {
+      // Focus search input when panel opens
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 300); // Wait for animation
+    }
+  }, [isOpen]);
 
   // Notify Sidebar of panel state changes
   useEffect(() => {
@@ -148,6 +162,18 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
 
   const getAvatarColor = (index) => avatarColors[index % avatarColors.length];
 
+  // Filter communities based on search query
+  const filteredCommunities = communities.filter(community => {
+    if (!searchQuery.trim()) return true;
+    const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
+    return displayName.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  // Check if The Commons matches the search
+  const showCommons = !searchQuery.trim() ||
+    'the commons'.includes(searchQuery.toLowerCase()) ||
+    'commons'.includes(searchQuery.toLowerCase());
+
   return (
     <>
       {/* Mask to hide panel when sliding behind sidebar (covers left margin area) */}
@@ -177,28 +203,57 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
           </button>
         </div>
 
+        {/* Search Box */}
+        <div className="slideout-search-container">
+          <div className="slideout-search-box">
+            <FaSearch className="slideout-search-icon" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search communities..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="slideout-search-input"
+            />
+            {searchQuery && (
+              <button
+                className="slideout-search-clear"
+                onClick={() => setSearchQuery('')}
+              >
+                <FaTimes />
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Community List */}
         <div className="slideout-community-list">
-          {/* Public Section */}
-          <div className="slideout-section-header">Public</div>
-          <div
-            className="slideout-community-item"
-            onClick={() => handleCommunityClick(townHall)}
-          >
-            <div className="slideout-community-avatar commons">
-              <span role="img" aria-label="commons">🏛</span>
-            </div>
-            <div className="slideout-community-info">
-              <div className="slideout-community-name">The Commons</div>
-              <div className="slideout-community-meta">Public community feed</div>
-            </div>
-          </div>
+          {/* Public Section - only show if matches search */}
+          {showCommons && (
+            <>
+              <div className="slideout-section-header">Public</div>
+              <div
+                className="slideout-community-item"
+                onClick={() => handleCommunityClick(townHall)}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=80&h=80&fit=crop"
+                  alt="The Commons"
+                  className="slideout-community-avatar-img"
+                />
+                <div className="slideout-community-info">
+                  <div className="slideout-community-name">The Commons</div>
+                  <div className="slideout-community-meta">Public community feed</div>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* My Communities Section */}
-          {communities.length > 0 && (
+          {filteredCommunities.length > 0 && (
             <>
               <div className="slideout-section-header">My Communities</div>
-              {communities.map((community, index) => {
+              {filteredCommunities.map((community, index) => {
                 const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
                 const initial = displayName.charAt(0).toUpperCase();
 
@@ -234,8 +289,15 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
             </>
           )}
 
-          {/* Empty state if no communities */}
-          {communities.length === 0 && (
+          {/* No search results */}
+          {searchQuery && !showCommons && filteredCommunities.length === 0 && (
+            <div className="slideout-empty-state">
+              <p>No communities found for "{searchQuery}"</p>
+            </div>
+          )}
+
+          {/* Empty state if no communities at all (and no search active) */}
+          {!searchQuery && communities.length === 0 && (
             <div className="slideout-empty-state">
               <p>You haven't joined any communities yet.</p>
               <p>Discover communities to join!</p>

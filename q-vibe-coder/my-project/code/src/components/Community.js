@@ -1044,7 +1044,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     transition: 'all 0.2s ease'
                   }}
                 >
-                  <FaLandmark size={14} />
+                  <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=40&h=40&fit=crop" alt="The Commons" style={{ width: 18, height: 18, borderRadius: 4, objectFit: 'cover' }} />
                   <span>The Commons</span>
                 </button>
 
@@ -1154,18 +1154,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               >
                 {/* Avatar */}
                 {communityMode === 'hub' ? (
-                  <div style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}>
-                    <FaLandmark style={{ color: '#fff', fontSize: 16 }} />
-                  </div>
+                  <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=80&h=80&fit=crop" alt="The Commons" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                 ) : (() => {
                   const selectedCreator = groupedByCreator.find(c => c.id === selectedCreatorId);
                   const instructor = selectedCreator ? getInstructorById(selectedCreator.instructorId) : null;
@@ -1256,17 +1245,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       onMouseLeave={e => { if (communityMode !== 'hub') e.currentTarget.style.background = 'transparent'; }}
                     >
                       <span style={{ width: 20, color: '#1d9bf0', fontWeight: 700 }}>{communityMode === 'hub' ? '\u2713' : ''}</span>
-                      <div style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        <FaLandmark style={{ color: '#fff', fontSize: 12 }} />
-                      </div>
+                      <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
                       <span style={{ fontWeight: 600, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>The Commons</span>
                     </div>
 
@@ -1661,20 +1640,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 gap: 10
               }}>
                 {/* Avatar */}
-                <div
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}
-                >
-                  <FaLandmark style={{ color: '#fff', fontSize: 20 }} />
-                </div>
+                <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=100&h=100&fit=crop" alt="The Commons" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
 
                 {/* Town Hall Details */}
                 <div style={{ flex: 1, minWidth: 0 }}>
