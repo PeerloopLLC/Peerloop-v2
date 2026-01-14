@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Commons - Profile Picture Options (More Searches)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #fff;
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #1d9bf0;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 40px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .option-card {
+      background: #16213e;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .option-card h3 {
+      margin-bottom: 8px;
+      color: #1d9bf0;
+    }
+
+    .option-card p {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .preview-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .circle-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #1d9bf0;
+      flex-shrink: 0;
+    }
+
+    .circle-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .circle-preview.large {
+      width: 120px;
+      height: 120px;
+    }
+
+    .sidebar-mockup {
+      background: #0f0f23;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .sidebar-item .mini-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .sidebar-item .mini-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .full-image {
+      width: 100%;
+      height: 200px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    .full-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .label {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>The Commons - Profile Picture Options</h1>
+  <p class="subtitle">Multiple Categories - Click to see which works best</p>
+
+  <div class="options-grid">
+
+    <!-- A: Greek Columns -->
+    <div class="option-card">
+      <h3>A: Greek Columns</h3>
+      <p>Classical pillars - timeless civic symbol</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=200&h=200&fit=crop" alt="Greek columns">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="Greek columns">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=600&h=300&fit=crop" alt="Greek columns full">
+      </div>
+    </div>
+
+    <!-- B: Roman Pantheon -->
+    <div class="option-card">
+      <h3>B: Pantheon Dome</h3>
+      <p>Iconic domed ceiling - community under one roof</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=200&h=200&fit=crop" alt="Pantheon">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=60&h=60&fit=crop" alt="Pantheon">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=600&h=300&fit=crop" alt="Pantheon full">
+      </div>
+    </div>
+
+    <!-- C: Library Interior -->
+    <div class="option-card">
+      <h3>C: Grand Library</h3>
+      <p>Knowledge commons - learning together</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=200&h=200&fit=crop" alt="Library">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=60&h=60&fit=crop" alt="Library">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600&h=300&fit=crop" alt="Library full">
+      </div>
+    </div>
+
+    <!-- D: Town Hall -->
+    <div class="option-card">
+      <h3>D: Town Hall</h3>
+      <p>Classic civic building</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1569025743873-ea3a9ber472b?w=200&h=200&fit=crop" alt="Town hall">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1569025743873-ea3a9ber472b?w=60&h=60&fit=crop" alt="Town hall">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1569025743873-ea3a9ber472b?w=600&h=300&fit=crop" alt="Town hall full">
+      </div>
+    </div>
+
+    <!-- E: Gazebo/Bandstand -->
+    <div class="option-card">
+      <h3>E: Park Gazebo</h3>
+      <p>Welcoming gathering spot</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop" alt="Gazebo">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop" alt="Gazebo">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=300&fit=crop" alt="Gazebo full">
+      </div>
+    </div>
+
+    <!-- F: Fountain Plaza -->
+    <div class="option-card">
+      <h3>F: Fountain Plaza</h3>
+      <p>Public fountain - center of activity</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1504598318550-17eba1008a68?w=200&h=200&fit=crop" alt="Fountain">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1504598318550-17eba1008a68?w=60&h=60&fit=crop" alt="Fountain">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1504598318550-17eba1008a68?w=600&h=300&fit=crop" alt="Fountain full">
+      </div>
+    </div>
+
+    <!-- G: Open Doorway -->
+    <div class="option-card">
+      <h3>G: Open Doorway</h3>
+      <p>Welcoming entrance with light</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=200&h=200&fit=crop" alt="Doorway">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=60&h=60&fit=crop" alt="Doorway">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&h=300&fit=crop" alt="Doorway full">
+      </div>
+    </div>
+
+    <!-- H: Spiral Staircase -->
+    <div class="option-card">
+      <h3>H: Spiral Staircase</h3>
+      <p>Elegant architectural spiral</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1553301208-a3718cc0150e?w=200&h=200&fit=crop" alt="Spiral">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1553301208-a3718cc0150e?w=60&h=60&fit=crop" alt="Spiral">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1553301208-a3718cc0150e?w=600&h=300&fit=crop" alt="Spiral full">
+      </div>
+    </div>
+
+    <!-- I: Hands Together -->
+    <div class="option-card">
+      <h3>I: Hands Together</h3>
+      <p>Community and connection</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=200&h=200&fit=crop" alt="Hands">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=60&h=60&fit=crop" alt="Hands">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=300&fit=crop" alt="Hands full">
+      </div>
+    </div>
+
+    <!-- J: Network/Hub -->
+    <div class="option-card">
+      <h3>J: Network Hub</h3>
+      <p>Abstract connected nodes</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=200&h=200&fit=crop" alt="Network">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=60&h=60&fit=crop" alt="Network">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=300&fit=crop" alt="Network full">
+      </div>
+    </div>
+
+    <!-- K: Colosseum -->
+    <div class="option-card">
+      <h3>K: Colosseum</h3>
+      <p>Historic gathering place</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1552751753-d47c95c40a28?w=200&h=200&fit=crop" alt="Colosseum">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1552751753-d47c95c40a28?w=60&h=60&fit=crop" alt="Colosseum">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1552751753-d47c95c40a28?w=600&h=300&fit=crop" alt="Colosseum full">
+      </div>
+    </div>
+
+    <!-- L: Tree of Life -->
+    <div class="option-card">
+      <h3>L: Great Tree</h3>
+      <p>Gathering under nature</p>
+      <div class="preview-row">
+        <div>
+          <div class="circle-preview large">
+            <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=200&h=200&fit=crop" alt="Tree">
+          </div>
+          <div class="label">Large</div>
+        </div>
+        <div class="sidebar-mockup">
+          <div class="sidebar-item">
+            <div class="mini-circle">
+              <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=60&h=60&fit=crop" alt="Tree">
+            </div>
+            <span>↳ The Commons</span>
+          </div>
+        </div>
+      </div>
+      <div class="full-image">
+        <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=600&h=300&fit=crop" alt="Tree full">
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feeds Hierarchy - Wireframe Options</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #15202b;
+      color: #e7e9ea;
+      padding: 40px;
+    }
+    h1 { color: #1d9bf0; margin-bottom: 30px; font-size: 24px; }
+    h2 { color: #71767b; margin: 30px 0 15px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+
+    .option {
+      background: #192734;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #38444d;
+    }
+    .option-title {
+      color: #1d9bf0;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #38444d;
+    }
+    .option-desc {
+      color: #71767b;
+      font-size: 12px;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    /* Simulated sidebar */
+    .sidebar-sim {
+      background: #1e2a35;
+      border-radius: 8px;
+      padding: 12px;
+      width: 200px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); }
+    .nav-item.active { background: rgba(29, 155, 240, 0.1); }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .nav-label { font-size: 15px; font-weight: 500; }
+
+    /* Option-specific styles */
+
+    /* Option 1: Muted/smaller text */
+    .opt1 .sub-item {
+      padding: 8px 12px 8px 44px;
+      font-size: 13px;
+      color: #8899a6;
+    }
+    .opt1 .sub-item .sub-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: #38444d;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+
+    /* Option 2: Vertical line connector */
+    .opt2 .feeds-group { position: relative; }
+    .opt2 .sub-item {
+      padding: 8px 12px 8px 20px;
+      margin-left: 20px;
+      font-size: 13px;
+      color: #8899a6;
+      position: relative;
+    }
+    .opt2 .sub-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 50%;
+      width: 2px;
+      background: #38444d;
+      border-radius: 2px;
+    }
+    .opt2 .sub-item::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 12px;
+      height: 2px;
+      background: #38444d;
+    }
+
+    /* Option 3: Inline breadcrumb */
+    .opt3 .feeds-inline {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 12px;
+    }
+    .opt3 .feeds-inline .separator { color: #536471; font-size: 12px; }
+    .opt3 .feeds-inline .current {
+      background: rgba(29, 155, 240, 0.15);
+      color: #1d9bf0;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    /* Option 4: Nested card */
+    .opt4 .sub-card {
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      margin: 4px 8px 8px 8px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .opt4 .sub-card .card-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: #38444d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .opt4 .sub-card .card-label {
+      font-size: 13px;
+      color: #8899a6;
+    }
+
+    /* Option 5: Badge on parent */
+    .opt5 .badge-item {
+      flex-wrap: wrap;
+    }
+    .opt5 .selection-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(29, 155, 240, 0.1);
+      border: 1px solid rgba(29, 155, 240, 0.3);
+      border-radius: 16px;
+      padding: 4px 10px 4px 6px;
+      margin-top: 8px;
+      margin-left: 32px;
+      font-size: 12px;
+      color: #1d9bf0;
+    }
+    .opt5 .selection-badge .badge-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: #38444d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    /* Option 6: Dot indicator */
+    .opt6 .sub-item {
+      padding: 6px 12px 6px 44px;
+      font-size: 13px;
+      color: #8899a6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .opt6 .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1d9bf0;
+    }
+
+    /* Option 7: Tab-style underline */
+    .opt7 .feeds-parent {
+      border-bottom: 2px solid #1d9bf0;
+      margin-bottom: 0;
+      border-radius: 8px 8px 0 0;
+    }
+    .opt7 .sub-item {
+      background: rgba(29, 155, 240, 0.05);
+      padding: 8px 12px 8px 44px;
+      font-size: 13px;
+      color: #8899a6;
+      border-radius: 0 0 8px 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Option 8: Arrow prefix */
+    .opt8 .sub-item {
+      padding: 6px 12px 6px 36px;
+      font-size: 13px;
+      color: #8899a6;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .opt8 .arrow { color: #536471; font-size: 10px; }
+
+    .pros-cons {
+      margin-top: 12px;
+      font-size: 11px;
+      padding-top: 10px;
+      border-top: 1px dashed #38444d;
+    }
+    .pro { color: #00ba7c; }
+    .con { color: #f4212e; }
+  </style>
+</head>
+<body>
+  <h1>Feeds Hierarchy - Visual Options</h1>
+  <p style="color: #71767b; margin-bottom: 30px;">How to show the selected community is a sub-level of Feeds</p>
+
+  <div class="options-grid">
+
+    <!-- Option 1: Muted smaller text (current approach improved) -->
+    <div class="option opt1">
+      <div class="option-title">1. Muted Sub-item (Current Style)</div>
+      <div class="option-desc">Smaller, lighter text with small icon. Uses indentation via padding.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-item">
+          <span class="sub-icon">🏛</span>
+          The Commons
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Clear hierarchy</div>
+        <div class="con">- Uses indentation</div>
+      </div>
+    </div>
+
+    <!-- Option 2: Vertical line connector -->
+    <div class="option opt2">
+      <div class="option-title">2. Tree Line Connector</div>
+      <div class="option-desc">Vertical line connects parent to child, like a file tree.</div>
+      <div class="sidebar-sim">
+        <div class="feeds-group">
+          <div class="nav-item active">
+            <div class="nav-icon">👥</div>
+            <span class="nav-label">Feeds (11)</span>
+          </div>
+          <div class="nav-item sub-item">
+            🏛 The Commons
+          </div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Very clear hierarchy</div>
+        <div class="con">- Still uses indent</div>
+      </div>
+    </div>
+
+    <!-- Option 3: Inline breadcrumb -->
+    <div class="option opt3">
+      <div class="option-title">3. Inline / Breadcrumb</div>
+      <div class="option-desc">Show selection inline with Feeds label using a separator.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active feeds-inline">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds</span>
+          <span class="separator">›</span>
+          <span class="current">🏛 Commons</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ No extra row</div>
+        <div class="con">- Gets cramped with long names</div>
+      </div>
+    </div>
+
+    <!-- Option 4: Nested card -->
+    <div class="option opt4">
+      <div class="option-title">4. Nested Card / Container</div>
+      <div class="option-desc">Selection shown in a subtle card under Feeds.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="sub-card">
+          <div class="card-icon">🏛</div>
+          <span class="card-label">The Commons</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Clear visual separation</div>
+        <div class="con">- Takes more vertical space</div>
+      </div>
+    </div>
+
+    <!-- Option 5: Badge on parent -->
+    <div class="option opt5">
+      <div class="option-title">5. Selection Badge</div>
+      <div class="option-desc">Show current selection as a pill/badge attached to Feeds.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active badge-item">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+          <div class="selection-badge">
+            <span class="badge-icon">🏛</span>
+            Commons
+          </div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Compact, modern look</div>
+        <div class="con">- Badge can get long</div>
+      </div>
+    </div>
+
+    <!-- Option 6: Dot indicator -->
+    <div class="option opt6">
+      <div class="option-title">6. Dot Indicator</div>
+      <div class="option-desc">Small colored dot indicates this is the active selection.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-item">
+          <span class="dot"></span>
+          🏛 The Commons
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Minimal, clean</div>
+        <div class="con">- Still indented</div>
+      </div>
+    </div>
+
+    <!-- Option 7: Tab underline -->
+    <div class="option opt7">
+      <div class="option-title">7. Tab / Underline Style</div>
+      <div class="option-desc">Underline connects parent to child like tabs.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active feeds-parent">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-item">
+          🏛 The Commons
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Clear grouping</div>
+        <div class="con">- Unusual pattern</div>
+      </div>
+    </div>
+
+    <!-- Option 8: Arrow prefix -->
+    <div class="option opt8">
+      <div class="option-title">8. Arrow Prefix (No Indent)</div>
+      <div class="option-desc">Same left alignment, arrow indicates it's a sub-selection.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-item">
+          <span class="arrow">↳</span>
+          🏛 The Commons
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ No indent, clear hierarchy</div>
+        <div class="con">- Arrow takes space</div>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 style="margin-top: 40px;">My Recommendations</h2>
+  <div style="background: #192734; padding: 20px; border-radius: 12px; margin-top: 15px;">
+    <p style="color: #e7e9ea; line-height: 1.6;">
+      <strong style="color: #1d9bf0;">Option 8 (Arrow Prefix)</strong> - Best if you want NO indentation. The arrow clearly shows hierarchy while keeping everything left-aligned.<br><br>
+      <strong style="color: #1d9bf0;">Option 4 (Nested Card)</strong> - Best for visual clarity. The card creates a clear "container" feel without traditional indentation.<br><br>
+      <strong style="color: #1d9bf0;">Option 5 (Badge)</strong> - Most compact and modern. Works well if community names are short.
+    </p>
+  </div>
+</body>
+</html>
