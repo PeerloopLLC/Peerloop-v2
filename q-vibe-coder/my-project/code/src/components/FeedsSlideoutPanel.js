@@ -140,12 +140,22 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
   }, [isOpen]);
 
   // Handle community selection
-  const handleCommunityClick = (community) => {
+  const handleCommunityClick = (community, e) => {
+    if (e) e.stopPropagation(); // Prevent event bubbling
     if (onSelectCommunity) {
       onSelectCommunity(community);
     }
     setIsOpen(false);
   };
+
+  // Listen for communitySelected event (from sidebar clicks) to close panel
+  useEffect(() => {
+    const handleCommunitySelected = () => {
+      setIsOpen(false);
+    };
+    window.addEventListener('communitySelected', handleCommunitySelected);
+    return () => window.removeEventListener('communitySelected', handleCommunitySelected);
+  }, []);
 
   // Handle close
   const handleClose = () => {
@@ -244,7 +254,7 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
               <div className="slideout-section-header">Public</div>
               <div
                 className="slideout-community-item"
-                onClick={() => handleCommunityClick(townHall)}
+                onClick={(e) => handleCommunityClick(townHall, e)}
               >
                 <img
                   src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=80&h=80&fit=crop"
@@ -271,7 +281,7 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
                   <div
                     key={community.id}
                     className="slideout-community-item"
-                    onClick={() => handleCommunityClick(community)}
+                    onClick={(e) => handleCommunityClick(community, e)}
                   >
                     {community.avatar ? (
                       <img
