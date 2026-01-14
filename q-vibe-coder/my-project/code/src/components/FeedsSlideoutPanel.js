@@ -69,7 +69,17 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
   // Listen for toggle event from Sidebar
   useEffect(() => {
     const handleToggle = () => {
-      setIsOpen(prev => !prev);
+      // Recalculate sidebar position before toggling to ensure correct placement
+      // This fixes issues when resizing between mobile/desktop views
+      requestAnimationFrame(() => {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+          const rect = sidebar.getBoundingClientRect();
+          setSidebarRight(rect.right);
+          setSidebarLeft(rect.left);
+        }
+        setIsOpen(prev => !prev);
+      });
     };
     window.addEventListener('toggleSlideoutPanel', handleToggle);
     return () => window.removeEventListener('toggleSlideoutPanel', handleToggle);
