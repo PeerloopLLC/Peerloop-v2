@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commons Dropdown Options - Wireframes</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+      color: #0f1419;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #1d9bf0;
+    }
+
+    .wireframe-section {
+      max-width: 650px;
+      margin: 0 auto 60px auto;
+    }
+
+    .wireframe-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #0f1419;
+    }
+
+    .wireframe-description {
+      font-size: 14px;
+      color: #536471;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* Simulated feed container */
+    .feed-container {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Profile card base styles */
+    .profile-card {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 8px 16px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #fff;
+      font-size: 20px;
+    }
+
+    .community-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #10b981;
+    }
+
+    .community-subtitle {
+      font-size: 14px;
+      color: #536471;
+    }
+
+    .community-description {
+      font-size: 14px;
+      color: #0f1419;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    /* Dropdown styles */
+    .dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      border: 1px solid #e5e7eb;
+      min-width: 220px;
+      z-index: 100;
+      display: none;
+      margin-top: 8px;
+    }
+
+    .dropdown.show {
+      display: block;
+    }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .dropdown-item:hover {
+      background: #f7f9f9;
+    }
+
+    .dropdown-item:first-child {
+      border-radius: 12px 12px 0 0;
+    }
+
+    .dropdown-item:last-child {
+      border-radius: 0 0 12px 12px;
+    }
+
+    .dropdown-item.selected {
+      background: rgba(29, 155, 240, 0.1);
+    }
+
+    .dropdown-item .check {
+      color: #1d9bf0;
+      font-weight: 700;
+      width: 20px;
+    }
+
+    .dropdown-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1d9bf0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .dropdown-avatar.commons {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .dropdown-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: #e5e7eb;
+      margin: 4px 0;
+    }
+
+    .chevron {
+      font-size: 12px;
+      color: #536471;
+      margin-left: 4px;
+    }
+
+    /* Post placeholder */
+    .post-placeholder {
+      padding: 20px 16px;
+      border-top: 1px solid #eff3f4;
+    }
+
+    .post-placeholder-bar {
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .post-placeholder-bar.short {
+      width: 60%;
+    }
+
+    /* ============================================ */
+    /* OPTION B: Full Row Selector Bar */
+    /* ============================================ */
+    .option-b .selector-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #fff;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .option-b .selector-bar:hover {
+      border-color: #1d9bf0;
+      background: rgba(29, 155, 240, 0.03);
+    }
+
+    .option-b .selector-bar .avatar {
+      width: 36px;
+      height: 36px;
+      font-size: 16px;
+    }
+
+    .option-b .selector-bar .info {
+      flex: 1;
+    }
+
+    .option-b .selector-bar .name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #10b981;
+    }
+
+    .option-b .selector-bar .hint {
+      font-size: 12px;
+      color: #536471;
+    }
+
+    .option-b .selector-bar .switch-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(29, 155, 240, 0.1);
+      color: #1d9bf0;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .option-b .description-area {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #0f1419;
+      line-height: 1.4;
+    }
+
+    /* ============================================ */
+    /* OPTION C: Name as Dropdown Button */
+    /* ============================================ */
+    .option-c .profile-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .option-c .name-dropdown {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 2px 8px 2px 0;
+      border-radius: 6px;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .option-c .name-dropdown:hover {
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .option-c .name-dropdown:hover .chevron {
+      color: #10b981;
+    }
+
+    /* ============================================ */
+    /* OPTION E: Avatar + Name Combined Button */
+    /* ============================================ */
+    .option-e .combined-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px 8px 8px;
+      background: #fff;
+      border: 2px solid #e5e7eb;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .option-e .combined-button:hover {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .option-e .combined-button .avatar {
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+    }
+
+    .option-e .combined-button .name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #10b981;
+    }
+
+    .option-e .subtitle-area {
+      margin-top: 6px;
+      padding-left: 4px;
+    }
+
+    /* Click instruction */
+    .click-hint {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #1d9bf0;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>Commons Dropdown - 3 Options</h1>
+
+  <!-- OPTION B: Full Row Selector Bar -->
+  <div class="wireframe-section">
+    <div class="wireframe-title">Option B: Full Row Selector Bar</div>
+    <div class="wireframe-description">
+      The entire top row is one big clickable button. Most obvious - impossible to miss.
+      Shows "Switch Community" hint on the right side.
+    </div>
+
+    <div class="feed-container">
+      <div class="profile-card option-b">
+        <div class="selector-bar" onclick="toggleDropdown('dropdown-b')">
+          <div class="avatar">&#127963;</div>
+          <div class="info">
+            <div class="name">The Commons</div>
+            <div class="hint">Community Discussion Hub</div>
+          </div>
+          <div class="switch-btn">
+            Switch <span class="chevron">&#9662;</span>
+          </div>
+          <span class="click-hint">Click me!</span>
+
+          <div class="dropdown" id="dropdown-b">
+            <div class="dropdown-item selected">
+              <span class="check">&#10003;</span>
+              <div class="dropdown-avatar commons">&#127963;</div>
+              <div class="dropdown-name">The Commons</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item">
+              <span class="check"></span>
+              <div class="dropdown-avatar" style="background: #6366f1;">SC</div>
+              <div class="dropdown-name">Sarah Chen</div>
+            </div>
+            <div class="dropdown-item">
+              <span class="check"></span>
+              <div class="dropdown-avatar" style="background: #f59e0b;">MR</div>
+              <div class="dropdown-name">Marcus Rivera</div>
+            </div>
+            <div class="dropdown-item">
+              <span class="check"></span>
+              <div class="dropdown-avatar" style="background: #ec4899;">EW</div>
+              <div class="dropdown-name">Dr. Emily Wong</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="description-area">
+          Welcome to The Commons — the open forum where all community members come together.
+          Share ideas, ask questions, and connect with fellow learners.
+        </div>
+      </div>
+
+      <div class="post-placeholder">
+        <div class="post-placeholder-bar"></div>
+        <div class="post-placeholder-bar short"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION C: Name as Dropdown Button -->
+  <div class="wireframe-section">
+    <div class="wireframe-title">Option C: Name as Dropdown Button</div>
+    <div class="wireframe-description">
+      Just the name/title is clickable with a chevron. Subtle but clear - doesn't change the layout much.
+      Avatar stays static, only the name triggers the dropdown.
+    </div>
+
+    <div class="feed-container">
+      <div class="profile-card option-c">
+        <div class="profile-row">
+          <div class="avatar">&#127963;</div>
+          <div style="flex: 1;">
+            <div class="name-dropdown" onclick="toggleDropdown('dropdown-c')">
+              <span class="community-name">The Commons</span>
+              <span class="chevron">&#9662;</span>
+              <span class="click-hint">Click me!</span>
+
+              <div class="dropdown" id="dropdown-c">
+                <div class="dropdown-item selected">
+                  <span class="check">&#10003;</span>
+                  <div class="dropdown-avatar commons">&#127963;</div>
+                  <div class="dropdown-name">The Commons</div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item">
+                  <span class="check"></span>
+                  <div class="dropdown-avatar" style="background: #6366f1;">SC</div>
+                  <div class="dropdown-name">Sarah Chen</div>
+                </div>
+                <div class="dropdown-item">
+                  <span class="check"></span>
+                  <div class="dropdown-avatar" style="background: #f59e0b;">MR</div>
+                  <div class="dropdown-name">Marcus Rivera</div>
+                </div>
+                <div class="dropdown-item">
+                  <span class="check"></span>
+                  <div class="dropdown-avatar" style="background: #ec4899;">EW</div>
+                  <div class="dropdown-name">Dr. Emily Wong</div>
+                </div>
+              </div>
+            </div>
+            <div class="community-subtitle">Community Discussion Hub</div>
+            <div class="community-description">
+              Welcome to The Commons — the open forum where all community members come together.
+              Share ideas, ask questions, and connect with fellow learners.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-placeholder">
+        <div class="post-placeholder-bar"></div>
+        <div class="post-placeholder-bar short"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION E: Avatar + Name Combined Button -->
+  <div class="wireframe-section">
+    <div class="wireframe-title">Option E: Avatar + Name Combined Button</div>
+    <div class="wireframe-description">
+      Avatar and name together form one pill-shaped button (Slack workspace style).
+      Clean and compact, but still very obvious it's clickable.
+    </div>
+
+    <div class="feed-container">
+      <div class="profile-card option-e">
+        <div class="combined-button" onclick="toggleDropdown('dropdown-e')">
+          <div class="avatar">&#127963;</div>
+          <span class="name">The Commons</span>
+          <span class="chevron">&#9662;</span>
+          <span class="click-hint">Click me!</span>
+
+          <div class="dropdown" id="dropdown-e">
+            <div class="dropdown-item selected">
+              <span class="check">&#10003;</span>
+              <div class="dropdown-avatar commons">&#127963;</div>
+              <div class="dropdown-name">The Commons</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item">
+              <span class="check"></span>
+              <div class="dropdown-avatar" style="background: #6366f1;">SC</div>
+              <div class="dropdown-name">Sarah Chen</div>
+            </div>
+            <div class="dropdown-item">
+              <span class="check"></span>
+              <div class="dropdown-avatar" style="background: #f59e0b;">MR</div>
+              <div class="dropdown-name">Marcus Rivera</div>
+            </div>
+            <div class="dropdown-item">
+              <span class="check"></span>
+              <div class="dropdown-avatar" style="background: #ec4899;">EW</div>
+              <div class="dropdown-name">Dr. Emily Wong</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subtitle-area">
+          <div class="community-subtitle">Community Discussion Hub</div>
+          <div class="community-description">
+            Welcome to The Commons — the open forum where all community members come together.
+            Share ideas, ask questions, and connect with fellow learners.
+          </div>
+        </div>
+      </div>
+
+      <div class="post-placeholder">
+        <div class="post-placeholder-bar"></div>
+        <div class="post-placeholder-bar short"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDropdown(id) {
+      // Close all dropdowns first
+      document.querySelectorAll('.dropdown').forEach(d => {
+        if (d.id !== id) d.classList.remove('show');
+      });
+
+      // Toggle the clicked one
+      const dropdown = document.getElementById(id);
+      dropdown.classList.toggle('show');
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.selector-bar') &&
+          !e.target.closest('.name-dropdown') &&
+          !e.target.closest('.combined-button')) {
+        document.querySelectorAll('.dropdown').forEach(d => {
+          d.classList.remove('show');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
