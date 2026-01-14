@@ -1,0 +1,130 @@
+/**
+ * VideoRoom Component Styles
+ *
+ * Full-screen overlay for embedded BigBlueButton meetings
+ */
+
+.video-room-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #0f0f23;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-room-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #2d2d44;
+}
+
+.video-room-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.video-room-icon {
+  color: #1d9bf0;
+  font-size: 18px;
+}
+
+.video-room-close {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.video-room-close:hover {
+  background: #dc2626;
+}
+
+.video-room-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.video-room-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.video-room-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #fff;
+}
+
+.video-room-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #2d2d44;
+  border-top: 4px solid #1d9bf0;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.video-room-loading p {
+  font-size: 16px;
+  color: #9ca3af;
+}
+
+.video-room-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #fff;
+  text-align: center;
+}
+
+.video-room-error p {
+  font-size: 16px;
+  color: #ef4444;
+}
+
+.video-room-error button {
+  background: #1d9bf0;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.video-room-error button:hover {
+  background: #1a8cd8;
+}

@@ -649,6 +649,37 @@
 - Run `cd my-project/code && npm start` for the original app
 - peerloop-v2 folder is archived/transferred - do not use for active development here
 
+---
+
+### Session 17
+**Date:** January 14, 2026
+**Phase:** Building
+
+**What we did:**
+- **BigBlueButton integration started** - Added video conferencing capability to communities
+- Created `src/utils/bigbluebutton.js` - API utility for BBB calls (checksum signing, create/join meetings)
+- Created `src/components/VideoRoom.js` + `.css` - Full-screen overlay component with iframe
+- Added green "Video Room" button to community headers (next to "View All Courses")
+- Button works, overlay opens/closes properly
+
+**Technical discovery:**
+- BBB requires **server-side API calls** due to security (secret can't be in browser JS)
+- CORS blocks direct browser-to-BBB API calls
+- Free test server exists: `test-install.blindsidenetworks.com`
+
+**Files created:**
+- `src/utils/bigbluebutton.js`
+- `src/components/VideoRoom.js`
+- `src/components/VideoRoom.css`
+- Modified: `Community.js` (button + VideoRoom render)
+
+**Decision needed next session:**
+1. Add simple Express proxy (~20 lines) - keeps BBB, free test server
+2. Switch to Jitsi Meet - no backend needed, completely free, simpler
+3. Pay $1/week for BigBlueButton Host + still need proxy
+
+**Next session:** Decide on video solution and complete the integration
+
 <!-- Add more sessions as needed -->
 
 ---

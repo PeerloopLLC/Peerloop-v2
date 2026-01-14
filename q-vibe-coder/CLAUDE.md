@@ -1,5 +1,20 @@
 # q-vibe-coder
 
+## ⚠️ IMPORTANT: Edit Tool Workaround
+
+**The Edit tool often fails on this Windows machine** with "file unexpectedly modified" errors (caused by Windows Search Indexer).
+
+**When Edit fails, use the Python helper:**
+```bash
+python claude-edit.py <filepath> --inline "old text" "new text"
+```
+
+The helper is located at: `my-project/code/claude-edit.py`
+
+This works 100% of the time. Always try Edit first, but switch to Python immediately if it fails.
+
+---
+
 **You bring the vision and taste. We bring the engineering.**
 
 ---
