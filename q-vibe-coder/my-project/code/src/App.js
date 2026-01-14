@@ -6,6 +6,7 @@ import CreatorSidebar from './components/CreatorSidebar';
 import MainContent from './components/MainContent';
 import BottomNav from './components/BottomNav';
 import ErrorBoundary from './components/ErrorBoundary';
+import FeedsSlideoutPanel from './components/FeedsSlideoutPanel';
 import useDeviceDetect from './hooks/useDeviceDetect';
 import Login from './components/Login';
 import { supabase, getProfile } from './services/supabase';
@@ -278,9 +279,9 @@ function App() {
       <div className={`app ${isDarkMode ? 'dark-mode' : ''} ${device.deviceType}`}>
         {/* Left Sidebar - Navigation and user profile */}
         {isCreatorMode ? (
-          <CreatorSidebar 
-            onMenuChange={handleMenuChange} 
-            activeMenu={activeMenu} 
+          <CreatorSidebar
+            onMenuChange={handleMenuChange}
+            activeMenu={activeMenu}
             currentUser={currentUser}
             onBackToMain={handleBackToMain}
             isDarkMode={isDarkMode}
@@ -301,7 +302,23 @@ function App() {
             }}
           />
         )}
-        
+
+        {/* Feeds Slideout Panel - Substack-style slide-out for community selection */}
+        {!isCreatorMode && (
+          <FeedsSlideoutPanel
+            currentUser={currentUser}
+            onSelectCommunity={(community) => {
+              // Store selected community and navigate to community view
+              localStorage.setItem('pendingCommunityCreator', JSON.stringify({
+                id: community.id,
+                name: community.name
+              }));
+              window.dispatchEvent(new CustomEvent('communitySelected', { detail: community }));
+              handleMenuChange('My Community');
+            }}
+          />
+        )}
+
         {/* Main Content Area - Displays different content based on active menu */}
         <MainContent
           activeMenu={activeMenu}

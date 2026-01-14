@@ -152,7 +152,11 @@
 
 **Phase:** Building
 
-**Status:** App imported, setting up workspace, preparing for feature expansion and cleanup
+**Status:** Active development on original React app (`my-project/code/`)
 
-**Blockers:** None currently - awaiting business model documents for context
+**Note:** The peerloop-v2 rebuild (TypeScript + Tailwind + Zustand) has been transferred to a separate project. This workspace continues with the original React/CSS codebase.
+
+**Dev server:** `cd my-project/code && npm start` → http://localhost:3000/Peerloop-v2
+
+**Blockers:** None
 

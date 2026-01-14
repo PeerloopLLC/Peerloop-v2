@@ -262,7 +262,7 @@ export const instructorsDatabase = [
       averageRating: 4.9,
       totalReviews: 127
     },
-    courses: [15] // AI Prompting Mastery
+    courses: [15, 22, 23, 24, 25] // AI Prompting Mastery, AI Tools Overview, Intro to Claude Code, Intro to n8n, Vibe Coding 101
   },
   {
     id: 9,
@@ -1140,6 +1140,205 @@ export const coursesDatabase = [
       { title: "ChatGPT Integration", duration: "2h 30min", description: "Connecting OpenAI to your workflows" },
       { title: "AI-Powered Workflows", duration: "3h", description: "Building intelligent automation chains" },
       { title: "Advanced AI Patterns", duration: "2h 15min", description: "Chains, memory, and complex AI tasks" }
+    ]
+  },
+  {
+    id: 22,
+    title: "AI Tools Overview",
+    description: "Navigate the overwhelming world of AI tools with confidence. This practical course cuts through the noise and helps you understand what AI tools exist, what they're actually good for, and how to choose the right ones for your specific needs - without getting lost in the hype. The AI landscape is exploding with new tools every week. Instead of drowning you in more information, this course gives you a framework for understanding and evaluating AI tools.",
+    duration: "3 hours",
+    level: "Beginner",
+    rating: 4.8,
+    ratingCount: 0,
+    students: 0,
+    price: "$249",
+    badge: "New",
+    thumbnail: "https://via.placeholder.com/300x200/667eea/ffffff?text=AI+Tools",
+    instructorId: 8,
+    category: "AI Tools",
+    tags: ["AI Tools", "ChatGPT", "Claude", "AI Coding", "AI Image Generation", "AI Video", "Tool Selection", "Beginner"],
+    peerloopFeatures: {
+      oneOnOneTeaching: true,
+      certifiedTeachers: true,
+      earnWhileTeaching: true,
+      teacherCommission: "70%"
+    },
+    learningObjectives: [
+      "Understand the major categories of AI tools available",
+      "Navigate AI writing tools (ChatGPT, Claude, Gemini) confidently",
+      "Know when to use different AI coding tools",
+      "Understand AI image and video generation capabilities",
+      "Use a decision framework to choose the right tool for any task",
+      "Build a personal AI toolkit matched to your needs",
+      "Evaluate new AI tools without getting overwhelmed",
+      "Stay current with AI developments strategically"
+    ],
+    curriculum: [
+      { title: "Understanding AI Categories", duration: "45 min", description: "Major types of AI tools, how they differ, reducing overwhelm with clear frameworks" },
+      { title: "AI Writing Tools", duration: "45 min", description: "ChatGPT, Claude, Gemini - what each does best, when to use which, hands-on practice" },
+      { title: "AI Coding Tools", duration: "45 min", description: "Claude Code, Cursor, GitHub Copilot - capabilities, differences, choosing for your skill level" },
+      { title: "Decision Framework", duration: "45 min", description: "How to evaluate and choose AI tools for specific tasks without getting overwhelmed" },
+      { title: "AI Image Generation", duration: "30 min", description: "Midjourney, DALL-E, Stable Diffusion - what's possible, use cases, hands-on creation" },
+      { title: "AI Video Generation", duration: "30 min", description: "Runway, Pika, Sora - current capabilities, when to use, limitations" },
+      { title: "Other AI Tools Landscape", duration: "30 min", description: "Productivity tools (Notion AI, Otter.ai), research tools (Perplexity), voice AI" },
+      { title: "Building Your AI Toolkit", duration: "30 min", description: "Match tools to your actual needs, avoid shiny object syndrome, staying current strategically" }
+    ],
+    includes: [
+      "Full course access",
+      "2 live 1-on-1 sessions (90 min each)",
+      "Hands-on demos with key tools",
+      "Decision frameworks you can use immediately",
+      "Lifetime access to course materials",
+      "Certificate of completion",
+      "Personalized recommendations"
+    ]
+  },
+  {
+    id: 23,
+    title: "Intro to Claude Code",
+    description: "Learn to harness the power of AI-assisted development with Claude Code - Anthropic's revolutionary terminal-based coding assistant. This hands-on course transforms complete beginners into confident AI-powered builders, without requiring any prior coding experience. Claude Code isn't just another coding tool - it's your AI partner that works directly in your terminal, understanding your projects deeply and helping you build real applications through natural conversation.",
+    duration: "3 hours",
+    level: "Beginner",
+    rating: 4.9,
+    ratingCount: 0,
+    students: 0,
+    price: "$249",
+    badge: "New",
+    thumbnail: "https://via.placeholder.com/300x200/1d9bf0/ffffff?text=Claude+Code",
+    instructorId: 8,
+    category: "AI Coding",
+    tags: ["AI Coding Assistant", "Terminal Tools", "Beginner", "No-Code", "Automation", "Claude AI"],
+    peerloopFeatures: {
+      oneOnOneTeaching: true,
+      certifiedTeachers: true,
+      earnWhileTeaching: true,
+      teacherCommission: "70%"
+    },
+    learningObjectives: [
+      "Install and configure Claude Code on any system",
+      "Write effective prompts to generate clean code",
+      "Manage project context for accurate AI responses",
+      "Use planning and thinking modes for complex tasks",
+      "Create custom commands for repeated workflows",
+      "Build real projects with AI assistance"
+    ],
+    curriculum: [
+      { title: "Installation & Setup", duration: "30 min", description: "Get Claude Code running on Windows or Mac, authenticate your account, and configure your development environment" },
+      { title: "Project Context with CLAUDE.md", duration: "30 min", description: "Initialize intelligent project memory so Claude understands your codebase structure, conventions, and preferences" },
+      { title: "Context Management", duration: "30 min", description: "Add files, images, and references to give Claude the right information at the right time" },
+      { title: "Tools & Permissions", duration: "30 min", description: "Understand Claude's built-in capabilities (read, edit, bash) and control what it can access" },
+      { title: "Planning Mode", duration: "30 min", description: "Handle complex, multi-file tasks by letting Claude create structured plans before executing" },
+      { title: "Thinking Modes", duration: "30 min", description: "Activate different levels of reasoning (think, think hard, ultra think) for challenging logic problems" },
+      { title: "Built-in & Custom Commands", duration: "30 min", description: "Master essential slash commands for memory, context, session management, and create reusable templates" },
+      { title: "Real-World Project Workflow", duration: "30 min", description: "Put everything together to build a complete project from scratch with best practices" }
+    ],
+    includes: [
+      "Full course access",
+      "2 live 1-on-1 sessions (90 min each)",
+      "Hands-on exercises during each session",
+      "Homework projects between sessions",
+      "Lifetime access to course materials",
+      "Certificate of completion"
+    ]
+  },
+  {
+    id: 24,
+    title: "Intro to n8n",
+    description: "Learn to automate your workflows and connect your favorite apps without writing a single line of code. This hands-on course teaches you n8n - a powerful, visual workflow automation platform that helps you build automations like a developer, without being one. Stop doing repetitive tasks manually. Whether it's moving data between apps, sending notifications, organizing information, or managing responses, n8n lets you automate it all through a simple drag-and-drop interface.",
+    duration: "3 hours",
+    level: "Beginner",
+    rating: 4.85,
+    ratingCount: 0,
+    students: 0,
+    price: "$249",
+    badge: "New",
+    thumbnail: "https://via.placeholder.com/300x200/EA580C/ffffff?text=n8n+101",
+    instructorId: 8,
+    category: "Workflow Automation",
+    tags: ["Workflow Automation", "No-Code", "n8n", "App Integration", "Business Automation", "Productivity"],
+    peerloopFeatures: {
+      oneOnOneTeaching: true,
+      certifiedTeachers: true,
+      earnWhileTeaching: true,
+      teacherCommission: "70%"
+    },
+    learningObjectives: [
+      "Set up and navigate the n8n platform confidently",
+      "Build automated workflows connecting multiple apps",
+      "Use triggers, actions, and conditional logic in workflows",
+      "Integrate popular apps (Gmail, Google Sheets, Slack, Notion)",
+      "Handle credentials and security properly",
+      "Test, debug, and troubleshoot workflows",
+      "Use n8n's template library for quick automation",
+      "Build a complete form response handler with email notifications"
+    ],
+    curriculum: [
+      { title: "What is n8n?", duration: "20 min", description: "Understanding workflow automation, n8n vs competitors (Zapier, Make), when to use n8n" },
+      { title: "Platform Setup", duration: "20 min", description: "Cloud vs self-hosted options, creating your account, navigating the Editor UI" },
+      { title: "Core Concepts", duration: "30 min", description: "Nodes, workflows, triggers, actions, how data flows between nodes" },
+      { title: "Building Your First Workflow", duration: "30 min", description: "Create a simple 2-node automation from scratch, understanding data structures" },
+      { title: "App Integrations", duration: "30 min", description: "Connect Gmail, Google Sheets, Slack, Notion, and more" },
+      { title: "Credentials & Security", duration: "20 min", description: "Add OAuth connections, API keys, store credentials safely" },
+      { title: "Conditional Logic", duration: "30 min", description: "Use IF nodes and Switch nodes to make smart workflows" },
+      { title: "Final Project", duration: "30 min", description: "Build complete automated form response handler with notifications and emails" }
+    ],
+    includes: [
+      "Full course access",
+      "2 live 1-on-1 sessions (90 min each)",
+      "Hands-on building during every session",
+      "Practice workflows between sessions",
+      "Lifetime access to course materials",
+      "Certificate of completion",
+      "Personalized automation recommendations"
+    ]
+  },
+  {
+    id: 25,
+    title: "Vibe Coding 101",
+    description: "Learn to build and deploy real websites using AI as your development partner. This hands-on course takes you from project idea to production deployment, teaching you the structured methodology that turns vibe coding into a reliable, repeatable skill. Vibe coding isn't about letting AI do everything blindly - it's about directing AI strategically through a proven process. You'll learn the 6-phase methodology: Vision, Constraints, Architecture, Building, Testing, and Deployment.",
+    duration: "3 hours",
+    level: "Intermediate",
+    rating: 4.9,
+    ratingCount: 0,
+    students: 0,
+    price: "$249",
+    badge: "New",
+    thumbnail: "https://via.placeholder.com/300x200/10B981/ffffff?text=Vibe+Coding",
+    instructorId: 8,
+    category: "AI Development",
+    tags: ["Vibe Coding", "AI Development", "GitHub", "Vercel Deployment", "Web Development", "Project Planning", "Q-System"],
+    peerloopFeatures: {
+      oneOnOneTeaching: true,
+      certifiedTeachers: true,
+      earnWhileTeaching: true,
+      teacherCommission: "70%"
+    },
+    learningObjectives: [
+      "Plan and architect web projects with AI guidance",
+      "Build complete websites using the 6-phase vibe coding methodology",
+      "Set up GitHub repositories and manage code with git",
+      "Deploy production websites to Vercel",
+      "Troubleshoot and debug AI-generated code effectively",
+      "Understand tool limitations and when to use integrations",
+      "Use Q-System for session management across long projects",
+      "Make strategic technical decisions (deployment, stack, architecture)"
+    ],
+    curriculum: [
+      { title: "Vibe Coding Mindset", duration: "20 min", description: "How to work with AI as a coding partner, the taste principle, and when to use AI vs manual coding" },
+      { title: "The 6-Phase Methodology", duration: "25 min", description: "Vision, Constraints, Architecture, Building, Testing, Deployment - the structured process for any project" },
+      { title: "Strategic Planning", duration: "25 min", description: "How to make upfront technical decisions (deployment, stack, architecture) that affect your entire build" },
+      { title: "GitHub Repository Setup", duration: "20 min", description: "Creating repos, managing code, understanding git workflows for AI-assisted development" },
+      { title: "Vercel Configuration", duration: "20 min", description: "Setting up deployment infrastructure before you build (architecture follows deployment)" },
+      { title: "Iterative Building", duration: "30 min", description: "Building component by component with Claude, using the q-vibe-coder methodology files" },
+      { title: "Troubleshooting & Debugging", duration: "30 min", description: "Common errors, how to fix them, debugging strategies, git recovery techniques" },
+      { title: "Production Deployment", duration: "30 min", description: "Deploying your website to Vercel, connecting domains, going live" }
+    ],
+    includes: [
+      "Full course access",
+      "2 live 1-on-1 sessions (90 min each)",
+      "Hands-on building during each session",
+      "Lifetime access to course materials and q-vibe-coder template",
+      "Certificate of completion"
     ]
   }
 ];

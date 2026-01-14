@@ -44,7 +44,7 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
   // Community navigation style preference: 'pills' (top bar) or 'dropdown' (sidebar flyout)
   const [communityNavStyle, setCommunityNavStyle] = useState(() => {
     const saved = localStorage.getItem('communityNavStyle');
-    return saved || 'pills'; // Default to pills
+    return saved || 'slideout'; // Default to slideout panel
   });
 
   // Text darkness color mapping (1=light, 7=pure black)
@@ -461,9 +461,41 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
               >
                 Dropdown (Sidebar)
               </button>
+              <button
+                onClick={() => setCommunityNavStyle('selector')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  border: communityNavStyle === 'selector' ? '2px solid #1d9bf0' : '1px solid #d1d5db',
+                  background: communityNavStyle === 'selector' ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : '#e0f2fe') : (isDarkMode ? '#2f3336' : '#fff'),
+                  color: communityNavStyle === 'selector' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                Selector (Card)
+              </button>
+              <button
+                onClick={() => setCommunityNavStyle('slideout')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  border: communityNavStyle === 'slideout' ? '2px solid #1d9bf0' : '1px solid #d1d5db',
+                  background: communityNavStyle === 'slideout' ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : '#e0f2fe') : (isDarkMode ? '#2f3336' : '#fff'),
+                  color: communityNavStyle === 'slideout' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                Slide-out (Panel)
+              </button>
             </div>
             <span style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
-              Choose how to switch between communities in the Community view
+              Choose how to switch between communities in the Feeds view
             </span>
           </div>
 

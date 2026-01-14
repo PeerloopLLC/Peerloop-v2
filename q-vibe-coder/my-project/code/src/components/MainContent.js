@@ -32,6 +32,9 @@ import DiscoverView from './DiscoverView';
 import { getAllInstructors, getInstructorWithCourses, getCourseById, getAllCourses, getInstructorById, getIndexedCourses, getIndexedInstructors } from '../data/database';
 import { UserPropType } from './PropTypes';
 
+// Guy Rymberg's course IDs - default enrollment for all users
+const GUY_RYMBERG_COURSES = [15, 22, 23, 24, 25];
+
 const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDarkMode }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const lastTopMenuRef = useRef('courses');
@@ -348,26 +351,17 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Purchased courses - courses the user has bought (enables course-level follow/unfollow)
   const [purchasedCourses, setPurchasedCourses] = useState(() => {
-    // Sarah (demo_sarah) gets courses from her 2 followed instructors
-    if (currentUser?.id === 'demo_sarah') {
-      const allInstructors = getAllInstructors();
-      const sarahInstructorIds = allInstructors.slice(0, 2).map(i => i.id);
-      return getAllCourses().filter(c => sarahInstructorIds.includes(c.instructorId)).map(c => c.id);
-    }
-    if (currentUser?.isNewUser) return [];
+    // All users default to Guy Rymberg's courses
     try {
       const storageKey = `purchasedCourses_${currentUser?.id}`;
       const stored = localStorage.getItem(storageKey);
       if (stored) {
         return JSON.parse(stored);
       }
-      // Demo users start with some purchased courses for testing
-      if (currentUser?.id?.startsWith('demo_') && !currentUser?.isNewUser) {
-        return [1, 2, 3]; // First 3 courses purchased by default for demo users
-      }
-      return [];
+      // Default: Guy Rymberg's courses for all users
+      return GUY_RYMBERG_COURSES;
     } catch (e) {
-      return [];
+      return GUY_RYMBERG_COURSES;
     }
   });
 
@@ -375,41 +369,23 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   React.useEffect(() => {
     if (!currentUser?.id) return;
 
-    // Sarah (demo_sarah) gets courses from her 2 followed instructors
-    if (currentUser.id === 'demo_sarah') {
-      const allInstructors = getAllInstructors();
-      const sarahInstructorIds = allInstructors.slice(0, 2).map(i => i.id);
-      setPurchasedCourses(getAllCourses().filter(c => sarahInstructorIds.includes(c.instructorId)).map(c => c.id));
-      return;
-    }
-
     try {
       const storageKey = `purchasedCourses_${currentUser.id}`;
-
-      // New users always start fresh - clear any stored data
-      if (currentUser.isNewUser || currentUser.userType === 'new_user') {
-        localStorage.removeItem(storageKey);
-        setPurchasedCourses([]);
-        return;
-      }
-
       const stored = localStorage.getItem(storageKey);
       if (stored) {
         setPurchasedCourses(JSON.parse(stored));
-      } else if (currentUser.id.startsWith('demo_') && !currentUser.isNewUser) {
-        // Demo users start with some purchased courses for testing
-        setPurchasedCourses([1, 2, 3, 15]); // Courses for demo users
       } else {
-        setPurchasedCourses([]);
+        // Default: Guy Rymberg's courses for all users
+        setPurchasedCourses(GUY_RYMBERG_COURSES);
       }
     } catch (e) {
-      setPurchasedCourses([]);
+      setPurchasedCourses(GUY_RYMBERG_COURSES);
     }
-  }, [currentUser?.id, currentUser?.isNewUser]);
+  }, [currentUser?.id]);
 
-  // Save purchased courses to localStorage (skip for Sarah - hard coded)
+  // Save purchased courses to localStorage
   React.useEffect(() => {
-    if (currentUser?.id && purchasedCourses.length > 0 && currentUser.id !== 'demo_sarah') {
+    if (currentUser?.id && purchasedCourses.length > 0) {
       localStorage.setItem(`purchasedCourses_${currentUser.id}`, JSON.stringify(purchasedCourses));
     }
   }, [purchasedCourses, currentUser?.id]);

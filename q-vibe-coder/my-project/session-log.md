@@ -586,6 +586,69 @@
 - User to decide between Option C (full-width bar) or Option D (avatar+name button)
 - Test and polish the new navigation mode
 
+---
+
+### Session 15
+**Date:** January 13, 2026
+**Phase:** Building - PeerLoop v2 Final Testing (Task 30)
+
+**What we did:**
+
+- **Completed Task 30: Final Testing** for peerloop-v2 rebuild (TypeScript + React + Tailwind + Zustand)
+
+- **Route Testing (all working):**
+  - `/login` - User selection with Creator, Student-Teacher, and Student options
+  - `/community` - Town Hall feed with pinned posts, post composer
+  - `/discover` - Course and creator discovery with category filters
+  - `/my-courses` - Enrolled courses (empty state working)
+  - `/notifications` - Grouped notifications (Today/Yesterday/Older) with actions
+  - `/dashboard` - Creator dashboard with stats and course list
+  - `/profile` - User profile with achievements, expertise, creator stats
+  - `/settings` - Settings with dark mode toggle
+  - `/course-builder` - Full course builder UI (sidebar, canvas, preview)
+  - `/browse` - Placeholder (Tasks 16-19 not yet implemented)
+
+- **Bug Found & Fixed - Dark Mode (Tailwind v4):**
+  - Issue: Dark mode toggle worked (class applied to HTML) but styles didn't change
+  - Root cause: Tailwind v4 requires CSS custom variant definition
+  - Fix: Added `@custom-variant dark (&:where(.dark, .dark *));` to `src/index.css`
+  - Both light and dark themes now work correctly
+
+- **Mobile Responsiveness Tested:**
+  - Bottom navigation replaces sidebar on mobile (375px width)
+  - "More" menu provides access to Courses, Profile, Settings, Dark toggle, Logout
+  - Content properly adapts to mobile width
+  - Community, Discover pages render correctly on mobile
+
+**Files modified:**
+- `peerloop-v2/src/index.css` (added Tailwind v4 dark mode custom variant)
+- `peerloop-v2/TASKS.md` (marked Task 30 as complete)
+
+**Technical notes:**
+- All 30 tasks in TASKS.md now complete (✅)
+- Tasks 16-19 (Browse pages) are still placeholders but not blocking
+- Tailwind v4 uses `@custom-variant` for dark mode class strategy
+- Mobile breakpoint at 768px triggers layout switch
+
+**Project Status:**
+- PeerLoop v2 rebuild: All 30 tasks complete
+- Ready for next phase (Browse pages implementation or deployment)
+
+---
+
+### Session 16
+**Date:** January 14, 2026
+**Phase:** Building
+
+**What we did:**
+- **peerloop-v2 transferred to separate project** - The TypeScript/Tailwind/Zustand rebuild is now managed in its own project workspace
+- This q-vibe-coder workspace continues with the **original React app** (`my-project/code/`)
+- Dev server: http://localhost:3000/Peerloop-v2
+
+**Note for future sessions:**
+- Run `cd my-project/code && npm start` for the original app
+- peerloop-v2 folder is archived/transferred - do not use for active development here
+
 <!-- Add more sessions as needed -->
 
 ---
