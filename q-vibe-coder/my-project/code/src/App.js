@@ -116,10 +116,10 @@ function App() {
   // State for tracking if we're in creator mode
   const [isCreatorMode, setIsCreatorMode] = useState(false);
 
-  // Dark mode state - persisted in localStorage (dark mode is default)
+  // Dark mode state - persisted in localStorage (light mode is default)
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
-    return saved !== null ? JSON.parse(saved) : true;
+    return saved !== null ? JSON.parse(saved) : false;
   });
 
   // Apply dark mode class to body and persist preference
