@@ -65,12 +65,11 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
   // Banner color for profile header
   const [bannerColor, setBannerColor] = useState(() => {
     const saved = localStorage.getItem('profileBannerColor');
-    return saved || 'default'; // Default is the gradient
+    return saved || 'blue'; // Default to blue
   });
 
   // Available banner colors
   const bannerColors = [
-    { id: 'default', label: 'Default', gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' },
     { id: 'blue', label: 'Blue', color: '#e8f4f8', gradient: 'linear-gradient(135deg, #e8f4f8 0%, #d0e8f0 100%)' },
     { id: 'cream', label: 'Cream', color: '#faf5eb', gradient: 'linear-gradient(135deg, #faf5eb 0%, #f0e8d8 100%)' },
     { id: 'green', label: 'Green', color: '#f0fdf4', gradient: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)' },
