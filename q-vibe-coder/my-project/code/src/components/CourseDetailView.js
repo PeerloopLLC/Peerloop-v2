@@ -18,6 +18,9 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
   const [activeTab, setActiveTab] = useState('overview');
   const [newPostText, setNewPostText] = useState('');
   const [isPosting, setIsPosting] = useState(false);
+  const [isJoiningSession, setIsJoiningSession] = useState(false);
+  const [showBbbModal, setShowBbbModal] = useState(false);
+  const [bbbJoinUrl, setBbbJoinUrl] = useState(null);
 
   // Mock enrollment data for enrolled users
   const enrollmentData = isCoursePurchased ? {
@@ -64,6 +67,55 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
       setNewPostText('');
       setIsPosting(false);
     }, 500);
+  };
+
+  // Handle joining a BigBlueButton session via Supabase Edge Function
+  const handleJoinSession = async () => {
+    if (isJoiningSession || !course) return;
+    setIsJoiningSession(true);
+
+    // Show modal with loading state
+    setBbbJoinUrl(null);
+    setShowBbbModal(true);
+
+    try {
+      const userName = currentUser?.name || 'Student';
+
+      // Call Supabase Edge Function to create meeting and get join URL
+      const response = await fetch('https://vnleonyfgwkfpvprpbqa.supabase.co/functions/v1/bbb-join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZubGVvbnlmZ3drZnB2cHJwYnFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNDM2OTIsImV4cCI6MjA4MDYxOTY5Mn0.aunUqqZJTYGBIXjPT2_V_CtaBpmF61-IkEhkPvJdEu8',
+        },
+        body: JSON.stringify({
+          courseId: course.id,
+          courseName: course.title,
+          userName: userName
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to create meeting');
+      }
+
+      // Set the join URL to load in iframe
+      setBbbJoinUrl(data.joinUrl);
+      setIsJoiningSession(false);
+    } catch (error) {
+      console.error('Failed to join session:', error);
+      alert('Failed to join session. Please try again.');
+      setIsJoiningSession(false);
+      setShowBbbModal(false);
+    }
+  };
+
+  // Close BBB modal
+  const handleCloseBbbModal = () => {
+    setShowBbbModal(false);
+    setBbbJoinUrl(null);
   };
 
   if (!course) {
@@ -1182,21 +1234,25 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
               }}>
                 {enrollmentData.nextSession.date} · {enrollmentData.nextSession.time}
               </div>
-              <button style={{
+              <button
+                onClick={handleJoinSession}
+                disabled={isJoiningSession}
+                style={{
                 marginTop: 10,
-                background: '#1d9bf0',
+                background: isJoiningSession ? '#71767b' : '#1d9bf0',
                 color: '#fff',
                 border: 'none',
                 padding: '8px 16px',
                 borderRadius: 6,
                 fontSize: 13,
                 fontWeight: 600,
-                cursor: 'pointer',
+                cursor: isJoiningSession ? 'wait' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6
+                gap: 6,
+                opacity: isJoiningSession ? 0.7 : 1
               }}>
-                <FaPlay style={{ fontSize: 10 }} /> Join Session
+                <FaPlay style={{ fontSize: 10 }} /> {isJoiningSession ? 'Joining...' : 'Join Session'}
               </button>
             </div>
           )}
@@ -1662,6 +1718,76 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
         </div>
         )}
       </div>
+
+      {/* BBB Video Session Modal */}
+      {showBbbModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.9)',
+          zIndex: 10000,
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          {/* Header with close button */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '12px 20px',
+            background: '#1a1a1a',
+            borderBottom: '1px solid #333'
+          }}>
+            <div style={{ color: '#fff', fontSize: 16, fontWeight: 600 }}>
+              {course?.title} - Live Session
+            </div>
+            <button
+              onClick={handleCloseBbbModal}
+              style={{
+                background: '#dc3545',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 6,
+                padding: '8px 16px',
+                cursor: 'pointer',
+                fontSize: 14,
+                fontWeight: 500
+              }}
+            >
+              Leave Session
+            </button>
+          </div>
+
+          {/* BBB iframe or loading state */}
+          {bbbJoinUrl ? (
+            <iframe
+              src={bbbJoinUrl}
+              style={{
+                flex: 1,
+                width: '100%',
+                border: 'none'
+              }}
+              allow="camera; microphone; display-capture; fullscreen"
+              title="BigBlueButton Session"
+            />
+          ) : (
+            <div style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#000',
+              color: '#fff',
+              fontSize: 18
+            }}>
+              Creating meeting room...
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
