@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeerLoop - Discover (Option B: Featured Hero + Compact List)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #a5b4fc;
+      --secondary: #10b981;
+      --secondary-light: #34d399;
+      --accent: #f59e0b;
+      --accent-light: #fbbf24;
+      --danger: #ef4444;
+
+      --bg-base: #0a0a0f;
+      --bg-surface: #12121a;
+      --bg-elevated: #1a1a24;
+      --bg-hover: #22222e;
+      --bg-active: #2a2a38;
+
+      --text-primary: #f5f5f7;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --text-inverse: #0a0a0f;
+
+      --border: #27272a;
+      --border-light: #3f3f46;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+
+      --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* Main Layout */
+    .app {
+      display: grid;
+      grid-template-columns: 240px 1fr 300px;
+      grid-template-rows: 64px 1fr;
+      min-height: 100vh;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      grid-column: 1 / -1;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 32px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .search-bar {
+      flex: 1;
+      max-width: 480px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      transition: all 0.2s;
+    }
+
+    .search-bar:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    .search-bar input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-icon {
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .search-shortcut {
+      padding: 4px 8px;
+      background: var(--bg-active);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .top-bar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 20px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .top-bar-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      background: var(--danger);
+      border-radius: 50%;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    /* Left Sidebar */
+    .left-sidebar {
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 12px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%);
+      color: var(--primary-light);
+    }
+
+    .nav-icon {
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--danger);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* Your Creators */
+    .creators-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .creator-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .creator-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .creator-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      position: relative;
+    }
+
+    .creator-avatar-wrapper {
+      position: relative;
+    }
+
+    .creator-live-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      background: var(--secondary);
+      border: 2px solid var(--bg-surface);
+      border-radius: 50%;
+    }
+
+    .creator-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .creator-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .creator-course {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .creator-unread {
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    .browse-more {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      color: var(--text-muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .browse-more:hover {
+      color: var(--primary-light);
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 24px 32px;
+      overflow-y: auto;
+      background: var(--bg-base);
+    }
+
+    /* Page Header */
+    .page-header {
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .page-search {
+      display: flex;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 14px 20px;
+      max-width: 400px;
+      transition: all 0.2s;
+    }
+
+    .page-search:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .page-search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 15px;
+      width: 100%;
+      margin-left: 12px;
+    }
+
+    .page-search input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Featured Section */
+    .featured-section {
+      margin-bottom: 48px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .featured-card {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.02) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      display: flex;
+      gap: 32px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .featured-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .featured-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: 600;
+    }
+
+    .featured-content {
+      flex: 1;
+    }
+
+    .featured-name {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .featured-tagline {
+      font-size: 16px;
+      color: var(--primary-light);
+      margin-bottom: 12px;
+    }
+
+    .featured-bio {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .featured-stats {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .featured-courses {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .featured-course-chip {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--primary-light);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    /* List Section */
+    .list-section {
+      margin-bottom: 32px;
+    }
+
+    .creator-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .creator-row {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-surface);
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .creator-row:last-child {
+      border-bottom: none;
+    }
+
+    .creator-row:hover {
+      background: var(--bg-hover);
+    }
+
+    .row-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin-right: 16px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .row-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .row-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .row-tagline {
+      font-size: 14px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .row-stats {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-right: 20px;
+    }
+
+    .row-stat {
+      text-align: center;
+      min-width: 60px;
+    }
+
+    .row-stat-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .row-stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .row-btn {
+      background: transparent;
+      border: 1px solid var(--border-light);
+      color: var(--text-primary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .row-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary-light);
+    }
+
+    .row-btn.joined {
+      border-color: transparent;
+      background: var(--bg-active);
+      color: var(--text-muted);
+    }
+
+    .expand-icon {
+      color: var(--text-muted);
+      margin-left: 12px;
+      font-size: 18px;
+    }
+
+    /* Right Sidebar */
+    .right-sidebar {
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+
+    .sidebar-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    /* Categories */
+    .categories-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .category-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .category-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .category-item.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .category-icon {
+      font-size: 20px;
+    }
+
+    .category-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .category-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-active);
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* Popular Courses */
+    .popular-course {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .popular-course:hover {
+      background: var(--bg-hover);
+    }
+
+    .popular-course-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .popular-course-info {
+      flex: 1;
+    }
+
+    .popular-course-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .popular-course-creator {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .popular-course-students {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Trending Topics */
+    .trending-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .trending-tag {
+      padding: 8px 14px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-xl);
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .trending-tag:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .trending-tag.hot {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+    }
+
+    /* Design Note */
+    .design-note {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="logo">PeerLoop</div>
+
+      <div class="search-bar">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" placeholder="Search knowledge, creators, courses..." />
+        <span class="search-shortcut">&#8984;K</span>
+      </div>
+
+      <div class="top-bar-right">
+        <button class="top-bar-btn">
+          &#128276;
+          <span class="notification-dot"></span>
+        </button>
+        <button class="top-bar-btn">&#128172;</button>
+        <div class="user-avatar">AS</div>
+      </div>
+    </header>
+
+    <!-- Left Sidebar -->
+    <aside class="left-sidebar">
+      <nav>
+        <div class="nav-item">
+          <span class="nav-icon">&#127968;</span>
+          <span>Commons</span>
+        </div>
+        <div class="nav-item active">
+          <span class="nav-icon">&#128269;</span>
+          <span>Discover</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">&#128218;</span>
+          <span>My Courses</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">&#127891;</span>
+          <span>Teaching</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">&#128197;</span>
+          <span>Sessions</span>
+          <span class="nav-badge">2</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">&#128204;</span>
+          <span>Saved</span>
+        </div>
+      </nav>
+
+      <div>
+        <div class="nav-section-title">Your Creators</div>
+        <div class="creators-list">
+          <div class="creator-item">
+            <div class="creator-avatar-wrapper">
+              <img src="https://i.pravatar.cc/36?img=32" class="creator-avatar" />
+              <div class="creator-live-dot"></div>
+            </div>
+            <div class="creator-info">
+              <div class="creator-name">Jane Doe</div>
+              <div class="creator-course">AI for PMs</div>
+            </div>
+            <div class="creator-unread"></div>
+          </div>
+          <div class="creator-item">
+            <img src="https://i.pravatar.cc/36?img=68" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">Einstein</div>
+              <div class="creator-course">Python</div>
+            </div>
+          </div>
+          <div class="creator-item">
+            <img src="https://i.pravatar.cc/36?img=47" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">Prof. Maria</div>
+              <div class="creator-course">Data Science</div>
+            </div>
+          </div>
+          <div class="creator-item">
+            <img src="https://i.pravatar.cc/36?img=52" class="creator-avatar" />
+            <div class="creator-info">
+              <div class="creator-name">James Wilson</div>
+              <div class="creator-course">Full-Stack</div>
+            </div>
+          </div>
+          <div class="browse-more">
+            <span>+</span>
+            <span>Browse creators</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content: Discover Page -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1 class="page-title">Discover</h1>
+        <div class="page-search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="M21 21l-4.35-4.35"></path>
+          </svg>
+          <input type="text" placeholder="Search creators & courses...">
+        </div>
+      </div>
+
+      <!-- Featured Creator Section -->
+      <div class="featured-section">
+        <div class="section-label">&#10024; Featured Creator</div>
+        <div class="featured-card">
+          <div class="featured-avatar">JD</div>
+          <div class="featured-content">
+            <div class="featured-name">Jane Doe</div>
+            <div class="featured-tagline">Leading AI Strategist at TechCorp</div>
+            <div class="featured-bio">
+              Expert in helping companies leverage AI for competitive advantage.
+              Has helped 500+ professionals master AI product management.
+            </div>
+            <div class="featured-stats">
+              <div class="stat">
+                <div class="stat-value">19.9K</div>
+                <div class="stat-label">Followers</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">4</div>
+                <div class="stat-label">Courses</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">2.3K</div>
+                <div class="stat-label">Students</div>
+              </div>
+            </div>
+            <div class="featured-courses">
+              <span class="featured-course-chip">AI for Product Managers</span>
+              <span class="featured-course-chip">Deep Learning Fundamentals</span>
+              <span class="featured-course-chip">+2 more</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Creators List -->
+      <div class="list-section">
+        <div class="section-label">All Creators</div>
+        <div class="creator-list">
+          <div class="creator-row">
+            <div class="row-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">SC</div>
+            <div class="row-info">
+              <div class="row-name">Dr. Sarah Chen</div>
+              <div class="row-tagline">AI Research Scientist & Educator</div>
+            </div>
+            <div class="row-stats">
+              <div class="row-stat">
+                <div class="row-stat-value">8.5K</div>
+                <div class="row-stat-label">followers</div>
+              </div>
+              <div class="row-stat">
+                <div class="row-stat-value">2</div>
+                <div class="row-stat-label">courses</div>
+              </div>
+            </div>
+            <button class="row-btn">Join</button>
+            <span class="expand-icon">&#8250;</span>
+          </div>
+
+          <div class="creator-row">
+            <div class="row-avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">MJ</div>
+            <div class="row-info">
+              <div class="row-name">Marcus Johnson</div>
+              <div class="row-tagline">DevOps Engineer & Open Source Advocate</div>
+            </div>
+            <div class="row-stats">
+              <div class="row-stat">
+                <div class="row-stat-value">12K</div>
+                <div class="row-stat-label">followers</div>
+              </div>
+              <div class="row-stat">
+                <div class="row-stat-value">2</div>
+                <div class="row-stat-label">courses</div>
+              </div>
+            </div>
+            <button class="row-btn joined">Joined</button>
+            <span class="expand-icon">&#8250;</span>
+          </div>
+
+          <div class="creator-row">
+            <div class="row-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">GR</div>
+            <div class="row-info">
+              <div class="row-name">Guy Rymberg</div>
+              <div class="row-tagline">AI Prompting Specialist & Business AI Expert</div>
+            </div>
+            <div class="row-stats">
+              <div class="row-stat">
+                <div class="row-stat-value">527</div>
+                <div class="row-stat-label">followers</div>
+              </div>
+              <div class="row-stat">
+                <div class="row-stat-value">5</div>
+                <div class="row-stat-label">courses</div>
+              </div>
+            </div>
+            <button class="row-btn">Join</button>
+            <span class="expand-icon">&#8250;</span>
+          </div>
+
+          <div class="creator-row">
+            <div class="row-avatar" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">MR</div>
+            <div class="row-info">
+              <div class="row-name">Prof. Maria Rodriguez</div>
+              <div class="row-tagline">Data Science & Analytics Specialist</div>
+            </div>
+            <div class="row-stats">
+              <div class="row-stat">
+                <div class="row-stat-value">2.4K</div>
+                <div class="row-stat-label">followers</div>
+              </div>
+              <div class="row-stat">
+                <div class="row-stat-value">2</div>
+                <div class="row-stat-label">courses</div>
+              </div>
+            </div>
+            <button class="row-btn joined">Joined</button>
+            <span class="expand-icon">&#8250;</span>
+          </div>
+
+          <div class="creator-row">
+            <div class="row-avatar" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">JW</div>
+            <div class="row-info">
+              <div class="row-name">James Wilson</div>
+              <div class="row-tagline">Full-Stack Development & DevOps Engineer</div>
+            </div>
+            <div class="row-stats">
+              <div class="row-stat">
+                <div class="row-stat-value">2.9K</div>
+                <div class="row-stat-label">followers</div>
+              </div>
+              <div class="row-stat">
+                <div class="row-stat-value">3</div>
+                <div class="row-stat-label">courses</div>
+              </div>
+            </div>
+            <button class="row-btn">Join</button>
+            <span class="expand-icon">&#8250;</span>
+          </div>
+
+          <div class="creator-row">
+            <div class="row-avatar" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">ER</div>
+            <div class="row-info">
+              <div class="row-name">Elena Rodriguez</div>
+              <div class="row-tagline">Automation Specialist & No-Code Expert</div>
+            </div>
+            <div class="row-stats">
+              <div class="row-stat">
+                <div class="row-stat-value">5.2K</div>
+                <div class="row-stat-label">followers</div>
+              </div>
+              <div class="row-stat">
+                <div class="row-stat-value">2</div>
+                <div class="row-stat-label">courses</div>
+              </div>
+            </div>
+            <button class="row-btn">Join</button>
+            <span class="expand-icon">&#8250;</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+      <!-- Categories -->
+      <div>
+        <div class="sidebar-section-title">Categories</div>
+        <div class="categories-list">
+          <div class="category-item active">
+            <span class="category-icon">&#127760;</span>
+            <span class="category-name">All</span>
+            <span class="category-count">42</span>
+          </div>
+          <div class="category-item">
+            <span class="category-icon">&#129302;</span>
+            <span class="category-name">AI & Machine Learning</span>
+            <span class="category-count">12</span>
+          </div>
+          <div class="category-item">
+            <span class="category-icon">&#128187;</span>
+            <span class="category-name">Web Development</span>
+            <span class="category-count">8</span>
+          </div>
+          <div class="category-item">
+            <span class="category-icon">&#128202;</span>
+            <span class="category-name">Data Science</span>
+            <span class="category-count">7</span>
+          </div>
+          <div class="category-item">
+            <span class="category-icon">&#128241;</span>
+            <span class="category-name">Mobile Development</span>
+            <span class="category-count">5</span>
+          </div>
+          <div class="category-item">
+            <span class="category-icon">&#9881;</span>
+            <span class="category-name">DevOps & Cloud</span>
+            <span class="category-count">6</span>
+          </div>
+          <div class="category-item">
+            <span class="category-icon">&#127912;</span>
+            <span class="category-name">Design</span>
+            <span class="category-count">4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Popular Courses -->
+      <div>
+        <div class="sidebar-section-title">Popular This Week</div>
+        <div class="popular-course">
+          <div class="popular-course-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">&#129302;</div>
+          <div class="popular-course-info">
+            <div class="popular-course-name">AI for Product Managers</div>
+            <div class="popular-course-creator">Jane Doe</div>
+          </div>
+          <div class="popular-course-students">2.3K</div>
+        </div>
+        <div class="popular-course">
+          <div class="popular-course-icon" style="background: linear-gradient(135deg, #3776ab 0%, #ffd43b 100%);">&#128013;</div>
+          <div class="popular-course-info">
+            <div class="popular-course-name">Python Fundamentals</div>
+            <div class="popular-course-creator">Einstein</div>
+          </div>
+          <div class="popular-course-students">1.8K</div>
+        </div>
+        <div class="popular-course">
+          <div class="popular-course-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">&#127760;</div>
+          <div class="popular-course-info">
+            <div class="popular-course-name">Full-Stack Web Dev</div>
+            <div class="popular-course-creator">James Wilson</div>
+          </div>
+          <div class="popular-course-students">1.2K</div>
+        </div>
+      </div>
+
+      <!-- Trending Topics -->
+      <div>
+        <div class="sidebar-section-title">Trending Topics</div>
+        <div class="trending-topics">
+          <span class="trending-tag hot">&#128293; LLMs</span>
+          <span class="trending-tag">Prompt Engineering</span>
+          <span class="trending-tag">React 19</span>
+          <span class="trending-tag">Python</span>
+          <span class="trending-tag">Data Pipelines</span>
+          <span class="trending-tag">RAG</span>
+          <span class="trending-tag">TypeScript</span>
+          <span class="trending-tag">System Design</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="design-note">
+    <strong>Option B:</strong> Featured Hero + Compact List. One creator spotlighted, others in scannable rows.
+  </div>
+</body>
+</html>

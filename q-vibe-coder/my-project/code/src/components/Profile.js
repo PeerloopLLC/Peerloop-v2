@@ -62,6 +62,24 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
     return saved || 'slideout'; // Default to slideout panel
   });
 
+  // Banner color for profile header
+  const [bannerColor, setBannerColor] = useState(() => {
+    const saved = localStorage.getItem('profileBannerColor');
+    return saved || 'default'; // Default is the gradient
+  });
+
+  // Available banner colors
+  const bannerColors = [
+    { id: 'default', label: 'Default', gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' },
+    { id: 'blue', label: 'Blue', color: '#e8f4f8', gradient: 'linear-gradient(135deg, #e8f4f8 0%, #d0e8f0 100%)' },
+    { id: 'cream', label: 'Cream', color: '#faf5eb', gradient: 'linear-gradient(135deg, #faf5eb 0%, #f0e8d8 100%)' },
+    { id: 'green', label: 'Green', color: '#f0fdf4', gradient: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)' },
+    { id: 'pink', label: 'Pink', color: '#fef3f2', gradient: 'linear-gradient(135deg, #fef3f2 0%, #fecaca 100%)' },
+    { id: 'purple', label: 'Purple', color: '#f5f3ff', gradient: 'linear-gradient(135deg, #f5f3ff 0%, #e9d5ff 100%)' },
+    { id: 'teal', label: 'Teal', color: '#f0fdfa', gradient: 'linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%)' },
+    { id: 'orange', label: 'Orange', color: '#fff7ed', gradient: 'linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%)' },
+  ];
+
   // Text darkness color mapping (1=light, 7=pure black)
   const darknessColors = {
     1: '#6b7280', // Light gray
@@ -85,6 +103,11 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
     // Dispatch custom event so other components in same tab can update
     window.dispatchEvent(new CustomEvent('communityNavStyleChanged', { detail: communityNavStyle }));
   }, [communityNavStyle]);
+
+  // Save banner color preference when it changes
+  useEffect(() => {
+    localStorage.setItem('profileBannerColor', bannerColor);
+  }, [bannerColor]);
 
   // Apply on mount
   useEffect(() => {
@@ -763,11 +786,54 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
   const renderEditProfile = () => {
     const showTeachingTab = currentUser?.userType !== 'student' && currentUser?.userType !== 'new_user';
 
+    // Get the selected banner gradient
+    const selectedBanner = bannerColors.find(c => c.id === bannerColor) || bannerColors[0];
+
     return (
       <div className="edit-profile-section">
         {/* Cover Image */}
-        <div className="ep-cover-image">
-          <div className="ep-cover-gradient"></div>
+        <div className="ep-cover-image" style={{ position: 'relative' }}>
+          <div
+            className="ep-cover-gradient"
+            style={{ background: selectedBanner.gradient }}
+          ></div>
+
+          {/* Color Swatches - shown when editing */}
+          {isEditing && (
+            <div style={{
+              position: 'absolute',
+              bottom: 12,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              gap: 8,
+              background: 'rgba(255,255,255,0.95)',
+              padding: '8px 16px',
+              borderRadius: 24,
+              boxShadow: '0 2px 10px rgba(0,0,0,0.15)'
+            }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#374151', alignSelf: 'center', marginRight: 4 }}>Banner:</span>
+              {bannerColors.map((color) => (
+                <button
+                  key={color.id}
+                  onClick={() => setBannerColor(color.id)}
+                  title={color.label}
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    border: bannerColor === color.id ? '3px solid #1d9bf0' : '2px solid #e5e7eb',
+                    background: color.id === 'default'
+                      ? 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)'
+                      : color.color,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    boxShadow: bannerColor === color.id ? '0 0 0 2px rgba(29,155,240,0.3)' : 'none'
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Profile Info */}
@@ -782,9 +848,44 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
           </div>
 
           {/* Edit Profile Button (own profile only) */}
-          <button className="ep-edit-btn" onClick={() => setIsEditing(true)}>
-            Edit profile
-          </button>
+          {!isEditing ? (
+            <button className="ep-edit-btn" onClick={() => setIsEditing(true)}>
+              Edit profile
+            </button>
+          ) : (
+            <div style={{ position: 'absolute', top: 12, right: 16, display: 'flex', gap: 8 }}>
+              <button
+                onClick={handleCancel}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 9999,
+                  border: '1px solid #ccc',
+                  background: '#fff',
+                  color: '#374151',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 9999,
+                  border: 'none',
+                  background: '#1d9bf0',
+                  color: '#fff',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: 'pointer'
+                }}
+              >
+                Save
+              </button>
+            </div>
+          )}
 
           {/* Profile Details */}
           <div className="ep-profile-details">

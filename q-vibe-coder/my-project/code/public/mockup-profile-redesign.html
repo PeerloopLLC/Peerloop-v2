@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeerLoop - Profile Redesign Mockup</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #000;
+      color: #e7e9ea;
+      line-height: 1.5;
+    }
+
+    .app-container {
+      display: flex;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 270px;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      border-right: 1px solid #2f3336;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .logo-icon {
+      font-size: 32px;
+      color: #1d9bf0;
+    }
+
+    .logo-text {
+      font-size: 10px;
+      font-weight: 600;
+      color: #71767b;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: 9999px;
+      font-size: 20px;
+      color: #e7e9ea;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .nav-item:hover {
+      background: rgba(231, 233, 234, 0.1);
+    }
+
+    .nav-item.active {
+      font-weight: 700;
+    }
+
+    .nav-icon {
+      font-size: 24px;
+      width: 28px;
+      text-align: center;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 270px;
+      flex: 1;
+      max-width: 600px;
+      border-right: 1px solid #2f3336;
+      min-height: 100vh;
+    }
+
+    /* Profile Header */
+    .profile-header {
+      position: relative;
+    }
+
+    .cover-image {
+      height: 200px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      position: relative;
+    }
+
+    .cover-image::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.5));
+    }
+
+    .profile-info {
+      padding: 12px 16px;
+      position: relative;
+    }
+
+    .avatar-container {
+      position: absolute;
+      top: -67px;
+      left: 16px;
+    }
+
+    .avatar {
+      width: 134px;
+      height: 134px;
+      border-radius: 50%;
+      border: 4px solid #000;
+      object-fit: cover;
+    }
+
+    .edit-profile-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      padding: 8px 16px;
+      border: 1px solid #536471;
+      border-radius: 9999px;
+      background: transparent;
+      color: #e7e9ea;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .edit-profile-btn:hover {
+      background: rgba(239, 243, 244, 0.1);
+    }
+
+    .profile-details {
+      margin-top: 68px;
+    }
+
+    .profile-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: #e7e9ea;
+    }
+
+    .profile-handle {
+      font-size: 15px;
+      color: #71767b;
+    }
+
+    .profile-role {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 2px 8px;
+      background: rgba(29, 155, 240, 0.1);
+      color: #1d9bf0;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .profile-bio {
+      margin-top: 12px;
+      font-size: 15px;
+      color: #e7e9ea;
+    }
+
+    .profile-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+      font-size: 15px;
+      color: #71767b;
+    }
+
+    .profile-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .profile-meta a {
+      color: #1d9bf0;
+      text-decoration: none;
+    }
+
+    .profile-meta a:hover {
+      text-decoration: underline;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 16px;
+      background: #16181c;
+      border-radius: 16px;
+    }
+
+    .stat-item {
+      flex: 1;
+      text-align: center;
+      padding: 12px 8px;
+      background: #000;
+      border-radius: 12px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #e7e9ea;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #71767b;
+      margin-top: 4px;
+    }
+
+    .streak-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 12px;
+      padding: 8px 16px;
+      font-size: 14px;
+      color: #71767b;
+    }
+
+    .streak-info .streak {
+      color: #f59e0b;
+    }
+
+    /* Profile Tabs */
+    .profile-tabs {
+      display: flex;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 16px 0;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: #71767b;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .tab:hover {
+      background: rgba(231, 233, 234, 0.1);
+    }
+
+    .tab.active {
+      font-weight: 700;
+      color: #e7e9ea;
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 56px;
+      height: 4px;
+      background: #1d9bf0;
+      border-radius: 2px;
+    }
+
+    .tab-count {
+      font-size: 13px;
+      color: #71767b;
+      margin-left: 4px;
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #2f3336;
+      overflow-x: auto;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border-radius: 9999px;
+      background: transparent;
+      border: 1px solid #536471;
+      color: #e7e9ea;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+      background: rgba(231, 233, 234, 0.1);
+    }
+
+    .filter-btn.active {
+      background: #e7e9ea;
+      color: #0f1419;
+      border-color: #e7e9ea;
+    }
+
+    /* Posts */
+    .post-item {
+      padding: 16px;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .post-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .post-type.answer {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+
+    .post-type.win {
+      background: rgba(251, 191, 36, 0.1);
+      color: #fbbf24;
+    }
+
+    .post-type.question {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .post-type.tip {
+      background: rgba(168, 85, 247, 0.1);
+      color: #a855f7;
+    }
+
+    .post-context {
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 8px;
+    }
+
+    .post-content {
+      font-size: 15px;
+      color: #e7e9ea;
+      margin-bottom: 8px;
+    }
+
+    .post-reply-to {
+      font-size: 13px;
+      color: #71767b;
+      padding: 8px 12px;
+      background: #16181c;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .post-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(29, 155, 240, 0.1);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #1d9bf0;
+      margin-bottom: 12px;
+    }
+
+    .post-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    .post-time {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    .post-item {
+      position: relative;
+    }
+
+    /* Courses */
+    .community-section {
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .community-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: #16181c;
+    }
+
+    .community-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e7e9ea;
+    }
+
+    .community-count {
+      font-size: 14px;
+      color: #71767b;
+    }
+
+    .course-item {
+      padding: 16px;
+      border-bottom: 1px solid #2f3336;
+      display: flex;
+      gap: 16px;
+    }
+
+    .course-badge {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .course-badge.completed {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #000;
+    }
+
+    .course-badge.in-progress {
+      background: #2f3336;
+      color: #71767b;
+    }
+
+    .course-badge-label {
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .course-details {
+      flex: 1;
+    }
+
+    .course-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e7e9ea;
+      margin-bottom: 4px;
+    }
+
+    .course-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .course-status.completed {
+      color: #22c55e;
+    }
+
+    .course-status.in-progress {
+      color: #1d9bf0;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #2f3336;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1d9bf0 0%, #22c55e 100%);
+      border-radius: 4px;
+    }
+
+    .course-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 12px;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .skill-tag {
+      padding: 4px 10px;
+      background: #2f3336;
+      border-radius: 9999px;
+      font-size: 12px;
+      color: #e7e9ea;
+    }
+
+    .course-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .course-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+
+    .course-btn.primary {
+      background: #1d9bf0;
+      color: #fff;
+    }
+
+    .course-btn.secondary {
+      background: transparent;
+      border: 1px solid #536471;
+      color: #e7e9ea;
+    }
+
+    /* Teaching Tab */
+    .teaching-summary {
+      display: flex;
+      gap: 8px;
+      padding: 16px;
+      background: #16181c;
+    }
+
+    .teaching-stat {
+      flex: 1;
+      text-align: center;
+      padding: 16px 8px;
+      background: #000;
+      border-radius: 12px;
+    }
+
+    .teaching-stat-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #e7e9ea;
+    }
+
+    .teaching-stat-label {
+      font-size: 12px;
+      color: #71767b;
+      margin-top: 4px;
+    }
+
+    .review-item {
+      padding: 12px 16px;
+      background: #16181c;
+      border-radius: 8px;
+      margin: 8px 16px;
+    }
+
+    .review-stars {
+      color: #fbbf24;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .review-text {
+      font-size: 14px;
+      color: #e7e9ea;
+    }
+
+    .review-author {
+      font-size: 13px;
+      color: #71767b;
+      margin-top: 4px;
+    }
+
+    /* Achievements Tab */
+    .achievement-summary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 20px;
+      background: #16181c;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .achievement-summary-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+    }
+
+    .section-header {
+      padding: 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: #0a0a0a;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .certificates-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .certificate-card {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid #2f3336;
+    }
+
+    .certificate-logo {
+      font-size: 24px;
+      color: #1d9bf0;
+      margin-bottom: 8px;
+    }
+
+    .certificate-brand {
+      font-size: 10px;
+      font-weight: 700;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .certificate-divider {
+      width: 40px;
+      height: 2px;
+      background: #1d9bf0;
+      margin: 8px auto;
+    }
+
+    .certificate-label {
+      font-size: 10px;
+      color: #71767b;
+      text-transform: uppercase;
+    }
+
+    .certificate-course {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e7e9ea;
+      margin: 4px 0;
+    }
+
+    .certificate-date {
+      font-size: 12px;
+      color: #71767b;
+    }
+
+    .certificate-score {
+      font-size: 12px;
+      color: #22c55e;
+      margin-top: 4px;
+    }
+
+    .certificate-verify {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 6px 12px;
+      background: rgba(29, 155, 240, 0.1);
+      color: #1d9bf0;
+      border-radius: 6px;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .badge-card {
+      background: #16181c;
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+
+    .badge-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .badge-icon.gold {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    }
+
+    .badge-icon.silver {
+      background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    }
+
+    .badge-icon.bronze {
+      background: linear-gradient(135deg, #cd7f32 0%, #b87333 100%);
+    }
+
+    .badge-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e7e9ea;
+      margin-bottom: 4px;
+    }
+
+    .badge-desc {
+      font-size: 12px;
+      color: #71767b;
+      margin-bottom: 8px;
+    }
+
+    .badge-date {
+      font-size: 11px;
+      color: #536471;
+    }
+
+    /* Streaks Section */
+    .streaks-section {
+      padding: 16px;
+    }
+
+    .streak-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .streak-current {
+      font-size: 18px;
+    }
+
+    .streak-current span {
+      color: #f59e0b;
+    }
+
+    .streak-longest {
+      font-size: 14px;
+      color: #71767b;
+    }
+
+    .week-grid {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .day-cell {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .day-cell.active {
+      background: #22c55e;
+    }
+
+    .day-cell.inactive {
+      background: #2f3336;
+    }
+
+    .day-labels {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      font-size: 12px;
+      color: #71767b;
+    }
+
+    .day-labels span {
+      width: 36px;
+      text-align: center;
+    }
+
+    .monthly-activity {
+      margin-top: 16px;
+    }
+
+    .month-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .month-label {
+      width: 32px;
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    .month-bar {
+      flex: 1;
+      height: 12px;
+      background: #2f3336;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .month-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1d9bf0 0%, #22c55e 100%);
+      border-radius: 6px;
+    }
+
+    .month-count {
+      font-size: 12px;
+      color: #71767b;
+      width: 80px;
+    }
+
+    /* Community Recognition */
+    .recognition-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .recognition-card {
+      background: #16181c;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .recognition-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .recognition-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e7e9ea;
+      margin-bottom: 8px;
+    }
+
+    .recognition-stats {
+      font-size: 12px;
+      color: #71767b;
+    }
+
+    .recognition-rank {
+      color: #fbbf24;
+      font-weight: 600;
+    }
+
+    /* Activity Tab */
+    .engagement-overview {
+      display: flex;
+      gap: 8px;
+      padding: 16px;
+      background: #16181c;
+    }
+
+    .engagement-stat {
+      flex: 1;
+      text-align: center;
+      padding: 16px 8px;
+      background: #000;
+      border-radius: 12px;
+    }
+
+    .engagement-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #e7e9ea;
+    }
+
+    .engagement-label {
+      font-size: 11px;
+      color: #71767b;
+      margin-top: 4px;
+    }
+
+    .engagement-comparison {
+      text-align: center;
+      padding: 12px;
+      font-size: 14px;
+      color: #22c55e;
+      background: #16181c;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .activity-breakdown {
+      padding: 16px;
+    }
+
+    .breakdown-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .breakdown-label {
+      width: 80px;
+      font-size: 14px;
+      color: #e7e9ea;
+    }
+
+    .breakdown-bar {
+      flex: 1;
+      height: 20px;
+      background: #2f3336;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .breakdown-fill {
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    .breakdown-fill.learning {
+      background: #1d9bf0;
+    }
+
+    .breakdown-fill.teaching {
+      background: #22c55e;
+    }
+
+    .breakdown-fill.community {
+      background: #a855f7;
+    }
+
+    .breakdown-fill.sessions {
+      background: #f59e0b;
+    }
+
+    .breakdown-percent {
+      width: 40px;
+      font-size: 14px;
+      color: #71767b;
+      text-align: right;
+    }
+
+    /* Contribution Graph */
+    .contribution-graph {
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    .graph-row {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-bottom: 2px;
+    }
+
+    .graph-label {
+      width: 32px;
+      font-size: 11px;
+      color: #71767b;
+    }
+
+    .graph-cell {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    .graph-cell.level-0 { background: #161b22; }
+    .graph-cell.level-1 { background: #0e4429; }
+    .graph-cell.level-2 { background: #006d32; }
+    .graph-cell.level-3 { background: #26a641; }
+    .graph-cell.level-4 { background: #39d353; }
+
+    .graph-legend {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 8px;
+      font-size: 11px;
+      color: #71767b;
+    }
+
+    /* Activity Timeline */
+    .timeline-section {
+      padding: 16px;
+    }
+
+    .timeline-date {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e7e9ea;
+      margin-bottom: 12px;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 12px;
+      padding: 8px 0;
+      padding-left: 24px;
+      border-left: 2px solid #2f3336;
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 12px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #1d9bf0;
+    }
+
+    .timeline-icon {
+      font-size: 16px;
+    }
+
+    .timeline-text {
+      flex: 1;
+      font-size: 14px;
+      color: #e7e9ea;
+    }
+
+    .timeline-text .highlight {
+      color: #1d9bf0;
+    }
+
+    .timeline-text .rating {
+      color: #fbbf24;
+    }
+
+    /* Right Sidebar */
+    .right-sidebar {
+      width: 350px;
+      padding: 16px;
+      position: fixed;
+      right: calc((100vw - 1400px) / 2);
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 1400px) {
+      .right-sidebar {
+        display: none;
+      }
+    }
+
+    .sidebar-card {
+      background: #16181c;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .sidebar-card-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #e7e9ea;
+      margin-bottom: 16px;
+    }
+
+    .export-btn {
+      width: 100%;
+      padding: 12px;
+      background: #1d9bf0;
+      color: #fff;
+      border: none;
+      border-radius: 9999px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .export-btn.secondary {
+      background: transparent;
+      border: 1px solid #536471;
+      color: #e7e9ea;
+    }
+
+    .quick-verify {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .verify-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #000;
+      border-radius: 12px;
+    }
+
+    .verify-icon {
+      font-size: 20px;
+    }
+
+    .verify-details {
+      flex: 1;
+    }
+
+    .verify-course {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e7e9ea;
+    }
+
+    .verify-date {
+      font-size: 12px;
+      color: #71767b;
+    }
+
+    .verify-link {
+      color: #1d9bf0;
+      font-size: 13px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">&#8734;</span>
+        <span class="logo-text">PeerLoop</span>
+      </div>
+      <nav>
+        <div class="nav-item">
+          <span class="nav-icon">&#128101;</span>
+          <span>My Feeds</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">&#128269;</span>
+          <span>Discover</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">&#128218;</span>
+          <span>My Courses</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">&#128172;</span>
+          <span>Messages</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">&#128276;</span>
+          <span>Notifications</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">&#128202;</span>
+          <span>Dashboard</span>
+        </div>
+        <div class="nav-item active">
+          <span class="nav-icon">&#128100;</span>
+          <span>Profile</span>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="cover-image"></div>
+        <div class="profile-info">
+          <div class="avatar-container">
+            <img src="https://i.pravatar.cc/150?img=68" alt="Profile" class="avatar">
+          </div>
+          <button class="edit-profile-btn">Edit profile</button>
+          <div class="profile-details">
+            <h1 class="profile-name">Alex Sanders</h1>
+            <p class="profile-handle">@alexsanders</p>
+            <span class="profile-role">Student-Teacher</span>
+            <p class="profile-bio">Lifelong learner passionate about AI and machine learning. Currently studying Deep Learning and teaching Python basics to beginners. Love helping others on their learning journey!</p>
+            <div class="profile-meta">
+              <span>&#128205; San Francisco, CA</span>
+              <span>&#128279; <a href="#">alexsanders.dev</a></span>
+              <span>&#128197; Joined March 2024</span>
+            </div>
+          </div>
+
+          <!-- Stats Row -->
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-value">12</div>
+              <div class="stat-label">Courses Completed</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">47</div>
+              <div class="stat-label">Students Helped</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">4.9&#11088;</div>
+              <div class="stat-label">Rating</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">156</div>
+              <div class="stat-label">Hours Learned</div>
+            </div>
+          </div>
+
+          <div class="streak-info">
+            <span class="streak">&#128293; 15-day learning streak</span>
+            <span>&#8226;</span>
+            <span>Last active 2 hours ago</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Tabs -->
+      <div class="profile-tabs">
+        <div class="tab active" onclick="showTab('posts')">Posts<span class="tab-count">(24)</span></div>
+        <div class="tab" onclick="showTab('courses-taken')">Courses Taken<span class="tab-count">(12)</span></div>
+        <div class="tab" onclick="showTab('courses-taught')">Courses Taught<span class="tab-count">(3)</span></div>
+        <div class="tab" onclick="showTab('achievements')">Achievements<span class="tab-count">(8)</span></div>
+        <div class="tab" onclick="showTab('activity')">Activity</div>
+      </div>
+
+      <!-- Posts Tab -->
+      <div id="posts" class="tab-content active">
+        <div class="filter-bar">
+          <button class="filter-btn active">All</button>
+          <button class="filter-btn">Questions</button>
+          <button class="filter-btn">Answers</button>
+          <button class="filter-btn">Wins</button>
+          <button class="filter-btn">Tips</button>
+        </div>
+
+        <div class="post-item">
+          <span class="post-time">2 hours ago</span>
+          <div class="post-type answer">&#9989; HELPFUL ANSWER</div>
+          <div class="post-context">In: Einstein Community &gt; Relativity 101</div>
+          <div class="post-content">"The key to understanding E=mc&sup2; is thinking about mass and energy as two forms of the same thing. When you convert a tiny bit of mass, you get a huge amount of energy because c&sup2; is such a large number..."</div>
+          <div class="post-reply-to">&#8617;&#65039; Reply to: "Can someone explain E=mc&sup2; simply?"</div>
+          <div class="post-stats">
+            <span>&#128077; 12 Found Helpful</span>
+            <span>&#128172; 3 Replies</span>
+            <span style="color: #22c55e;">+15 Goodwill</span>
+          </div>
+        </div>
+
+        <div class="post-item">
+          <span class="post-time">Yesterday</span>
+          <div class="post-type win">&#127881; WIN</div>
+          <div class="post-context">In: Jane's AI Academy &gt; Deep Learning Fundamentals</div>
+          <div class="post-content">"Just completed the Neural Networks module! The hands-on project really helped cement the concepts. Finally understand backpropagation!"</div>
+          <div class="post-badge">&#127942; Earned: Neural Network Basics Badge</div>
+          <div class="post-stats">
+            <span>&#128077; 8 Congrats</span>
+            <span>&#128172; 5 Replies</span>
+          </div>
+        </div>
+
+        <div class="post-item">
+          <span class="post-time">3 days ago</span>
+          <div class="post-type question">&#10067; QUESTION</div>
+          <div class="post-context">In: The Commons &gt; General</div>
+          <div class="post-content">"What's the best way to visualize gradient descent? Looking for intuitive explanations that would help beginners understand the concept."</div>
+          <div class="post-stats">
+            <span style="color: #22c55e;">&#9989; RESOLVED</span>
+            <span>&#128172; 7 Replies</span>
+            <span>Best answer by @mariateacher</span>
+          </div>
+        </div>
+
+        <div class="post-item">
+          <span class="post-time">5 days ago</span>
+          <div class="post-type tip">&#128161; TIP</div>
+          <div class="post-context">In: The Commons &gt; Python Beginners</div>
+          <div class="post-content">"Pro tip: When debugging Python, use print(type(variable)) to check what kind of data you're working with. 90% of beginner errors come from type mismatches!"</div>
+          <div class="post-stats">
+            <span>&#128077; 24 Found Helpful</span>
+            <span>&#128172; 8 Replies</span>
+            <span style="color: #22c55e;">+20 Goodwill</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses Taken Tab -->
+      <div id="courses-taken" class="tab-content">
+        <div class="filter-bar">
+          <button class="filter-btn active">All</button>
+          <button class="filter-btn">Completed</button>
+          <button class="filter-btn">In Progress</button>
+          <button class="filter-btn">Certified</button>
+        </div>
+
+        <!-- Einstein Community -->
+        <div class="community-section">
+          <div class="community-header">
+            <span class="community-name">&#128300; Einstein Community</span>
+            <span class="community-count">3 courses taken</span>
+          </div>
+
+          <div class="course-item">
+            <div class="course-badge completed">
+              <span>&#127942;</span>
+              <span class="course-badge-label">CERT</span>
+            </div>
+            <div class="course-details">
+              <h3 class="course-title">Relativity 101: Understanding Space-Time</h3>
+              <div class="course-status completed">&#9989; COMPLETED &bull; Certificate Earned</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%"></div>
+              </div>
+              <div class="course-meta">
+                <span>&#9201; 18 hours invested</span>
+                <span>&#128197; Completed Dec 2024</span>
+                <span>&#128221; Score: 94%</span>
+                <span>&#127942; Top 5%</span>
+              </div>
+              <div class="skill-tags">
+                <span class="skill-tag">Special Relativity</span>
+                <span class="skill-tag">Spacetime</span>
+                <span class="skill-tag">Lorentz Transform</span>
+              </div>
+              <div class="course-actions">
+                <button class="course-btn primary">View Certificate</button>
+                <button class="course-btn secondary">Share to LinkedIn</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-item">
+            <div class="course-badge in-progress">
+              <span>&#128218;</span>
+              <span class="course-badge-label">60%</span>
+            </div>
+            <div class="course-details">
+              <h3 class="course-title">Quantum Mechanics Fundamentals</h3>
+              <div class="course-status in-progress">&#128260; IN PROGRESS</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 60%"></div>
+              </div>
+              <div class="course-meta">
+                <span>&#9201; 12 hours invested</span>
+                <span>&#128197; Last activity: Today</span>
+                <span>&#128198; Est. completion: 2 weeks</span>
+              </div>
+              <p style="font-size: 14px; color: #71767b; margin-bottom: 12px;">Current Module: Wave-Particle Duality</p>
+              <div class="course-actions">
+                <button class="course-btn primary">Continue Learning &#8594;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jane's AI Academy -->
+        <div class="community-section">
+          <div class="community-header">
+            <span class="community-name">&#129302; Jane's AI Academy</span>
+            <span class="community-count">2 courses taken</span>
+          </div>
+
+          <div class="course-item">
+            <div class="course-badge completed">
+              <span>&#127942;</span>
+              <span class="course-badge-label">CERT</span>
+            </div>
+            <div class="course-details">
+              <h3 class="course-title">Deep Learning Fundamentals</h3>
+              <div class="course-status completed">&#9989; COMPLETED &bull; Certificate Earned</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%"></div>
+              </div>
+              <div class="course-meta">
+                <span>&#9201; 24 hours invested</span>
+                <span>&#128197; Completed Nov 2024</span>
+                <span>&#128221; Score: 91%</span>
+                <span>&#127942; Top 10%</span>
+              </div>
+              <div class="skill-tags">
+                <span class="skill-tag">Neural Networks</span>
+                <span class="skill-tag">Backpropagation</span>
+                <span class="skill-tag">TensorFlow</span>
+              </div>
+              <div class="course-actions">
+                <button class="course-btn primary">View Certificate</button>
+                <button class="course-btn secondary">Share to LinkedIn</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses Taught Tab -->
+      <div id="courses-taught" class="tab-content">
+        <div class="teaching-summary">
+          <div class="teaching-stat">
+            <div class="teaching-stat-value">47</div>
+            <div class="teaching-stat-label">Students Helped</div>
+          </div>
+          <div class="teaching-stat">
+            <div class="teaching-stat-value">4.9&#11088;</div>
+            <div class="teaching-stat-label">Rating (156 reviews)</div>
+          </div>
+          <div class="teaching-stat">
+            <div class="teaching-stat-value">89%</div>
+            <div class="teaching-stat-label">Comeback Rate</div>
+          </div>
+          <div class="teaching-stat">
+            <div class="teaching-stat-value">$2,340</div>
+            <div class="teaching-stat-label">Total Earned</div>
+          </div>
+        </div>
+
+        <div class="section-header">Courses I Tutor</div>
+
+        <div class="course-item">
+          <div class="course-badge completed" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+            <span>&#128013;</span>
+            <span class="course-badge-label">TUTOR</span>
+          </div>
+          <div class="course-details">
+            <h3 class="course-title">Python Basics for Beginners</h3>
+            <div class="course-status" style="color: #71767b;">In: The Commons (available to all)</div>
+            <div class="course-meta" style="margin-top: 12px;">
+              <span>&#128101; 28 students helped</span>
+              <span>&#11088; 4.9 rating (89 reviews)</span>
+              <span>&#128077; 92% recommend</span>
+              <span>&#9201; 45 hours of sessions</span>
+            </div>
+            <p style="font-size: 14px; color: #71767b; margin: 12px 0 8px;">Recent Reviews:</p>
+            <div class="review-item">
+              <div class="review-stars">&#11088;&#11088;&#11088;&#11088;&#11088;</div>
+              <div class="review-text">"Alex explained loops so clearly! Finally understand how they work."</div>
+              <div class="review-author">- @newcoder</div>
+            </div>
+            <div class="review-item">
+              <div class="review-stars">&#11088;&#11088;&#11088;&#11088;&#11088;</div>
+              <div class="review-text">"Patient and knowledgeable. Made debugging feel less scary!"</div>
+              <div class="review-author">- @pythonfan</div>
+            </div>
+            <div class="course-actions" style="margin-top: 16px;">
+              <button class="course-btn secondary">View All Reviews</button>
+              <button class="course-btn primary">Manage Availability</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="course-item">
+          <div class="course-badge completed" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+            <span>&#128202;</span>
+            <span class="course-badge-label">TUTOR</span>
+          </div>
+          <div class="course-details">
+            <h3 class="course-title">Data Analysis with Pandas</h3>
+            <div class="course-status" style="color: #71767b;">In: Jane's AI Academy</div>
+            <div class="course-meta" style="margin-top: 12px;">
+              <span>&#128101; 12 students helped</span>
+              <span>&#11088; 4.8 rating (34 reviews)</span>
+              <span>&#128077; 88% recommend</span>
+              <span>&#9201; 18 hours of sessions</span>
+            </div>
+            <div class="course-actions" style="margin-top: 16px;">
+              <button class="course-btn secondary">View All Reviews</button>
+              <button class="course-btn primary">Manage Availability</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">Certifications to Teach</div>
+        <div style="padding: 16px; color: #71767b; font-size: 14px;">
+          <p style="margin-bottom: 12px;">Courses you've completed and could teach:</p>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #16181c; border-radius: 8px; margin-bottom: 8px;">
+            <span style="color: #71767b;">&#9898;</span>
+            <span style="flex: 1; color: #e7e9ea;">Relativity 101</span>
+            <span>Score: 94%</span>
+            <button class="course-btn primary" style="padding: 6px 12px; font-size: 12px;">Apply to Teach</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #16181c; border-radius: 8px;">
+            <span style="color: #71767b;">&#9898;</span>
+            <span style="flex: 1; color: #e7e9ea;">Deep Learning Fundamentals</span>
+            <span>Score: 91%</span>
+            <button class="course-btn primary" style="padding: 6px 12px; font-size: 12px;">Apply to Teach</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements Tab -->
+      <div id="achievements" class="tab-content">
+        <div class="achievement-summary">
+          <div class="achievement-summary-item">
+            <span>&#127942;</span>
+            <span>8 Badges Earned</span>
+          </div>
+          <div class="achievement-summary-item">
+            <span>&#128293;</span>
+            <span>15-Day Streak</span>
+          </div>
+          <div class="achievement-summary-item">
+            <span style="color: #22c55e;">&#9679;</span>
+            <span>1,240 Goodwill Points</span>
+          </div>
+        </div>
+
+        <div class="section-header">Course Certificates (Verifiable)</div>
+        <div class="certificates-grid">
+          <div class="certificate-card">
+            <div class="certificate-logo">&#8734;</div>
+            <div class="certificate-brand">PEERLOOP</div>
+            <div class="certificate-divider"></div>
+            <div class="certificate-label">CERTIFIED</div>
+            <div class="certificate-course">Relativity 101</div>
+            <div class="certificate-date">Dec 2024</div>
+            <div class="certificate-score">Score: 94%</div>
+            <a href="#" class="certificate-verify">&#128274; Verify</a>
+          </div>
+          <div class="certificate-card">
+            <div class="certificate-logo">&#8734;</div>
+            <div class="certificate-brand">PEERLOOP</div>
+            <div class="certificate-divider"></div>
+            <div class="certificate-label">CERTIFIED</div>
+            <div class="certificate-course">Deep Learning</div>
+            <div class="certificate-date">Nov 2024</div>
+            <div class="certificate-score">Score: 91%</div>
+            <a href="#" class="certificate-verify">&#128274; Verify</a>
+          </div>
+          <div class="certificate-card">
+            <div class="certificate-logo">&#8734;</div>
+            <div class="certificate-brand">PEERLOOP</div>
+            <div class="certificate-divider"></div>
+            <div class="certificate-label">CERTIFIED</div>
+            <div class="certificate-course">Python Basics</div>
+            <div class="certificate-date">Oct 2024</div>
+            <div class="certificate-score">Score: 88%</div>
+            <a href="#" class="certificate-verify">&#128274; Verify</a>
+          </div>
+        </div>
+
+        <div class="section-header">Milestone Badges</div>
+        <div class="badges-grid">
+          <div class="badge-card">
+            <div class="badge-icon gold">&#127891;</div>
+            <div class="badge-name">Quick Learner</div>
+            <div class="badge-desc">Completed 10 courses</div>
+            <div class="badge-date">Earned Oct 2024</div>
+          </div>
+          <div class="badge-card">
+            <div class="badge-icon gold">&#127775;</div>
+            <div class="badge-name">Helpful Teacher</div>
+            <div class="badge-desc">Helped 25+ students</div>
+            <div class="badge-date">Earned Nov 2024</div>
+          </div>
+          <div class="badge-card">
+            <div class="badge-icon gold">&#11088;</div>
+            <div class="badge-name">Rising Star</div>
+            <div class="badge-desc">Top rated student-teacher</div>
+            <div class="badge-date">Earned Dec 2024</div>
+          </div>
+        </div>
+
+        <div class="section-header">Streaks & Engagement</div>
+        <div class="streaks-section">
+          <div class="streak-header">
+            <div class="streak-current">&#128293; Current Streak: <span>15 days</span></div>
+            <div class="streak-longest">&#128202; Longest: 28 days (Nov 2024)</div>
+          </div>
+          <div class="week-grid">
+            <div class="day-cell active">&#9989;</div>
+            <div class="day-cell active">&#9989;</div>
+            <div class="day-cell active">&#9989;</div>
+            <div class="day-cell active">&#9989;</div>
+            <div class="day-cell active">&#9989;</div>
+            <div class="day-cell inactive">&#11036;</div>
+            <div class="day-cell inactive">&#11036;</div>
+          </div>
+          <div class="day-labels">
+            <span>M</span>
+            <span>T</span>
+            <span>W</span>
+            <span>Th</span>
+            <span>F</span>
+            <span>S</span>
+            <span>S</span>
+          </div>
+          <div class="monthly-activity">
+            <div class="month-row">
+              <span class="month-label">Jan</span>
+              <div class="month-bar">
+                <div class="month-fill" style="width: 60%"></div>
+              </div>
+              <span class="month-count">18 active days</span>
+            </div>
+            <div class="month-row">
+              <span class="month-label">Dec</span>
+              <div class="month-bar">
+                <div class="month-fill" style="width: 90%"></div>
+              </div>
+              <span class="month-count">28 active days</span>
+            </div>
+            <div class="month-row">
+              <span class="month-label">Nov</span>
+              <div class="month-bar">
+                <div class="month-fill" style="width: 80%"></div>
+              </div>
+              <span class="month-count">24 active days</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">Community Recognition</div>
+        <div class="recognition-grid">
+          <div class="recognition-card">
+            <div class="recognition-icon">&#127963;</div>
+            <div class="recognition-name">The Commons</div>
+            <div class="recognition-stats">
+              <div>Rank: <span class="recognition-rank">#12</span></div>
+              <div>Goodwill: 580</div>
+              <div>Helpful: 34</div>
+            </div>
+          </div>
+          <div class="recognition-card">
+            <div class="recognition-icon">&#128300;</div>
+            <div class="recognition-name">Einstein</div>
+            <div class="recognition-stats">
+              <div>Rank: <span class="recognition-rank">#5</span></div>
+              <div>Goodwill: 420</div>
+              <div>Helpful: 28</div>
+            </div>
+          </div>
+          <div class="recognition-card">
+            <div class="recognition-icon">&#129302;</div>
+            <div class="recognition-name">Jane's AI</div>
+            <div class="recognition-stats">
+              <div>Rank: <span class="recognition-rank">#8</span></div>
+              <div>Goodwill: 240</div>
+              <div>Helpful: 15</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Tab -->
+      <div id="activity" class="tab-content">
+        <div class="engagement-overview">
+          <div class="engagement-stat">
+            <div class="engagement-value">24</div>
+            <div class="engagement-label">Hours Learning</div>
+          </div>
+          <div class="engagement-stat">
+            <div class="engagement-value">18</div>
+            <div class="engagement-label">Posts Made</div>
+          </div>
+          <div class="engagement-stat">
+            <div class="engagement-value">12</div>
+            <div class="engagement-label">Sessions</div>
+          </div>
+          <div class="engagement-stat">
+            <div class="engagement-value">156</div>
+            <div class="engagement-label">Goodwill</div>
+          </div>
+        </div>
+        <div class="engagement-comparison">&#8593; 15% more active compared to last month</div>
+
+        <div class="section-header">Activity Breakdown</div>
+        <div class="activity-breakdown">
+          <div class="breakdown-row">
+            <span class="breakdown-label">Learning</span>
+            <div class="breakdown-bar">
+              <div class="breakdown-fill learning" style="width: 45%"></div>
+            </div>
+            <span class="breakdown-percent">45%</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Teaching</span>
+            <div class="breakdown-bar">
+              <div class="breakdown-fill teaching" style="width: 28%"></div>
+            </div>
+            <span class="breakdown-percent">28%</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Community</span>
+            <div class="breakdown-bar">
+              <div class="breakdown-fill community" style="width: 18%"></div>
+            </div>
+            <span class="breakdown-percent">18%</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Sessions</span>
+            <div class="breakdown-bar">
+              <div class="breakdown-fill sessions" style="width: 9%"></div>
+            </div>
+            <span class="breakdown-percent">9%</span>
+          </div>
+        </div>
+
+        <div class="section-header">Contribution Graph</div>
+        <div class="contribution-graph">
+          <div class="graph-row">
+            <span class="graph-label">Mon</span>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-0"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-4"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-0"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-0"></div>
+          </div>
+          <div class="graph-row">
+            <span class="graph-label">Wed</span>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-4"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-1"></div>
+          </div>
+          <div class="graph-row">
+            <span class="graph-label">Fri</span>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-0"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-4"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-0"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-0"></div>
+          </div>
+          <div class="graph-legend">
+            <span>Less</span>
+            <div class="graph-cell level-0"></div>
+            <div class="graph-cell level-1"></div>
+            <div class="graph-cell level-2"></div>
+            <div class="graph-cell level-3"></div>
+            <div class="graph-cell level-4"></div>
+            <span>More</span>
+          </div>
+        </div>
+
+        <div class="section-header">Recent Activity Timeline</div>
+        <div class="timeline-section">
+          <div class="timeline-date">Today</div>
+          <div class="timeline-item">
+            <span class="timeline-icon">&#127891;</span>
+            <span class="timeline-text">Completed module "<span class="highlight">Backpropagation</span>" in Deep Learning</span>
+          </div>
+          <div class="timeline-item">
+            <span class="timeline-icon">&#9989;</span>
+            <span class="timeline-text">Answered question in Einstein Community <span style="color: #22c55e;">(+15 goodwill)</span></span>
+          </div>
+          <div class="timeline-item">
+            <span class="timeline-icon">&#128197;</span>
+            <span class="timeline-text">Scheduled tutoring session with <span class="highlight">@newcoder</span></span>
+          </div>
+
+          <div class="timeline-date" style="margin-top: 24px;">Yesterday</div>
+          <div class="timeline-item">
+            <span class="timeline-icon">&#127881;</span>
+            <span class="timeline-text">Earned "<span class="highlight">Neural Networks</span>" badge</span>
+          </div>
+          <div class="timeline-item">
+            <span class="timeline-icon">&#128104;&#8205;&#127979;</span>
+            <span class="timeline-text">Taught Python session to @pythonfan <span class="rating">(4.9&#11088; rating)</span></span>
+          </div>
+          <div class="timeline-item">
+            <span class="timeline-icon">&#128172;</span>
+            <span class="timeline-text">Posted tip about debugging in The Commons</span>
+          </div>
+
+          <div class="timeline-date" style="margin-top: 24px;">2 days ago</div>
+          <div class="timeline-item">
+            <span class="timeline-icon">&#127891;</span>
+            <span class="timeline-text">Started course "<span class="highlight">NLP Fundamentals</span>"</span>
+          </div>
+          <div class="timeline-item">
+            <span class="timeline-icon">&#9989;</span>
+            <span class="timeline-text">Marked 3 answers as helpful</span>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 20px;">
+          <button class="course-btn secondary">Load More...</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+      <div class="sidebar-card">
+        <h3 class="sidebar-card-title">For Employers</h3>
+        <button class="export-btn">&#128196; Export as PDF</button>
+        <button class="export-btn secondary">&#128279; Share Profile Link</button>
+      </div>
+
+      <div class="sidebar-card">
+        <h3 class="sidebar-card-title">Quick Verify</h3>
+        <div class="quick-verify">
+          <div class="verify-item">
+            <span class="verify-icon">&#127942;</span>
+            <div class="verify-details">
+              <div class="verify-course">Relativity 101</div>
+              <div class="verify-date">Dec 2024 &bull; Score: 94%</div>
+            </div>
+            <a href="#" class="verify-link">Verify</a>
+          </div>
+          <div class="verify-item">
+            <span class="verify-icon">&#127942;</span>
+            <div class="verify-details">
+              <div class="verify-course">Deep Learning</div>
+              <div class="verify-date">Nov 2024 &bull; Score: 91%</div>
+            </div>
+            <a href="#" class="verify-link">Verify</a>
+          </div>
+          <div class="verify-item">
+            <span class="verify-icon">&#127942;</span>
+            <div class="verify-details">
+              <div class="verify-course">Python Basics</div>
+              <div class="verify-date">Oct 2024 &bull; Score: 88%</div>
+            </div>
+            <a href="#" class="verify-link">Verify</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3 class="sidebar-card-title">Teaching Stats</h3>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: #71767b;">Students Helped</span>
+            <span style="font-weight: 700;">47</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: #71767b;">Average Rating</span>
+            <span style="font-weight: 700;">4.9 &#11088;</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: #71767b;">Comeback Rate</span>
+            <span style="font-weight: 700; color: #22c55e;">89%</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: #71767b;">Response Time</span>
+            <span style="font-weight: 700;">~2 hours</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      // Show selected tab content
+      document.getElementById(tabId).classList.add('active');
+
+      // Add active class to clicked tab
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>

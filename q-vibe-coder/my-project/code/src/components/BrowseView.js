@@ -14,6 +14,8 @@ const BrowseView = ({
   isDarkMode,
   currentUser,
   onMenuChange,
+  // Banner color from Profile settings
+  userBannerColor = localStorage.getItem('profileBannerColor') || 'default',
   // State
   activeTopMenu,
   setActiveTopMenu,
@@ -52,6 +54,24 @@ const BrowseView = ({
   handleFollowCourse,
   onRestoreCourseView
 }) => {
+  // Available banner colors (matching Profile.js)
+  const bannerColorOptions = {
+    default: { start: '#1a1a2e', end: '#0f3460' },
+    blue: { start: '#e8f4f8', end: '#d0e8f0' },
+    cream: { start: '#faf5eb', end: '#f0e8d8' },
+    green: { start: '#f0fdf4', end: '#dcfce7' },
+    pink: { start: '#fef3f2', end: '#fecaca' },
+    purple: { start: '#f5f3ff', end: '#e9d5ff' },
+    teal: { start: '#f0fdfa', end: '#ccfbf1' },
+    orange: { start: '#fff7ed', end: '#fed7aa' },
+  };
+
+  // Get the user's selected banner gradient
+  const getUserBannerGradient = () => {
+    const colors = bannerColorOptions[userBannerColor] || bannerColorOptions.default;
+    return `linear-gradient(135deg, ${colors.start} 0%, ${colors.end} 100%)`;
+  };
+
   // Render instructor profile detail view
   const renderInstructorProfile = () => {
     const creator = selectedInstructor;
@@ -134,7 +154,7 @@ const BrowseView = ({
 
         {/* Creator Header with Action Buttons - Floating Card */}
         <div style={{
-          background: isDarkMode ? '#0a0a0a' : '#fff',
+          background: isDarkMode ? '#0a0a0a' : getUserBannerGradient(),
           borderRadius: 16,
           padding: '20px',
           margin: '12px 16px',
@@ -388,130 +408,140 @@ const BrowseView = ({
           </span>
         </div>
 
-        {/* Courses List */}
-        <div style={{ padding: '0' }}>
+        {/* Courses List - Discovery Style */}
+        <div style={{ padding: '16px' }}>
           {creatorCourses.length > 0 ? (
-            creatorCourses.map(course => {
-              const isFollowed = isCourseFollowed(course.id);
-              return (
-                <div
-                  key={course.id}
-                  onClick={() => {
-                    setSelectedCourse(course);
-                    setCurrentInstructorForCourse(creator);
-                  }}
-                  style={{
-                    background: isDarkMode ? '#000' : '#fff',
-                    padding: '16px',
-                    cursor: 'pointer',
-                    borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                    display: 'flex',
-                    gap: 12,
-                    alignItems: 'flex-start'
-                  }}
-                >
-                  <img
-                    src={course.thumbnail}
-                    alt={course.title}
-                    style={{ width: 120, height: 68, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }}
-                  />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{course.title}</h3>
-                      {course.badge && (
-                        <span style={{
-                          background: course.badge === 'Bestseller' ? '#fbbf24' :
-                                     course.badge === 'Popular' ? '#1d9bf0' :
-                                     course.badge === 'New' ? '#22c55e' :
-                                     course.badge === 'Featured' ? '#a855f7' : '#6b7280',
-                          color: course.badge === 'Bestseller' ? '#000' : '#fff',
-                          padding: '2px 6px',
-                          borderRadius: 10,
-                          fontSize: 10,
-                          fontWeight: 600,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                          flexShrink: 0
-                        }}>
-                          {course.badge}
-                        </span>
-                      )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {creatorCourses.map((course, index) => {
+                const isFollowed = isCourseFollowed(course.id);
+                // Thumbnail gradient colors matching Discovery
+                const thumbGradients = [
+                  'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)',
+                  'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
+                  'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
+                  'linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)'
+                ];
+
+                return (
+                  <div
+                    key={course.id}
+                    onClick={() => {
+                      setSelectedCourse(course);
+                      setCurrentInstructorForCourse(creator);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 12,
+                      padding: 12,
+                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                      borderRadius: 12,
+                      background: isDarkMode ? '#16181c' : '#f7f9f9',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
+                    }}
+                  >
+                    {/* Course Thumbnail - Gradient like Discovery */}
+                    <div style={{
+                      width: 100,
+                      height: 70,
+                      borderRadius: 8,
+                      flexShrink: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      background: thumbGradients[index % 4]
+                    }}>
                     </div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 15, color: isDarkMode ? '#71767b' : '#536471', alignItems: 'center' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineStar /> {course.rating} ({course.ratingCount || 0})</span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineTeam /> {course.students?.toLocaleString()}</span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><AiOutlineBarChart /> {course.level}</span>
-                      <span style={{ color: '#1d9bf0', fontWeight: 700 }}>{course.price}</span>
-                      <span
-                        onClick={(e) => { e.stopPropagation(); setSelectedCourse(course); }}
-                        style={{ color: '#1d9bf0', cursor: 'pointer', fontWeight: 500 }}
-                        onMouseEnter={e => e.target.style.textDecoration = 'underline'}
-                        onMouseLeave={e => e.target.style.textDecoration = 'none'}
-                      >
-                        View course →
-                      </span>
+
+                    {/* Course Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: '#1d9bf0'
+                      }}>
+                        {course.title}
+                      </div>
+                      <div style={{
+                        fontSize: 14,
+                        color: isDarkMode ? '#71767b' : '#536471',
+                        lineHeight: 1.4,
+                        marginTop: 4,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
+                      }}>
+                        {course.description}
+                      </div>
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+
+                    {/* Enroll/Follow Button - Discovery Style */}
                     {isCoursePurchased(course.id) ? (
-                      <>
-                        <span
-                          style={{
-                            background: isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)',
-                            color: '#10b981',
-                            padding: '4px 12px',
-                            borderRadius: 12,
-                            fontSize: 12,
-                            fontWeight: 600,
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
-                          Enrolled
-                        </span>
-                        <button
-                          onClick={e => { e.stopPropagation(); handleFollowCourse(course.id); }}
-                          disabled={isFollowingLoading}
-                          style={{
-                            background: isFollowed ? 'transparent' : '#1d9bf0',
-                            color: isFollowed ? (isDarkMode ? '#e7e9ea' : '#0f1419') : '#fff',
-                            border: isFollowed ? (isDarkMode ? '1px solid #536471' : '1px solid #cfd9de') : 'none',
-                            padding: '6px 16px',
-                            borderRadius: 20,
-                            fontWeight: 700,
-                            fontSize: 13,
-                            cursor: 'pointer',
-                            flexShrink: 0
-                          }}
-                        >
-                          {isFollowed ? 'Unfollow' : 'Follow'}
-                        </button>
-                      </>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleFollowCourse(course.id);
+                        }}
+                        disabled={isFollowingLoading}
+                        style={{
+                          background: isDarkMode ? '#2f3336' : '#eff3f4',
+                          border: 'none',
+                          color: isDarkMode ? '#71767b' : '#536471',
+                          padding: '6px 16px',
+                          borderRadius: 20,
+                          fontSize: 14,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          flexShrink: 0,
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {isFollowed ? 'Following' : 'Follow'}
+                      </button>
                     ) : (
                       <button
-                        onClick={e => {
+                        onClick={(e) => {
                           e.stopPropagation();
                           setEnrollingCourse(course);
                           setShowEnrollmentFlow(true);
                         }}
                         style={{
-                          background: '#10b981',
-                          color: '#fff',
-                          border: 'none',
+                          background: isDarkMode ? 'transparent' : 'white',
+                          border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                          color: isDarkMode ? '#e7e9ea' : '#0f1419',
                           padding: '6px 16px',
                           borderRadius: 20,
-                          fontWeight: 700,
-                          fontSize: 13,
+                          fontSize: 14,
+                          fontWeight: 600,
                           cursor: 'pointer',
-                          flexShrink: 0
+                          whiteSpace: 'nowrap',
+                          flexShrink: 0,
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = isDarkMode ? 'transparent' : 'white';
                         }}
                       >
-                        Enroll
+                        Enroll {course.price}
                       </button>
                     )}
                   </div>
-                </div>
-              );
-            })
+                );
+              })}
+            </div>
           ) : (
             <div style={{ padding: '32px 16px', textAlign: 'center', color: isDarkMode ? '#71767b' : '#536471' }}>
               No courses available yet.

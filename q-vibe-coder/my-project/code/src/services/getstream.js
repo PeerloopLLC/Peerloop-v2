@@ -198,7 +198,7 @@ export const mockActivities = [
   },
   {
     id: 'act_3',
-    actor: { id: 'demo_alex', name: 'Alex Sanders', avatar: 'https://i.pravatar.cc/150?img=68' },
+    actor: { id: 'demo_alex', name: 'Alex Sanders', avatar: 'https://i.pravatar.cc/150?img=3' },
     verb: ActivityTypes.BADGE_EARNED,
     object: { id: 'badge_1', name: 'Quick Learner', icon: '🎓' },
     time: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
@@ -230,7 +230,7 @@ export const mockActivities = [
   },
   {
     id: 'act_7',
-    actor: { id: 'demo_alex', name: 'Alex Sanders', avatar: 'https://i.pravatar.cc/150?img=68' },
+    actor: { id: 'demo_alex', name: 'Alex Sanders', avatar: 'https://i.pravatar.cc/150?img=3' },
     verb: ActivityTypes.COURSE_ENROLLED,
     object: { id: 'course_3', name: 'Deep Learning Fundamentals' },
     time: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(), // 8 hours ago

@@ -153,7 +153,19 @@
   color: #666;
 }
 
-/* Community List */
+/* The Commons - Fixed at top */
+.slideout-commons-fixed {
+  flex-shrink: 0;
+  border-bottom: 1px solid #eee;
+  background: #ffffff;
+}
+
+.dark-mode .slideout-commons-fixed {
+  border-bottom-color: #2f3336;
+  background: #16181c;
+}
+
+/* Community List - Scrollable */
 .slideout-community-list {
   flex: 1;
   overflow-y: auto;

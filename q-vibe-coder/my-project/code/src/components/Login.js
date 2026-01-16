@@ -23,7 +23,7 @@ const demoUsers = [
     email: 'alex@demo.com',
     roles: ['student', 'teacher'],
     userType: 'student_teacher',
-    avatar: 'https://i.pravatar.cc/150?img=68',
+    avatar: 'https://i.pravatar.cc/150?img=3',
     bio: 'Lifelong learner passionate about AI and machine learning.',
     location: 'San Francisco, CA',
     stats: { coursesCompleted: 12, coursesTeaching: 3, studentsHelped: 47, avgRating: 4.9, totalEarnings: 2340 }

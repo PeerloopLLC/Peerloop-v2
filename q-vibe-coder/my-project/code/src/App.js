@@ -168,7 +168,7 @@ function App() {
     username: '@alexsanders',
     email: 'alex@peerloop.com',
     roles: ['student', 'teacher'], // Alex can both learn and teach
-    avatar: 'https://i.pravatar.cc/150?img=68', // Professional male with smile
+    avatar: 'https://i.pravatar.cc/150?img=3', // Young professional male - different from Einstein
     bio: 'Lifelong learner passionate about AI and machine learning. Currently studying Deep Learning and teaching Python basics to beginners. Love helping others on their learning journey!',
     location: 'San Francisco, CA',
     website: 'https://alexsanders.dev',

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe - Feeds Slide-out Panel (Substack Style)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .description {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .behavior-note {
+      background: #e3f2fd;
+      border-left: 3px solid #2196f3;
+      padding: 12px;
+      margin-bottom: 30px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .behavior-note strong {
+      color: #1565c0;
+    }
+
+    .wireframe-container {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .wireframe {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .wireframe-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .wireframe-subtitle {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    /* App Frame */
+    .app-frame {
+      width: 700px;
+      height: 450px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      position: relative;
+      background: #fff;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: #fff;
+      border-right: 1px solid #e0e0e0;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      padding: 14px 16px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #333;
+      border-bottom: 1px solid #eee;
+    }
+
+    .nav-section {
+      padding: 8px 0;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      cursor: pointer;
+      color: #333;
+      font-size: 14px;
+      transition: background 0.15s;
+    }
+
+    .nav-item:hover {
+      background: #f5f5f5;
+    }
+
+    .nav-item.active {
+      background: #f0f7ff;
+      color: #1a73e8;
+      font-weight: 500;
+    }
+
+    .nav-item .icon {
+      width: 18px;
+      height: 18px;
+      background: #ccc;
+      border-radius: 4px;
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .nav-item.active .icon {
+      background: #1a73e8;
+      color: white;
+    }
+
+    .nav-item .badge {
+      margin-left: auto;
+      background: #eee;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .nav-item .chevron {
+      margin-left: 8px;
+      font-size: 10px;
+      color: #999;
+    }
+
+    /* Sub-item under Feeds */
+    .sub-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px 8px 44px;
+      cursor: pointer;
+      color: #333;
+      font-size: 13px;
+      transition: background 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    .sub-item.active {
+      background: #e8f0fe;
+      color: #1a73e8;
+      font-weight: 500;
+      border-left-color: #1a73e8;
+    }
+
+    .sub-item .sub-icon {
+      width: 18px;
+      height: 18px;
+      background: #ddd;
+      border-radius: 4px;
+      margin-right: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .sub-item.active .sub-icon {
+      background: #1a73e8;
+      color: white;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      background: #fafafa;
+      padding: 20px;
+      position: relative;
+    }
+
+    .main-content.dimmed {
+      opacity: 0.3;
+    }
+
+    .content-placeholder {
+      background: #eee;
+      height: 60px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    /* Slide-out Panel - Substack Style */
+    .slideout-panel {
+      position: absolute;
+      left: 220px;
+      top: 0;
+      width: 320px;
+      height: 100%;
+      background: #fff;
+      border-right: 1px solid #e0e0e0;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.08);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slideout-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slideout-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .close-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f5f5f5;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #666;
+    }
+
+    .close-btn:hover {
+      background: #eee;
+    }
+
+
+    /* Community List in Panel */
+    .community-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .community-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .community-item:hover {
+      background: #f5f5f5;
+    }
+
+    .community-item.selected {
+      background: #e8f0fe;
+    }
+
+    .community-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .community-avatar.commons {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-size: 16px;
+    }
+
+    .community-avatar.purple {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .community-avatar.green {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .community-avatar.orange {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .community-avatar.blue {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .community-info {
+      flex: 1;
+    }
+
+    .community-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    .community-meta {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .community-item .checkmark {
+      color: #1a73e8;
+      font-size: 18px;
+      margin-left: 8px;
+    }
+
+    /* Section headers in list */
+    .section-header {
+      padding: 14px 20px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Annotations */
+    .annotation {
+      margin-top: 16px;
+      padding: 12px;
+      background: #fff3e0;
+      border-left: 3px solid #ff9800;
+      font-size: 12px;
+      color: #555;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .annotation strong {
+      color: #e65100;
+    }
+
+    .annotation.blue {
+      background: #e3f2fd;
+      border-left-color: #2196f3;
+    }
+
+    .annotation.blue strong {
+      color: #1565c0;
+    }
+
+    .flow-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #ccc;
+      padding: 0 10px;
+      align-self: center;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 40px 0 20px;
+      color: #333;
+    }
+
+    /* Comparison section */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .comparison-box {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .comparison-box h4 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .comparison-box ul {
+      list-style: none;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .comparison-box li {
+      padding: 4px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .comparison-box li:before {
+      content: "•";
+      position: absolute;
+      left: 6px;
+      color: #1a73e8;
+    }
+  </style>
+</head>
+<body>
+  <h1>Feeds Slide-out Panel - Substack Style</h1>
+  <p class="description">Large panel slides out from sidebar, main content stays visible but dimmed</p>
+
+  <div class="behavior-note">
+    <strong>Behavior:</strong> Click "Feeds" in sidebar → Large panel slides out showing all communities with filters. Click a community → Panel closes, that community shows under "Feeds" in sidebar, and main content shows that community's feed.
+  </div>
+
+  <div class="wireframe-container">
+
+    <!-- State 1: Panel Closed -->
+    <div class="wireframe">
+      <div class="wireframe-title">Closed State</div>
+      <div class="wireframe-subtitle">Normal sidebar view</div>
+      <div class="app-frame">
+        <div class="sidebar">
+          <div class="logo">PeerLoop</div>
+          <div class="nav-section">
+            <div class="nav-item active">
+              <div class="icon">F</div>
+              Feeds
+              <span class="badge">5</span>
+              <span class="chevron">▸</span>
+            </div>
+            <div class="sub-item active">
+              <div class="sub-icon">🏛</div>
+              The Commons
+            </div>
+            <div class="nav-item">
+              <div class="icon">D</div>
+              Discover
+            </div>
+            <div class="nav-item">
+              <div class="icon">C</div>
+              My Courses
+            </div>
+            <div class="nav-item">
+              <div class="icon">N</div>
+              Notifications
+            </div>
+          </div>
+        </div>
+        <div class="main-content">
+          <div class="content-placeholder"></div>
+          <div class="content-placeholder"></div>
+          <div class="content-placeholder"></div>
+        </div>
+      </div>
+      <div class="annotation blue">
+        <strong>Chevron ▸</strong> indicates panel can be opened. Currently showing "The Commons" feed.
+      </div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <!-- State 2: Panel Open -->
+    <div class="wireframe">
+      <div class="wireframe-title">Panel Open</div>
+      <div class="wireframe-subtitle">User clicked "Feeds" - panel slides out</div>
+      <div class="app-frame">
+        <div class="sidebar">
+          <div class="logo">PeerLoop</div>
+          <div class="nav-section">
+            <div class="nav-item active">
+              <div class="icon">F</div>
+              Feeds
+              <span class="badge">5</span>
+              <span class="chevron">▾</span>
+            </div>
+            <div class="sub-item active">
+              <div class="sub-icon">🏛</div>
+              The Commons
+            </div>
+            <div class="nav-item">
+              <div class="icon">D</div>
+              Discover
+            </div>
+            <div class="nav-item">
+              <div class="icon">C</div>
+              My Courses
+            </div>
+            <div class="nav-item">
+              <div class="icon">N</div>
+              Notifications
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide-out Panel -->
+        <div class="slideout-panel">
+          <div class="slideout-header">
+            <h3>My Feeds</h3>
+            <button class="close-btn">✕</button>
+          </div>
+          <div class="community-list">
+            <div class="section-header">Public</div>
+            <div class="community-item selected">
+              <div class="community-avatar commons">🏛</div>
+              <div class="community-info">
+                <div class="community-name">The Commons</div>
+                <div class="community-meta">Public community feed</div>
+              </div>
+              <span class="checkmark">✓</span>
+            </div>
+
+            <div class="section-header">My Communities</div>
+            <div class="community-item">
+              <div class="community-avatar purple">D</div>
+              <div class="community-info">
+                <div class="community-name">The Design Hub</div>
+                <div class="community-meta">248 members • 12 new posts</div>
+              </div>
+            </div>
+            <div class="community-item">
+              <div class="community-avatar green">U</div>
+              <div class="community-info">
+                <div class="community-name">UX with John</div>
+                <div class="community-meta">156 members • 5 new posts</div>
+              </div>
+            </div>
+            <div class="community-item">
+              <div class="community-avatar orange">P</div>
+              <div class="community-info">
+                <div class="community-name">Photo Masters</div>
+                <div class="community-meta">89 members • 3 new posts</div>
+              </div>
+            </div>
+            <div class="community-item">
+              <div class="community-avatar blue">R</div>
+              <div class="community-info">
+                <div class="community-name">React Developers</div>
+                <div class="community-meta">412 members • 28 new posts</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="main-content dimmed">
+          <div class="content-placeholder"></div>
+          <div class="content-placeholder"></div>
+          <div class="content-placeholder"></div>
+        </div>
+      </div>
+      <div class="annotation">
+        <strong>Panel shows:</strong> Filters at top, The Commons (public) + all joined communities. Current selection has checkmark. Main content dimmed.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- State 3: After Selection -->
+  <h2>After Selecting a Community</h2>
+  <div class="wireframe-container">
+
+    <div class="wireframe">
+      <div class="wireframe-title">Community Selected</div>
+      <div class="wireframe-subtitle">User clicked "The Design Hub" - panel closes</div>
+      <div class="app-frame">
+        <div class="sidebar">
+          <div class="logo">PeerLoop</div>
+          <div class="nav-section">
+            <div class="nav-item active">
+              <div class="icon">F</div>
+              Feeds
+              <span class="badge">5</span>
+              <span class="chevron">▸</span>
+            </div>
+            <div class="sub-item active">
+              <div class="sub-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 4px;">D</div>
+              The Design Hub
+            </div>
+            <div class="nav-item">
+              <div class="icon">D</div>
+              Discover
+            </div>
+            <div class="nav-item">
+              <div class="icon">C</div>
+              My Courses
+            </div>
+            <div class="nav-item">
+              <div class="icon">N</div>
+              Notifications
+            </div>
+          </div>
+        </div>
+        <div class="main-content">
+          <div class="content-placeholder"></div>
+          <div class="content-placeholder"></div>
+          <div class="content-placeholder"></div>
+        </div>
+      </div>
+      <div class="annotation blue">
+        <strong>"The Design Hub"</strong> now shows under Feeds. Panel is closed. Main content shows Design Hub's feed.
+      </div>
+    </div>
+
+  </div>
+
+  <h2>Comparison: Current vs New</h2>
+  <div class="comparison">
+    <div class="comparison-box">
+      <h4>Current Dropdown Flyout</h4>
+      <ul>
+        <li>Small dropdown appears on hover/click</li>
+        <li>Shows community list only</li>
+        <li>Limited space for info</li>
+        <li>Disappears on inactivity</li>
+        <li>Good for quick selection</li>
+      </ul>
+    </div>
+    <div class="comparison-box">
+      <h4>New Slide-out Panel (Substack Style)</h4>
+      <ul>
+        <li>Large panel slides from sidebar</li>
+        <li>Shows member count & new posts</li>
+        <li>Stays open until user closes or selects</li>
+        <li>Better for browsing & discovery</li>
+        <li>Main content stays visible (dimmed)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Interaction Summary</h2>
+  <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <thead>
+      <tr style="background: #f5f5f5;">
+        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Action</th>
+        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Result</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">Click "Feeds" nav item</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">Slide-out panel opens with all communities</td>
+      </tr>
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">Click ✕ or outside panel</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">Panel closes, current selection unchanged</td>
+      </tr>
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">Click a community in panel</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">Panel closes, that community shows under "Feeds", main content updates</td>
+      </tr>
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">Click sub-item under Feeds</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">Goes directly to that community's feed (panel doesn't open)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>CSS Animation Notes</h2>
+  <div class="annotation blue" style="margin-top: 0;">
+    <strong>Slide animation:</strong><br>
+    <code>transform: translateX(-100%)</code> → <code>translateX(0)</code><br>
+    <code>transition: transform 0.25s ease-out</code><br><br>
+    <strong>Main content dim:</strong><br>
+    <code>opacity: 1</code> → <code>0.3</code><br>
+    <code>transition: opacity 0.2s ease</code>
+  </div>
+
+</body>
+</html>

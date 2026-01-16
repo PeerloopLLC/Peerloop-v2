@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feeds Hierarchy - No Indent Options</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #15202b;
+      color: #e7e9ea;
+      padding: 40px;
+    }
+    h1 { color: #1d9bf0; margin-bottom: 10px; font-size: 24px; }
+    .subtitle { color: #71767b; margin-bottom: 30px; }
+    h2 { color: #71767b; margin: 30px 0 15px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+
+    .option {
+      background: #192734;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #38444d;
+    }
+    .option-title {
+      color: #1d9bf0;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #38444d;
+    }
+    .option-desc {
+      color: #71767b;
+      font-size: 12px;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    /* Simulated sidebar */
+    .sidebar-sim {
+      background: #1e2a35;
+      border-radius: 8px;
+      padding: 12px;
+      width: 220px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); }
+    .nav-item.active { background: rgba(29, 155, 240, 0.1); }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .nav-label { font-size: 15px; font-weight: 500; }
+
+    /* ========== OPTION STYLES ========== */
+
+    /* Option 1: Left accent bar */
+    .opt1 .feeds-group {
+      position: relative;
+    }
+    .opt1 .feeds-group::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 4px;
+      bottom: 4px;
+      width: 3px;
+      background: #1d9bf0;
+      border-radius: 2px;
+    }
+    .opt1 .sub-row {
+      background: rgba(29, 155, 240, 0.05);
+    }
+
+    /* Option 2: Shared background container */
+    .opt2 .feeds-group {
+      background: rgba(29, 155, 240, 0.08);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 4px;
+    }
+    .opt2 .feeds-group .nav-item {
+      background: transparent;
+    }
+    .opt2 .feeds-group .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Option 3: Divider lines around group */
+    .opt3 .feeds-group {
+      border-top: 1px solid #38444d;
+      border-bottom: 1px solid #38444d;
+      padding: 4px 0;
+      margin: 4px 0;
+    }
+
+    /* Option 4: Color-coded row */
+    .opt4 .sub-row {
+      background: linear-gradient(90deg, rgba(29, 155, 240, 0.15) 0%, transparent 100%);
+    }
+    .opt4 .sub-row .nav-icon {
+      color: #1d9bf0;
+    }
+
+    /* Option 5: Smaller/muted typography */
+    .opt5 .sub-row {
+      opacity: 0.7;
+    }
+    .opt5 .sub-row .nav-label {
+      font-size: 13px;
+      font-weight: 400;
+    }
+    .opt5 .sub-row .nav-icon {
+      font-size: 14px;
+    }
+
+    /* Option 6: Prefix arrow in label */
+    .opt6 .sub-row .arrow-prefix {
+      color: #536471;
+      margin-right: 4px;
+      font-size: 12px;
+    }
+
+    /* Option 7: Connected background */
+    .opt7 .feeds-parent {
+      background: rgba(29, 155, 240, 0.12);
+      border-radius: 8px 8px 0 0;
+      margin-bottom: 0;
+    }
+    .opt7 .sub-row {
+      background: rgba(29, 155, 240, 0.06);
+      border-radius: 0 0 8px 8px;
+      margin-top: 0;
+    }
+
+    /* Option 8: Icon style difference */
+    .opt8 .sub-row .nav-icon {
+      width: 24px;
+      height: 24px;
+      background: rgba(29, 155, 240, 0.15);
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    /* Option 9: Dot prefix */
+    .opt9 .sub-row .dot-prefix {
+      width: 6px;
+      height: 6px;
+      background: #1d9bf0;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    /* Option 10: Bottom border on parent */
+    .opt10 .feeds-parent {
+      border-bottom: 2px solid #1d9bf0;
+      border-radius: 8px 8px 0 0;
+      padding-bottom: 8px;
+    }
+    .opt10 .sub-row {
+      padding-top: 8px;
+    }
+
+    /* Option 11: Combined - Shared Background + Arrow */
+    .opt11 .feeds-group {
+      background: rgba(29, 155, 240, 0.08);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 4px;
+    }
+    .opt11 .feeds-group .nav-item {
+      background: transparent;
+    }
+    .opt11 .feeds-group .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .opt11 .sub-row .arrow-prefix {
+      color: #536471;
+      margin-right: 4px;
+      font-size: 12px;
+    }
+
+    .pros-cons {
+      margin-top: 12px;
+      font-size: 11px;
+      padding-top: 10px;
+      border-top: 1px dashed #38444d;
+    }
+    .pro { color: #00ba7c; }
+    .con { color: #f4212e; }
+
+    .highlight-box {
+      background: rgba(29, 155, 240, 0.1);
+      border: 1px solid rgba(29, 155, 240, 0.3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #8899a6;
+    }
+  </style>
+</head>
+<body>
+  <h1>Feeds Hierarchy - No Indent Options</h1>
+  <p class="subtitle">All options keep the community row at the <strong style="color:#1d9bf0">same left alignment</strong> as other menu items</p>
+
+  <div class="options-grid">
+
+    <!-- Option 1: Left accent bar -->
+    <div class="option opt1">
+      <div class="option-title">1. Left Accent Bar</div>
+      <div class="option-desc">Colored vertical bar on left edge groups both rows together.</div>
+      <div class="sidebar-sim">
+        <div class="feeds-group">
+          <div class="nav-item active">
+            <div class="nav-icon">👥</div>
+            <span class="nav-label">Feeds (11)</span>
+          </div>
+          <div class="nav-item sub-row">
+            <div class="nav-icon">🏛</div>
+            <span class="nav-label">The Commons</span>
+          </div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Clear grouping, same alignment</div>
+        <div class="pro">+ Common UI pattern</div>
+      </div>
+    </div>
+
+    <!-- Option 2: Shared background -->
+    <div class="option opt2">
+      <div class="option-title">2. Shared Background</div>
+      <div class="option-desc">Both rows share a subtle background container.</div>
+      <div class="sidebar-sim">
+        <div class="feeds-group">
+          <div class="nav-item active">
+            <div class="nav-icon">👥</div>
+            <span class="nav-label">Feeds (11)</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">🏛</div>
+            <span class="nav-label">The Commons</span>
+          </div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Very clear grouping</div>
+        <div class="pro">+ Same alignment</div>
+      </div>
+    </div>
+
+    <!-- Option 3: Divider lines -->
+    <div class="option opt3">
+      <div class="option-title">3. Divider Lines</div>
+      <div class="option-desc">Horizontal lines above and below create a section.</div>
+      <div class="sidebar-sim">
+        <div class="feeds-group">
+          <div class="nav-item active">
+            <div class="nav-icon">👥</div>
+            <span class="nav-label">Feeds (11)</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">🏛</div>
+            <span class="nav-label">The Commons</span>
+          </div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Clear section boundary</div>
+        <div class="con">- Lines can feel heavy</div>
+      </div>
+    </div>
+
+    <!-- Option 4: Gradient background -->
+    <div class="option opt4">
+      <div class="option-title">4. Color Gradient Row</div>
+      <div class="option-desc">Sub-row has a gradient that fades from accent color.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-row">
+          <div class="nav-icon">🏛</div>
+          <span class="nav-label">The Commons</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Subtle but visible</div>
+        <div class="pro">+ Color links to parent</div>
+      </div>
+    </div>
+
+    <!-- Option 5: Muted typography -->
+    <div class="option opt5">
+      <div class="option-title">5. Muted Typography</div>
+      <div class="option-desc">Sub-row uses smaller, lighter text to show subordinate status.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-row">
+          <div class="nav-icon">🏛</div>
+          <span class="nav-label">The Commons</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Minimal visual change</div>
+        <div class="con">- Subtle, may miss it</div>
+      </div>
+    </div>
+
+    <!-- Option 6: Arrow in label -->
+    <div class="option opt6">
+      <div class="option-title">6. Arrow in Label</div>
+      <div class="option-desc">Small arrow before text indicates it's a selection from above.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-row">
+          <div class="nav-icon">🏛</div>
+          <span class="nav-label"><span class="arrow-prefix">↳</span>The Commons</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Clear relationship</div>
+        <div class="pro">+ Same alignment</div>
+      </div>
+    </div>
+
+    <!-- Option 7: Connected backgrounds -->
+    <div class="option opt7">
+      <div class="option-title">7. Connected Backgrounds</div>
+      <div class="option-desc">Parent darker, child lighter - same color family.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active feeds-parent">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-row">
+          <div class="nav-icon">🏛</div>
+          <span class="nav-label">The Commons</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Visual flow between rows</div>
+        <div class="pro">+ Feels connected</div>
+      </div>
+    </div>
+
+    <!-- Option 8: Icon badge style -->
+    <div class="option opt8">
+      <div class="option-title">8. Icon Badge Style</div>
+      <div class="option-desc">Sub-row icon has a background badge, differentiating it.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-row">
+          <div class="nav-icon">🏛</div>
+          <span class="nav-label">The Commons</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Icon stands out differently</div>
+        <div class="con">- Subtle distinction</div>
+      </div>
+    </div>
+
+    <!-- Option 9: Dot prefix -->
+    <div class="option opt9">
+      <div class="option-title">9. Dot Prefix</div>
+      <div class="option-desc">Small dot before icon indicates selection/active state.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-row">
+          <div class="dot-prefix"></div>
+          <div class="nav-icon">🏛</div>
+          <span class="nav-label">The Commons</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Minimal indicator</div>
+        <div class="con">- May not show hierarchy clearly</div>
+      </div>
+    </div>
+
+    <!-- Option 10: Underline parent -->
+    <div class="option opt10">
+      <div class="option-title">10. Underline Parent</div>
+      <div class="option-desc">Parent has bottom border, child sits directly below.</div>
+      <div class="sidebar-sim">
+        <div class="nav-item active feeds-parent">
+          <div class="nav-icon">👥</div>
+          <span class="nav-label">Feeds (11)</span>
+        </div>
+        <div class="nav-item sub-row">
+          <div class="nav-icon">🏛</div>
+          <span class="nav-label">The Commons</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Clear parent indicator</div>
+        <div class="pro">+ Child clearly belongs</div>
+      </div>
+    </div>
+
+    <!-- Option 11: Combined - Shared Background + Arrow -->
+    <div class="option opt11" style="border: 2px solid #1d9bf0;">
+      <div class="option-title">11. Combined: Background + Arrow (2+6)</div>
+      <div class="option-desc">Shared background container with arrow prefix for double clarity.</div>
+      <div class="sidebar-sim">
+        <div class="feeds-group">
+          <div class="nav-item active">
+            <div class="nav-icon">👥</div>
+            <span class="nav-label">Feeds (11)</span>
+          </div>
+          <div class="nav-item sub-row">
+            <div class="nav-icon">🏛</div>
+            <span class="nav-label"><span class="arrow-prefix">↳</span>The Commons</span>
+          </div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🔍</div>
+          <span class="nav-label">Discover</span>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pro">+ Very clear grouping (background)</div>
+        <div class="pro">+ Clear relationship (arrow)</div>
+        <div class="pro">+ Same alignment maintained</div>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 style="margin-top: 40px;">Top Recommendations</h2>
+  <div style="background: #192734; padding: 20px; border-radius: 12px; margin-top: 15px;">
+    <p style="color: #e7e9ea; line-height: 1.8;">
+      <strong style="color: #1d9bf0;">Option 1 (Left Accent Bar)</strong> - Most common pattern. Used by Slack, Discord, VS Code. Clear grouping without indent.<br><br>
+      <strong style="color: #1d9bf0;">Option 2 (Shared Background)</strong> - Very clear visual container. Both items obviously belong together.<br><br>
+      <strong style="color: #1d9bf0;">Option 7 (Connected Backgrounds)</strong> - Elegant gradient effect that flows from parent to child.
+    </p>
+  </div>
+
+  <div class="highlight-box" style="margin-top: 20px;">
+    <strong>Key point:</strong> All 10 options maintain the same left alignment. The hierarchy is communicated through color, backgrounds, borders, or typography - not indentation.
+  </div>
+</body>
+</html>

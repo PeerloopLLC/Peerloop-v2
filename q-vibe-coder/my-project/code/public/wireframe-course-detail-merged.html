@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Detail - Merged Layout Wireframe</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #e7e9ea;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      padding: 24px;
+      border-bottom: 1px solid #2f3336;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #1a1a24;
+      border: 1px solid #3f3f46;
+      border-radius: 8px;
+      padding: 10px 16px;
+      color: #f5f5f7;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .course-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+    .course-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .course-subtitle {
+      color: #71767b;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    .enrolled-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .instructor-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .instructor-link img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+    .instructor-link span {
+      color: #1d9bf0;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .header-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn-primary {
+      background: #1d9bf0;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid #536471;
+      color: #e7e9ea;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #2f3336;
+    }
+    .tab {
+      padding: 16px 20px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #71767b;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+    }
+    .tab.active {
+      color: #e7e9ea;
+      font-weight: 700;
+      border-bottom-color: #1d9bf0;
+    }
+
+    /* Two Column Layout */
+    .content {
+      display: flex;
+      gap: 32px;
+      padding: 24px;
+    }
+    .main-col {
+      flex: 1;
+    }
+    .sidebar {
+      width: 320px;
+      flex-shrink: 0;
+    }
+
+    /* Video Player */
+    .video-player {
+      background: #16181c;
+      border-radius: 12px;
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      border: 1px solid #2f3336;
+      position: relative;
+    }
+    .play-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    /* Section Headers */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #e7e9ea;
+    }
+    .section {
+      margin-bottom: 32px;
+    }
+
+    /* Description */
+    .description {
+      font-size: 15px;
+      color: #e7e9ea;
+      line-height: 1.7;
+    }
+
+    /* What You'll Learn */
+    .learn-list {
+      list-style: none;
+    }
+    .learn-list li {
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+      font-size: 15px;
+    }
+    .learn-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-weight: bold;
+    }
+
+    /* Tags */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tag {
+      background: #2f3336;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    /* ============================================ */
+    /* NEW: Progress Section (from PurchasedDetail) */
+    /* ============================================ */
+
+    .progress-section {
+      margin-bottom: 32px;
+    }
+    .progress-stats {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2f3336;
+    }
+    .progress-stat {
+      text-align: center;
+    }
+    .progress-stat .number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1d9bf0;
+    }
+    .progress-stat .label {
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    /* Progress Bar */
+    .progress-bar-container {
+      margin-top: 12px;
+    }
+    .progress-bar {
+      height: 8px;
+      background: #2f3336;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1d9bf0, #10b981);
+      border-radius: 4px;
+    }
+    .progress-text {
+      font-size: 13px;
+      color: #71767b;
+      margin-top: 8px;
+    }
+
+    /* ============================================ */
+    /* NEW: Session Timeline (listing style)       */
+    /* ============================================ */
+
+    .session-list {
+      list-style: none;
+    }
+    .session-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid #2f3336;
+    }
+    .session-item:last-child {
+      border-bottom: none;
+    }
+    .session-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .session-number.completed {
+      background: #10b981;
+      color: #fff;
+    }
+    .session-number.upcoming {
+      background: #1d9bf0;
+      color: #fff;
+    }
+    .session-number.locked {
+      background: #2f3336;
+      color: #71767b;
+    }
+    .session-info {
+      flex: 1;
+    }
+    .session-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .session-meta {
+      font-size: 13px;
+      color: #71767b;
+    }
+    .session-hw {
+      text-align: right;
+    }
+    .hw-badge {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    .hw-badge.submitted {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+    .hw-badge.due {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+    }
+    .hw-badge.locked {
+      color: #71767b;
+    }
+
+    /* ============================================ */
+    /* NEW: Resources (listing style)              */
+    /* ============================================ */
+
+    .resources-list {
+      list-style: none;
+    }
+    .resource-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #2f3336;
+    }
+    .resource-item:last-child {
+      border-bottom: none;
+    }
+    .resource-session-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    .resource-links {
+      display: flex;
+      gap: 16px;
+    }
+    .resource-link {
+      color: #1d9bf0;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .resource-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ============================================ */
+    /* SIDEBAR                                      */
+    /* ============================================ */
+
+    .sidebar-section {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #2f3336;
+    }
+    .sidebar-section:last-child {
+      border-bottom: none;
+    }
+    .sidebar-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #71767b;
+      margin-bottom: 16px;
+    }
+
+    /* Instructor Card */
+    .instructor-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .instructor-card img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+    }
+    .instructor-name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .instructor-title-text {
+      font-size: 13px;
+      color: #71767b;
+    }
+    .instructor-stats {
+      display: flex;
+      gap: 16px;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+    .instructor-stats span strong {
+      color: #e7e9ea;
+    }
+    .instructor-stats span {
+      color: #71767b;
+    }
+    .instructor-bio {
+      font-size: 14px;
+      color: #9ca3af;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .instructor-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .instructor-actions button {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    /* Course Details List */
+    .details-list {
+      list-style: none;
+    }
+    .details-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      font-size: 14px;
+      border-bottom: 1px solid #2f3336;
+    }
+    .details-list li:last-child {
+      border-bottom: none;
+    }
+    .details-list .icon {
+      color: #71767b;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Upcoming Session Alert */
+    .upcoming-alert {
+      background: rgba(29, 155, 240, 0.1);
+      border-left: 3px solid #1d9bf0;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+    .upcoming-alert-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .upcoming-alert-meta {
+      font-size: 13px;
+      color: #71767b;
+    }
+    .upcoming-alert-btn {
+      margin-top: 10px;
+      background: #1d9bf0;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Homework Due Alert */
+    .homework-alert {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 3px solid #f59e0b;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+    .homework-alert-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+      color: #f59e0b;
+    }
+    .homework-alert-meta {
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    /* Certificate Progress */
+    .certificate-section {
+      text-align: center;
+      padding: 16px 0;
+    }
+    .certificate-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    .certificate-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .certificate-text {
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 12px;
+    }
+
+    /* Help Link */
+    .help-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+    .help-link-text {
+      font-size: 14px;
+    }
+    .help-link a {
+      color: #1d9bf0;
+      font-size: 14px;
+    }
+
+    /* Discussion Link */
+    .discussion-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .new-posts-badge {
+      font-size: 12px;
+      background: rgba(29, 155, 240, 0.15);
+      color: #1d9bf0;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+      <button class="back-btn">← Back to Discover</button>
+
+      <div class="course-header">
+        <div>
+          <h1 class="course-title">AI Prompting Mastery</h1>
+          <p class="course-subtitle">Master the art of communicating with AI to unlock its full potential...</p>
+          <span class="enrolled-badge">✓ ENROLLED · Started Dec 10, 2024</span>
+          <div class="instructor-link">
+            <img src="https://i.pravatar.cc/120?img=13" alt="Guy Rymberg">
+            <span>Guy Rymberg</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="btn-primary">▶ Continue Learning</button>
+          <button class="btn-secondary">Go to Community</button>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="tabs">
+        <div class="tab active">Overview</div>
+        <div class="tab">Sessions & Progress</div>
+        <div class="tab">Resources</div>
+        <div class="tab">Course Feed</div>
+        <div class="tab">Reviews</div>
+      </div>
+    </div>
+
+    <!-- TWO COLUMN CONTENT -->
+    <div class="content">
+
+      <!-- MAIN COLUMN -->
+      <div class="main-col">
+
+        <!-- Video Player -->
+        <div class="video-player">
+          <div class="play-btn">▶</div>
+        </div>
+
+        <!-- Progress Section (NEW from PurchasedDetail) -->
+        <div class="section progress-section">
+          <h3 class="section-title">Your Progress</h3>
+          <div class="progress-stats">
+            <div class="progress-stat">
+              <div class="number">3/8</div>
+              <div class="label">Sessions</div>
+            </div>
+            <div class="progress-stat">
+              <div class="number">2/3</div>
+              <div class="label">Homework</div>
+            </div>
+            <div class="progress-stat">
+              <div class="number">90%</div>
+              <div class="label">Avg Score</div>
+            </div>
+            <div class="progress-stat">
+              <div class="number">2 days</div>
+              <div class="label">Last Active</div>
+            </div>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 37.5%"></div>
+            </div>
+            <p class="progress-text">37.5% complete · 5 sessions remaining for certificate</p>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="section">
+          <h3 class="section-title">About This Course</h3>
+          <p class="description">
+            Learn how to craft effective prompts that get the best results from AI models like ChatGPT, Claude, and others.
+            This comprehensive course covers everything from basic prompting techniques to advanced strategies for complex tasks.
+            You'll learn prompt engineering patterns, how to handle edge cases, and how to iterate on prompts for optimal results.
+          </p>
+        </div>
+
+        <!-- What You'll Learn -->
+        <div class="section">
+          <h3 class="section-title">What You'll Learn</h3>
+          <ul class="learn-list">
+            <li>Understand how large language models interpret prompts</li>
+            <li>Master the fundamentals of prompt engineering</li>
+            <li>Learn advanced techniques for complex tasks</li>
+            <li>Build a personal prompt library for reuse</li>
+            <li>Apply AI prompting to real business scenarios</li>
+          </ul>
+        </div>
+
+        <!-- Session Timeline (NEW from PurchasedDetail) -->
+        <div class="section">
+          <h3 class="section-title">Sessions</h3>
+          <ul class="session-list">
+            <li class="session-item">
+              <div class="session-number completed">✓</div>
+              <div class="session-info">
+                <div class="session-title">Session 1: Introduction to AI Prompting</div>
+                <div class="session-meta">Dec 10 · Completed</div>
+              </div>
+              <div class="session-hw">
+                <span class="hw-badge submitted">HW: 92%</span>
+              </div>
+            </li>
+            <li class="session-item">
+              <div class="session-number completed">✓</div>
+              <div class="session-info">
+                <div class="session-title">Session 2: Core Prompting Patterns</div>
+                <div class="session-meta">Dec 14 · Completed</div>
+              </div>
+              <div class="session-hw">
+                <span class="hw-badge submitted">HW: 88%</span>
+              </div>
+            </li>
+            <li class="session-item">
+              <div class="session-number completed">✓</div>
+              <div class="session-info">
+                <div class="session-title">Session 3: Advanced Techniques</div>
+                <div class="session-meta">Dec 18 · Completed</div>
+              </div>
+              <div class="session-hw">
+                <span class="hw-badge due">HW Due: Dec 23</span>
+              </div>
+            </li>
+            <li class="session-item">
+              <div class="session-number upcoming">4</div>
+              <div class="session-info">
+                <div class="session-title">Session 4: Business Applications</div>
+                <div class="session-meta">Dec 24 · 2:00 PM EST · Upcoming</div>
+              </div>
+              <div class="session-hw">
+                <span class="hw-badge locked">After session</span>
+              </div>
+            </li>
+            <li class="session-item">
+              <div class="session-number locked">5</div>
+              <div class="session-info">
+                <div class="session-title">Session 5: Prompt Libraries</div>
+                <div class="session-meta">Not scheduled</div>
+              </div>
+              <div class="session-hw"></div>
+            </li>
+            <li class="session-item">
+              <div class="session-number locked">6</div>
+              <div class="session-info">
+                <div class="session-title">Session 6: Iterating & Refining</div>
+                <div class="session-meta">Not scheduled</div>
+              </div>
+              <div class="session-hw"></div>
+            </li>
+            <li class="session-item">
+              <div class="session-number locked">7</div>
+              <div class="session-info">
+                <div class="session-title">Session 7: Review & Practice</div>
+                <div class="session-meta">Not scheduled</div>
+              </div>
+              <div class="session-hw"></div>
+            </li>
+            <li class="session-item">
+              <div class="session-number locked">8</div>
+              <div class="session-info">
+                <div class="session-title">Session 8: Final Project</div>
+                <div class="session-meta">Not scheduled</div>
+              </div>
+              <div class="session-hw"></div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Resources (NEW from PurchasedDetail) -->
+        <div class="section">
+          <h3 class="section-title">Resources</h3>
+          <ul class="resources-list">
+            <li class="resource-item">
+              <div class="resource-session-title">Session 1: Introduction to AI Prompting</div>
+              <div class="resource-links">
+                <a href="#" class="resource-link">Recording</a>
+                <a href="#" class="resource-link">Slides</a>
+                <a href="#" class="resource-link">Code Files</a>
+              </div>
+            </li>
+            <li class="resource-item">
+              <div class="resource-session-title">Session 2: Core Prompting Patterns</div>
+              <div class="resource-links">
+                <a href="#" class="resource-link">Recording</a>
+                <a href="#" class="resource-link">Slides</a>
+                <a href="#" class="resource-link">Prompt Templates</a>
+              </div>
+            </li>
+            <li class="resource-item">
+              <div class="resource-session-title">Session 3: Advanced Techniques</div>
+              <div class="resource-links">
+                <a href="#" class="resource-link">Recording</a>
+                <a href="#" class="resource-link">Slides</a>
+                <a href="#" class="resource-link">Example Prompts</a>
+              </div>
+            </li>
+          </ul>
+          <p style="margin-top: 16px;">
+            <a href="#" class="resource-link">Download All Materials →</a>
+          </p>
+        </div>
+
+        <!-- Topics -->
+        <div class="section">
+          <h3 class="section-title">Topics</h3>
+          <div class="tags">
+            <span class="tag">AI</span>
+            <span class="tag">Prompt Engineering</span>
+            <span class="tag">ChatGPT</span>
+            <span class="tag">Claude</span>
+            <span class="tag">LLMs</span>
+            <span class="tag">Business AI</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+
+        <!-- Upcoming Session Alert -->
+        <div class="sidebar-section">
+          <div class="upcoming-alert">
+            <div class="upcoming-alert-title">Next Session</div>
+            <div class="upcoming-alert-meta">Session 4: Business Applications</div>
+            <div class="upcoming-alert-meta">Dec 24 · 2:00 PM EST</div>
+            <button class="upcoming-alert-btn">▶ Join Session</button>
+          </div>
+        </div>
+
+        <!-- Homework Due Alert -->
+        <div class="sidebar-section">
+          <div class="homework-alert">
+            <div class="homework-alert-title">⚠ Homework Due</div>
+            <div class="homework-alert-meta">Session 3 Assignment</div>
+            <div class="homework-alert-meta">Due: Dec 23 (2 days)</div>
+            <a href="#" style="color: #f59e0b; font-size: 13px; margin-top: 8px; display: inline-block;">Submit Homework →</a>
+          </div>
+        </div>
+
+        <!-- Instructor -->
+        <div class="sidebar-section">
+          <div class="sidebar-title">Instructor</div>
+          <div class="instructor-card">
+            <img src="https://i.pravatar.cc/120?img=13" alt="Guy Rymberg">
+            <div>
+              <div class="instructor-name">Guy Rymberg</div>
+              <div class="instructor-title-text">AI Prompting Specialist</div>
+            </div>
+          </div>
+          <div class="instructor-stats">
+            <span><strong>4.9</strong> rating</span>
+            <span><strong>527</strong> students</span>
+            <span><strong>5</strong> courses</span>
+          </div>
+          <p class="instructor-bio">
+            AI teaching specialist with 15 years experience. Expert in helping professionals leverage AI prompting for competitive advantage.
+          </p>
+          <div class="instructor-actions">
+            <button class="btn-primary" style="background: #10b981;">Joined Community ✓</button>
+            <button class="btn-secondary">View All Courses</button>
+          </div>
+        </div>
+
+        <!-- Course Details -->
+        <div class="sidebar-section">
+          <div class="sidebar-title">Course Details</div>
+          <ul class="details-list">
+            <li><span class="icon">📚</span> 8 Sessions</li>
+            <li><span class="icon">🎬</span> 24 Video Lessons</li>
+            <li><span class="icon">📝</span> 8 Homework Assignments</li>
+            <li><span class="icon">♾️</span> Lifetime Access</li>
+            <li><span class="icon">🎓</span> Certificate of Completion</li>
+            <li><span class="icon">👥</span> Community Access</li>
+          </ul>
+        </div>
+
+        <!-- Certificate Progress -->
+        <div class="sidebar-section">
+          <div class="certificate-section">
+            <div class="certificate-icon">🎓</div>
+            <div class="certificate-title">Certificate Progress</div>
+            <div class="progress-bar" style="margin: 12px 0;">
+              <div class="progress-fill" style="width: 37.5%"></div>
+            </div>
+            <p class="certificate-text">Complete 5 more sessions to earn your certificate</p>
+          </div>
+        </div>
+
+        <!-- Need Help -->
+        <div class="sidebar-section">
+          <div class="sidebar-title">Need Extra Help?</div>
+          <p style="font-size: 14px; color: #9ca3af; margin-bottom: 12px;">
+            Book a 1-on-1 session with a Student-Teacher who completed this course
+          </p>
+          <a href="#" style="color: #1d9bf0; font-size: 14px;">Browse Student-Teachers →</a>
+        </div>
+
+        <!-- Discussion -->
+        <div class="sidebar-section">
+          <div class="sidebar-title">Class Discussion</div>
+          <div class="discussion-link">
+            <span class="new-posts-badge">5 new posts</span>
+            <a href="#" style="color: #1d9bf0; font-size: 14px;">View →</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</body>
+</html>

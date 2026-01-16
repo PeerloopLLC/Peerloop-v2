@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community & Course List - Wireframe</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      color: #0f1419;
+      padding: 20px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Creator Card */
+    .creator-card {
+      padding: 0 0 20px 0;
+      border-bottom: 1px solid #eff3f4;
+      margin-bottom: 20px;
+    }
+
+    .creator-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 4px;
+    }
+
+    /* Color options - using soft blue-gray for first, warm cream for second */
+    .creator-card:nth-child(2) .creator-header {
+      background: linear-gradient(135deg, #e8f4f8 0%, #f0f7fa 100%);
+    }
+
+    .creator-card:nth-child(3) .creator-header {
+      background: linear-gradient(135deg, #faf5eb 0%, #f8f3e8 100%);
+    }
+
+    .creator-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .creator-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .creator-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .creator-top-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .creator-name {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .creator-handle {
+      color: #536471;
+      font-size: 15px;
+    }
+
+    .creator-meta {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #536471;
+      font-size: 14px;
+    }
+
+    .followers-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .dot {
+      margin: 0 4px;
+    }
+
+    .creator-bio {
+      margin-top: 8px;
+      font-size: 15px;
+      line-height: 1.4;
+      color: #0f1419;
+    }
+
+    .join-btn {
+      background: #c6f432;
+      border: none;
+      color: #0f1419;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .join-btn:hover {
+      background: #b8e62e;
+    }
+
+    /* Course List */
+    .courses-list {
+      margin-top: 16px;
+      margin-left: 60px;
+    }
+
+    .course-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid #eff3f4;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      background: #fff;
+    }
+
+    .course-card:hover {
+      background: #f7f9f9;
+    }
+
+    .course-thumbnail {
+      width: 100px;
+      height: 70px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .course-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Placeholder gradient thumbnails */
+    .thumb-ai {
+      background: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%);
+    }
+
+    .thumb-python {
+      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+    }
+
+    .thumb-nodejs {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    }
+
+    .thumb-aws {
+      background: linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%);
+    }
+
+    .course-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .course-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1d9bf0;
+    }
+
+    .course-description {
+      font-size: 14px;
+      color: #536471;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    .follow-btn {
+      background: white;
+      border: 1px solid #cfd9de;
+      color: #0f1419;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .follow-btn:hover {
+      background: #f7f9f9;
+    }
+
+    .see-all-btn {
+      display: inline-block;
+      margin-top: 8px;
+      margin-left: 60px;
+      padding: 8px 16px;
+      border: 1px solid #cfd9de;
+      border-radius: 20px;
+      font-size: 14px;
+      color: #536471;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .see-all-btn:hover {
+      background: #f7f9f9;
+    }
+
+    .wireframe-label {
+      background: #1d9bf0;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wireframe-label">Community & Course List Format</div>
+
+  <!-- Creator 1 -->
+  <div class="creator-card">
+    <div class="creator-header">
+      <div class="creator-avatar">
+        <img src="https://i.pravatar.cc/96?img=32" alt="Jane Doe">
+      </div>
+      <div class="creator-info">
+        <div class="creator-top-row">
+          <span class="creator-name">Jane Doe</span>
+          <span class="creator-handle">@janedoe</span>
+        </div>
+        <div class="creator-meta">
+          <svg class="followers-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          19,928 followers
+          <span class="dot">•</span>
+          Leading AI Strategist at TechCorp
+        </div>
+        <div class="creator-bio">
+          Leading AI strategist with 10+ years experience in product management and AI implementation. Expert in helping companies leverage AI for competitive advantage.
+        </div>
+      </div>
+      <button class="join-btn">Join Community</button>
+    </div>
+
+    <div class="courses-list">
+      <div class="course-card">
+        <div class="course-thumbnail thumb-ai"></div>
+        <div class="course-info">
+          <div class="course-title">AI for Product Managers</div>
+          <div class="course-description">Master the skills to lead AI-driven products. Learn to evaluate AI technologies, build AI roadmaps, and make data-driven decisions.</div>
+        </div>
+        <button class="follow-btn">Follow</button>
+      </div>
+
+      <div class="course-card">
+        <div class="course-thumbnail thumb-python"></div>
+        <div class="course-info">
+          <div class="course-title">Computer Vision with Python</div>
+          <div class="course-description">Design and deploy scalable cloud solutions using AWS services. Learn serverless architecture and infrastructure as code.</div>
+        </div>
+        <button class="follow-btn">Follow</button>
+      </div>
+    </div>
+
+    <a href="#" class="see-all-btn">See all 4 courses</a>
+  </div>
+
+  <!-- Creator 2 -->
+  <div class="creator-card">
+    <div class="creator-header">
+      <div class="creator-avatar">
+        <img src="https://i.pravatar.cc/96?img=68" alt="Albert Einstein">
+      </div>
+      <div class="creator-info">
+        <div class="creator-top-row">
+          <span class="creator-name">Albert Einstein</span>
+          <span class="creator-handle">@alberteinstein</span>
+        </div>
+        <div class="creator-meta">
+          <svg class="followers-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          1,730 followers
+          <span class="dot">•</span>
+          Theoretical Physicist & Nobel Laureate
+        </div>
+        <div class="creator-bio">
+          Revolutionary physicist who developed the theory of relativity, one of the two pillars of modern physics. Nobel Prize winner.
+        </div>
+      </div>
+      <button class="join-btn">Join Community</button>
+    </div>
+
+    <div class="courses-list">
+      <div class="course-card">
+        <div class="course-thumbnail thumb-nodejs"></div>
+        <div class="course-info">
+          <div class="course-title">Node.js Backend Development</div>
+          <div class="course-description">Learn to build robust backend services with Node.js, Express, and MongoDB. Master REST APIs and authentication systems.</div>
+        </div>
+        <button class="follow-btn">Follow</button>
+      </div>
+
+      <div class="course-card">
+        <div class="course-thumbnail thumb-aws"></div>
+        <div class="course-info">
+          <div class="course-title">Cloud Architecture with AWS</div>
+          <div class="course-description">Design and deploy scalable cloud solutions using AWS services. Learn serverless architecture and infrastructure as code.</div>
+        </div>
+        <button class="follow-btn">Follow</button>
+      </div>
+    </div>
+
+    <a href="#" class="see-all-btn">See all 2 courses</a>
+  </div>
+
+</body>
+</html>

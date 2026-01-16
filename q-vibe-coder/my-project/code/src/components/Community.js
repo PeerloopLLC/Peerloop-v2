@@ -49,6 +49,30 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     return saved || 'pills'; // Default to pills
   });
 
+  // Banner color from Profile settings
+  const [userBannerColor, setUserBannerColor] = useState(() => {
+    const saved = localStorage.getItem('profileBannerColor');
+    return saved || 'default';
+  });
+
+  // Available banner colors (matching Profile.js)
+  const bannerColorOptions = {
+    default: { start: '#1a1a2e', end: '#0f3460' },
+    blue: { start: '#e8f4f8', end: '#d0e8f0' },
+    cream: { start: '#faf5eb', end: '#f0e8d8' },
+    green: { start: '#f0fdf4', end: '#dcfce7' },
+    pink: { start: '#fef3f2', end: '#fecaca' },
+    purple: { start: '#f5f3ff', end: '#e9d5ff' },
+    teal: { start: '#f0fdfa', end: '#ccfbf1' },
+    orange: { start: '#fff7ed', end: '#fed7aa' },
+  };
+
+  // Get the user's selected banner gradient
+  const getUserBannerGradient = () => {
+    const colors = bannerColorOptions[userBannerColor] || bannerColorOptions.default;
+    return `linear-gradient(135deg, ${colors.start} 0%, ${colors.end} 100%)`;
+  };
+
   // Pills scrolling state (course pills within a creator's community)
   const pillsContainerRef = useRef(null);
   const [showPillsLeftArrow, setShowPillsLeftArrow] = useState(false);
@@ -67,6 +91,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
 
   // Collapsible profile card state
   const [isProfileCollapsed, setIsProfileCollapsed] = useState(false);
+  const isProfileCollapsedRef = useRef(false); // Ref to track current collapsed state for scroll handler
   const lastScrollY = useRef(0);
   const feedContainerRef = useRef(null);
   // Selector bar dropdown state (for 'selector' nav style)
@@ -228,24 +253,50 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   }, [communityMode, selectedCreatorId, pendingCreatorName]);
 
   // Handle scroll to collapse/expand profile card based on scroll direction
+  const lastToggleTime = useRef(0);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    isProfileCollapsedRef.current = isProfileCollapsed;
+  }, [isProfileCollapsed]);
+
   useEffect(() => {
     const COLLAPSE_THRESHOLD = 100; // Collapse when scrolled past this point
+    const EXPAND_THRESHOLD = 50; // Expand when scrolled back above this point (increased for reliability)
+    const TOGGLE_COOLDOWN = 200; // Reduced cooldown for more responsive expand
 
     const handleScroll = () => {
       const container = feedContainerRef.current;
       if (!container) return;
 
       const currentScrollY = container.scrollTop;
-      const previousScrollY = lastScrollY.current;
-      const isScrollingUp = currentScrollY < previousScrollY;
+      const now = Date.now();
+
+      // Always expand when at the very top (scrollTop <= 5), bypass cooldown
+      if (isProfileCollapsedRef.current && currentScrollY <= 5) {
+        setIsProfileCollapsed(false);
+        isProfileCollapsedRef.current = false;
+        lastToggleTime.current = now;
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Skip if we recently toggled (prevents jitter from layout shifts)
+      if (now - lastToggleTime.current < TOGGLE_COOLDOWN) {
+        return;
+      }
 
       // Collapse: when scrolled down past threshold
-      if (!isProfileCollapsed && currentScrollY > COLLAPSE_THRESHOLD) {
+      if (!isProfileCollapsedRef.current && currentScrollY > COLLAPSE_THRESHOLD) {
         setIsProfileCollapsed(true);
+        isProfileCollapsedRef.current = true;
+        lastToggleTime.current = now;
       }
-      // Expand: immediately when scrolling UP (direction change)
-      else if (isProfileCollapsed && isScrollingUp) {
+      // Expand: when scrolled back near the top
+      else if (isProfileCollapsedRef.current && currentScrollY < EXPAND_THRESHOLD) {
         setIsProfileCollapsed(false);
+        isProfileCollapsedRef.current = false;
+        lastToggleTime.current = now;
       }
 
       lastScrollY.current = currentScrollY;
@@ -260,11 +311,12 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
         container.removeEventListener('scroll', handleScroll);
       }
     };
-  }, [isProfileCollapsed]);
+  }, []); // Empty dependency - handler uses refs for current values
 
   // Reset collapsed state when changing creators
   useEffect(() => {
     setIsProfileCollapsed(false);
+    isProfileCollapsedRef.current = false;
     lastScrollY.current = 0;
   }, [selectedCreatorId]);
 
@@ -1111,17 +1163,22 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
           )}
 
           {/* Selector Bar - Option B Style (shows when communityNavStyle === 'selector') */}
-          {communityNavStyle === 'selector' && (
+          {communityNavStyle === 'selector' && (() => {
+            return (
             <div style={{
-              background: isDarkMode ? '#1f2937' : '#f9fafb',
-              borderRadius: 12,
+              background: communityMode === 'creators' && selectedCreatorId
+                ? (isDarkMode
+                    ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
+                    : getUserBannerGradient())
+                : (isDarkMode ? '#1f2937' : '#f9fafb'),
+              borderRadius: 16,
               padding: '12px 16px',
               margin: '8px 16px 0 16px',
               position: 'sticky',
               top: 0,
               zIndex: 10,
-              border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-              boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.1)'
+              border: communityMode === 'creators' && selectedCreatorId ? 'none' : (isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb'),
+              boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.06)'
             }}>
               {/* Selector Bar - Clickable row */}
               <div
@@ -1428,7 +1485,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       color: isDarkMode ? '#9ca3af' : '#536471',
                       marginTop: 2
                     }}>
-                      {instructor.courses?.length || effectiveCreator.allCourses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · {Math.floor(Math.random() * 200) + 20} Posts
+                      {instructor.courses?.length || effectiveCreator.allCourses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · 189 Posts
                     </div>
                     {/* Bio */}
                     {instructor.bio && (
@@ -1612,62 +1669,71 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 );
               })()}
             </div>
-          )}
+          );
+          })()}
 
           {/* Old slideout panel removed - now handled by FeedsSlideoutPanel in App.js */}
 
           {/* Town Hall Profile Card - Shows when Town Hall is selected (non-selector mode) */}
           {communityNavStyle !== 'selector' && communityMode === 'hub' && (
             <div style={{
-              background: isDarkMode ? '#1f2937' : '#f9fafb',
-              borderRadius: 12,
-              padding: '12px 16px',
+              background: isDarkMode ? '#1f2937' : '#fff',
+              borderRadius: 16,
               margin: '8px 16px 0 16px',
               position: 'sticky',
               top: communityNavStyle === 'pills' ? 57 : 0,
               zIndex: 10,
               border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-              boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.1)'
+              boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.08)',
+              overflow: 'hidden'
             }}>
-              {/* Town Hall Info Row */}
+              {/* Hero Banner Image */}
               <div style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 10
+                position: 'relative',
+                height: 140,
+                overflow: 'hidden'
               }}>
-                {/* Avatar */}
-                <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=100&h=100&fit=crop" alt="The Commons" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                <img
+                  src={process.env.PUBLIC_URL + '/commons-banner.png'}
+                  alt="The Commons"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              </div>
 
-                {/* Town Hall Details */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{
-                    fontSize: 16,
-                    fontWeight: 700,
-                    color: '#10b981',
-                    lineHeight: 1.2
-                  }}>
-                    The Commons
-                  </div>
-                  <div style={{
-                    fontSize: 14,
-                    color: isDarkMode ? '#71767b' : '#536471'
-                  }}>
-                    Community Discussion Hub
-                  </div>
-                  <div style={{
-                    fontSize: 14,
-                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                    marginTop: 4,
-                    lineHeight: 1.3
-                  }}>
-                    Welcome to The Commons — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners across all courses and communities.
-                  </div>
+              {/* Town Hall Details */}
+              <div style={{ padding: '16px 20px' }}>
+                <div style={{
+                  fontSize: 20,
+                  fontWeight: 700,
+                  color: isDarkMode ? '#e7e9ea' : '#1a365d',
+                  lineHeight: 1.2,
+                  marginBottom: 4
+                }}>
+                  The Commons
+                </div>
+                <div style={{
+                  fontSize: 14,
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  marginBottom: 8
+                }}>
+                  Community Discussion Hub
+                </div>
+                <div style={{
+                  fontSize: 14,
+                  color: isDarkMode ? '#9ca3af' : '#4a5568',
+                  lineHeight: 1.5
+                }}>
+                  Welcome to The Commons — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners across all courses and communities.
                 </div>
               </div>
 
               {/* Commons Feed Pills */}
               <div style={{
-                marginTop: 12,
+                padding: '0 20px 16px 20px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8
@@ -1701,8 +1767,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   Main Hall
                 </button>
 
-                {/* Placeholder Pills 1, 2, 3 */}
-                {['1', '2', '3'].map(num => (
+                {/* Placeholder Pills - Ask AI, 2, 3 */}
+                {['Ask AI', '2', '3'].map(num => (
                   <button
                     key={num}
                     onClick={() => setCommonsSelectedFeed(num)}
@@ -1758,15 +1824,17 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
             
             return (
               <div style={{
-                background: isDarkMode ? '#1f2937' : '#f9fafb',
-                borderRadius: 12,
-                padding: isProfileCollapsed ? '8px 16px' : '12px 16px',
+                background: isDarkMode
+                  ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
+                  : getUserBannerGradient(),
+                borderRadius: 16,
+                padding: isProfileCollapsed ? '8px 16px' : '20px',
                 margin: '8px 16px 0 16px',
                 position: 'sticky',
                 top: communityNavStyle === 'pills' ? 57 : 0,
                 zIndex: 10,
-                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-                boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.1)',
+                border: 'none',
+                boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.06)',
                 transition: 'padding 0.2s ease'
               }}>
                 {/* Collapsed View - Just name and pills */}
@@ -1918,7 +1986,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           color: isDarkMode ? '#9ca3af' : '#536471',
                           marginTop: 2
                         }}>
-                          {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · {Math.floor(Math.random() * 200) + 20} Posts
+                          {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · 189 Posts
                         </div>
                         {instructor.bio && (
                           <div style={{
@@ -2412,6 +2480,16 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     
                     // Handle clicking on post author to view their profile
                     const handlePostAuthorClick = () => {
+                      // If this is a creator post, navigate to creator profile
+                      if (post.isCreatorTownHall && post.instructorId) {
+                        const instructor = getInstructorById(post.instructorId);
+                        if (instructor && onViewCreatorProfile) {
+                          // Add instructorId property for the callback to use
+                          onViewCreatorProfile({ ...instructor, instructorId: post.instructorId });
+                          return;
+                        }
+                      }
+                      // Otherwise, navigate to user profile
                       if (onViewUserProfile) {
                         onViewUserProfile(post.author);
                       }

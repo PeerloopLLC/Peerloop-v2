@@ -393,17 +393,16 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           ) : (
             /* Expanded sidebar: Feeds group with shared background */
             <div className="feeds-group">
+            {/* TOP: Community selector - shows selected community name + count + arrow */}
             <div
-              className={`nav-item feeds-header ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities || communityNavStyle === 'pills' ? 'no-flyout' : ''}`}
+              className={`community-selector ${isFlyoutOpen ? 'flyout-open' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                // Navigate to My Community (preserves current community selection)
-                onMenuChange('My Community');
                 // Toggle slideout panel if slideout mode is enabled
                 if (hasFollowedCommunities && communityNavStyle === 'slideout') {
                   window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
                 }
-                // Only toggle flyout if user has followed communities AND dropdown mode is enabled
+                // Toggle flyout if dropdown mode is enabled
                 else if (hasFollowedCommunities && communityNavStyle === 'dropdown') {
                   const willOpen = !isFlyoutOpen;
                   setIsFlyoutOpen(willOpen);
@@ -413,45 +412,48 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                     clearFlyoutCloseTimer();
                   }
                 }
-              }}
-              >
-              <div className="nav-icon"><FaUsers /></div>
-              <span className="nav-label">My Feeds ({allCommunities.length})</span>
-              {hasFollowedCommunities && (communityNavStyle === 'dropdown' || communityNavStyle === 'slideout') && (
-                <span className="feeds-arrow-toggle">
-                  <span className="arrow-left">◂</span>
-                  <span className="arrow-right">▸</span>
-                </span>
-              )}
-            </div>
-
-            {/* Selected community sub-item with arrow prefix */}
-            <div
-              className="selected-community-item"
-              onClick={(e) => {
-                e.stopPropagation();
-                // Navigate directly to the selected community (no slideout)
-                handleCommunitySelect(selectedCommunity);
+                // For pills mode, just navigate to the community
+                else {
+                  handleCommunitySelect(selectedCommunity);
+                }
               }}
             >
               {selectedCommunity.id === 'town-hall' ? (
-                <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=100&h=100&fit=crop" alt="The Commons" className="selected-community-avatar selected-community-avatar-img" />
+                <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=100&h=100&fit=crop" alt="The Commons" className="community-selector-avatar" />
               ) : selectedCommunity.avatar ? (
                 <img
                   src={selectedCommunity.avatar}
                   alt={selectedCommunity.name}
-                  className="selected-community-avatar selected-community-avatar-img"
+                  className="community-selector-avatar"
                 />
               ) : (
-                <div className="selected-community-avatar">
+                <div className="community-selector-avatar community-selector-avatar-letter">
                   {(selectedCommunity.name || 'C').charAt(0).toUpperCase()}
                 </div>
               )}
-              <span className="selected-community-name">
-                {selectedCommunity.id === 'town-hall'
-                  ? 'The Commons'
-                  : `${selectedCommunity.name || 'Community'}`}
-              </span>
+              <div className="community-selector-info">
+                <span className="community-selector-name">
+                  {selectedCommunity.id === 'town-hall'
+                    ? 'The Commons'
+                    : `${selectedCommunity.name || 'Community'}`}
+                </span>
+                <span className="community-selector-count">{communities.length} {communities.length === 1 ? 'community' : 'communities'}</span>
+              </div>
+              {hasFollowedCommunities && (
+                <span className="community-selector-arrow">&rarr;</span>
+              )}
+            </div>
+
+            {/* SECOND: My Feeds static label - no arrow */}
+            <div
+              className={`nav-item feeds-label ${activeMenu === 'My Community' ? 'active' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onMenuChange('My Community');
+              }}
+            >
+              <div className="nav-icon"><FaUsers /></div>
+              <span className="nav-label">My Feeds</span>
             </div>
             </div>
           )}

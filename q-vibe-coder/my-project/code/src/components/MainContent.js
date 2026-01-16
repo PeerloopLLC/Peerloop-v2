@@ -294,6 +294,11 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Helper function to load follows for a specific user
   const loadFollowsForUser = (userId, isNewUser) => {
+    // New User (demo_new) starts with no communities - completely fresh
+    if (userId === 'demo_new') {
+      return [];
+    }
+
     // Sarah (demo_sarah) starts with only 2 communities joined
     if (userId === 'demo_sarah') {
       return getSarahDefaultCommunities();
@@ -360,7 +365,11 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Purchased courses - courses the user has bought (enables course-level follow/unfollow)
   const [purchasedCourses, setPurchasedCourses] = useState(() => {
-    // All users default to Guy Rymberg's courses
+    // New User (demo_new) starts with no courses - completely fresh
+    if (currentUser?.id === 'demo_new') {
+      return [];
+    }
+    // All other users default to Guy Rymberg's courses
     try {
       const storageKey = `purchasedCourses_${currentUser?.id}`;
       const stored = localStorage.getItem(storageKey);
@@ -377,6 +386,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // Reload purchased courses when user changes
   React.useEffect(() => {
     if (!currentUser?.id) return;
+
+    // New User (demo_new) has no courses - completely fresh
+    if (currentUser.id === 'demo_new') {
+      setPurchasedCourses([]);
+      return;
+    }
 
     // Alex (demo_alex) always has all of Guy Rymberg's courses - hardcoded
     if (currentUser.id === 'demo_alex') {
@@ -1170,12 +1185,18 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           onViewCourse={handleViewCourseFromCommunity}
           onViewCreatorProfile={(creator) => {
             // Navigate to creator profile in Browse with back navigation to Feeds
-            const instructorId = creator.instructorId || creator.id?.replace('creator-', '');
+            const instructorId = creator.instructorId || (typeof creator.id === 'string' ? creator.id.replace('creator-', '') : creator.id);
             const fullData = getInstructorWithCourses(instructorId);
             setSelectedInstructor(fullData || creator);
             setSelectedCourse(null); // Clear any selected course so profile shows
             setActiveTopMenu('creators');
-            setPreviousBrowseContext({ type: 'feeds', community: creator }); // Store community for back navigation
+            // Format community object with id as "creator-{id}" for back navigation
+            const communityForBack = {
+              id: `creator-${instructorId}`,
+              name: creator.name,
+              instructorId: instructorId
+            };
+            setPreviousBrowseContext({ type: 'feeds', community: communityForBack });
             setNavigationHistory(prev => [...prev, 'My Community']);
             onMenuChange('Browse_Communities');
           }}

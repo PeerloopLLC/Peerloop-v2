@@ -24,6 +24,25 @@ const MyCoursesView = ({
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'inprogress', or 'completed'
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Banner color from Profile settings (same as DiscoverView)
+  const userBannerColor = localStorage.getItem('profileBannerColor') || 'default';
+
+  const bannerColorOptions = {
+    default: { start: '#1a1a2e', end: '#0f3460' },
+    blue: { start: '#e8f4f8', end: '#d0e8f0' },
+    cream: { start: '#faf5eb', end: '#f0e8d8' },
+    green: { start: '#f0fdf4', end: '#dcfce7' },
+    pink: { start: '#fef3f2', end: '#fecaca' },
+    purple: { start: '#f5f3ff', end: '#e9d5ff' },
+    teal: { start: '#f0fdfa', end: '#ccfbf1' },
+    orange: { start: '#fff7ed', end: '#fed7aa' },
+  };
+
+  const getUserBannerGradient = () => {
+    const colors = bannerColorOptions[userBannerColor] || bannerColorOptions.default;
+    return `linear-gradient(135deg, ${colors.start} 0%, ${colors.end} 100%)`;
+  };
+
   // Get full course data for purchased courses with mock progress
   const myCoursesData = useMemo(() => {
     return purchasedCourses.map(purchasedId => {
@@ -277,7 +296,7 @@ const MyCoursesView = ({
                       borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb'
                     }}
                   >
-                    {/* Instructor Profile Card */}
+                    {/* Instructor Profile Card - Discovery Style with Gradient Background */}
                     <div
                       onClick={() => {
                         // Navigate to creator profile via callback (handles history)
@@ -292,11 +311,16 @@ const MyCoursesView = ({
                       }}
                       style={{
                         padding: 20,
+                        borderRadius: 16,
+                        marginBottom: 4,
                         cursor: 'pointer',
-                        transition: 'background 0.2s'
+                        transition: 'all 0.2s',
+                        background: isDarkMode
+                          ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
+                          : getUserBannerGradient()
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#1a1a24' : '#f9fafb'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                      onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                     >
                       {/* Top row: Avatar, Name, Join button */}
                       <div style={{
@@ -327,25 +351,38 @@ const MyCoursesView = ({
                         </div>
 
                         <div style={{ flex: 1, minWidth: 0 }}>
+                          {/* Name and Handle Row */}
                           <div style={{
-                            fontSize: 18,
-                            fontWeight: 600,
-                            color: isDarkMode ? '#f5f5f7' : '#111827',
+                            display: 'flex',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            gap: 4,
                             marginBottom: 4
                           }}>
-                            {highlightMatch(instructor?.name || 'Unknown Instructor', searchQuery)}
+                            <span style={{
+                              fontSize: 18,
+                              fontWeight: 600,
+                              color: isDarkMode ? '#f5f5f7' : '#111827'
+                            }}>
+                              {highlightMatch(instructor?.name || 'Unknown Instructor', searchQuery)}
+                            </span>
+                            <span style={{
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              fontSize: 15
+                            }}>
+                              @{instructor?.name?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
+                            </span>
                           </div>
                           <div style={{
                             fontSize: 14,
                             color: isDarkMode ? '#a1a1aa' : '#6b7280',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 12
+                            gap: 4
                           }}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                              <AiOutlineTeam /> {(instructor?.stats?.studentsTaught || 0).toLocaleString()} followers
-                            </span>
-                            <span>·</span>
+                            <AiOutlineTeam style={{ fontSize: 16 }} />
+                            <span>{(instructor?.stats?.studentsTaught || 0).toLocaleString()} followers</span>
+                            <span style={{ margin: '0 4px' }}>•</span>
                             <span>{instructor?.title || 'Instructor'}</span>
                           </div>
                         </div>
@@ -356,19 +393,30 @@ const MyCoursesView = ({
                             handleFollowInstructor && handleFollowInstructor(instructor?.id);
                           }}
                           style={{
-                            padding: '8px 20px',
-                            borderRadius: 20,
-                            background: '#1d9bf0',
-                            color: '#fff',
+                            background: isFollowing ? (isDarkMode ? '#2f3336' : '#eff3f4') : '#c6f432',
                             border: 'none',
+                            color: isFollowing ? (isDarkMode ? '#71767b' : '#536471') : '#0f1419',
+                            padding: '8px 16px',
+                            borderRadius: 20,
                             fontSize: 14,
                             fontWeight: 600,
                             cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            flexShrink: 0
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isFollowing) {
+                              e.currentTarget.style.background = '#b8e62e';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isFollowing) {
+                              e.currentTarget.style.background = '#c6f432';
+                            }
                           }}
                         >
-                          {isFollowing ? 'Joined Community' : 'Join Community'}
+                          {isFollowing ? 'Joined' : 'Join Community'}
                         </button>
                       </div>
 
@@ -428,129 +476,62 @@ const MyCoursesView = ({
                               background: isDarkMode ? '#3f3f46' : '#e5e7eb'
                             }} />
 
-                            {/* Course Card */}
+                            {/* Course Card - Discovery Style */}
                             <div
                               onClick={() => onViewCourse && onViewCourse(course.id)}
                               style={{
                                 flex: 1,
-                                padding: '12px 16px',
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                gap: 12,
+                                padding: 12,
                                 marginBottom: 8,
-                                background: isDarkMode ? '#1a1a24' : '#f9fafb',
+                                background: isDarkMode ? '#16181c' : '#f7f9f9',
                                 borderRadius: 12,
                                 cursor: 'pointer',
-                                border: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb',
+                                border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
                                 transition: 'all 0.2s'
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.background = isDarkMode ? '#27272a' : '#f3f4f6';
-                                e.currentTarget.style.borderColor = '#6366f1';
+                                e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.background = isDarkMode ? '#1a1a24' : '#f9fafb';
-                                e.currentTarget.style.borderColor = isDarkMode ? '#27272a' : '#e5e7eb';
+                                e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
                               }}
                             >
-                              {/* Course Header */}
-                              <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 12,
-                                marginBottom: 8
-                              }}>
-                                <div style={{
-                                  width: 28,
-                                  height: 28,
-                                  background: isDarkMode ? '#27272a' : '#e0e7ff',
-                                  borderRadius: 6,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  color: '#6366f1',
-                                  fontSize: 12,
-                                  flexShrink: 0
-                                }}>
-                                  <FaBook />
-                                </div>
+                              {/* Course Thumbnail - Gradient like Discovery */}
+                              {(() => {
+                                const thumbGradients = [
+                                  'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)',
+                                  'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
+                                  'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
+                                  'linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)'
+                                ];
+                                return (
+                                  <div style={{
+                                    width: 100,
+                                    height: 70,
+                                    borderRadius: 8,
+                                    flexShrink: 0,
+                                    background: thumbGradients[index % 4]
+                                  }} />
+                                );
+                              })()}
 
+                              {/* Course Info */}
+                              <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{
-                                  flex: 1,
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   fontWeight: 600,
-                                  color: isDarkMode ? '#f5f5f7' : '#111827'
+                                  color: '#1d9bf0'
                                 }}>
                                   {highlightMatch(course.title, searchQuery)}
                                 </div>
-
-                                {/* Status Badge */}
-                                <span style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 4,
-                                  background: isCompleted
-                                    ? (isDarkMode ? 'rgba(34, 197, 94, 0.2)' : '#dcfce7')
-                                    : (isDarkMode ? 'rgba(59, 130, 246, 0.2)' : '#dbeafe'),
-                                  color: isCompleted ? '#22c55e' : '#3b82f6',
-                                  padding: '2px 8px',
-                                  borderRadius: 10,
-                                  fontSize: 11,
-                                  fontWeight: 600,
-                                  flexShrink: 0
-                                }}>
-                                  {isCompleted ? (
-                                    <><FaCheckCircle style={{ fontSize: 10 }} /> Done</>
-                                  ) : (
-                                    <><FaPlay style={{ fontSize: 8 }} /> {course.progress}%</>
-                                  )}
-                                </span>
-
-                                {/* Follow/Unfollow Button */}
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleFollowCourse && handleFollowCourse(course.id);
-                                  }}
-                                  style={{
-                                    padding: '4px 12px',
-                                    borderRadius: 12,
-                                    background: '#1d9bf0',
-                                    color: '#fff',
-                                    border: 'none',
-                                    fontSize: 12,
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    flexShrink: 0
-                                  }}
-                                >
-                                  {isFollowed ? 'Unfollow Course' : 'Follow Course'}
-                                </button>
-                              </div>
-
-                              {/* Progress Bar */}
-                              <div style={{ paddingLeft: 40 }}>
                                 <div style={{
-                                  width: '100%',
-                                  height: 4,
-                                  background: isDarkMode ? '#374151' : '#e5e7eb',
-                                  borderRadius: 2,
-                                  overflow: 'hidden'
-                                }}>
-                                  <div style={{
-                                    width: `${course.progress}%`,
-                                    height: '100%',
-                                    background: isCompleted
-                                      ? 'linear-gradient(90deg, #22c55e, #16a34a)'
-                                      : 'linear-gradient(90deg, #3b82f6, #1d4ed8)',
-                                    borderRadius: 2,
-                                    transition: 'width 0.3s ease'
-                                  }} />
-                                </div>
-
-                                {/* Course Description */}
-                                <div style={{
-                                  fontSize: 13,
-                                  lineHeight: 1.5,
-                                  color: isDarkMode ? '#a1a1aa' : '#6b7280',
-                                  marginTop: 8,
+                                  fontSize: 14,
+                                  color: isDarkMode ? '#71767b' : '#536471',
+                                  lineHeight: 1.4,
+                                  marginTop: 4,
                                   display: '-webkit-box',
                                   WebkitLineClamp: 2,
                                   WebkitBoxOrient: 'vertical',
@@ -559,11 +540,11 @@ const MyCoursesView = ({
                                   {highlightMatch(course.description, searchQuery)}
                                 </div>
 
-                                {/* Course Stats */}
+                                {/* Course Stats - Kept per user request */}
                                 <div style={{
                                   display: 'flex',
                                   alignItems: 'center',
-                                  gap: 12,
+                                  gap: 8,
                                   marginTop: 8,
                                   fontSize: 12,
                                   color: isDarkMode ? '#71717a' : '#9ca3af'
@@ -577,6 +558,29 @@ const MyCoursesView = ({
                                   <span>{course.duration}</span>
                                 </div>
                               </div>
+
+                              {/* Follow/Unfollow Button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleFollowCourse && handleFollowCourse(course.id);
+                                }}
+                                style={{
+                                  background: isDarkMode ? '#2f3336' : '#eff3f4',
+                                  border: 'none',
+                                  color: isDarkMode ? '#71767b' : '#536471',
+                                  padding: '6px 16px',
+                                  borderRadius: 20,
+                                  fontSize: 14,
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  whiteSpace: 'nowrap',
+                                  flexShrink: 0,
+                                  transition: 'all 0.2s'
+                                }}
+                              >
+                                {isFollowed ? 'Unfollow Course' : 'Follow Course'}
+                              </button>
                             </div>
                           </div>
                         );
