@@ -52,12 +52,12 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   // Banner color from Profile settings
   const [userBannerColor, setUserBannerColor] = useState(() => {
     const saved = localStorage.getItem('profileBannerColor');
-    return saved || 'default';
+    return saved || 'blue';
   });
 
   // Available banner colors (matching Profile.js)
   const bannerColorOptions = {
-    default: { start: '#1a1a2e', end: '#0f3460' },
+    default: { start: '#e8f4f8', end: '#d0e8f0' },
     blue: { start: '#e8f4f8', end: '#d0e8f0' },
     cream: { start: '#faf5eb', end: '#f0e8d8' },
     green: { start: '#f0fdf4', end: '#dcfce7' },

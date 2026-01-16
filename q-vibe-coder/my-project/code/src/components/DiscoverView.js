@@ -28,11 +28,11 @@ const DiscoverView = ({
   const [activeFilter, setActiveFilter] = useState('All');
 
   // Banner color from Profile settings
-  const userBannerColor = localStorage.getItem('profileBannerColor') || 'default';
+  const userBannerColor = localStorage.getItem('profileBannerColor') || 'blue';
 
   // Available banner colors (matching Profile.js)
   const bannerColorOptions = {
-    default: { start: '#1a1a2e', end: '#0f3460' },
+    default: { start: '#e8f4f8', end: '#d0e8f0' },
     blue: { start: '#e8f4f8', end: '#d0e8f0' },
     cream: { start: '#faf5eb', end: '#f0e8d8' },
     green: { start: '#f0fdf4', end: '#dcfce7' },
