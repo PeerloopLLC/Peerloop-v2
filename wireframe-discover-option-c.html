@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option C: Category-First Browse</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e7e9ea;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .header {
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .header-subtitle {
+      color: #71767b;
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #16181c;
+      border: 1px solid #2f3336;
+      border-radius: 24px;
+      padding: 14px 24px;
+      max-width: 500px;
+    }
+
+    .search-bar input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e7e9ea;
+      font-size: 16px;
+      width: 100%;
+      margin-left: 12px;
+    }
+
+    .search-bar input::placeholder {
+      color: #71767b;
+    }
+
+    /* Category Cards */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .category-card {
+      background: #16181c;
+      border: 1px solid #2f3336;
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .category-card:hover {
+      border-color: #1d9bf0;
+      transform: translateY(-2px);
+    }
+
+    .category-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .category-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .category-desc {
+      font-size: 14px;
+      color: #71767b;
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    .category-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: #a0a0a0;
+    }
+
+    .category-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .category-gradient {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.3;
+    }
+
+    /* Trending Section */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .see-all {
+      color: #1d9bf0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .see-all:hover {
+      text-decoration: underline;
+    }
+
+    .trending-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .trending-item {
+      display: flex;
+      align-items: center;
+      background: #16181c;
+      border: 1px solid #2f3336;
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .trending-item:hover {
+      border-color: #1d9bf0;
+    }
+
+    .trending-rank {
+      font-size: 24px;
+      font-weight: 700;
+      color: #71767b;
+      width: 40px;
+      text-align: center;
+      margin-right: 16px;
+    }
+
+    .trending-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin-right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .trending-info {
+      flex: 1;
+    }
+
+    .trending-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .trending-category {
+      font-size: 13px;
+      color: #1d9bf0;
+    }
+
+    .trending-meta {
+      text-align: right;
+    }
+
+    .trending-followers {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .trending-growth {
+      font-size: 12px;
+      color: #00ba7c;
+    }
+
+    .design-note {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #1d9bf0;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      max-width: 350px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Discover</h1>
+      <p class="header-subtitle">Explore communities and courses by topic</p>
+      <div class="search-bar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71767b" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="M21 21l-4.35-4.35"></path>
+        </svg>
+        <input type="text" placeholder="Search for anything...">
+      </div>
+    </div>
+
+    <div class="categories-grid">
+      <div class="category-card">
+        <div class="category-gradient" style="background: #667eea;"></div>
+        <div class="category-icon">🤖</div>
+        <div class="category-name">AI & Machine Learning</div>
+        <div class="category-desc">Master artificial intelligence, deep learning, and neural networks</div>
+        <div class="category-stats">
+          <span class="category-stat">👥 5 creators</span>
+          <span class="category-stat">📚 12 courses</span>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="category-gradient" style="background: #f093fb;"></div>
+        <div class="category-icon">💻</div>
+        <div class="category-name">Development</div>
+        <div class="category-desc">Build web apps, APIs, and full-stack solutions</div>
+        <div class="category-stats">
+          <span class="category-stat">👥 3 creators</span>
+          <span class="category-stat">📚 8 courses</span>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="category-gradient" style="background: #4facfe;"></div>
+        <div class="category-icon">📊</div>
+        <div class="category-name">Data Science</div>
+        <div class="category-desc">Analyze data, build dashboards, and drive decisions</div>
+        <div class="category-stats">
+          <span class="category-stat">👥 2 creators</span>
+          <span class="category-stat">📚 4 courses</span>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="category-gradient" style="background: #00ba7c;"></div>
+        <div class="category-icon">⚡</div>
+        <div class="category-name">No-Code & Automation</div>
+        <div class="category-desc">Automate workflows without writing code</div>
+        <div class="category-stats">
+          <span class="category-stat">👥 2 creators</span>
+          <span class="category-stat">📚 3 courses</span>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="category-gradient" style="background: #fa709a;"></div>
+        <div class="category-icon">✨</div>
+        <div class="category-name">Prompt Engineering</div>
+        <div class="category-desc">Master the art of communicating with AI</div>
+        <div class="category-stats">
+          <span class="category-stat">👥 2 creators</span>
+          <span class="category-stat">📚 5 courses</span>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="category-gradient" style="background: #a18cd1;"></div>
+        <div class="category-icon">🏥</div>
+        <div class="category-name">AI in Healthcare</div>
+        <div class="category-desc">Apply AI to medical diagnostics and research</div>
+        <div class="category-stats">
+          <span class="category-stat">👥 1 creator</span>
+          <span class="category-stat">📚 2 courses</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">🔥 Trending Creators</div>
+      <span class="see-all">See all →</span>
+    </div>
+
+    <div class="trending-list">
+      <div class="trending-item">
+        <div class="trending-rank">1</div>
+        <div class="trending-avatar">JD</div>
+        <div class="trending-info">
+          <div class="trending-name">Jane Doe</div>
+          <div class="trending-category">AI & Machine Learning</div>
+        </div>
+        <div class="trending-meta">
+          <div class="trending-followers">19.9K</div>
+          <div class="trending-growth">↑ 12% this week</div>
+        </div>
+      </div>
+
+      <div class="trending-item">
+        <div class="trending-rank">2</div>
+        <div class="trending-avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">MJ</div>
+        <div class="trending-info">
+          <div class="trending-name">Marcus Johnson</div>
+          <div class="trending-category">Development</div>
+        </div>
+        <div class="trending-meta">
+          <div class="trending-followers">12K</div>
+          <div class="trending-growth">↑ 8% this week</div>
+        </div>
+      </div>
+
+      <div class="trending-item">
+        <div class="trending-rank">3</div>
+        <div class="trending-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">SC</div>
+        <div class="trending-info">
+          <div class="trending-name">Dr. Sarah Chen</div>
+          <div class="trending-category">AI & Machine Learning</div>
+        </div>
+        <div class="trending-meta">
+          <div class="trending-followers">8.5K</div>
+          <div class="trending-growth">↑ 15% this week</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="design-note">
+    <strong>Option C:</strong> Category-First. Users browse by topic first, then see creators/courses. Reduces cognitive load.
+  </div>
+</body>
+</html>

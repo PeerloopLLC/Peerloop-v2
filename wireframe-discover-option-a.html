@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option A: Card Grid (Pinterest/Marketplace Style)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e7e9ea;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .header {
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #16181c;
+      border: 1px solid #2f3336;
+      border-radius: 24px;
+      padding: 12px 20px;
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+
+    .search-bar input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e7e9ea;
+      font-size: 15px;
+      width: 100%;
+      margin-left: 12px;
+    }
+
+    .search-bar input::placeholder {
+      color: #71767b;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: #16181c;
+      border: 1px solid #2f3336;
+      color: #e7e9ea;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+      background: #1d1f23;
+    }
+
+    .filter-btn.active {
+      background: #1d9bf0;
+      border-color: #1d9bf0;
+    }
+
+    /* Card Grid Layout */
+    .creators-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .creator-card {
+      background: #16181c;
+      border: 1px solid #2f3336;
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .creator-card:hover {
+      border-color: #1d9bf0;
+      transform: translateY(-2px);
+    }
+
+    .creator-card:hover .courses-preview {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .creator-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .creator-name {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .creator-tagline {
+      font-size: 14px;
+      color: #71767b;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .creator-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    .creator-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .courses-preview {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, #16181c 30%);
+      padding: 60px 24px 24px;
+      border-radius: 0 0 16px 16px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+    }
+
+    .courses-preview-title {
+      font-size: 12px;
+      color: #71767b;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .course-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .course-chip {
+      background: #2f3336;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      color: #e7e9ea;
+    }
+
+    .join-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: transparent;
+      border: 1px solid #1d9bf0;
+      color: #1d9bf0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .join-btn:hover {
+      background: #1d9bf0;
+      color: white;
+    }
+
+    .join-btn.joined {
+      background: transparent;
+      border-color: #2f3336;
+      color: #71767b;
+    }
+
+    .design-note {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #1d9bf0;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      max-width: 300px;
+    }
+
+    @media (max-width: 900px) {
+      .creators-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .creators-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Discover</h1>
+      <div class="search-bar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#71767b" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="M21 21l-4.35-4.35"></path>
+        </svg>
+        <input type="text" placeholder="Search creators & courses...">
+      </div>
+      <div class="filters">
+        <button class="filter-btn active">All</button>
+        <button class="filter-btn">AI & ML</button>
+        <button class="filter-btn">Development</button>
+        <button class="filter-btn">Data Science</button>
+        <button class="filter-btn">No-Code</button>
+      </div>
+    </div>
+
+    <div class="creators-grid">
+      <div class="creator-card">
+        <button class="join-btn joined">Joined</button>
+        <div class="creator-avatar">JD</div>
+        <div class="creator-name">Jane Doe</div>
+        <div class="creator-tagline">Leading AI Strategist at TechCorp</div>
+        <div class="creator-meta">
+          <span>👥 19.9K followers</span>
+          <span>📚 4 courses</span>
+        </div>
+        <div class="courses-preview">
+          <div class="courses-preview-title">Courses</div>
+          <div class="course-chips">
+            <span class="course-chip">AI for PMs</span>
+            <span class="course-chip">Deep Learning</span>
+            <span class="course-chip">+2 more</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="creator-card">
+        <button class="join-btn">Join</button>
+        <div class="creator-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">SC</div>
+        <div class="creator-name">Dr. Sarah Chen</div>
+        <div class="creator-tagline">AI Research Scientist & Educator</div>
+        <div class="creator-meta">
+          <span>👥 8.5K followers</span>
+          <span>📚 2 courses</span>
+        </div>
+        <div class="courses-preview">
+          <div class="courses-preview-title">Courses</div>
+          <div class="course-chips">
+            <span class="course-chip">AI for Beginners</span>
+            <span class="course-chip">ML Essentials</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="creator-card">
+        <button class="join-btn joined">Joined</button>
+        <div class="creator-avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">MJ</div>
+        <div class="creator-name">Marcus Johnson</div>
+        <div class="creator-tagline">DevOps Engineer & Open Source Advocate</div>
+        <div class="creator-meta">
+          <span>👥 12K followers</span>
+          <span>📚 2 courses</span>
+        </div>
+        <div class="courses-preview">
+          <div class="courses-preview-title">Courses</div>
+          <div class="course-chips">
+            <span class="course-chip">Intro to GitHub</span>
+            <span class="course-chip">Git for Teams</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="creator-card">
+        <button class="join-btn">Join</button>
+        <div class="creator-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">GR</div>
+        <div class="creator-name">Guy Rymberg</div>
+        <div class="creator-tagline">AI Prompting Specialist</div>
+        <div class="creator-meta">
+          <span>👥 527 followers</span>
+          <span>📚 5 courses</span>
+        </div>
+        <div class="courses-preview">
+          <div class="courses-preview-title">Courses</div>
+          <div class="course-chips">
+            <span class="course-chip">AI Prompting</span>
+            <span class="course-chip">Claude Code</span>
+            <span class="course-chip">+3 more</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="creator-card">
+        <button class="join-btn joined">Joined</button>
+        <div class="creator-avatar" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">MR</div>
+        <div class="creator-name">Prof. Maria Rodriguez</div>
+        <div class="creator-tagline">Data Science & Analytics Specialist</div>
+        <div class="creator-meta">
+          <span>👥 2.4K followers</span>
+          <span>📚 2 courses</span>
+        </div>
+        <div class="courses-preview">
+          <div class="courses-preview-title">Courses</div>
+          <div class="course-chips">
+            <span class="course-chip">Data Science</span>
+            <span class="course-chip">BI & Analytics</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="creator-card">
+        <button class="join-btn">Join</button>
+        <div class="creator-avatar" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">JW</div>
+        <div class="creator-name">James Wilson</div>
+        <div class="creator-tagline">Full-Stack Development & DevOps</div>
+        <div class="creator-meta">
+          <span>👥 2.9K followers</span>
+          <span>📚 3 courses</span>
+        </div>
+        <div class="courses-preview">
+          <div class="courses-preview-title">Courses</div>
+          <div class="course-chips">
+            <span class="course-chip">Full-Stack Web</span>
+            <span class="course-chip">DevOps</span>
+            <span class="course-chip">+1 more</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="design-note">
+    <strong>Option A:</strong> Card Grid - Clean, scannable. Courses appear on hover. Much less visual noise.
+  </div>
+</body>
+</html>

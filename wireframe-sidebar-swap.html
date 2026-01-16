@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sidebar Mockup - Community Name Top</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      gap: 40px;
+      padding: 20px;
+    }
+
+    .mockup-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mockup-label {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      width: 200px;
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 4px 12px 4px;
+      border-bottom: 1px solid #334155;
+      margin-bottom: 8px;
+    }
+
+    .logo-symbol {
+      font-size: 28px;
+      color: #1d9bf0;
+      line-height: 1;
+    }
+
+    .logo-text {
+      font-size: 9px;
+      font-weight: 600;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* Community selector (TOP) */
+    .community-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #334155;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .community-selector:hover {
+      background: #3b4a5e;
+    }
+
+    .community-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .community-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .community-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .community-count {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .community-arrow {
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    /* My Feeds label (SECOND) */
+    .feeds-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .feeds-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Nav items */
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .nav-item:hover {
+      background: #334155;
+      color: #f1f5f9;
+    }
+
+    .nav-item.active {
+      background: #1d4ed8;
+      color: #fff;
+    }
+
+    .nav-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: #334155;
+      margin: 8px 0;
+    }
+
+    /* Community dropdown panel */
+    .community-dropdown {
+      position: absolute;
+      left: 220px;
+      top: 80px;
+      width: 240px;
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      border: 1px solid #334155;
+    }
+
+    .dropdown-header {
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #334155;
+      margin-bottom: 8px;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: #334155;
+    }
+
+    .dropdown-item.selected {
+      background: #1d4ed8;
+    }
+
+    .dropdown-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+
+    .dropdown-avatar-letter {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .dropdown-name {
+      font-size: 13px;
+      color: #e2e8f0;
+    }
+
+    /* State indicators */
+    .state-label {
+      position: absolute;
+      top: -25px;
+      left: 0;
+      font-size: 11px;
+      color: #22c55e;
+      background: #14532d;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Default State -->
+  <div class="mockup-container">
+    <div class="mockup-label">Default State - The Commons Selected</div>
+    <div class="sidebar">
+      <div class="logo">
+        <span class="logo-symbol">&infin;</span>
+        <span class="logo-text">PeerLoop</span>
+      </div>
+
+      <!-- TOP: Community Selector -->
+      <div class="community-selector">
+        <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=100&h=100&fit=crop" alt="The Commons" class="community-avatar">
+        <div class="community-info">
+          <span class="community-name">The Commons</span>
+          <span class="community-count">12 communities</span>
+        </div>
+        <span class="community-arrow">&rarr;</span>
+      </div>
+
+      <!-- SECOND: My Feeds Label -->
+      <div class="feeds-label">
+        <span class="feeds-icon">&#128101;</span>
+        <span>My Feeds</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="nav-item">
+        <span class="nav-icon">&#128269;</span>
+        <span>Discover</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128218;</span>
+        <span>My Courses</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#9993;</span>
+        <span>Messages</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128276;</span>
+        <span>Notifications</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128202;</span>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128100;</span>
+        <span>Profile</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="nav-item">
+        <span class="nav-icon">&#8505;</span>
+        <span>How It Works</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Different Community Selected -->
+  <div class="mockup-container">
+    <div class="mockup-label">After Selecting Different Community</div>
+    <div class="sidebar">
+      <div class="logo">
+        <span class="logo-symbol">&infin;</span>
+        <span class="logo-text">PeerLoop</span>
+      </div>
+
+      <!-- TOP: Now shows Albert Einstein Community -->
+      <div class="community-selector">
+        <img src="https://i.pravatar.cc/100?img=68" alt="Albert Einstein" class="community-avatar">
+        <div class="community-info">
+          <span class="community-name">Albert Einstein</span>
+          <span class="community-count">12 communities</span>
+        </div>
+        <span class="community-arrow">&rarr;</span>
+      </div>
+
+      <!-- SECOND: My Feeds Label (unchanged) -->
+      <div class="feeds-label">
+        <span class="feeds-icon">&#128101;</span>
+        <span>My Feeds</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="nav-item">
+        <span class="nav-icon">&#128269;</span>
+        <span>Discover</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128218;</span>
+        <span>My Courses</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#9993;</span>
+        <span>Messages</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128276;</span>
+        <span>Notifications</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128202;</span>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128100;</span>
+        <span>Profile</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="nav-item">
+        <span class="nav-icon">&#8505;</span>
+        <span>How It Works</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- With Dropdown Open -->
+  <div class="mockup-container" style="position: relative;">
+    <div class="mockup-label">Dropdown Open (click arrow)</div>
+    <div class="sidebar">
+      <div class="logo">
+        <span class="logo-symbol">&infin;</span>
+        <span class="logo-text">PeerLoop</span>
+      </div>
+
+      <!-- TOP: Community Selector (active state) -->
+      <div class="community-selector" style="background: #3b4a5e; border: 1px solid #1d9bf0;">
+        <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=100&h=100&fit=crop" alt="The Commons" class="community-avatar">
+        <div class="community-info">
+          <span class="community-name">The Commons</span>
+          <span class="community-count">12 communities</span>
+        </div>
+        <span class="community-arrow" style="color: #1d9bf0;">&rarr;</span>
+      </div>
+
+      <!-- SECOND: My Feeds Label -->
+      <div class="feeds-label">
+        <span class="feeds-icon">&#128101;</span>
+        <span>My Feeds</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="nav-item">
+        <span class="nav-icon">&#128269;</span>
+        <span>Discover</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128218;</span>
+        <span>My Courses</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#9993;</span>
+        <span>Messages</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128276;</span>
+        <span>Notifications</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128202;</span>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">&#128100;</span>
+        <span>Profile</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="nav-item">
+        <span class="nav-icon">&#8505;</span>
+        <span>How It Works</span>
+      </div>
+    </div>
+
+    <!-- Dropdown Panel -->
+    <div class="community-dropdown">
+      <div class="dropdown-header">Switch Community</div>
+      <div class="dropdown-item selected">
+        <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=100&h=100&fit=crop" alt="The Commons" class="dropdown-avatar">
+        <span class="dropdown-name">The Commons</span>
+      </div>
+      <div class="dropdown-item">
+        <img src="https://i.pravatar.cc/100?img=68" alt="Albert Einstein" class="dropdown-avatar">
+        <span class="dropdown-name">Albert Einstein Community</span>
+      </div>
+      <div class="dropdown-item">
+        <img src="https://i.pravatar.cc/100?img=47" alt="Marie Curie" class="dropdown-avatar">
+        <span class="dropdown-name">Marie Curie Community</span>
+      </div>
+      <div class="dropdown-item">
+        <img src="https://i.pravatar.cc/100?img=12" alt="Richard Feynman" class="dropdown-avatar">
+        <span class="dropdown-name">Richard Feynman Community</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
