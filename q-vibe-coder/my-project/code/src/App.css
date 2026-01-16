@@ -748,6 +748,7 @@ body.dark-mode .creator-badge {
   max-width: 1010px; /* 200px sidebar + 810px content */
   margin: 0 auto;
   overflow-x: auto; /* Allow horizontal scroll if window is too small */
+  overflow-y: hidden; /* Prevent vertical scroll on app container - only center-column should scroll */
   position: relative;
   align-items: flex-start;
   transition: background-color 0.3s ease, color 0.3s ease;

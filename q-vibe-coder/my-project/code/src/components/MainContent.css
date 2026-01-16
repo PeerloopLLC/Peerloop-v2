@@ -2,8 +2,7 @@
 .main-content {
   flex: 1;
   background-color: var(--bg-primary, #ffffff);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   height: 100vh;
   margin-left: 0;
   width: 810px;
@@ -19,7 +18,7 @@
 .three-column-layout {
   display: flex;
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
   gap: 0;
 }
 
@@ -30,7 +29,7 @@
   border-right: 1px solid var(--border-color, #e2e8f0);
   border-left: 1px solid var(--border-color, #e2e8f0);
   overflow-y: auto;
-  height: 100vh;
+  height: 100%;
 }
 
 /* Browse layout - same as default now */

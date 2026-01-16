@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { FaBook, FaUser, FaSearch } from 'react-icons/fa';
+import { FaBook, FaUser, FaSearch, FaFolder, FaPlay, FaFileAlt, FaLink } from 'react-icons/fa';
 import { AiOutlineStar, AiOutlineTeam, AiOutlineClockCircle, AiOutlineBarChart } from 'react-icons/ai';
 import CourseDetailView from './CourseDetailView';
 import EnrollmentFlow from './EnrollmentFlow';
@@ -54,6 +54,10 @@ const BrowseView = ({
   handleFollowCourse,
   onRestoreCourseView
 }) => {
+  // State for profile tabs (courses vs general content)
+  const [activeProfileTab, setActiveProfileTab] = useState('courses');
+  const [selectedContentItem, setSelectedContentItem] = useState(null);
+
   // Available banner colors (matching Profile.js)
   const bannerColorOptions = {
     default: { start: '#e8f4f8', end: '#d0e8f0' },
@@ -78,6 +82,43 @@ const BrowseView = ({
     const creatorCourses = creator.courses
       ? creator.courses.map(c => typeof c === 'object' ? c : indexedCourses.find(course => course.id === c)).filter(Boolean)
       : [];
+
+    // Sample general content data (would come from database in production)
+    const generalContent = {
+      sections: [
+        {
+          id: 'getting-started',
+          title: 'Getting Started',
+          items: [
+            { id: 'welcome', type: 'video', title: 'Welcome Video', description: 'Welcome to my community! In this video I\'ll walk you through everything you need to get started.', duration: '5:32', url: 'https://example.com/welcome' },
+            { id: 'tips', type: 'video', title: 'Quick Tips', description: 'Essential tips to get the most out of this community.', duration: '3:15', url: 'https://example.com/tips' },
+            { id: 'faq', type: 'file', title: 'FAQ Document', description: 'Frequently asked questions and answers.', fileType: 'PDF', url: 'https://example.com/faq.pdf' }
+          ]
+        },
+        {
+          id: 'free-resources',
+          title: 'Free Resources',
+          items: [
+            { id: 'cheatsheet', type: 'file', title: 'Cheat Sheet', description: 'My most popular resource - quick reference guide.', fileType: 'PDF', url: 'https://example.com/cheatsheet.pdf' },
+            { id: 'links', type: 'link', title: 'Useful Links', description: 'Curated collection of helpful external resources.', url: 'https://example.com/links' },
+            { id: 'templates', type: 'file', title: 'Starter Templates', description: 'Ready-to-use templates to jumpstart your projects.', fileType: 'ZIP', url: 'https://example.com/templates.zip' }
+          ]
+        },
+        {
+          id: 'bonus',
+          title: 'Bonus Content',
+          items: [
+            { id: 'behind', type: 'video', title: 'Behind the Scenes', description: 'A look at how I create my courses and content.', duration: '8:45', url: 'https://example.com/behind' },
+            { id: 'updates', type: 'video', title: 'Community Updates', description: 'Latest news and upcoming content announcements.', duration: '4:20', url: 'https://example.com/updates' }
+          ]
+        }
+      ]
+    };
+
+    // Set default selected content item
+    if (!selectedContentItem && generalContent.sections.length > 0 && generalContent.sections[0].items.length > 0) {
+      // Don't set here to avoid render loop - will set on tab click
+    }
 
     return (
       <div style={{ background: isDarkMode ? '#000' : '#f8fafc', minHeight: '100vh', padding: '0' }}>
@@ -393,161 +434,410 @@ const BrowseView = ({
           )}
         </div>
 
-        {/* Section Header */}
+        {/* Tab Menu Header */}
         <div style={{
-          padding: '12px 16px',
-          background: isDarkMode ? '#000' : '#f8fafc',
-          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
           display: 'flex',
-          alignItems: 'center',
-          gap: 8
+          gap: 0,
+          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+          background: isDarkMode ? '#000' : '#fff'
         }}>
-          <FaBook style={{ fontSize: 14, color: '#1d9bf0' }} />
-          <span style={{ fontSize: 14, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
-            COURSES BY {creator.name.toUpperCase()} ({creatorCourses.length})
-          </span>
+          {/* Courses Tab */}
+          <button
+            onClick={() => setActiveProfileTab('courses')}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '12px 16px',
+              fontSize: 14,
+              fontWeight: activeProfileTab === 'courses' ? 700 : 500,
+              color: activeProfileTab === 'courses' ? (isDarkMode ? '#e7e9ea' : '#0f1419') : (isDarkMode ? '#71767b' : '#536471'),
+              cursor: 'pointer',
+              borderBottom: activeProfileTab === 'courses' ? '3px solid #1d9bf0' : '3px solid transparent',
+              marginBottom: -1
+            }}
+          >
+            Courses
+          </button>
+
+          {/* General Content Tab */}
+          <button
+            onClick={() => {
+              setActiveProfileTab('general-content');
+              if (!selectedContentItem && generalContent.sections.length > 0 && generalContent.sections[0].items.length > 0) {
+                setSelectedContentItem(generalContent.sections[0].items[0]);
+              }
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '12px 16px',
+              fontSize: 14,
+              fontWeight: activeProfileTab === 'general-content' ? 700 : 500,
+              color: activeProfileTab === 'general-content' ? (isDarkMode ? '#e7e9ea' : '#0f1419') : (isDarkMode ? '#71767b' : '#536471'),
+              cursor: 'pointer',
+              borderBottom: activeProfileTab === 'general-content' ? '3px solid #1d9bf0' : '3px solid transparent',
+              marginBottom: -1
+            }}
+          >
+            Content
+          </button>
         </div>
 
-        {/* Courses List - Discovery Style */}
-        <div style={{ padding: '16px' }}>
-          {creatorCourses.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {creatorCourses.map((course, index) => {
-                const isFollowed = isCourseFollowed(course.id);
-                // Thumbnail gradient colors matching Discovery
-                const thumbGradients = [
-                  'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)',
-                  'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
-                  'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
-                  'linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)'
-                ];
+        {/* Courses Tab Content */}
+        {activeProfileTab === 'courses' && (
+          <div style={{ padding: '16px' }}>
+            {creatorCourses.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {creatorCourses.map((course, index) => {
+                  const isFollowed = isCourseFollowed(course.id);
+                  const thumbGradients = [
+                    'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)',
+                    'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
+                    'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
+                    'linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)'
+                  ];
 
-                return (
-                  <div
-                    key={course.id}
-                    onClick={() => {
-                      setSelectedCourse(course);
-                      setCurrentInstructorForCourse(creator);
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 12,
-                      padding: 12,
-                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
-                      borderRadius: 12,
-                      background: isDarkMode ? '#16181c' : '#f7f9f9',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
-                    }}
-                  >
-                    {/* Course Thumbnail - Gradient like Discovery */}
+                  return (
+                    <div
+                      key={course.id}
+                      onClick={() => {
+                        setSelectedCourse(course);
+                        setCurrentInstructorForCourse(creator);
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 12,
+                        padding: 12,
+                        border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                        borderRadius: 12,
+                        background: isDarkMode ? '#16181c' : '#f7f9f9',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
+                      }}
+                    >
+                      <div style={{
+                        width: 100,
+                        height: 70,
+                        borderRadius: 8,
+                        flexShrink: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                        background: thumbGradients[index % 4]
+                      }}>
+                      </div>
+
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          color: '#1d9bf0'
+                        }}>
+                          {course.title}
+                        </div>
+                        <div style={{
+                          fontSize: 14,
+                          color: isDarkMode ? '#71767b' : '#536471',
+                          lineHeight: 1.4,
+                          marginTop: 4,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }}>
+                          {course.description}
+                        </div>
+                      </div>
+
+                      {isCoursePurchased(course.id) ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleFollowCourse(course.id);
+                          }}
+                          disabled={isFollowingLoading}
+                          style={{
+                            background: isDarkMode ? '#2f3336' : '#eff3f4',
+                            border: 'none',
+                            color: isDarkMode ? '#71767b' : '#536471',
+                            padding: '6px 16px',
+                            borderRadius: 20,
+                            fontSize: 14,
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          {isFollowed ? 'Following' : 'Follow'}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEnrollingCourse(course);
+                            setShowEnrollmentFlow(true);
+                          }}
+                          style={{
+                            background: isDarkMode ? 'transparent' : 'white',
+                            border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                            color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                            padding: '6px 16px',
+                            borderRadius: 20,
+                            fontSize: 14,
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = isDarkMode ? 'transparent' : 'white';
+                          }}
+                        >
+                          Enroll {course.price}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={{ padding: '32px 16px', textAlign: 'center', color: isDarkMode ? '#71767b' : '#536471' }}>
+                No courses available yet.
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* General Content Tab Content */}
+        {activeProfileTab === 'general-content' && (
+          <div style={{
+            display: 'flex',
+            minHeight: 400,
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
+          }}>
+            {/* Left Navigation - Content List */}
+            <div style={{
+              width: 280,
+              borderRight: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+              background: isDarkMode ? '#0a0a0a' : '#f8fafc',
+              overflowY: 'auto'
+            }}>
+              {generalContent.sections.map((section) => (
+                <div key={section.id}>
+                  {/* Section Header */}
+                  <div style={{
+                    padding: '12px 16px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: isDarkMode ? '#71767b' : '#536471',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
+                  }}>
+                    {section.title}
+                  </div>
+                  {/* Section Items */}
+                  {section.items.map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => setSelectedContentItem(item)}
+                      style={{
+                        padding: '12px 16px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        background: selectedContentItem?.id === item.id
+                          ? (isDarkMode ? '#1d1f23' : '#e0f2fe')
+                          : 'transparent',
+                        borderLeft: selectedContentItem?.id === item.id
+                          ? '3px solid #1d9bf0'
+                          : '3px solid transparent',
+                        transition: 'all 0.15s'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (selectedContentItem?.id !== item.id) {
+                          e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f1f5f9';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (selectedContentItem?.id !== item.id) {
+                          e.currentTarget.style.background = 'transparent';
+                        }
+                      }}
+                    >
+                      {/* Icon based on type */}
+                      {item.type === 'video' && <FaPlay style={{ fontSize: 12, color: '#1d9bf0', flexShrink: 0 }} />}
+                      {item.type === 'file' && <FaFileAlt style={{ fontSize: 12, color: '#10b981', flexShrink: 0 }} />}
+                      {item.type === 'link' && <FaLink style={{ fontSize: 12, color: '#8b5cf6', flexShrink: 0 }} />}
+                      <span style={{
+                        fontSize: 14,
+                        color: selectedContentItem?.id === item.id
+                          ? '#1d9bf0'
+                          : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                        fontWeight: selectedContentItem?.id === item.id ? 600 : 400,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {item.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            {/* Right Content Display */}
+            <div style={{
+              flex: 1,
+              padding: 24,
+              background: isDarkMode ? '#000' : '#fff',
+              overflowY: 'auto'
+            }}>
+              {selectedContentItem ? (
+                <div>
+                  {/* Content Title */}
+                  <h2 style={{
+                    fontSize: 20,
+                    fontWeight: 700,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    marginBottom: 16
+                  }}>
+                    {selectedContentItem.title}
+                  </h2>
+
+                  {/* Video Player (for video type) */}
+                  {selectedContentItem.type === 'video' && (
                     <div style={{
-                      width: 100,
-                      height: 70,
-                      borderRadius: 8,
-                      flexShrink: 0,
+                      width: '100%',
+                      aspectRatio: '16/9',
+                      background: isDarkMode ? '#16181c' : '#f1f5f9',
+                      borderRadius: 12,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      overflow: 'hidden',
-                      background: thumbGradients[index % 4]
+                      marginBottom: 16,
+                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
                     }}>
+                      <div style={{ textAlign: 'center' }}>
+                        <FaPlay style={{ fontSize: 48, color: '#1d9bf0', marginBottom: 8 }} />
+                        <div style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#536471' }}>
+                          Duration: {selectedContentItem.duration}
+                        </div>
+                      </div>
                     </div>
+                  )}
 
-                    {/* Course Info */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{
-                        fontSize: 15,
+                  {/* File Download (for file type) */}
+                  {selectedContentItem.type === 'file' && (
+                    <div style={{
+                      padding: 24,
+                      background: isDarkMode ? '#16181c' : '#f1f5f9',
+                      borderRadius: 12,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 16,
+                      marginBottom: 16,
+                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
+                    }}>
+                      <FaFileAlt style={{ fontSize: 40, color: '#10b981' }} />
+                      <div>
+                        <div style={{ fontSize: 16, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                          {selectedContentItem.title}
+                        </div>
+                        <div style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#536471' }}>
+                          {selectedContentItem.fileType} File
+                        </div>
+                      </div>
+                      <button style={{
+                        marginLeft: 'auto',
+                        background: '#10b981',
+                        color: '#fff',
+                        border: 'none',
+                        padding: '10px 20px',
+                        borderRadius: 8,
                         fontWeight: 600,
-                        color: '#1d9bf0'
+                        cursor: 'pointer'
                       }}>
-                        {course.title}
-                      </div>
-                      <div style={{
-                        fontSize: 14,
-                        color: isDarkMode ? '#71767b' : '#536471',
-                        lineHeight: 1.4,
-                        marginTop: 4,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden'
-                      }}>
-                        {course.description}
-                      </div>
+                        Download
+                      </button>
                     </div>
+                  )}
 
-                    {/* Enroll/Follow Button - Discovery Style */}
-                    {isCoursePurchased(course.id) ? (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleFollowCourse(course.id);
-                        }}
-                        disabled={isFollowingLoading}
-                        style={{
-                          background: isDarkMode ? '#2f3336' : '#eff3f4',
-                          border: 'none',
-                          color: isDarkMode ? '#71767b' : '#536471',
-                          padding: '6px 16px',
-                          borderRadius: 20,
-                          fontSize: 14,
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          flexShrink: 0,
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        {isFollowed ? 'Following' : 'Follow'}
+                  {/* Link (for link type) */}
+                  {selectedContentItem.type === 'link' && (
+                    <div style={{
+                      padding: 24,
+                      background: isDarkMode ? '#16181c' : '#f1f5f9',
+                      borderRadius: 12,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 16,
+                      marginBottom: 16,
+                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
+                    }}>
+                      <FaLink style={{ fontSize: 40, color: '#8b5cf6' }} />
+                      <div>
+                        <div style={{ fontSize: 16, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                          {selectedContentItem.title}
+                        </div>
+                        <div style={{ fontSize: 14, color: '#1d9bf0' }}>
+                          {selectedContentItem.url}
+                        </div>
+                      </div>
+                      <button style={{
+                        marginLeft: 'auto',
+                        background: '#8b5cf6',
+                        color: '#fff',
+                        border: 'none',
+                        padding: '10px 20px',
+                        borderRadius: 8,
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}>
+                        Open Link
                       </button>
-                    ) : (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEnrollingCourse(course);
-                          setShowEnrollmentFlow(true);
-                        }}
-                        style={{
-                          background: isDarkMode ? 'transparent' : 'white',
-                          border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                          color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                          padding: '6px 16px',
-                          borderRadius: 20,
-                          fontSize: 14,
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          flexShrink: 0,
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = isDarkMode ? 'transparent' : 'white';
-                        }}
-                      >
-                        Enroll {course.price}
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
+                    </div>
+                  )}
+
+                  {/* Description */}
+                  <p style={{
+                    fontSize: 15,
+                    lineHeight: 1.6,
+                    color: isDarkMode ? '#a1a1aa' : '#4b5563'
+                  }}>
+                    {selectedContentItem.description}
+                  </p>
+                </div>
+              ) : (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%',
+                  color: isDarkMode ? '#71767b' : '#536471'
+                }}>
+                  Select an item from the left to view its content
+                </div>
+              )}
             </div>
-          ) : (
-            <div style={{ padding: '32px 16px', textAlign: 'center', color: isDarkMode ? '#71767b' : '#536471' }}>
-              No courses available yet.
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   };

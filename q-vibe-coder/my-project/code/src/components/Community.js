@@ -261,8 +261,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   }, [isProfileCollapsed]);
 
   useEffect(() => {
-    const COLLAPSE_THRESHOLD = 100; // Collapse when scrolled past this point
-    const EXPAND_THRESHOLD = 50; // Expand when scrolled back above this point (increased for reliability)
+    const COLLAPSE_THRESHOLD = 1; // Collapse immediately when scrolling
+    const EXPAND_THRESHOLD = 1; // Expand when back at top
     const TOGGLE_COOLDOWN = 200; // Reduced cooldown for more responsive expand
 
     const handleScroll = () => {
@@ -1687,38 +1687,73 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.08)',
               overflow: 'hidden'
             }}>
-              {/* Hero Banner Image */}
+              {/* Collapsible Banner Section - animates height */}
               <div style={{
-                position: 'relative',
-                height: 140,
-                overflow: 'hidden'
+                maxHeight: isProfileCollapsed ? 0 : 140,
+                overflow: 'hidden',
+                transition: 'max-height 0.3s ease-out'
               }}>
                 <img
                   src={process.env.PUBLIC_URL + '/commons-banner.png'}
                   alt="The Commons"
                   style={{
                     width: '100%',
-                    height: '100%',
+                    height: 140,
                     objectFit: 'cover'
                   }}
                 />
               </div>
 
-              {/* Town Hall Details */}
-              <div style={{ padding: '16px 20px' }}>
+              {/* Header - always visible, adjusts padding */}
+              <div style={{
+                padding: isProfileCollapsed ? '12px 16px 8px 16px' : '16px 20px 0 20px',
+                transition: 'padding 0.3s ease-out'
+              }}>
                 <div style={{
-                  fontSize: 20,
-                  fontWeight: 700,
-                  color: isDarkMode ? '#e7e9ea' : '#1a365d',
-                  lineHeight: 1.2,
-                  marginBottom: 4
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12
                 }}>
-                  The Commons
+                  {/* Small avatar only shows when collapsed */}
+                  <img
+                    src={process.env.PUBLIC_URL + '/commons-banner.png'}
+                    alt="The Commons"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 8,
+                      objectFit: 'cover',
+                      opacity: isProfileCollapsed ? 1 : 0,
+                      maxWidth: isProfileCollapsed ? 36 : 0,
+                      marginRight: isProfileCollapsed ? 0 : -12,
+                      transition: 'opacity 0.3s ease-out, max-width 0.3s ease-out, margin-right 0.3s ease-out'
+                    }}
+                  />
+                  <div style={{
+                    fontSize: isProfileCollapsed ? 16 : 20,
+                    fontWeight: 700,
+                    color: isDarkMode ? '#e7e9ea' : '#1a365d',
+                    lineHeight: 1.2,
+                    transition: 'font-size 0.3s ease-out'
+                  }}>
+                    The Commons
+                  </div>
                 </div>
+              </div>
+
+              {/* Collapsible Details Section - animates height */}
+              <div style={{
+                maxHeight: isProfileCollapsed ? 0 : 100,
+                overflow: 'hidden',
+                opacity: isProfileCollapsed ? 0 : 1,
+                transition: 'max-height 0.3s ease-out, opacity 0.2s ease-out',
+                padding: '0 20px'
+              }}>
                 <div style={{
                   fontSize: 14,
                   color: isDarkMode ? '#71767b' : '#536471',
-                  marginBottom: 8
+                  marginBottom: 8,
+                  marginTop: 4
                 }}>
                   Community Discussion Hub
                 </div>
@@ -1731,22 +1766,22 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 </div>
               </div>
 
-              {/* Commons Feed Pills */}
+              {/* Commons Feed Pills - always visible */}
               <div style={{
-                padding: '0 20px 16px 20px',
+                padding: isProfileCollapsed ? '8px 16px 12px 16px' : '12px 20px 16px 20px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 8
+                gap: 8,
+                transition: 'padding 0.3s ease-out'
               }}>
-                {/* Main Hall Pill */}
                 <button
                   onClick={() => setCommonsSelectedFeed('main')}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 6,
-                    padding: '8px 16px',
-                    borderRadius: 20,
+                    padding: isProfileCollapsed ? '6px 12px' : '8px 16px',
+                    borderRadius: isProfileCollapsed ? 16 : 20,
                     border: commonsSelectedFeed === 'main'
                       ? '2px solid #10b981'
                       : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
@@ -1756,18 +1791,16 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     color: commonsSelectedFeed === 'main'
                       ? '#10b981'
                       : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                    fontSize: 14,
+                    fontSize: isProfileCollapsed ? 13 : 14,
                     fontWeight: 600,
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.3s ease-out'
                   }}
                 >
                   Main Hall
                 </button>
-
-                {/* Placeholder Pills - Ask AI, 2, 3 */}
                 {['Ask AI', '2', '3'].map(num => (
                   <button
                     key={num}
@@ -1776,8 +1809,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       display: 'flex',
                       alignItems: 'center',
                       gap: 6,
-                      padding: '8px 16px',
-                      borderRadius: 20,
+                      padding: isProfileCollapsed ? '6px 12px' : '8px 16px',
+                      borderRadius: isProfileCollapsed ? 16 : 20,
                       border: commonsSelectedFeed === num
                         ? '2px solid #10b981'
                         : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
@@ -1787,12 +1820,12 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       color: commonsSelectedFeed === num
                         ? '#10b981'
                         : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                      fontSize: 14,
+                      fontSize: isProfileCollapsed ? 13 : 14,
                       fontWeight: 600,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
                       flexShrink: 0,
-                      transition: 'all 0.2s ease'
+                      transition: 'all 0.3s ease-out'
                     }}
                   >
                     {num}
@@ -1828,180 +1861,173 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
                   : getUserBannerGradient(),
                 borderRadius: 16,
-                padding: isProfileCollapsed ? '8px 16px' : '20px',
+                padding: isProfileCollapsed ? '12px 16px' : '20px',
                 margin: '8px 16px 0 16px',
                 position: 'sticky',
                 top: communityNavStyle === 'pills' ? 57 : 0,
                 zIndex: 10,
                 border: 'none',
                 boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.06)',
-                transition: 'padding 0.2s ease'
+                transition: 'padding 0.3s ease-out'
               }}>
-                {/* Collapsed View - Just name and pills */}
-                {isProfileCollapsed ? (
-                  <div>
-                    <div
-                      onClick={() => {
-                        if (onViewCreatorProfile) {
-                          onViewCreatorProfile(effectiveCreator);
-                        }
-                      }}
+                {/* Header Row - Always visible, shows avatar + name */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10
+                }}>
+                  {/* Avatar - shrinks when collapsed */}
+                  {instructor.avatar ? (
+                    <img
+                      src={instructor.avatar}
+                      alt={instructor.name}
                       style={{
-                        fontSize: 18,
-                        fontWeight: 700,
-                        color: '#1d9bf0',
-                        cursor: 'pointer',
-                        display: 'inline-block',
-                        marginBottom: 8
+                        width: isProfileCollapsed ? 32 : 44,
+                        height: isProfileCollapsed ? 32 : 44,
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        flexShrink: 0,
+                        transition: 'width 0.3s ease-out, height 0.3s ease-out'
                       }}
-                      onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                      onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                    >
-                      {instructor.name} Community
-                    </div>
-                  </div>
-                ) : (
-                  /* Expanded View - Full card */
-                  <>
-                    {/* Creator Info Row */}
+                    />
+                  ) : (
                     <div style={{
+                      width: isProfileCollapsed ? 32 : 44,
+                      height: isProfileCollapsed ? 32 : 44,
+                      borderRadius: '50%',
+                      background: '#1d9bf0',
+                      color: '#fff',
                       display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 10
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: isProfileCollapsed ? 12 : 16,
+                      fontWeight: 700,
+                      flexShrink: 0,
+                      transition: 'width 0.3s ease-out, height 0.3s ease-out, font-size 0.3s ease-out'
                     }}>
-                      {/* Avatar */}
-                      {instructor.avatar ? (
-                        <img
-                          src={instructor.avatar}
-                          alt={instructor.name}
-                          style={{
-                            width: 44,
-                            height: 44,
-                            borderRadius: '50%',
-                            objectFit: 'cover',
-                            flexShrink: 0
-                          }}
-                        />
-                      ) : (
-                        <div style={{
-                          width: 44,
-                          height: 44,
-                          borderRadius: '50%',
-                          background: '#1d9bf0',
-                          color: '#fff',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 16,
-                          fontWeight: 700,
-                          flexShrink: 0
-                        }}>
-                          {instructor.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                        </div>
-                      )}
-
-                      {/* Creator Details */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div
-                            onClick={() => {
-                              if (onViewCreatorProfile) {
-                                onViewCreatorProfile(effectiveCreator);
-                              }
-                            }}
-                            style={{
-                              fontSize: 18,
-                              fontWeight: 700,
-                              color: '#1d9bf0',
-                              cursor: 'pointer',
-                              display: 'inline-block',
-                              lineHeight: 1.2
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                            onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                          >
-                            {instructor.name} Community
-                          </div>
-                          <div
-                            onClick={() => {
-                              if (onViewCreatorProfile) {
-                                onViewCreatorProfile(effectiveCreator);
-                              }
-                            }}
-                            style={{
-                              fontSize: 12,
-                              color: '#1d9bf0',
-                              cursor: 'pointer'
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                            onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                          >
-                            Go to Profile
-                          </div>
-                          {/* Spacer to push View All Courses to the right */}
-                          <div style={{ flex: 1 }} />
-                          {/* View All Courses Button - Top Right */}
-                          <button
-                            onClick={() => {
-                              if (onViewCreatorProfile) {
-                                onViewCreatorProfile(effectiveCreator);
-                              }
-                            }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              padding: '6px 14px',
-                              borderRadius: 16,
-                              border: '2px solid #6366f1',
-                              background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
-                              color: '#6366f1',
-                              fontSize: 13,
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                              flexShrink: 0,
-                              transition: 'all 0.2s ease'
-                            }}
-                            onMouseEnter={e => {
-                              e.currentTarget.style.background = '#6366f1';
-                              e.currentTarget.style.color = '#fff';
-                            }}
-                            onMouseLeave={e => {
-                              e.currentTarget.style.background = isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)';
-                              e.currentTarget.style.color = '#6366f1';
-                            }}
-                          >
-                            View All Courses
-                          </button>
-                        </div>
-                        <div style={{
-                          fontSize: 14,
-                          color: isDarkMode ? '#9ca3af' : '#536471'
-                        }}>
-                          {instructor.title}
-                        </div>
-                        <div style={{
-                          fontSize: 12,
-                          color: isDarkMode ? '#9ca3af' : '#536471',
-                          marginTop: 2
-                        }}>
-                          {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · 189 Posts
-                        </div>
-                        {instructor.bio && (
-                          <div style={{
-                            fontSize: 14,
-                            color: isDarkMode ? '#d1d5db' : '#374151',
-                            marginTop: 8,
-                            lineHeight: 1.4
-                          }}>
-                            {instructor.bio.length > 150 ? instructor.bio.substring(0, 150) + '...' : instructor.bio}
-                          </div>
-                        )}
-                      </div>
+                      {instructor.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                     </div>
-                  </>
-                )}
+                  )}
+
+                  {/* Name - always visible */}
+                  <div
+                    onClick={() => {
+                      if (onViewCreatorProfile) {
+                        onViewCreatorProfile(effectiveCreator);
+                      }
+                    }}
+                    style={{
+                      fontSize: isProfileCollapsed ? 16 : 18,
+                      fontWeight: 700,
+                      color: '#1d9bf0',
+                      cursor: 'pointer',
+                      display: 'inline-block',
+                      lineHeight: 1.2,
+                      transition: 'font-size 0.3s ease-out'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                    onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                  >
+                    {instructor.name} Community
+                  </div>
+
+                  {/* Go to Profile - hidden when collapsed */}
+                  <div
+                    onClick={() => {
+                      if (onViewCreatorProfile) {
+                        onViewCreatorProfile(effectiveCreator);
+                      }
+                    }}
+                    style={{
+                      fontSize: 12,
+                      color: '#1d9bf0',
+                      cursor: 'pointer',
+                      opacity: isProfileCollapsed ? 0 : 1,
+                      maxWidth: isProfileCollapsed ? 0 : 100,
+                      overflow: 'hidden',
+                      transition: 'opacity 0.3s ease-out, max-width 0.3s ease-out'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                    onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                  >
+                    Go to Profile
+                  </div>
+
+                  {/* Spacer */}
+                  <div style={{ flex: 1 }} />
+
+                  {/* View All Courses Button - hidden when collapsed */}
+                  <button
+                    onClick={() => {
+                      if (onViewCreatorProfile) {
+                        onViewCreatorProfile(effectiveCreator);
+                      }
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '6px 14px',
+                      borderRadius: 16,
+                      border: '2px solid #6366f1',
+                      background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
+                      color: '#6366f1',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                      opacity: isProfileCollapsed ? 0 : 1,
+                      maxWidth: isProfileCollapsed ? 0 : 200,
+                      overflow: 'hidden',
+                      padding: isProfileCollapsed ? 0 : '6px 14px',
+                      transition: 'all 0.3s ease-out'
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = '#6366f1';
+                      e.currentTarget.style.color = '#fff';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)';
+                      e.currentTarget.style.color = '#6366f1';
+                    }}
+                  >
+                    View All Courses
+                  </button>
+                </div>
+
+                {/* Collapsible Details Section */}
+                <div style={{
+                  maxHeight: isProfileCollapsed ? 0 : 150,
+                  overflow: 'hidden',
+                  opacity: isProfileCollapsed ? 0 : 1,
+                  transition: 'max-height 0.3s ease-out, opacity 0.2s ease-out',
+                  marginTop: isProfileCollapsed ? 0 : 4
+                }}>
+                  <div style={{
+                    fontSize: 14,
+                    color: isDarkMode ? '#9ca3af' : '#536471'
+                  }}>
+                    {instructor.title}
+                  </div>
+                  <div style={{
+                    fontSize: 12,
+                    color: isDarkMode ? '#9ca3af' : '#536471',
+                    marginTop: 2
+                  }}>
+                    {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · 189 Posts
+                  </div>
+                  {instructor.bio && (
+                    <div style={{
+                      fontSize: 14,
+                      color: isDarkMode ? '#d1d5db' : '#374151',
+                      marginTop: 8,
+                      lineHeight: 1.4
+                    }}>
+                      {instructor.bio.length > 150 ? instructor.bio.substring(0, 150) + '...' : instructor.bio}
+                    </div>
+                  )}
+                </div>
 
                 {/* Horizontal Scrollable Course Pills - Always visible */}
                 {(() => {

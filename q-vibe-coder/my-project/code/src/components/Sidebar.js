@@ -400,11 +400,13 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               className={`community-selector ${isFlyoutOpen ? 'flyout-open' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                // Toggle slideout panel if slideout mode is enabled
+                // Always navigate to the selected community first
+                handleCommunitySelect(selectedCommunity);
+                // Also toggle slideout panel if slideout mode is enabled
                 if (hasFollowedCommunities && communityNavStyle === 'slideout') {
                   window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
                 }
-                // Toggle flyout if dropdown mode is enabled
+                // Or toggle flyout if dropdown mode is enabled
                 else if (hasFollowedCommunities && communityNavStyle === 'dropdown') {
                   const willOpen = !isFlyoutOpen;
                   setIsFlyoutOpen(willOpen);
@@ -413,10 +415,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                   } else {
                     clearFlyoutCloseTimer();
                   }
-                }
-                // For pills mode, just navigate to the community
-                else {
-                  handleCommunitySelect(selectedCommunity);
                 }
               }}
             >

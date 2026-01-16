@@ -68,11 +68,22 @@
   flex-shrink: 0;
 }
 
+.slideout-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
 .slideout-panel-header h3 {
   font-size: 18px;
   font-weight: 600;
   color: #333;
   margin: 0;
+}
+
+.slideout-header-subtitle {
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
 }
 
 .slideout-close-btn {
@@ -309,6 +320,10 @@
 
 .dark-mode .slideout-panel-header h3 {
   color: #e7e9ea;
+}
+
+.dark-mode .slideout-header-subtitle {
+  color: #71767b;
 }
 
 .dark-mode .slideout-close-btn {

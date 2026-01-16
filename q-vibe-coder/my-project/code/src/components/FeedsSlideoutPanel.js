@@ -217,7 +217,10 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
       >
         {/* Header */}
         <div className="slideout-panel-header">
-          <h3>My Feeds</h3>
+          <div className="slideout-header-text">
+            <h3>My Feeds</h3>
+            <span className="slideout-header-subtitle">Choose A Community Feed</span>
+          </div>
           <button className="slideout-close-btn" onClick={handleClose}>
             <FaTimes />
           </button>
@@ -246,29 +249,29 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
           </div>
         </div>
 
-        {/* The Commons - Fixed at top (always visible) */}
-        {showCommons && (
-          <div className="slideout-commons-fixed">
-            <div className="slideout-section-header">Public</div>
-            <div
-              className="slideout-community-item"
-              onClick={(e) => handleCommunityClick(townHall, e)}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=80&h=80&fit=crop"
-                alt="The Commons"
-                className="slideout-community-avatar-img"
-              />
-              <div className="slideout-community-info">
-                <div className="slideout-community-name">The Commons</div>
-                <div className="slideout-community-meta">Public community feed</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* My Communities - Scrollable section */}
+        {/* Scrollable community list */}
         <div className="slideout-community-list">
+          {/* The Commons - scrolls with content */}
+          {showCommons && (
+            <>
+              <div className="slideout-section-header">Public</div>
+              <div
+                className="slideout-community-item"
+                onClick={(e) => handleCommunityClick(townHall, e)}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=80&h=80&fit=crop"
+                  alt="The Commons"
+                  className="slideout-community-avatar-img"
+                />
+                <div className="slideout-community-info">
+                  <div className="slideout-community-name">The Commons</div>
+                  <div className="slideout-community-meta">Public community feed</div>
+                </div>
+              </div>
+            </>
+          )}
+
           {/* My Communities Section */}
           {filteredCommunities.length > 0 && (
             <>
