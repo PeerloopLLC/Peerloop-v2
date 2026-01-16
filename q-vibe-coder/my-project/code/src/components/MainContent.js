@@ -201,6 +201,15 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     }
   }, [activeMenu]);
 
+  // Clear course view when navigating to main menus (fixes navigation staying stuck on course detail)
+  useEffect(() => {
+    const menusToReset = ['Discover', 'Dashboard', 'My Community', 'Profile', 'Settings', 'Browse', 'My Courses'];
+    if (menusToReset.includes(activeMenu)) {
+      setViewingCourseFromCommunity(null);
+      setViewingUserProfile(null);
+    }
+  }, [activeMenu]);
+
   // Function to view a user's profile
   const handleViewUserProfile = (username) => {
     // Save current location to history
@@ -368,6 +377,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // Reload purchased courses when user changes
   React.useEffect(() => {
     if (!currentUser?.id) return;
+
+    // Alex (demo_alex) always has all of Guy Rymberg's courses - hardcoded
+    if (currentUser.id === 'demo_alex') {
+      setPurchasedCourses(GUY_RYMBERG_COURSES);
+      return;
+    }
 
     try {
       const storageKey = `purchasedCourses_${currentUser.id}`;
@@ -950,32 +965,24 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     if (isPurchased) {
       return (
         <CourseDetailWrapper>
-          <PurchasedCourseDetail
+          <CourseDetailView
             course={viewingCourseFromCommunity}
             onBack={handleBackFromCourse}
             isDarkMode={isDarkMode}
-            currentUser={currentUser}
-            isCreatorFollowed={isCreatorFollowed}
-            onFollowCreator={handleFollowInstructor}
-            onViewCreatorProfile={(instructor) => {
+            followedCommunities={followedCommunities}
+            setFollowedCommunities={setFollowedCommunities}
+            onViewInstructor={(instructorId) => {
               // Navigate to creator profile in Browse, remembering the course for back navigation
+              const instructor = getInstructorById(instructorId);
               setPreviousBrowseContext({ type: 'course', course: viewingCourseFromCommunity });
               setSelectedInstructor(instructor);
               setActiveTopMenu('creators');
               setViewingCourseFromCommunity(null);
               onMenuChange('Browse');
             }}
-            onGoToCommunity={(instructor) => {
-              // Navigate to creator's community with specific course selected
-              localStorage.setItem('pendingCommunityCreator', JSON.stringify({
-                id: `creator-${instructor.id}`,
-                name: instructor.name,
-                courseId: viewingCourseFromCommunity.id,
-                courseTitle: viewingCourseFromCommunity.title
-              }));
-              setViewingCourseFromCommunity(null);
-              onMenuChange('My Community');
-            }}
+            isCoursePurchased={true}
+            currentUser={currentUser}
+            onMenuChange={onMenuChange}
           />
         </CourseDetailWrapper>
       );
@@ -1013,8 +1020,17 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           isDarkMode={isDarkMode}
           followedCommunities={followedCommunities}
           setFollowedCommunities={setFollowedCommunities}
+          onViewInstructor={(instructorId) => {
+            const instructor = getInstructorById(instructorId);
+            setPreviousBrowseContext({ type: 'course', course: viewingCourseFromCommunity });
+            setSelectedInstructor(instructor);
+            setActiveTopMenu('creators');
+            setViewingCourseFromCommunity(null);
+            onMenuChange('Browse');
+          }}
           isCoursePurchased={false}
           currentUser={currentUser}
+          onMenuChange={onMenuChange}
           onEnroll={(course) => {
             setEnrollingCourse(course);
             setShowEnrollmentFlow(true);
@@ -1159,7 +1175,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             setSelectedInstructor(fullData || creator);
             setSelectedCourse(null); // Clear any selected course so profile shows
             setActiveTopMenu('creators');
-            setPreviousBrowseContext({ type: 'feeds' }); // Prevent selectedInstructor reset
+            setPreviousBrowseContext({ type: 'feeds', community: creator }); // Store community for back navigation
             setNavigationHistory(prev => [...prev, 'My Community']);
             onMenuChange('Browse_Communities');
           }}

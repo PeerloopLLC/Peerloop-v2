@@ -365,7 +365,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           {shouldCollapse ? (
             /* Collapsed sidebar: Compact feed button */
             <div
-              className={`feeds-compact-btn ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities || (communityNavStyle === 'pills' || communityNavStyle === 'selector') ? 'no-flyout' : ''}`}
+              className={`feeds-compact-btn ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities || communityNavStyle === 'pills' ? 'no-flyout' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
                 // Navigate to My Community (preserves current community selection)
@@ -394,7 +394,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
             /* Expanded sidebar: Feeds group with shared background */
             <div className="feeds-group">
             <div
-              className={`nav-item feeds-header ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities || (communityNavStyle === 'pills' || communityNavStyle === 'selector') ? 'no-flyout' : ''}`}
+              className={`nav-item feeds-header ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities || communityNavStyle === 'pills' ? 'no-flyout' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
                 // Navigate to My Community (preserves current community selection)
@@ -447,7 +447,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                   {(selectedCommunity.name || 'C').charAt(0).toUpperCase()}
                 </div>
               )}
-              <span className="selected-community-arrow">↳</span>
               <span className="selected-community-name">
                 {selectedCommunity.id === 'town-hall'
                   ? 'The Commons'
@@ -563,15 +562,15 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           </div>
         ))}
 
-        {/* Divider line - hide in slideout mode */}
-        {communityNavStyle !== 'slideout' && <div className="nav-section-divider" />}
+        {/* Divider line */}
+        <div className="nav-section-divider" />
 
-        {/* Scrollable Communities Section - hide in slideout mode (communities shown in slideout panel instead) */}
-        {communityNavStyle !== 'slideout' && <div
+        {/* Scrollable Communities Section - My Feeds at bottom of sidebar */}
+        <div
           className="sidebar-communities-section"
         >
           <div className="communities-header">
-            <span className="communities-title">Feeds</span>
+            <span className="communities-title">My Feeds</span>
           </div>
           <div className="communities-list">
             {/* The Commons - always first */}
@@ -606,7 +605,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               );
             })}
           </div>
-        </div>}
+        </div>
 
       </nav>
     </div>

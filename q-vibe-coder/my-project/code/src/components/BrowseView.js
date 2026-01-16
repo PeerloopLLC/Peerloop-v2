@@ -76,7 +76,10 @@ const BrowseView = ({
                 setPreviousBrowseContext(null);
                 if (onMenuChange) onMenuChange('Discover');
               } else if (previousBrowseContext?.type === 'feeds') {
-                // Navigate back to Feeds
+                // Navigate back to Feeds - restore the community they were viewing
+                if (previousBrowseContext.community) {
+                  localStorage.setItem('pendingCommunityCreator', JSON.stringify(previousBrowseContext.community));
+                }
                 setSelectedInstructor(null);
                 setPreviousBrowseContext(null);
                 if (onMenuChange) onMenuChange('My Community');

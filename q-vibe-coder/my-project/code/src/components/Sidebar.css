@@ -1,5 +1,5 @@
 .sidebar {
-  width: 240px;
+  width: 270px;
   height: 100vh;
   border-right: 1px solid #e1e8ed;
   padding: 0 4px;
@@ -1277,6 +1277,22 @@
   border-radius: 0;
   padding: 0;
   margin: 0;
+  position: relative;
+}
+
+.feeds-group::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: #d1d5db;
+  border-radius: 1px;
+}
+
+.dark-mode .feeds-group::before {
+  background: #4b5563;
 }
 
 .feeds-group .nav-item {
@@ -1351,7 +1367,7 @@
 }
 
 .selected-community-name {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 500;
   color: var(--text-darkness, #0f1419);
   white-space: nowrap;
@@ -1361,6 +1377,7 @@
 
 .dark-mode .selected-community-name {
   color: #e7e9ea;
+  font-size: 20px;
 }
 
 /* Hide feeds-group on collapsed sidebar - show compact button instead */

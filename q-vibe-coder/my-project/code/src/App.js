@@ -166,6 +166,7 @@ function App() {
     id: 1,
     name: 'Alex Sanders',
     username: '@alexsanders',
+    email: 'alex@peerloop.com',
     roles: ['student', 'teacher'], // Alex can both learn and teach
     avatar: 'https://i.pravatar.cc/150?img=68', // Professional male with smile
     bio: 'Lifelong learner passionate about AI and machine learning. Currently studying Deep Learning and teaching Python basics to beginners. Love helping others on their learning journey!',
@@ -192,6 +193,7 @@ function App() {
     id: 2,
     name: 'Jamie Chen',
     username: '@jamiechen',
+    email: 'jamie@peerloop.com',
     roles: ['creator', 'instructor', 'student', 'teacher'], // Jamie has all roles
     avatar: 'https://i.pravatar.cc/150?img=47', // Professional female avatar
     bio: 'Full-stack developer and course creator with 10+ years of experience. Passionate about making tech education accessible to everyone.',
@@ -323,7 +325,7 @@ function App() {
         <MainContent
           activeMenu={activeMenu}
           currentUser={currentUser}
-          onSwitchUser={toggleUser}
+          onSwitchUser={handleLogout}
           onMenuChange={handleMenuChange}
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './Community.css';
-import { FaUsers, FaStar, FaClock, FaPlay, FaBook, FaGraduationCap, FaHome, FaChevronLeft, FaChevronRight, FaHeart, FaComment, FaRetweet, FaBookmark, FaShare, FaChevronDown, FaInfoCircle, FaImage, FaLink, FaPaperclip, FaLandmark, FaVideo } from 'react-icons/fa';
+import { FaUsers, FaStar, FaClock, FaPlay, FaBook, FaGraduationCap, FaHome, FaChevronLeft, FaChevronRight, FaHeart, FaComment, FaRetweet, FaBookmark, FaShare, FaChevronDown, FaInfoCircle, FaImage, FaLink, FaPaperclip, FaLandmark } from 'react-icons/fa';
 import { getAllCourses, getInstructorById, getCourseById } from '../data/database';
 import { createPost, getPosts, likePost } from '../services/posts';
 import { initGetStream } from '../services/getstream';
 import { fakePosts } from '../data/communityPosts';
-import VideoRoom from './VideoRoom';
 
 const Community = ({ followedCommunities = [], setFollowedCommunities = null, isDarkMode = false, currentUser = null, onMenuChange = null, onViewUserProfile = null, onViewCourse = null, onViewCreatorProfile = null }) => {
   const [selectedCommunity, setSelectedCommunity] = useState(null);
@@ -74,8 +73,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const [showSelectorDropdown, setShowSelectorDropdown] = useState(false);
   // Slide-out panel state (for 'slideout' nav style)
   const [showSlideoutPanel, setShowSlideoutPanel] = useState(false);
-  // Video room state (BigBlueButton integration)
-  const [showVideoRoom, setShowVideoRoom] = useState(false);
 
   // Persist communityMode to localStorage when it changes
   useEffect(() => {
@@ -803,7 +800,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     );
 
     return (
-      <>
       <div style={{ background: '#f8fafc', minHeight: '100vh', padding: 0 }}>
         {/* Back Button */}
         <button 
@@ -865,24 +861,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 }}
               >
                 {isCommunityFollowed(selectedCommunity.id) ? 'Joined Community' : 'Join Community'}
-              </button>
-              <button
-                onClick={() => setShowVideoRoom(true)}
-                style={{
-                  background: '#10b981',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '10px 24px',
-                  borderRadius: 8,
-                  fontWeight: 600,
-                  fontSize: 14,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8
-                }}
-              >
-                <FaVideo /> Join Video Room
               </button>
             </div>
 
@@ -965,14 +943,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
           </div>
         </div>
       </div>
-      {showVideoRoom && (
-        <VideoRoom
-          roomName={selectedCommunity.name}
-          userName={currentUser?.name || 'Guest'}
-          onClose={() => setShowVideoRoom(false)}
-        />
-      )}
-      </>
     );
   }
 
@@ -985,7 +955,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   };
 
   return (
-    <>
     <div className="community-content-outer" style={{ background: isDarkMode ? '#000' : '#fff' }}>
       <div className="community-three-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
         <div ref={feedContainerRef} className="community-center-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
@@ -1373,14 +1342,12 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
-                          localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                          localStorage.setItem('browseActiveTopMenu', 'creators');
-                          if (onMenuChange) {
-                            onMenuChange('Browse');
+                          if (onViewCreatorProfile) {
+                            onViewCreatorProfile(effectiveCreator);
                           }
                         }}
                         style={{
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: 700,
                           color: '#1d9bf0',
                           cursor: 'pointer',
@@ -1395,10 +1362,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
-                          localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                          localStorage.setItem('browseActiveTopMenu', 'creators');
-                          if (onMenuChange) {
-                            onMenuChange('Browse');
+                          if (onViewCreatorProfile) {
+                            onViewCreatorProfile(effectiveCreator);
                           }
                         }}
                         style={{
@@ -1447,35 +1412,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         }}
                       >
                         View All Courses
-                      </button>
-                      {/* Join Video Room Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowVideoRoom(true);
-                        }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          padding: '6px 12px',
-                          fontSize: 12,
-                          fontWeight: 600,
-                          background: '#10b981',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: 16,
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease'
-                        }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.background = '#059669';
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.background = '#10b981';
-                        }}
-                      >
-                        <FaVideo style={{ fontSize: 10 }} /> Video Room
                       </button>
                     </div>
                     {/* Title */}
@@ -1838,14 +1774,12 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   <div>
                     <div
                       onClick={() => {
-                        localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                        localStorage.setItem('browseActiveTopMenu', 'creators');
-                        if (onMenuChange) {
-                          onMenuChange('Browse');
+                        if (onViewCreatorProfile) {
+                          onViewCreatorProfile(effectiveCreator);
                         }
                       }}
                       style={{
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: 700,
                         color: '#1d9bf0',
                         cursor: 'pointer',
@@ -1903,15 +1837,12 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <div
                             onClick={() => {
-                              // Store instructor info and navigate to Browse -> Creators
-                              localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                              localStorage.setItem('browseActiveTopMenu', 'creators');
-                              if (onMenuChange) {
-                                onMenuChange('Browse');
+                              if (onViewCreatorProfile) {
+                                onViewCreatorProfile(effectiveCreator);
                               }
                             }}
                             style={{
-                              fontSize: 16,
+                              fontSize: 18,
                               fontWeight: 700,
                               color: '#1d9bf0',
                               cursor: 'pointer',
@@ -1925,10 +1856,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           </div>
                           <div
                             onClick={() => {
-                              localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                              localStorage.setItem('browseActiveTopMenu', 'creators');
-                              if (onMenuChange) {
-                                onMenuChange('Browse');
+                              if (onViewCreatorProfile) {
+                                onViewCreatorProfile(effectiveCreator);
                               }
                             }}
                             style={{
@@ -1976,37 +1905,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                             }}
                           >
                             View All Courses
-                          </button>
-                          {/* Join Video Room Button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setShowVideoRoom(true);
-                            }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              padding: '6px 14px',
-                              borderRadius: 16,
-                              border: 'none',
-                              background: '#10b981',
-                              color: '#fff',
-                              fontSize: 13,
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                              flexShrink: 0,
-                              transition: 'all 0.2s ease'
-                            }}
-                            onMouseEnter={e => {
-                              e.currentTarget.style.background = '#059669';
-                            }}
-                            onMouseLeave={e => {
-                              e.currentTarget.style.background = '#10b981';
-                            }}
-                          >
-                            <FaVideo style={{ fontSize: 12 }} /> Video Room
                           </button>
                         </div>
                         <div style={{
@@ -2250,35 +2148,49 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   padding: '12px 14px',
                   gap: 10
                 }}>
-                  {/* User Avatar */}
+                  {/* User Avatar - clickable to go to profile */}
                   {currentUser?.avatar ? (
                     <img
                       src={currentUser.avatar}
                       alt={currentUser.name}
+                      onClick={() => onMenuChange && onMenuChange('Profile')}
                       style={{
                         width: 32,
                         height: 32,
                         borderRadius: '50%',
                         objectFit: 'cover',
                         flexShrink: 0,
-                        marginTop: 2
+                        marginTop: 2,
+                        cursor: 'pointer',
+                        transition: 'opacity 0.2s'
                       }}
+                      onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+                      onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                      title="View your profile"
                     />
                   ) : (
-                    <div style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: '50%',
-                      background: '#1d9bf0',
-                      color: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 12,
-                      fontWeight: 700,
-                      flexShrink: 0,
-                      marginTop: 2
-                    }}>
+                    <div
+                      onClick={() => onMenuChange && onMenuChange('Profile')}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        background: '#1d9bf0',
+                        color: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        flexShrink: 0,
+                        marginTop: 2,
+                        cursor: 'pointer',
+                        transition: 'opacity 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+                      onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                      title="View your profile"
+                    >
                       {getUserInitials()}
                     </div>
                   )}
@@ -2675,14 +2587,6 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
         {/* Right Pane - Removed for cleaner centered layout */}
       </div>
     </div>
-    {showVideoRoom && (
-      <VideoRoom
-        roomName={selectedCreatorId ? `${selectedCreatorId} Community` : 'PeerLoop Video Room'}
-        userName={currentUser?.name || 'Guest'}
-        onClose={() => setShowVideoRoom(false)}
-      />
-    )}
-    </>
   );
 };
 
