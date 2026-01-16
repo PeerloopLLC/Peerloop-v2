@@ -202,21 +202,23 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
 
   /**
    * Personal menu items (middle section)
+   * Dashboard is hidden for new users and students (only shown for creators, admins, student_teachers)
    */
+  const showDashboard = currentUser?.userType &&
+    ['creator', 'admin', 'student_teacher'].includes(currentUser.userType);
+
   const personalItems = [
     { icon: <FaBook />, label: 'My Courses', displayLabel: 'My Courses' }, // User's enrolled courses
     { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
-    { icon: <FaChalkboardTeacher />, label: 'Dashboard', displayLabel: 'Dashboard' }, // User dashboard (varies by role)
+    ...(showDashboard ? [{ icon: <FaChalkboardTeacher />, label: 'Dashboard', displayLabel: 'Dashboard' }] : []), // User dashboard (only for creators/admins)
     { icon: <FaUser />, label: 'Profile', displayLabel: 'Profile' }, // User profile
   ];
 
   /**
    * Footer menu items (bottom section)
    */
-  const footerItems = [
-    { icon: <FaInfoCircle />, label: 'About', displayLabel: 'How It Works' }, // How PeerLoop works
-  ];
+  const footerItems = [];
 
 
   /**
@@ -509,6 +511,9 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
             </div>
           )}
         </div>
+
+        {/* Divider between Feeds and Discover */}
+        <div className="nav-section-divider" />
 
         {/* Discover item */}
         <div
