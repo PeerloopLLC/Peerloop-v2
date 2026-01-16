@@ -2,7 +2,8 @@
 .main-content {
   flex: 1;
   background-color: var(--bg-primary, #ffffff);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: 100vh;
   margin-left: 0;
   width: 810px;
