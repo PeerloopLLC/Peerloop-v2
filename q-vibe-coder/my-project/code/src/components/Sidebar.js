@@ -270,7 +270,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
   // Community navigation style preference from Profile settings
   const [communityNavStyle, setCommunityNavStyle] = useState(() => {
     const saved = localStorage.getItem('communityNavStyle');
-    return saved || 'pills'; // Default to pills
+    return saved || 'slideout'; // Default to slideout panel
   });
 
   // Listen for community nav style changes from Profile settings
@@ -278,7 +278,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
     // Handle changes from other tabs
     const handleStorageChange = (e) => {
       if (e.key === 'communityNavStyle') {
-        const newStyle = e.newValue || 'pills';
+        const newStyle = e.newValue || 'slideout';
         setCommunityNavStyle(newStyle);
         // Close flyout if switching to pills mode
         if (newStyle === 'pills') {
