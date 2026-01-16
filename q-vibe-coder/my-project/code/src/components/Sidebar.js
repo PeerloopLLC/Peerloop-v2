@@ -400,11 +400,16 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               className={`community-selector ${isFlyoutOpen ? 'flyout-open' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                // Always navigate to the selected community first
-                handleCommunitySelect(selectedCommunity);
-                // Also toggle slideout panel if slideout mode is enabled
+                // Toggle slideout panel if slideout mode is enabled
                 if (hasFollowedCommunities && communityNavStyle === 'slideout') {
-                  window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
+                  // If panel is already open, just close it (don't navigate)
+                  if (isSlideoutPanelOpen) {
+                    window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
+                  } else {
+                    // Panel is closed - navigate to community and open panel
+                    handleCommunitySelect(selectedCommunity);
+                    window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
+                  }
                 }
                 // Or toggle flyout if dropdown mode is enabled
                 else if (hasFollowedCommunities && communityNavStyle === 'dropdown') {
@@ -415,6 +420,10 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                   } else {
                     clearFlyoutCloseTimer();
                   }
+                }
+                // If no communities followed or pills mode, just navigate
+                else {
+                  handleCommunitySelect(selectedCommunity);
                 }
               }}
             >
@@ -449,6 +458,10 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               className={`nav-item feeds-label ${activeMenu === 'My Community' ? 'active' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
+                // Close slideout panel if it's open
+                if (isSlideoutPanelOpen) {
+                  window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
+                }
                 onMenuChange('My Community');
               }}
             >
