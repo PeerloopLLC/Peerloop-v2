@@ -21,6 +21,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
   const [isJoiningSession, setIsJoiningSession] = useState(false);
   const [showBbbModal, setShowBbbModal] = useState(false);
   const [bbbJoinUrl, setBbbJoinUrl] = useState(null);
+  const [showHelpPanel, setShowHelpPanel] = useState(false);
 
   // Mock enrollment data for enrolled users
   const enrollmentData = isCoursePurchased ? {
@@ -69,14 +70,19 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
     }, 500);
   };
 
+  // Detect if user is on iOS/iPad/mobile Safari (iframe restrictions)
+  const isMobileOrSafari = () => {
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    const isIPadOS = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    return isIOS || isIPadOS || (isSafari && 'ontouchend' in document);
+  };
+
   // Handle joining a BigBlueButton session via Supabase Edge Function
   const handleJoinSession = async () => {
     if (isJoiningSession || !course) return;
     setIsJoiningSession(true);
-
-    // Show modal with loading state
-    setBbbJoinUrl(null);
-    setShowBbbModal(true);
 
     try {
       const userName = currentUser?.name || 'Student';
@@ -101,9 +107,17 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
         throw new Error(data.error || 'Failed to create meeting');
       }
 
-      // Set the join URL to load in iframe
-      setBbbJoinUrl(data.joinUrl);
-      setIsJoiningSession(false);
+      // On iOS/Safari, open in new tab (iframe restrictions)
+      // On desktop, use the iframe modal
+      if (isMobileOrSafari()) {
+        window.open(data.joinUrl, '_blank');
+        setIsJoiningSession(false);
+      } else {
+        setBbbJoinUrl(null);
+        setShowBbbModal(true);
+        setBbbJoinUrl(data.joinUrl);
+        setIsJoiningSession(false);
+      }
     } catch (error) {
       console.error('Failed to join session:', error);
       alert('Failed to join session. Please try again.');
@@ -333,24 +347,34 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
               </button>
             ) : (
               <>
-                {/* Continue Learning Button for enrolled users */}
+                {/* Join Session Button for enrolled users */}
                 <button
+                  onClick={handleJoinSession}
+                  disabled={isJoiningSession}
                   style={{
-                    background: '#1d9bf0',
-                    color: '#fff',
-                    border: 'none',
-                    padding: '12px 28px',
-                    borderRadius: 8,
-                    fontSize: 15,
+                    background: isDarkMode ? 'transparent' : 'white',
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    padding: '10px 20px',
+                    borderRadius: 20,
+                    fontSize: 14,
                     fontWeight: 600,
-                    cursor: 'pointer',
+                    cursor: isJoiningSession ? 'wait' : 'pointer',
                     whiteSpace: 'nowrap',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8
+                    gap: 8,
+                    transition: 'all 0.2s',
+                    opacity: isJoiningSession ? 0.7 : 1
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isJoiningSession) e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isJoiningSession) e.currentTarget.style.background = isDarkMode ? 'transparent' : 'white';
                   }}
                 >
-                  <FaPlay style={{ fontSize: 12 }} /> Continue Learning
+                  <FaPlay style={{ fontSize: 12 }} /> {isJoiningSession ? 'Joining...' : 'Join Session'}
                 </button>
 
                 {/* Go to Community Button */}
@@ -367,15 +391,22 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
                     }
                   }}
                   style={{
-                    background: 'transparent',
-                    border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                    background: isDarkMode ? 'transparent' : 'white',
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                    padding: '12px 28px',
-                    borderRadius: 8,
-                    fontSize: 15,
+                    padding: '10px 20px',
+                    borderRadius: 20,
+                    fontSize: 14,
                     fontWeight: 600,
                     cursor: 'pointer',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = isDarkMode ? 'transparent' : 'white';
                   }}
                 >
                   Go to Community
@@ -1239,18 +1270,25 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
                 disabled={isJoiningSession}
                 style={{
                 marginTop: 10,
-                background: isJoiningSession ? '#71767b' : '#1d9bf0',
-                color: '#fff',
-                border: 'none',
+                background: isDarkMode ? 'transparent' : 'white',
+                border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
                 padding: '8px 16px',
-                borderRadius: 6,
+                borderRadius: 20,
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: isJoiningSession ? 'wait' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                opacity: isJoiningSession ? 0.7 : 1
+                opacity: isJoiningSession ? 0.7 : 1,
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                if (!isJoiningSession) e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
+              }}
+              onMouseLeave={(e) => {
+                if (!isJoiningSession) e.currentTarget.style.background = isDarkMode ? 'transparent' : 'white';
               }}>
                 <FaPlay style={{ fontSize: 10 }} /> {isJoiningSession ? 'Joining...' : 'Join Session'}
               </button>
@@ -1741,51 +1779,274 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
             background: '#1a1a1a',
             borderBottom: '1px solid #333'
           }}>
-            <div style={{ color: '#fff', fontSize: 16, fontWeight: 600 }}>
-              {course?.title} - Live Session
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              {/* Outside Help Window Button */}
+              <button
+                onClick={() => setShowHelpPanel(!showHelpPanel)}
+                style={{
+                  background: showHelpPanel ? '#1d9bf0' : '#333',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '8px 16px',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  transition: 'background 0.2s',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {showHelpPanel ? 'Close Outside Help Window' : 'Open Outside Help Window'}
+              </button>
+              <div style={{ color: '#fff', fontSize: 16, fontWeight: 600 }}>
+                {course?.title} - Live Session
+              </div>
             </div>
-            <button
-              onClick={handleCloseBbbModal}
-              style={{
-                background: '#dc3545',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 6,
-                padding: '8px 16px',
-                cursor: 'pointer',
-                fontSize: 14,
-                fontWeight: 500
-              }}
-            >
-              Leave Session
-            </button>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <button
+                onClick={handleCloseBbbModal}
+                style={{
+                  background: '#dc3545',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '8px 16px',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                  fontWeight: 500
+                }}
+              >
+                Leave Session
+              </button>
+            </div>
           </div>
 
-          {/* BBB iframe or loading state */}
-          {bbbJoinUrl ? (
-            <iframe
-              src={bbbJoinUrl}
-              style={{
+          {/* Content area with BBB and sliding help panel */}
+          <div style={{ flex: 1, position: 'relative', display: 'flex', overflow: 'hidden' }}>
+            {/* BBB iframe or loading state */}
+            {bbbJoinUrl ? (
+              <iframe
+                src={bbbJoinUrl}
+                style={{
+                  flex: 1,
+                  width: '100%',
+                  border: 'none',
+                  transition: 'margin-right 0.3s ease'
+                }}
+                allow="camera; microphone; display-capture; fullscreen"
+                title="BigBlueButton Session"
+              />
+            ) : (
+              <div style={{
                 flex: 1,
-                width: '100%',
-                border: 'none'
-              }}
-              allow="camera; microphone; display-capture; fullscreen"
-              title="BigBlueButton Session"
-            />
-          ) : (
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#000',
+                color: '#fff',
+                fontSize: 18
+              }}>
+                Creating meeting room...
+              </div>
+            )}
+
+            {/* Sliding Help Panel - From Left */}
             <div style={{
-              flex: 1,
+              position: 'absolute',
+              top: 0,
+              left: showHelpPanel ? 0 : -320,
+              width: 320,
+              height: '100%',
+              background: '#1a1a1a',
+              borderRight: '1px solid #333',
+              transition: 'left 0.3s ease',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: '#000',
-              color: '#fff',
-              fontSize: 18
+              flexDirection: 'column',
+              zIndex: 10
             }}>
-              Creating meeting room...
+              {/* Panel Header */}
+              <div style={{
+                padding: '16px 20px',
+                borderBottom: '1px solid #333',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <span style={{ color: '#fff', fontSize: 16, fontWeight: 600 }}>Help Panel</span>
+                <button
+                  onClick={() => setShowHelpPanel(false)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#71767b',
+                    fontSize: 20,
+                    cursor: 'pointer',
+                    padding: 0,
+                    lineHeight: 1
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Panel Content - Course Feed */}
+              <div style={{
+                flex: 1,
+                overflowY: 'auto'
+              }}>
+                {/* Quick Post Box */}
+                <div style={{
+                  padding: 12,
+                  borderBottom: '1px solid #333'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    gap: 8,
+                    alignItems: 'flex-start'
+                  }}>
+                    {currentUser?.avatar ? (
+                      <img
+                        src={currentUser.avatar}
+                        alt={currentUser?.name || 'User'}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: '50%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        background: '#1d9bf0',
+                        color: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 11,
+                        fontWeight: 700
+                      }}>
+                        {getUserInitials()}
+                      </div>
+                    )}
+                    <input
+                      type="text"
+                      placeholder="Ask a question..."
+                      style={{
+                        flex: 1,
+                        background: '#2f3336',
+                        border: 'none',
+                        borderRadius: 16,
+                        padding: '8px 12px',
+                        color: '#e7e9ea',
+                        fontSize: 13,
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Feed Posts */}
+                {[
+                  {
+                    id: 1,
+                    author: 'CourseEnthusiast',
+                    authorAvatar: 'https://i.pravatar.cc/40?img=11',
+                    content: `Just finished the first module! The content is incredibly well-structured. 🚀`,
+                    timestamp: '2h',
+                    likes: 24
+                  },
+                  {
+                    id: 2,
+                    author: 'LearningDaily',
+                    authorAvatar: 'https://i.pravatar.cc/40?img=22',
+                    content: `The instructor explains complex concepts so clearly! Highly recommend.`,
+                    timestamp: '5h',
+                    likes: 42
+                  },
+                  {
+                    id: 3,
+                    author: 'TechStudent2024',
+                    authorAvatar: 'https://i.pravatar.cc/40?img=33',
+                    content: `Question: Has anyone completed the hands-on project in Module 3? Looking for study partners!`,
+                    timestamp: '1d',
+                    likes: 18
+                  },
+                  {
+                    id: 4,
+                    author: 'CareerChanger',
+                    authorAvatar: 'https://i.pravatar.cc/40?img=44',
+                    content: `Just became a Student-Teacher for this course! 🎉 Ready to help others learn.`,
+                    timestamp: '2d',
+                    likes: 89
+                  }
+                ].map(post => (
+                  <div
+                    key={post.id}
+                    style={{
+                      padding: '12px',
+                      borderBottom: '1px solid #333'
+                    }}
+                  >
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <img
+                        src={post.authorAvatar}
+                        alt={post.author}
+                        style={{ width: 32, height: 32, borderRadius: '50%' }}
+                      />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                          <span style={{ fontWeight: 600, color: '#e7e9ea', fontSize: 13 }}>
+                            {post.author}
+                          </span>
+                          <span style={{ color: '#71767b', fontSize: 12 }}>· {post.timestamp}</span>
+                        </div>
+                        <p style={{
+                          margin: '0 0 8px 0',
+                          color: '#e7e9ea',
+                          fontSize: 13,
+                          lineHeight: 1.4
+                        }}>
+                          {post.content}
+                        </p>
+                        <div style={{ display: 'flex', gap: 16 }}>
+                          <button style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#71767b',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            cursor: 'pointer',
+                            fontSize: 12,
+                            padding: 0
+                          }}>
+                            <FaComment style={{ fontSize: 11 }} /> Reply
+                          </button>
+                          <button style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#71767b',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            cursor: 'pointer',
+                            fontSize: 12,
+                            padding: 0
+                          }}>
+                            <FaHeart style={{ fontSize: 11 }} /> {post.likes}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
+          </div>
+
         </div>
       )}
     </div>
