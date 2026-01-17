@@ -46,7 +46,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   // Community navigation style preference from Profile settings
   const [communityNavStyle, setCommunityNavStyle] = useState(() => {
     const saved = localStorage.getItem('communityNavStyle');
-    return saved || 'pills'; // Default to pills
+    return saved || 'slideout'; // Default to slideout (pills disabled by default)
   });
 
   // Banner color from Profile settings
