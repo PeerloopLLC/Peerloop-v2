@@ -108,6 +108,16 @@ const Login = ({ onLoginSuccess, onDemoLogin }) => {
 
   // Handle demo user login
   const handleDemoLogin = (demoUser) => {
+    // Clear stored community so app defaults to The Commons on every login
+    localStorage.removeItem('pendingCommunityCreator');
+    localStorage.removeItem('activeCommunityMode');
+    localStorage.removeItem('activeCreatorId');
+
+    // Dispatch event to reset Sidebar to The Commons
+    window.dispatchEvent(new CustomEvent('communitySelected', {
+      detail: { id: 'town-hall', name: 'The Commons', type: 'hub' }
+    }));
+
     // New User goes directly to app (skip login form and interest selection)
     if (demoUser.id === 'demo_new') {
       const newUser = {
