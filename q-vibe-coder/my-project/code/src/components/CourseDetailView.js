@@ -262,33 +262,8 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
             }}>
               {course.title}
             </h1>
-            <p style={{
-              fontSize: 16,
-              color: isDarkMode ? '#71767b' : '#536471',
-              margin: '0 0 8px 0'
-            }}>
-              {course.description?.substring(0, 80)}...
-            </p>
 
-            {/* Enrolled Badge - Only for purchased courses */}
-            {isCoursePurchased && enrollmentData && (
-              <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'rgba(16, 185, 129, 0.15)',
-                color: '#10b981',
-                padding: '6px 12px',
-                borderRadius: 20,
-                fontSize: 13,
-                fontWeight: 600,
-                marginBottom: 12
-              }}>
-                <FaCheck style={{ fontSize: 10 }} /> ENROLLED · Started {enrollmentData.enrolledDate}
-              </span>
-            )}
-
-            {/* Creator Link */}
+            {/* Creator Link - directly under title */}
             <div
               onClick={(e) => {
                 e.stopPropagation();
@@ -299,7 +274,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
                 alignItems: 'center',
                 gap: 8,
                 cursor: 'pointer',
-                marginTop: isCoursePurchased ? 8 : 0
+                marginBottom: 8
               }}
             >
               <img
@@ -323,6 +298,68 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
               >
                 {instructor?.name}
               </span>
+            </div>
+
+            <p style={{
+              fontSize: 16,
+              color: isDarkMode ? '#71767b' : '#536471',
+              margin: '0 0 8px 0'
+            }}>
+              {course.description}
+            </p>
+
+            {/* Enrolled Badge - Only for purchased courses */}
+            {isCoursePurchased && enrollmentData && (
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'rgba(16, 185, 129, 0.15)',
+                color: '#10b981',
+                padding: '6px 12px',
+                borderRadius: 20,
+                fontSize: 13,
+                fontWeight: 600,
+                marginBottom: 12
+              }}>
+                <FaCheck style={{ fontSize: 10 }} /> ENROLLED · Started {enrollmentData.enrolledDate}
+              </span>
+            )}
+
+            {/* Stats Line */}
+            <div style={{
+              fontSize: 15,
+              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+              marginTop: 12,
+              paddingTop: 12,
+              borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+            }}>
+              <span style={{ color: '#fbbf24' }}>★</span> 4.8 (234) <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> 1,250 students <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> {course.curriculum?.length || 5} Modules <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> {(course.curriculum?.length || 5) * 4} Lessons <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> 12 hours
+            </div>
+
+            {/* What's Included - Horizontal */}
+            <div style={{ marginTop: 16 }}>
+              <h4 style={{
+                fontSize: 14,
+                fontWeight: 700,
+                color: isDarkMode ? '#71767b' : '#6b7280',
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+                marginBottom: 8
+              }}>
+                What's Included
+              </h4>
+              <div style={{
+                fontSize: 15,
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '4px 16px'
+              }}>
+                <span>• 1-on-1 sessions with Student-Teacher</span>
+                <span>• Access to AI Prompters Community</span>
+                <span>• Certificate</span>
+              </div>
             </div>
           </div>
 
@@ -579,26 +616,6 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
                   </div>
                 </div>
               )}
-
-              {/* Course Description */}
-              <div style={{ marginBottom: 32 }}>
-                <h3 style={{
-                  fontSize: 18,
-                  fontWeight: 700,
-                  marginBottom: 16,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                }}>
-                  About This Course
-                </h3>
-                <p style={{
-                  fontSize: 15,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                  lineHeight: 1.7,
-                  margin: 0
-                }}>
-                  {course.description}
-                </p>
-              </div>
 
               {/* What You'll Learn */}
               <div style={{ marginBottom: 32 }}>

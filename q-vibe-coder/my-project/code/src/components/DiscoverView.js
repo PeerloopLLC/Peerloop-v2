@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FaSearch, FaBook, FaPlay } from 'react-icons/fa';
 import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
@@ -25,7 +25,100 @@ const DiscoverView = ({
   onViewCommunity
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [activeFilter, setActiveFilter] = useState(() => {
+    // Restore from localStorage to preserve selection when navigating back
+    return localStorage.getItem('discoverActiveFilter') || 'All';
+  });
+
+  // Collapsible header state
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+  const isHeaderCollapsedRef = useRef(false); // Ref to track current collapsed state for scroll handler
+  const lastScrollY = useRef(0);
+  const lastToggleTime = useRef(0);
+
+  // Persist activeFilter to localStorage when it changes
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
+    localStorage.setItem('discoverActiveFilter', filter);
+  };
+
+  // Ref for scroll container
+  const scrollContainerRef = useRef(null);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    isHeaderCollapsedRef.current = isHeaderCollapsed;
+  }, [isHeaderCollapsed]);
+
+  // Handle scroll to collapse/expand header based on scroll position
+  useEffect(() => {
+    const COLLAPSE_THRESHOLD = 1; // Collapse immediately when scrolling
+    const EXPAND_THRESHOLD = 5; // Expand when back at top
+    const TOGGLE_COOLDOWN = 200; // Cooldown for responsive expand
+
+    const handleScroll = () => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      const currentScrollY = container.scrollTop;
+      const now = Date.now();
+
+      // Always expand when at the very top (scrollTop <= 5), bypass cooldown
+      if (isHeaderCollapsedRef.current && currentScrollY <= EXPAND_THRESHOLD) {
+        setIsHeaderCollapsed(false);
+        isHeaderCollapsedRef.current = false;
+        lastToggleTime.current = now;
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Respect cooldown for other state changes
+      if (now - lastToggleTime.current < TOGGLE_COOLDOWN) {
+        return;
+      }
+
+      // Collapse: when scrolled down past threshold
+      if (!isHeaderCollapsedRef.current && currentScrollY > COLLAPSE_THRESHOLD) {
+        setIsHeaderCollapsed(true);
+        isHeaderCollapsedRef.current = true;
+        lastToggleTime.current = now;
+      }
+      // Expand: when scrolled back near the top
+      else if (isHeaderCollapsedRef.current && currentScrollY < EXPAND_THRESHOLD) {
+        setIsHeaderCollapsed(false);
+        isHeaderCollapsedRef.current = false;
+        lastToggleTime.current = now;
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []); // Empty dependency - handler uses refs for current values
+
+  // Restore scroll position on mount
+  useEffect(() => {
+    const savedScrollPosition = localStorage.getItem('discoverScrollPosition');
+    if (savedScrollPosition && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = parseInt(savedScrollPosition, 10);
+    }
+  }, []);
+
+  // Save scroll position before navigating away
+  const saveScrollPosition = () => {
+    if (scrollContainerRef.current) {
+      localStorage.setItem('discoverScrollPosition', scrollContainerRef.current.scrollTop);
+    }
+  };
 
   // Banner color from Profile settings
   const userBannerColor = localStorage.getItem('profileBannerColor') || 'blue';
@@ -175,30 +268,46 @@ const DiscoverView = ({
   return (
     <div className="main-content">
       <div className="three-column-layout">
-        <div className="center-column" style={{ maxWidth: 800, margin: '0 auto' }}>
-          {/* Header */}
+        <div className="center-column" ref={scrollContainerRef} style={{ maxWidth: 800, margin: '0 auto' }}>
+          {/* Sticky Collapsible Header */}
           <div style={{
-            padding: '24px 16px',
-            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb'
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+            padding: isHeaderCollapsed ? '12px 16px' : '24px 16px',
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+            background: isDarkMode ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'saturate(180%) blur(20px)',
+            WebkitBackdropFilter: 'saturate(180%) blur(20px)',
+            transition: 'padding 0.3s ease-out'
           }}>
-            <h1 style={{
-              fontSize: 28,
-              fontWeight: 700,
-              marginBottom: 16,
-              color: isDarkMode ? '#f5f5f7' : '#111827'
+            {/* Collapsible Title Section */}
+            <div style={{
+              maxHeight: isHeaderCollapsed ? 0 : 50,
+              overflow: 'hidden',
+              opacity: isHeaderCollapsed ? 0 : 1,
+              transition: 'max-height 0.3s ease-out, opacity 0.2s ease-out'
             }}>
-              Discover Communities and Courses
-            </h1>
+              <h1 style={{
+                fontSize: 28,
+                fontWeight: 700,
+                marginBottom: 16,
+                color: isDarkMode ? '#f5f5f7' : '#111827'
+              }}>
+                Discover Communities and Courses
+              </h1>
+            </div>
 
-            {/* Search Bar */}
+            {/* Search Bar - Always visible but adjusts size */}
             <div style={{ position: 'relative', maxWidth: 600 }}>
               <FaSearch style={{
                 position: 'absolute',
-                left: 16,
+                left: isHeaderCollapsed ? 12 : 16,
                 top: '50%',
                 transform: 'translateY(-50%)',
                 color: isDarkMode ? '#71717a' : '#9ca3af',
-                fontSize: 18
+                fontSize: isHeaderCollapsed ? 16 : 18,
+                transition: 'all 0.3s ease-out'
               }} />
               <input
                 type="text"
@@ -207,14 +316,14 @@ const DiscoverView = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '14px 16px 14px 48px',
-                  fontSize: 16,
+                  padding: isHeaderCollapsed ? '10px 14px 10px 40px' : '14px 16px 14px 48px',
+                  fontSize: isHeaderCollapsed ? 14 : 16,
                   border: isDarkMode ? '2px solid #27272a' : '2px solid #e5e7eb',
                   borderRadius: 9999,
                   background: isDarkMode ? '#1a1a24' : '#f9fafb',
                   color: isDarkMode ? '#f5f5f7' : '#111827',
                   outline: 'none',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.3s ease-out'
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = '#6366f1';
@@ -227,21 +336,22 @@ const DiscoverView = ({
               />
             </div>
 
-            {/* Filter Pills - Scrollable Row */}
+            {/* Filter Pills - Scrollable Row, adjusts size when collapsed */}
             <div
               className="discover-pills-scroll"
               style={{
-                marginTop: 16,
+                marginTop: isHeaderCollapsed ? 10 : 16,
                 display: 'flex',
                 alignItems: 'center',
-                gap: 8,
+                gap: isHeaderCollapsed ? 6 : 8,
                 overflowX: 'auto',
                 overflowY: 'hidden',
-                paddingBottom: 8,
+                paddingBottom: isHeaderCollapsed ? 4 : 8,
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
                 WebkitOverflowScrolling: 'touch',
-                cursor: 'grab'
+                cursor: 'grab',
+                transition: 'all 0.3s ease-out'
               }}
             >
               <style>{`
@@ -255,17 +365,17 @@ const DiscoverView = ({
                   return (
                     <button
                       key={pill.id}
-                      onClick={() => setActiveFilter(pill.id)}
+                      onClick={() => handleFilterChange(pill.id)}
                       style={{
-                        padding: '8px 16px',
-                        borderRadius: 20,
-                        fontSize: 14,
+                        padding: isHeaderCollapsed ? '6px 12px' : '8px 16px',
+                        borderRadius: isHeaderCollapsed ? 16 : 20,
+                        fontSize: isHeaderCollapsed ? 13 : 14,
                         fontWeight: 600,
                         border: isActive
                           ? '2px solid #1d9bf0'
                           : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
+                        transition: 'all 0.3s ease-out',
                         flexShrink: 0,
                         background: isActive
                           ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
@@ -291,18 +401,26 @@ const DiscoverView = ({
                 })}
             </div>
 
-            {searchQuery && (
-              <p style={{
-                marginTop: 12,
-                fontSize: 14,
-                color: isDarkMode ? '#71717a' : '#6b7280'
-              }}>
-                Showing results for "<span style={{ color: '#6366f1' }}>{searchQuery}</span>"
-                {activeFilter !== 'All' && (
-                  <span> filtered by <span style={{ color: '#6366f1' }}>{activeFilter}</span></span>
-                )}
-              </p>
-            )}
+            {/* Search results text - collapses with title */}
+            <div style={{
+              maxHeight: isHeaderCollapsed ? 0 : (searchQuery ? 30 : 0),
+              overflow: 'hidden',
+              opacity: isHeaderCollapsed ? 0 : 1,
+              transition: 'max-height 0.3s ease-out, opacity 0.2s ease-out'
+            }}>
+              {searchQuery && (
+                <p style={{
+                  marginTop: 12,
+                  fontSize: 14,
+                  color: isDarkMode ? '#71717a' : '#6b7280'
+                }}>
+                  Showing results for "<span style={{ color: '#6366f1' }}>{searchQuery}</span>"
+                  {activeFilter !== 'All' && (
+                    <span> filtered by <span style={{ color: '#6366f1' }}>{activeFilter}</span></span>
+                  )}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Welcome Post - Only for new users */}
@@ -410,6 +528,7 @@ const DiscoverView = ({
                     <div
                       onClick={(e) => {
                         e.stopPropagation();
+                        saveScrollPosition();
                         onViewCommunity && onViewCommunity(instructor);
                       }}
                       style={{
@@ -559,12 +678,13 @@ const DiscoverView = ({
                               key={course.id}
                               onClick={(e) => {
                                 e.stopPropagation();
+                                saveScrollPosition();
                                 onViewCourse && onViewCourse(course);
                               }}
                               style={{
                                 display: 'flex',
-                                alignItems: 'flex-start',
-                                gap: 12,
+                                flexDirection: 'column',
+                                gap: 8,
                                 padding: 12,
                                 border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
                                 borderRadius: 12,
@@ -579,42 +699,44 @@ const DiscoverView = ({
                                 e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
                               }}
                             >
-                              {/* Course Thumbnail */}
-                              <div style={{
-                                width: 100,
-                                height: 70,
-                                borderRadius: 8,
-                                flexShrink: 0,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                overflow: 'hidden',
-                                background: thumbGradients[index % 4]
-                              }}>
-                              </div>
+                              {/* Top Row: Thumbnail + Title/Desc + Button */}
+                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                                {/* Course Thumbnail */}
+                                <div style={{
+                                  width: 100,
+                                  height: 70,
+                                  borderRadius: 8,
+                                  flexShrink: 0,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  overflow: 'hidden',
+                                  background: thumbGradients[index % 4]
+                                }}>
+                                </div>
 
-                              {/* Course Info */}
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{
-                                  fontSize: 15,
-                                  fontWeight: 600,
-                                  color: '#1d9bf0'
-                                }}>
-                                  {highlightMatch(course.title, searchQuery)}
+                                {/* Course Info */}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{
+                                    fontSize: 15,
+                                    fontWeight: 600,
+                                    color: '#1d9bf0'
+                                  }}>
+                                    {highlightMatch(course.title, searchQuery)}
+                                  </div>
+                                  <div style={{
+                                    fontSize: 14,
+                                    color: isDarkMode ? '#71767b' : '#536471',
+                                    lineHeight: 1.4,
+                                    marginTop: 4,
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
+                                  }}>
+                                    {highlightMatch(course.description, searchQuery)}
+                                  </div>
                                 </div>
-                                <div style={{
-                                  fontSize: 14,
-                                  color: isDarkMode ? '#71767b' : '#536471',
-                                  lineHeight: 1.4,
-                                  marginTop: 4,
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden'
-                                }}>
-                                  {highlightMatch(course.description, searchQuery)}
-                                </div>
-                              </div>
 
                               {/* Enroll/Following Button */}
                               {(() => {
@@ -652,6 +774,7 @@ const DiscoverView = ({
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
+                                        saveScrollPosition();
                                         if (onViewCourse) {
                                           onViewCourse(course);
                                         }
@@ -681,6 +804,28 @@ const DiscoverView = ({
                                   );
                                 }
                               })()}
+                              </div>
+
+                              {/* Benefits Line - Full Width */}
+                              <div style={{
+                                fontSize: 14,
+                                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: '4px 12px'
+                              }}>
+                                <span><span style={{ color: '#10b981' }}>✓</span> 1-on-1 sessions with Student-Teacher</span>
+                                <span><span style={{ color: '#10b981' }}>✓</span> Access to AI Prompters Community</span>
+                                <span><span style={{ color: '#10b981' }}>✓</span> Certificate</span>
+                              </div>
+
+                              {/* Stats Line - Full Width */}
+                              <div style={{
+                                fontSize: 14,
+                                color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                              }}>
+                                <span style={{ color: '#fbbf24' }}>★</span> 4.8 (234) <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> 1,250 students <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> {course.curriculum?.length || 5} Modules <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> 12 hours
+                              </div>
                             </div>
                           );
                         })}
@@ -705,6 +850,7 @@ const DiscoverView = ({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
+                          saveScrollPosition();
                           onViewCommunity && onViewCommunity(instructor);
                         }}
                         style={{

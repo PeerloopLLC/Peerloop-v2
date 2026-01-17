@@ -122,7 +122,7 @@
 .nav-section-divider {
   height: 1px;
   background-color: #e1e8ed;
-  margin: 8px 14px;
+  margin: 4px 14px;
 }
 
 /* Dark mode section labels */
@@ -735,7 +735,7 @@
 /* ===== FEEDS SECTION WITH SCROLLABLE LIST ===== */
 
 .feeds-section {
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .feeds-header {
@@ -1283,7 +1283,7 @@
 
 .feeds-group .nav-item {
   background: transparent;
-  margin-bottom: 0;
+  margin-bottom: 4px;
 }
 
 .feeds-group .nav-item:hover {
@@ -1389,7 +1389,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  background: #334155;
+  background: transparent;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s;
@@ -1397,12 +1397,11 @@
 }
 
 .community-selector:hover {
-  background: #3b4a5e;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .community-selector.flyout-open {
-  background: #3b4a5e;
-  border: 1px solid #1d9bf0;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .community-selector-avatar {
@@ -1432,9 +1431,9 @@
 }
 
 .community-selector-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #f1f5f9;
+  font-size: 18px;
+  font-weight: 400;
+  color: #0f1419;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1457,12 +1456,12 @@
 
 /* Light mode community selector */
 .community-selector {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background: transparent;
+  border: none;
 }
 
 .community-selector:hover {
-  background: #e2e8f0;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .community-selector-name {
@@ -1479,21 +1478,22 @@
 
 /* Dark mode community selector */
 .dark-mode .community-selector {
-  background: #334155;
-  border-color: #475569;
+  background: transparent;
+  border: none;
 }
 
 .dark-mode .community-selector:hover {
-  background: #3b4a5e;
+  background: rgba(231, 233, 234, 0.1);
 }
 
 .dark-mode .community-selector.flyout-open {
-  background: #3b4a5e;
-  border-color: #1d9bf0;
+  background: rgba(231, 233, 234, 0.1);
 }
 
 .dark-mode .community-selector-name {
-  color: #f1f5f9;
+  font-size: 20px;
+  font-weight: 400;
+  color: #e7e9ea;
 }
 
 .dark-mode .community-selector-count {
