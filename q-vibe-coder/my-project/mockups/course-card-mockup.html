@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Card & Detail Mockups</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #e7e9ea;
+      padding: 40px;
+      line-height: 1.5;
+    }
+
+    h1 {
+      color: #1d9bf0;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    h2 {
+      color: #71767b;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 40px 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .mockup-section {
+      margin-bottom: 60px;
+    }
+
+    .label {
+      color: #f59e0b;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ==================== */
+    /* SUMMARY CARD STYLES  */
+    /* ==================== */
+
+    .course-card {
+      padding: 16px;
+      border: 1px solid #2f3336;
+      border-radius: 12px;
+      background: #16181c;
+      max-width: 800px;
+      margin-bottom: 20px;
+    }
+
+    .course-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .course-thumbnail {
+      width: 100px;
+      height: 70px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%);
+    }
+
+    .course-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .course-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1d9bf0;
+      margin-bottom: 4px;
+    }
+
+    .course-description {
+      font-size: 14px;
+      color: #71767b;
+      line-height: 1.4;
+    }
+
+    .course-bottom {
+      padding-top: 12px;
+      border-top: 1px solid #2f3336;
+    }
+
+    .course-stats {
+      font-size: 14px;
+      color: #e7e9ea;
+      margin-bottom: 8px;
+    }
+
+    .course-stats span {
+      color: #71767b;
+    }
+
+    .course-benefits {
+      font-size: 13px;
+      color: #9ca3af;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+    }
+
+    .course-benefits .benefit {
+      white-space: nowrap;
+    }
+
+    .enroll-btn {
+      background: transparent;
+      border: 1px solid #2f3336;
+      color: #e7e9ea;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .enroll-btn:hover {
+      background: #1d1f23;
+    }
+
+    /* ==================== */
+    /* DETAIL VIEW STYLES   */
+    /* ==================== */
+
+    .detail-view {
+      max-width: 900px;
+      background: #000;
+      border: 1px solid #2f3336;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .detail-header {
+      padding: 24px;
+      border-bottom: 1px solid #2f3336;
+    }
+
+    .detail-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+
+    .detail-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #e7e9ea;
+      margin-bottom: 8px;
+    }
+
+    .detail-instructor {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d9bf0;
+      font-size: 14px;
+    }
+
+    .detail-instructor img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #2f3336;
+    }
+
+    .detail-enroll-btn {
+      background: #10b981;
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .detail-stats-line {
+      font-size: 15px;
+      color: #e7e9ea;
+      padding: 12px 0;
+      border-top: 1px solid #2f3336;
+      border-bottom: 1px solid #2f3336;
+      margin: 16px 0;
+    }
+
+    .detail-stats-line span {
+      color: #71767b;
+    }
+
+    .detail-description {
+      font-size: 15px;
+      color: #e7e9ea;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .detail-whats-included {
+      margin-bottom: 20px;
+    }
+
+    .detail-whats-included h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .detail-benefits-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .detail-benefits-list li {
+      font-size: 14px;
+      color: #e7e9ea;
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .detail-benefits-list .bullet {
+      color: #71767b;
+    }
+
+    .detail-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid #2f3336;
+      margin-top: 16px;
+    }
+
+    .detail-tab {
+      background: none;
+      border: none;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #71767b;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .detail-tab.active {
+      color: #e7e9ea;
+      font-weight: 700;
+      border-bottom-color: #1d9bf0;
+    }
+
+    .detail-content {
+      display: flex;
+      gap: 32px;
+      padding: 24px;
+    }
+
+    .detail-main {
+      flex: 1;
+    }
+
+    .detail-sidebar {
+      width: 300px;
+      flex-shrink: 0;
+    }
+
+    .video-placeholder {
+      background: #16181c;
+      border-radius: 12px;
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      border: 1px solid #2f3336;
+    }
+
+    .play-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 20px;
+    }
+
+    .sidebar-card {
+      background: #16181c;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid #2f3336;
+    }
+
+    .sidebar-card h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Course Card & Detail View Mockups</h1>
+  <p style="color: #71767b; margin-bottom: 40px;">Final proposed designs</p>
+
+  <!-- ==================== -->
+  <!-- SUMMARY CARD SECTION -->
+  <!-- ==================== -->
+
+  <div class="mockup-section">
+    <h2>Summary Card (Discover Page)</h2>
+
+    <div class="label">Proposed - Stats and benefits below thumbnail</div>
+
+    <div class="course-card">
+      <!-- Top row: thumbnail, title/description, enroll button -->
+      <div class="course-card-top">
+        <div class="course-thumbnail"></div>
+        <div class="course-info">
+          <div class="course-title">AI Prompting Mastery</div>
+          <div class="course-description">
+            Learn to write effective AI prompts for business use. Master the art of communicating with AI to boost your productivity.
+          </div>
+        </div>
+        <button class="enroll-btn">Enroll $450</button>
+      </div>
+
+      <!-- Bottom row: stats and benefits (full width) -->
+      <div class="course-bottom">
+        <div class="course-stats">
+          <span style="color: #fbbf24;">★</span> 4.8 (234) <span>•</span> 1,250 students <span>•</span> 5 Modules <span>•</span> 12 hours
+        </div>
+        <div class="course-benefits" style="font-size: 14px; color: #e7e9ea;">
+          <span class="benefit">• Full curriculum</span>
+          <span class="benefit">• 1-on-1 sessions with Student-Teacher</span>
+          <span class="benefit">• Access to AI Prompters Community</span>
+          <span class="benefit">• Certificate</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== -->
+  <!-- DETAIL VIEW SECTION  -->
+  <!-- ==================== -->
+
+  <div class="mockup-section">
+    <h2>Detail View (Course Page)</h2>
+
+    <div class="label" style="margin-bottom: 20px;">Proposed - Stats and benefits under title, "About This Course" removed</div>
+
+    <div class="detail-view">
+      <div class="detail-header">
+        <div class="detail-title-row">
+          <div style="flex: 1;">
+            <h1 class="detail-title">AI Prompting Mastery</h1>
+            <div class="detail-instructor">
+              <div style="width: 24px; height: 24px; border-radius: 50%; background: #2f3336;"></div>
+              Guy Rymberg
+            </div>
+          </div>
+          <button class="detail-enroll-btn">Enroll for $450</button>
+        </div>
+
+        <!-- Stats line directly under title -->
+        <div class="detail-stats-line">
+          <span style="color: #fbbf24;">★</span> 4.8 (234) <span>•</span> 1,250 students <span>•</span> 5 Modules <span>•</span> 12 Lessons <span>•</span> 12 hours
+        </div>
+
+        <!-- Description flows naturally (no "About This Course" heading) -->
+        <div class="detail-description">
+          Learn to write effective AI prompts for business use. Master the art of communicating with AI to boost your productivity. This comprehensive course teaches you the fundamentals and advanced techniques of prompt engineering.
+        </div>
+
+        <!-- What's Included section -->
+        <div class="detail-whats-included">
+          <h3>What's Included</h3>
+          <div class="course-benefits" style="font-size: 15px; color: #e7e9ea;">
+            <span class="benefit">• Full curriculum</span>
+            <span class="benefit">• 1-on-1 sessions with Student-Teacher</span>
+            <span class="benefit">• Access to AI Prompters Community</span>
+            <span class="benefit">• Certificate</span>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="detail-tabs">
+          <button class="detail-tab active">Overview</button>
+          <button class="detail-tab">Course Feed</button>
+          <button class="detail-tab">Curriculum</button>
+          <button class="detail-tab">Reviews</button>
+        </div>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-main">
+          <div class="video-placeholder">
+            <div class="play-btn">▶</div>
+          </div>
+
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">What you'll learn</h3>
+          <ul style="padding-left: 20px; margin-bottom: 24px;">
+            <li style="margin-bottom: 8px;">Prompt fundamentals and best practices</li>
+            <li style="margin-bottom: 8px;">Advanced prompting techniques</li>
+            <li style="margin-bottom: 8px;">Business applications of AI</li>
+          </ul>
+
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Topics</h3>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="background: #2f3336; padding: 8px 16px; border-radius: 20px; font-size: 14px;">AI</span>
+            <span style="background: #2f3336; padding: 8px 16px; border-radius: 20px; font-size: 14px;">Prompting</span>
+            <span style="background: #2f3336; padding: 8px 16px; border-radius: 20px; font-size: 14px;">Business</span>
+          </div>
+        </div>
+
+        <div class="detail-sidebar">
+          <div class="sidebar-card">
+            <h4>Instructor</h4>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <div style="width: 48px; height: 48px; border-radius: 50%; background: #2f3336;"></div>
+              <div>
+                <div style="font-weight: 600; font-size: 15px;">Guy Rymberg</div>
+                <div style="font-size: 13px; color: #71767b;">AI Prompting Specialist</div>
+              </div>
+            </div>
+            <p style="font-size: 14px; color: #9ca3af; line-height: 1.5;">
+              AI teaching specialist with 15 years experience in AI and machine learning...
+            </p>
+            <button style="width: 100%; margin-top: 12px; background: transparent; border: 1px solid #536471; color: #e7e9ea; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">
+              View All Courses
+            </button>
+          </div>
+
+          <div class="sidebar-card" style="text-align: center;">
+            <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">$450</div>
+            <div style="font-size: 14px; color: #71767b; margin-bottom: 16px;">One-time payment · Lifetime access</div>
+            <button style="width: 100%; background: #10b981; color: #fff; border: none; padding: 14px 24px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 8px;">
+              Enroll Now
+            </button>
+            <button style="width: 100%; background: transparent; border: 1px solid #536471; color: #e7e9ea; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">
+              Follow Course (Free)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+# Vibe Coding 101 - Course Information
+# PeerLoop Course Metadata
+
+course:
+  title: "Vibe Coding 101"
+  slug: "vibe-coding-101"
+  tagline: "Build and deploy real websites with AI - from idea to production"
+
+pricing:
+  amount: 249
+  currency: "USD"
+
+instructor:
+  name: "Guy Rymberg or Gabriel Rymberg"
+  role: "Instructor"
+  title: "AI & Automation Expert"
+
+course_stats:
+  sessions: 2
+  total_duration: "3 hours"
+  modules: 8
+  lessons: 16
+  format: "Live 1-on-1 sessions"
+  access: "Lifetime Access"
+  certificate: true
+  certificate_name: "Certificate of Completion"
+
+prerequisites:
+  required:
+    - "Completion of 'Intro to Claude Code' course OR equivalent Claude Code knowledge"
+    - "Computer with terminal (Windows or Mac)"
+    - "Claude account (Pro or Max plan)"
+    - "GitHub account (free)"
+  nice_to_have:
+    - "Basic understanding of web concepts (HTML, CSS)"
+  not_required:
+    - "No advanced coding experience needed"
+    - "No deployment experience required"
+
+target_audience:
+  - "Intro to Claude Code graduates ready for real projects"
+  - "Non-coders who want to build and deploy websites"
+  - "Entrepreneurs needing landing pages or simple sites"
+  - "AI enthusiasts wanting structured project workflows"
+
+topics:
+  - "Vibe Coding"
+  - "AI Development"
+  - "GitHub"
+  - "Vercel Deployment"
+  - "Web Development"
+  - "Project Planning"
+  - "Q-System"
+
+course_outcomes:
+  - "Plan and architect web projects with AI guidance"
+  - "Build complete websites using the 6-phase vibe coding methodology"
+  - "Set up GitHub repositories and manage code with git"
+  - "Deploy production websites to Vercel"
+  - "Troubleshoot and debug AI-generated code effectively"
+  - "Understand tool limitations and when to use integrations"
+  - "Use Q-System for session management across long projects"
+  - "Make strategic technical decisions (deployment, stack, architecture)"

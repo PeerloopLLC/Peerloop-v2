@@ -680,6 +680,76 @@
 
 **Next session:** Decide on video solution and complete the integration
 
+---
+
+### Session 18
+**Date:** January 17, 2026
+**Phase:** Building - UI Polish
+
+**What we did:**
+
+- **Course Detail View Layout:**
+  - Moved instructor profile directly under course title (before description)
+  - Made description show full text at top instead of truncated
+  - Removed duplicate description from Overview tab section
+
+- **Sidebar Menu Styling:**
+  - Removed gray background from Community selector (matched nav item styling)
+  - Updated font size/weight to match other menu items (18px/20px, weight 400)
+  - Fixed spacing between menu items (consistent 4px gaps)
+
+- **Discover View Improvements:**
+  - Added localStorage persistence for active filter pill
+  - Added scroll position persistence
+  - **Implemented sticky collapsible header** (main feature):
+    - Header sticks to top with frosted glass effect
+    - "Discover Communities and Courses" title collapses when scrolling
+    - Search bar and filter pills shrink to compact size
+    - Auto-expands when scrolled back to top
+    - Smooth 0.3s transitions throughout
+
+**Files modified:**
+- `my-project/code/src/components/CourseDetailView.js`
+- `my-project/code/src/components/DiscoverView.js`
+- `my-project/code/src/components/Sidebar.css`
+
+**Commits:**
+- fc6dbd4: Add sticky collapsible headers, improve course detail layout
+
+**Deployed:** Published to GitHub Pages
+
+---
+
+## NOTES FOR NEXT SESSION
+
+### BBB iPad Alternative - Popup Window Approach
+User wants to explore using `window.open()` for BBB on iPad instead of iframe:
+
+```javascript
+function openBBBPopup() {
+  const bbbUrl = 'https://your-bbb-server/join?meetingID=xyz&name=User';
+  window.open(bbbUrl, 'bbbPopup', 'width=1024,height=768,resizable=yes,scrollbars=yes,status=yes');
+}
+```
+
+**Why it might work better:**
+- iOS Safari allows popups when triggered by direct user interaction
+- Popup windows don't have same cross-origin restrictions as iframes
+- BBB's WebRTC (camera/mic) works better in full browser context
+
+**Considerations:**
+- On iPad, `window.open()` often opens new tab (not true popup) - functionally fine
+- User-agent detection for iPad is outdated; use feature detection:
+  ```javascript
+  const isIPad = navigator.maxTouchPoints > 0 && /MacIntel/.test(navigator.platform);
+  ```
+- Alternative: Use `target="_blank"` link styled as button for reliable iPad behavior
+- The sliding panel already implemented (commit c10c762) may be cleaner solution
+
+**Decision needed:** Test popup approach vs keep current sliding panel for BBB on iPad.
+
+---
+
 <!-- Add more sessions as needed -->
 
 ---
