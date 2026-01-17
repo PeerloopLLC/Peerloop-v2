@@ -446,7 +446,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                     ? 'The Commons'
                     : `${selectedCommunity.name || 'Community'}`}
                 </span>
-                <span className="community-selector-count">{communities.length} {communities.length === 1 ? 'community' : 'communities'}</span>
+                <span className="community-selector-count">Choose A Community Feed</span>
               </div>
               {hasFollowedCommunities && (
                 <span className="community-selector-arrow">&rarr;</span>
