@@ -280,33 +280,37 @@ function App() {
     <ErrorBoundary>
       <div className={`app ${isDarkMode ? 'dark-mode' : ''} ${device.deviceType}`}>
         {/* Left Sidebar - Navigation and user profile */}
-        {isCreatorMode ? (
-          <CreatorSidebar
-            onMenuChange={handleMenuChange}
-            activeMenu={activeMenu}
-            currentUser={currentUser}
-            onBackToMain={handleBackToMain}
-            isDarkMode={isDarkMode}
-            toggleDarkMode={toggleDarkMode}
-            device={device}
-          />
-        ) : (
-          <Sidebar
-            onMenuChange={handleMenuChange}
-            activeMenu={activeMenu}
-            currentUser={currentUser}
-            onSelectCommunity={(community) => {
-              // Store selected community in localStorage for Community component to pick up
-              localStorage.setItem('pendingCommunityCreator', JSON.stringify({
-                id: community.id,
-                name: community.name
-              }));
-            }}
-          />
+        {/* Hide sidebar when creator/admin views Dashboard (full-width dashboard) */}
+        {activeMenu === 'Dashboard' && (currentUser?.userType === 'creator' || currentUser?.userType === 'admin') ? null : (
+          isCreatorMode ? (
+            <CreatorSidebar
+              onMenuChange={handleMenuChange}
+              activeMenu={activeMenu}
+              currentUser={currentUser}
+              onBackToMain={handleBackToMain}
+              isDarkMode={isDarkMode}
+              toggleDarkMode={toggleDarkMode}
+              device={device}
+            />
+          ) : (
+            <Sidebar
+              onMenuChange={handleMenuChange}
+              activeMenu={activeMenu}
+              currentUser={currentUser}
+              onSelectCommunity={(community) => {
+                // Store selected community in localStorage for Community component to pick up
+                localStorage.setItem('pendingCommunityCreator', JSON.stringify({
+                  id: community.id,
+                  name: community.name
+                }));
+              }}
+            />
+          )
         )}
 
         {/* Feeds Slideout Panel - Substack-style slide-out for community selection */}
-        {!isCreatorMode && (
+        {/* Hide when in creator mode or when creator views Dashboard */}
+        {!isCreatorMode && !(activeMenu === 'Dashboard' && (currentUser?.userType === 'creator' || currentUser?.userType === 'admin')) && (
           <FeedsSlideoutPanel
             currentUser={currentUser}
             onSelectCommunity={(community) => {

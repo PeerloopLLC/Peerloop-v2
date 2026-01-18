@@ -1147,12 +1147,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         </div>
       );
     }
-    // Creators and Admins see Creator Dashboard
+    // Creators and Admins see Creator Dashboard (full-width, no sidebar)
     if (currentUser?.userType === 'creator' || currentUser?.userType === 'admin' ||
         currentUser?.roles?.includes('creator') || currentUser?.roles?.includes('instructor')) {
       return (
-        <div className="main-content">
-          <CreatorDashboard isDarkMode={isDarkMode} currentUser={currentUser} />
+        <div className="main-content full-width">
+          <CreatorDashboard isDarkMode={isDarkMode} currentUser={currentUser} onMenuChange={onMenuChange} />
         </div>
       );
     }

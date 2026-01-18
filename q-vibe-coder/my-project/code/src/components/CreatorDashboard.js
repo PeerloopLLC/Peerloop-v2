@@ -7,7 +7,7 @@ import {
   FaChevronRight
 } from 'react-icons/fa';
 
-const CreatorDashboard = ({ isDarkMode = true, currentUser = null }) => {
+const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange = null }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [expandedCertRequest, setExpandedCertRequest] = useState(0); // First one expanded by default
 
@@ -1899,13 +1899,36 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null }) => {
         top: 0,
         zIndex: 100
       }}>
-        {/* Logo */}
-        <div style={{
-          fontSize: 24,
-          fontWeight: 700,
-          color: accentBlue
-        }}>
-          ∞
+        {/* Logo with Back Button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {onMenuChange && (
+            <button
+              onClick={() => onMenuChange('My Community')}
+              style={{
+                padding: '6px 12px',
+                background: isDarkMode ? '#2f3336' : '#e2e8f0',
+                border: 'none',
+                borderRadius: 6,
+                color: textSecondary,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 13,
+                fontWeight: 500
+              }}
+            >
+              <FaChevronLeft style={{ fontSize: 10 }} />
+              Back
+            </button>
+          )}
+          <div style={{
+            fontSize: 24,
+            fontWeight: 700,
+            color: accentBlue
+          }}>
+            ∞
+          </div>
         </div>
 
         {/* Navigation Tabs with Arrows */}

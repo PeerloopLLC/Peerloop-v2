@@ -29,16 +29,17 @@ const demoUsers = [
     stats: { coursesCompleted: 12, coursesTeaching: 3, studentsHelped: 47, avgRating: 4.9, totalEarnings: 2340 }
   },
   {
-    id: 'demo_jamie',
-    name: 'Jamie Chen',
-    username: '@jamiechen',
-    email: 'jamie@demo.com',
-    roles: ['creator', 'instructor'],
+    id: 'GuyRymberg',
+    name: 'Guy Rymberg',
+    username: '@GuyRymberg',
+    email: 'guy@demo.com',
+    roles: ['creator'],
     userType: 'creator',
-    avatar: 'https://i.pravatar.cc/150?img=47',
-    bio: 'Full-stack developer and course creator with 10+ years experience.',
-    location: 'New York, NY',
-    stats: { coursesCompleted: 28, coursesTeaching: 8, studentsHelped: 234, avgRating: 4.95, totalEarnings: 12500 }
+    avatar: null,
+    avatarColor: '#1d9bf0',
+    bio: 'AI teaching specialist. Created AI Prompting Mastery. Learn, Teach, Earn.',
+    location: 'San Francisco, CA',
+    stats: { coursesCompleted: 0, coursesCreated: 1, studentsEnrolled: 127, studentTeachers: 3, avgRating: 4.9, totalEarnings: 8573 }
   },
   {
     id: 'demo_sarah',
