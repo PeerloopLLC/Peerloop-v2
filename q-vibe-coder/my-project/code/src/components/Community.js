@@ -43,6 +43,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   // Commons feed selection (permanent pills in The Commons)
   const [commonsSelectedFeed, setCommonsSelectedFeed] = useState('main'); // 'main', '1', '2', or '3'
 
+  // Welcome video popup - opens when user clicks thumbnail
+  const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
+
+  const closeWelcomeVideo = () => {
+    setShowWelcomeVideo(false);
+  };
+
   // Community navigation style preference from Profile settings
   const [communityNavStyle, setCommunityNavStyle] = useState(() => {
     const saved = localStorage.getItem('communityNavStyle');
@@ -1008,6 +1015,83 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
 
   return (
     <div className="community-content-outer" style={{ background: isDarkMode ? '#000' : '#fff' }}>
+      {/* Welcome Video Popup Modal */}
+      {showWelcomeVideo && (
+        <div
+          onClick={closeWelcomeVideo}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: 20
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: 800,
+              background: isDarkMode ? '#1a1a1a' : '#fff',
+              borderRadius: 16,
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)'
+            }}
+          >
+            {/* Close button */}
+            <button
+              onClick={closeWelcomeVideo}
+              style={{
+                position: 'absolute',
+                top: 12,
+                right: 12,
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                border: 'none',
+                background: 'rgba(0, 0, 0, 0.6)',
+                color: '#fff',
+                fontSize: 20,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+                transition: 'background 0.2s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)'}
+            >
+              ✕
+            </button>
+            {/* Video */}
+            <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+              <iframe
+                src="https://player.vimeo.com/video/1155787226?autoplay=1"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 'none'
+                }}
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                title="Welcome to PeerLoop"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="community-three-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
         <div ref={feedContainerRef} className="community-center-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
 
@@ -1801,7 +1885,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 >
                   Main Hall
                 </button>
-                {['Ask AI', '2', '3'].map(num => (
+                {['Ask AI'].map(num => (
                   <button
                     key={num}
                     onClick={() => setCommonsSelectedFeed(num)}
@@ -2439,26 +2523,54 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)'
                 }}
               >
-                {/* Video Placeholder - Left Side */}
-                <div style={{
-                  width: 240,
-                  height: 160,
-                  flexShrink: 0,
-                  background: isDarkMode ? '#2f3336' : '#f7f9f9',
-                  borderRadius: 10,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: isDarkMode ? '1px solid #3f4448' : '1px solid #e1e8ed',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? '#3f4448' : '#eff3f4'}
-                onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'}
+                {/* Video Thumbnail - Click to open popup */}
+                <div
+                  onClick={() => setShowWelcomeVideo(true)}
+                  style={{
+                    width: 240,
+                    height: 160,
+                    flexShrink: 0,
+                    background: isDarkMode ? '#2f3336' : '#f0f0f0',
+                    borderRadius: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'transform 0.2s ease'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <FaPlay style={{ fontSize: 32, color: '#1d9bf0', opacity: 0.8 }} />
-                    <span style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }}>Watch video</span>
+                  {/* Thumbnail image from Vimeo */}
+                  <img
+                    src="https://vumbnail.com/1155787226.jpg"
+                    alt="Welcome video thumbnail"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0
+                    }}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  {/* Play button overlay */}
+                  <div style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: '50%',
+                    background: 'rgba(0, 0, 0, 0.7)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 2
+                  }}>
+                    <FaPlay style={{ fontSize: 24, color: '#fff', marginLeft: 4 }} />
                   </div>
                 </div>
 
