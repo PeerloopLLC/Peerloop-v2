@@ -280,32 +280,30 @@ function App() {
     <ErrorBoundary>
       <div className={`app ${isDarkMode ? 'dark-mode' : ''} ${device.deviceType}`}>
         {/* Left Sidebar - Navigation and user profile */}
-        {/* Hide sidebar when creator/admin views Dashboard (full-width dashboard) */}
-        {activeMenu === 'Dashboard' && (currentUser?.userType === 'creator' || currentUser?.userType === 'admin') ? null : (
-          isCreatorMode ? (
-            <CreatorSidebar
-              onMenuChange={handleMenuChange}
-              activeMenu={activeMenu}
-              currentUser={currentUser}
-              onBackToMain={handleBackToMain}
-              isDarkMode={isDarkMode}
-              toggleDarkMode={toggleDarkMode}
-              device={device}
-            />
-          ) : (
-            <Sidebar
-              onMenuChange={handleMenuChange}
-              activeMenu={activeMenu}
-              currentUser={currentUser}
-              onSelectCommunity={(community) => {
-                // Store selected community in localStorage for Community component to pick up
-                localStorage.setItem('pendingCommunityCreator', JSON.stringify({
-                  id: community.id,
-                  name: community.name
-                }));
-              }}
-            />
-          )
+        {/* Always show sidebar - creators get Sidebar, creator mode gets CreatorSidebar */}
+        {isCreatorMode ? (
+          <CreatorSidebar
+            onMenuChange={handleMenuChange}
+            activeMenu={activeMenu}
+            currentUser={currentUser}
+            onBackToMain={handleBackToMain}
+            isDarkMode={isDarkMode}
+            toggleDarkMode={toggleDarkMode}
+            device={device}
+          />
+        ) : (
+          <Sidebar
+            onMenuChange={handleMenuChange}
+            activeMenu={activeMenu}
+            currentUser={currentUser}
+            onSelectCommunity={(community) => {
+              // Store selected community in localStorage for Community component to pick up
+              localStorage.setItem('pendingCommunityCreator', JSON.stringify({
+                id: community.id,
+                name: community.name
+              }));
+            }}
+          />
         )}
 
         {/* Feeds Slideout Panel - Substack-style slide-out for community selection */}

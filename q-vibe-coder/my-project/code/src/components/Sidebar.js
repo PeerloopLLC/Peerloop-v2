@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import './Sidebar.css';
-import {  FaSearch,  FaBell,  FaEnvelope,  FaUser,  FaUsers,  FaChalkboardTeacher,  FaBook,  FaInfoCircle} from 'react-icons/fa';
+import {  FaSearch,  FaBell,  FaEnvelope,  FaUser,  FaUsers,  FaChalkboardTeacher,  FaBook,  FaInfoCircle,  FaCog} from 'react-icons/fa';
 import useDeviceDetect from '../hooks/useDeviceDetect';
 
 /**
@@ -213,6 +213,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
     ...(showDashboard ? [{ icon: <FaChalkboardTeacher />, label: 'Dashboard', displayLabel: 'Dashboard' }] : []), // User dashboard (only for creators/admins)
     { icon: <FaUser />, label: 'Profile', displayLabel: 'Profile' }, // User profile
+    { icon: <FaCog />, label: 'Settings', displayLabel: 'Settings' }, // Settings menu
   ];
 
   /**
@@ -580,50 +581,54 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           </div>
         ))}
 
-        {/* Divider line */}
-        <div className="nav-section-divider" />
+        {/* Divider line and My Feeds - hidden when slideout panel is selected */}
+        {communityNavStyle !== 'slideout' && (
+          <>
+            <div className="nav-section-divider" />
 
-        {/* Scrollable Communities Section - My Feeds at bottom of sidebar */}
-        <div
-          className="sidebar-communities-section"
-        >
-          <div className="communities-header">
-            <span className="communities-title">My Feeds</span>
-          </div>
-          <div className="communities-list">
-            {/* The Commons - always first */}
+            {/* Scrollable Communities Section - My Feeds at bottom of sidebar */}
             <div
-              className="community-item"
-              onClick={() => { setIsFlyoutOpen(false); handleCommunitySelect(townHall); }}
+              className="sidebar-communities-section"
             >
-              <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" className="community-avatar community-avatar-img" />
-              <span className="community-name">The Commons</span>
-            </div>
-            {/* Followed creator communities */}
-            {communities.map((community) => {
-              const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
-              const initial = displayName.charAt(0).toUpperCase();
-              return (
+              <div className="communities-header">
+                <span className="communities-title">My Feeds</span>
+              </div>
+              <div className="communities-list">
+                {/* The Commons - always first */}
                 <div
-                  key={community.id}
                   className="community-item"
-                  onClick={() => { setIsFlyoutOpen(false); handleCommunitySelect(community); }}
+                  onClick={() => { setIsFlyoutOpen(false); handleCommunitySelect(townHall); }}
                 >
-                  {community.avatar ? (
-                    <img
-                      src={community.avatar}
-                      alt={displayName}
-                      className="community-avatar community-avatar-img"
-                    />
-                  ) : (
-                    <div className="community-avatar">{initial}</div>
-                  )}
-                  <span className="community-name">{displayName} Community</span>
+                  <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" className="community-avatar community-avatar-img" />
+                  <span className="community-name">The Commons</span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+                {/* Followed creator communities */}
+                {communities.map((community) => {
+                  const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
+                  const initial = displayName.charAt(0).toUpperCase();
+                  return (
+                    <div
+                      key={community.id}
+                      className="community-item"
+                      onClick={() => { setIsFlyoutOpen(false); handleCommunitySelect(community); }}
+                    >
+                      {community.avatar ? (
+                        <img
+                          src={community.avatar}
+                          alt={displayName}
+                          className="community-avatar community-avatar-img"
+                        />
+                      ) : (
+                        <div className="community-avatar">{initial}</div>
+                      )}
+                      <span className="community-name">{displayName} Community</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
 
       </nav>
     </div>

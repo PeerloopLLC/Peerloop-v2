@@ -114,12 +114,7 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
   }, []);
 
   const profileSections = [
-    { id: 'edit-profile', label: 'Profile', icon: <FaEdit /> },
-    { id: 'bookmarks', label: 'Bookmarks', icon: <FaBookmark /> },
-    { id: 'history', label: 'History', icon: <FaHistory /> },
-    { id: 'settings', label: 'Settings', icon: <FaCog /> },
-    { id: 'privacy', label: 'Privacy & Security', icon: <FaShieldAlt /> },
-    { id: 'help', label: 'Help & Support', icon: <FaQuestionCircle /> }
+    { id: 'edit-profile', label: 'Profile', icon: <FaEdit /> }
   ];
 
   // Sub-tab state for Edit Profile section

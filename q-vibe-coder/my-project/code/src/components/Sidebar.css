@@ -1,18 +1,16 @@
 .sidebar {
-  width: 270px;
+  width: 275px;
   height: 100vh;
   border-right: 1px solid #e1e8ed;
-  padding: 0 4px;
+  padding: 0 12px;
   display: flex;
   flex-direction: column;
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
   z-index: 1070; /* Higher than slideout panel (1060) so sidebar is always visible */
   background-color: #ffffff;
   transition: width 0.3s ease;
   flex-shrink: 0;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
 }
 
 /* Collapsed sidebar for mobile/tablet devices (non-desktop) */
@@ -28,7 +26,9 @@
 .sidebar.sidebar-collapsed .post-btn span,
 .sidebar.sidebar-collapsed .profile-details,
 .sidebar.sidebar-collapsed .profile-menu,
-.sidebar.sidebar-collapsed .toggle-label {
+.sidebar.sidebar-collapsed .toggle-label,
+.sidebar.sidebar-collapsed .sidebar-communities-section,
+.sidebar.sidebar-collapsed .nav-section-divider {
   display: none;
 }
 
@@ -150,12 +150,12 @@
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 10px 14px;
+  padding: 12px 12px;
   border-radius: 9999px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
-  font-size: 18px;
+  font-size: 21px;
   font-weight: 400;
   color: var(--text-darkness, #536471);
   position: relative;
@@ -176,16 +176,16 @@
 }
 
 .nav-icon {
-  margin-right: 16px;
-  width: 22px;
-  height: 22px;
+  margin-right: 18px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .nav-label {
-  font-size: 18px;
+  font-size: 21px;
   color: var(--text-darkness, inherit);
   white-space: nowrap;
   overflow: hidden;
@@ -498,7 +498,7 @@
 
 .dark-mode .nav-item {
   color: #e7e9ea;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 400;
 }
 
@@ -518,7 +518,7 @@
 
 .dark-mode .nav-label {
   color: #e7e9ea;
-  font-size: 20px;
+  font-size: 21px;
 }
 
 .dark-mode .nav-item.active .nav-label {

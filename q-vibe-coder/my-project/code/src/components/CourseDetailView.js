@@ -8,7 +8,7 @@ import './MainContent.css';
  * Shows detailed view of a course with tabs and two-column layout
  * Merged design: combines marketing view (pre-enrollment) with learning dashboard (post-enrollment)
  */
-const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange }) => {
+const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange, scheduledSessions = [] }) => {
   // Check if this specific course is being followed (within creator's followedCourseIds)
   const [isFollowing, setIsFollowing] = useState(() => {
     if (!course) return false;
@@ -58,6 +58,20 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
     if (!currentUser?.name) return 'U';
     return currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
+
+  // Format date for display
+  const formatDateForDisplay = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr + 'T00:00:00');
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    return `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  };
+
+  // Get scheduled sessions for this course
+  const courseScheduledSessions = scheduledSessions
+    .filter(s => s.courseId === course?.id && s.status === 'scheduled')
+    .sort((a, b) => a.date.localeCompare(b.date));
 
   // Handle post submission
   const handleSubmitPost = async () => {
@@ -324,6 +338,149 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
               }}>
                 <FaCheck style={{ fontSize: 10 }} /> ENROLLED · Started {enrollmentData.enrolledDate}
               </span>
+            )}
+
+            {/* Scheduled Session Section - For enrolled users */}
+            {isCoursePurchased && (
+              <div style={{
+                background: courseScheduledSessions.length > 0
+                  ? 'rgba(29, 155, 240, 0.08)'
+                  : (isDarkMode ? '#16181c' : '#f7f9f9'),
+                border: courseScheduledSessions.length > 0
+                  ? '1px solid rgba(29, 155, 240, 0.3)'
+                  : (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb'),
+                borderRadius: 12,
+                padding: 16,
+                marginTop: 12,
+                marginBottom: 12
+              }}>
+                {courseScheduledSessions.length > 0 ? (
+                  <>
+                    <div style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: '#1d9bf0',
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.5,
+                      marginBottom: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6
+                    }}>
+                      📅 {courseScheduledSessions.length === 1 ? 'YOUR NEXT SESSION' : 'YOUR UPCOMING SESSIONS'}
+                    </div>
+                    {courseScheduledSessions.slice(0, 3).map((session, idx) => (
+                      <div
+                        key={session.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: idx > 0 ? '8px 0 0 0' : 0,
+                          borderTop: idx > 0 ? (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb') : 'none',
+                          marginTop: idx > 0 ? 8 : 0
+                        }}
+                      >
+                        <div>
+                          <div style={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                          }}>
+                            {formatDateForDisplay(session.date)}
+                          </div>
+                          <div style={{
+                            fontSize: 14,
+                            color: isDarkMode ? '#71767b' : '#536471',
+                            marginTop: 2
+                          }}>
+                            {session.time} with {session.studentTeacherName}
+                          </div>
+                        </div>
+                        {idx === 0 && (
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <button
+                              onClick={handleJoinSession}
+                              disabled={isJoiningSession}
+                              style={{
+                                background: '#1d9bf0',
+                                color: '#fff',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: 20,
+                                fontSize: 13,
+                                fontWeight: 600,
+                                cursor: isJoiningSession ? 'wait' : 'pointer',
+                                opacity: isJoiningSession ? 0.7 : 1
+                              }}
+                            >
+                              {isJoiningSession ? 'Joining...' : 'Join Session'}
+                            </button>
+                            <button
+                              style={{
+                                background: 'transparent',
+                                color: isDarkMode ? '#71767b' : '#536471',
+                                border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                                padding: '8px 12px',
+                                borderRadius: 20,
+                                fontSize: 13,
+                                fontWeight: 500,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {courseScheduledSessions.length > 3 && (
+                      <div style={{
+                        marginTop: 12,
+                        fontSize: 13,
+                        color: '#1d9bf0',
+                        cursor: 'pointer'
+                      }}>
+                        +{courseScheduledSessions.length - 3} more sessions
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: isDarkMode ? '#71767b' : '#6b7280',
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.5,
+                      marginBottom: 8
+                    }}>
+                      📅 NO UPCOMING SESSION
+                    </div>
+                    <div style={{
+                      fontSize: 14,
+                      color: isDarkMode ? '#9ca3af' : '#536471',
+                      marginBottom: 12
+                    }}>
+                      You haven't scheduled a session for this course yet.
+                    </div>
+                    <button
+                      style={{
+                        background: '#1d9bf0',
+                        color: '#fff',
+                        border: 'none',
+                        padding: '10px 20px',
+                        borderRadius: 20,
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Schedule a Session
+                    </button>
+                  </>
+                )}
+              </div>
             )}
 
             {/* Stats Line */}

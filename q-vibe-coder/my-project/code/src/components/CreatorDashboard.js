@@ -320,7 +320,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
 
   // Render Overview Tab
   const renderOverviewTab = () => (
-    <div style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: 24, maxWidth: 1400 }}>
       {/* Welcome Header */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{
@@ -691,7 +691,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
     const chartHeight = 120;
 
     return (
-      <div style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
+      <div style={{ padding: 24, maxWidth: 1400 }}>
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
           <h1 style={{
@@ -1114,7 +1114,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
     const accentYellow = '#ffd700';
 
     return (
-      <div style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
+      <div style={{ padding: 24, maxWidth: 1400 }}>
         {/* Header with Stats */}
         <div style={{ marginBottom: 24 }}>
           <h1 style={{
@@ -1462,7 +1462,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
     const accentYellow = '#ffd700';
 
     return (
-      <div style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
+      <div style={{ padding: 24, maxWidth: 1400 }}>
         {/* Header with Stats */}
         <div style={{ marginBottom: 24 }}>
           <h1 style={{
@@ -2064,7 +2064,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {activeTab === 'students' && renderStudentsTab()}
       {activeTab === 'certifications' && renderCertificationsTab()}
       {activeTab === 'payouts' && (
-        <div style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ padding: 24, maxWidth: 1400 }}>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: textPrimary }}>
             Payouts
           </h1>
@@ -2072,7 +2072,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         </div>
       )}
       {activeTab === 'sessions' && (
-        <div style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ padding: 24, maxWidth: 1400 }}>
           <h1 style={{
             fontSize: 24,
             fontWeight: 700,
@@ -2091,7 +2091,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         </div>
       )}
       {activeTab === 'content' && (
-        <div style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ padding: 24, maxWidth: 1400 }}>
           <h1 style={{
             fontSize: 24,
             fontWeight: 700,
@@ -2110,7 +2110,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         </div>
       )}
       {activeTab === 'moderator' && (
-        <div style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ padding: 24, maxWidth: 1400 }}>
           <h1 style={{
             fontSize: 24,
             fontWeight: 700,

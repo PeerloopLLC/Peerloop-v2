@@ -15,12 +15,14 @@
   padding: 0;
 }
 
-/* Full-width mode for Creator Dashboard - takes entire screen */
+/* Full-width mode for Creator Dashboard - fills remaining space after sidebar */
 .main-content.full-width {
+  flex: 1 1 auto;
   width: 100%;
-  max-width: 100%;
-  min-width: 100%;
+  max-width: none;
+  min-width: 0;
   margin-left: 0;
+  border: none;
 }
 
 /* Two Column Layout (no right pane) */

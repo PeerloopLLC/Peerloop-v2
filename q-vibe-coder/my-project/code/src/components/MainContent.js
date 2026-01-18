@@ -420,6 +420,180 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     }
   }, [purchasedCourses, currentUser?.id]);
 
+  // Scheduled sessions - tracks booked 1-on-1 sessions with student-teachers
+  // Structure: { id, courseId, date, time, studentTeacherId, studentTeacherName, status }
+  const [scheduledSessions, setScheduledSessions] = useState(() => {
+    if (!currentUser?.id) return [];
+    try {
+      const storageKey = `scheduledSessions_${currentUser.id}`;
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // If stored data has scheduled sessions, use it; otherwise regenerate
+        if (parsed.length > 0 && parsed.some(s => s.status === 'scheduled')) {
+          return parsed;
+        }
+      }
+      // Default: sample sessions for all Guy Rymberg courses
+      // These match the purchased courses: [15, 22, 23, 24, 25]
+      const today = new Date();
+      const defaultSessions = [
+        {
+          id: 'session_1',
+          courseId: 15,
+          date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2).toISOString().split('T')[0],
+          time: '10:00 AM',
+          studentTeacherId: 'ProductPioneer42',
+          studentTeacherName: 'Patricia Parker',
+          status: 'scheduled'
+        },
+        {
+          id: 'session_2',
+          courseId: 23,
+          date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2).toISOString().split('T')[0],
+          time: '2:00 PM',
+          studentTeacherId: 'TechPM_Sarah',
+          studentTeacherName: 'Sarah Mitchell',
+          status: 'scheduled'
+        },
+        {
+          id: 'session_3',
+          courseId: 22,
+          date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5).toISOString().split('T')[0],
+          time: '11:00 AM',
+          studentTeacherId: 'BackendBoss99',
+          studentTeacherName: 'Brandon Blake',
+          status: 'scheduled'
+        },
+        {
+          id: 'session_4',
+          courseId: 24,
+          date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7).toISOString().split('T')[0],
+          time: '3:00 PM',
+          studentTeacherId: 'NeuralNetNinja',
+          studentTeacherName: 'Nathan Nguyen',
+          status: 'scheduled'
+        },
+        {
+          id: 'session_5',
+          courseId: 25,
+          date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 9).toISOString().split('T')[0],
+          time: '1:00 PM',
+          studentTeacherId: 'AIArchitect77',
+          studentTeacherName: 'Amanda Adams',
+          status: 'scheduled'
+        }
+      ];
+      // Save to localStorage immediately so it persists
+      localStorage.setItem(storageKey, JSON.stringify(defaultSessions));
+      return defaultSessions;
+    } catch (e) {
+      return [];
+    }
+  });
+
+  // Reload scheduled sessions when user changes
+  React.useEffect(() => {
+    if (!currentUser?.id) return;
+
+    // demo_new starts with no courses, so no sessions
+    if (currentUser.id === 'demo_new') {
+      setScheduledSessions([]);
+      return;
+    }
+
+    try {
+      const storageKey = `scheduledSessions_${currentUser.id}`;
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // If stored data has scheduled sessions, use it
+        if (parsed.length > 0 && parsed.some(s => s.status === 'scheduled')) {
+          setScheduledSessions(parsed);
+          return;
+        }
+      }
+
+      // Generate default sessions for all users with Guy Rymberg courses
+      const today = new Date();
+      const defaultSessions = [
+        {
+          id: 'session_1',
+          courseId: 15,
+          date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2).toISOString().split('T')[0],
+          time: '10:00 AM',
+          studentTeacherId: 'ProductPioneer42',
+          studentTeacherName: 'Patricia Parker',
+          status: 'scheduled'
+        },
+        {
+          id: 'session_2',
+          courseId: 23,
+          date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2).toISOString().split('T')[0],
+          time: '2:00 PM',
+          studentTeacherId: 'TechPM_Sarah',
+          studentTeacherName: 'Sarah Mitchell',
+          status: 'scheduled'
+        },
+        {
+          id: 'session_3',
+          courseId: 22,
+          date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5).toISOString().split('T')[0],
+          time: '11:00 AM',
+          studentTeacherId: 'BackendBoss99',
+          studentTeacherName: 'Brandon Blake',
+          status: 'scheduled'
+        },
+        {
+          id: 'session_4',
+          courseId: 24,
+          date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7).toISOString().split('T')[0],
+          time: '3:00 PM',
+          studentTeacherId: 'NeuralNetNinja',
+          studentTeacherName: 'Nathan Nguyen',
+          status: 'scheduled'
+        },
+        {
+          id: 'session_5',
+          courseId: 25,
+          date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 9).toISOString().split('T')[0],
+          time: '1:00 PM',
+          studentTeacherId: 'AIArchitect77',
+          studentTeacherName: 'Amanda Adams',
+          status: 'scheduled'
+        }
+      ];
+      localStorage.setItem(storageKey, JSON.stringify(defaultSessions));
+      setScheduledSessions(defaultSessions);
+    } catch (e) {
+      setScheduledSessions([]);
+    }
+  }, [currentUser?.id]);
+
+  // Save scheduled sessions to localStorage
+  React.useEffect(() => {
+    if (currentUser?.id && scheduledSessions.length > 0) {
+      localStorage.setItem(`scheduledSessions_${currentUser.id}`, JSON.stringify(scheduledSessions));
+    }
+  }, [scheduledSessions, currentUser?.id]);
+
+  // Helper to add a new scheduled session
+  const addScheduledSession = (session) => {
+    const newSession = {
+      ...session,
+      id: `session_${Date.now()}`
+    };
+    setScheduledSessions(prev => [...prev, newSession]);
+    return newSession;
+  };
+
+  // Helper to cancel a scheduled session
+  const cancelScheduledSession = (sessionId) => {
+    setScheduledSessions(prev => prev.map(s =>
+      s.id === sessionId ? { ...s, status: 'cancelled' } : s
+    ));
+  };
+
   // Helper to check if a course is purchased
   const isCoursePurchased = (courseId) => purchasedCourses.includes(courseId);
 
@@ -729,6 +903,42 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     saveFollowedCommunities();
   }, [followedCommunities, currentUser?.id]);
 
+  // Sync purchased courses to their community's followedCourseIds
+  // This ensures course pills show up for all enrolled courses
+  useEffect(() => {
+    if (!currentUser?.id || purchasedCourses.length === 0) return;
+
+    let needsUpdate = false;
+    const updatedCommunities = followedCommunities.map(community => {
+      // Get the instructor ID for this community
+      const instructorId = community.instructorId || parseInt(community.id?.replace('creator-', ''));
+      if (!instructorId) return community;
+
+      // Find which purchased courses belong to this instructor
+      const instructorCourseIds = purchasedCourses.filter(courseId => {
+        const course = getCourseById(courseId);
+        return course && course.instructorId === instructorId;
+      });
+
+      // Check if any are missing from followedCourseIds
+      const currentFollowed = community.followedCourseIds || [];
+      const missingCourses = instructorCourseIds.filter(id => !currentFollowed.includes(id));
+
+      if (missingCourses.length > 0) {
+        needsUpdate = true;
+        return {
+          ...community,
+          followedCourseIds: [...new Set([...currentFollowed, ...missingCourses])]
+        };
+      }
+      return community;
+    });
+
+    if (needsUpdate) {
+      setFollowedCommunities(updatedCommunities);
+    }
+  }, [purchasedCourses, currentUser?.id]); // Only run when purchasedCourses changes
+
     // 2. For each course button (dropdown and course list), use:
     // <button className={`follow-btn ${followedCourses.has(courseObj.id) ? 'following' : ''}`} ...>
     //   {followedCourses.has(courseObj.id) ? 'Following' : 'Follow'}
@@ -998,6 +1208,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             isCoursePurchased={true}
             currentUser={currentUser}
             onMenuChange={onMenuChange}
+            scheduledSessions={scheduledSessions}
           />
         </CourseDetailWrapper>
       );
@@ -1046,6 +1257,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           isCoursePurchased={false}
           currentUser={currentUser}
           onMenuChange={onMenuChange}
+          scheduledSessions={scheduledSessions}
           onEnroll={(course) => {
             setEnrollingCourse(course);
             setShowEnrollmentFlow(true);
@@ -1102,6 +1314,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         handleFollowCourse={handleFollowCourse}
         isCreatorFollowed={isCreatorFollowed}
         handleFollowInstructor={handleFollowInstructor}
+        scheduledSessions={scheduledSessions}
+        addScheduledSession={addScheduledSession}
+        cancelScheduledSession={cancelScheduledSession}
       />
     );
   }

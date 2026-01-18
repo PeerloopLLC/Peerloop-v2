@@ -745,8 +745,8 @@ body.dark-mode .creator-badge {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-width: 375px; /* Minimum for standard phones */
-  max-width: 1010px; /* 200px sidebar + 810px content */
-  margin: 0 auto;
+  max-width: 1400px; /* X.com style max-width for centered layout */
+  margin: 0 auto; /* Center the app like X.com */
   overflow-x: auto; /* Allow horizontal scroll if window is too small */
   overflow-y: hidden; /* Prevent vertical scroll on app container - only center-column should scroll */
   position: relative;
@@ -769,10 +769,16 @@ body.dark-mode .creator-badge {
   margin-left: 0;
 }
 
+/* Full-width mode for Creator Dashboard */
+.app .main-content.full-width {
+  width: auto;
+  flex: 1;
+}
+
 /* Adjust layout when sidebar collapses to icons */
 @media (max-width: 950px) {
   .app {
-    max-width: 898px; /* 88px collapsed sidebar + 810px content */
+    /* No max-width - left-justified layout */
   }
 }
 
