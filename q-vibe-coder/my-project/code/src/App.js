@@ -307,8 +307,8 @@ function App() {
         )}
 
         {/* Feeds Slideout Panel - Substack-style slide-out for community selection */}
-        {/* Hide when in creator mode or when creator views Dashboard */}
-        {!isCreatorMode && !(activeMenu === 'Dashboard' && (currentUser?.userType === 'creator' || currentUser?.userType === 'admin')) && (
+        {/* Hide when in creator mode or when creator views Workspace */}
+        {!isCreatorMode && !(activeMenu === 'Workspace' && (currentUser?.userType === 'creator' || currentUser?.userType === 'admin')) && (
           <FeedsSlideoutPanel
             currentUser={currentUser}
             onSelectCommunity={(community) => {

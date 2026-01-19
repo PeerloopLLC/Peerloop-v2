@@ -1201,8 +1201,9 @@ const BrowseView = ({
                   const purchasedCourse = enrollingCourse;
                   setEnrollingCourse(null);
                   // Use callback to navigate to My Courses with course detail
+                  // Pass both course and booking so session can be saved
                   if (onEnrollmentComplete) {
-                    onEnrollmentComplete(purchasedCourse);
+                    onEnrollmentComplete(purchasedCourse, booking);
                   } else {
                     onMenuChange('My Courses');
                   }

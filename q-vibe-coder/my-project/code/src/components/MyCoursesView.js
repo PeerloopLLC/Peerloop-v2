@@ -291,6 +291,7 @@ const MyCoursesView = ({
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'inprogress', or 'completed'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState(null); // Selected date for filtering
+  const [courseViewTab, setCourseViewTab] = useState('active'); // 'active' or 'completed'
 
   // Calculate scheduled dates from sessions (for calendar dots)
   const scheduledDates = useMemo(() => {
@@ -469,6 +470,48 @@ const MyCoursesView = ({
   const allInProgressCount = myCoursesData.filter(c => c.progress < 100).length;
   const allCompletedCount = myCoursesData.filter(c => c.progress === 100).length;
 
+  // Check if a course is completed (certified) based on sessions
+  const isCourseCompleted = (courseId) => {
+    const courseSessions = scheduledSessions.filter(s => s.courseId === courseId);
+    if (courseSessions.length === 0) return false;
+    // Course is completed if ALL sessions are completed (none scheduled)
+    const hasScheduled = courseSessions.some(s => s.status === 'scheduled');
+    const hasCompleted = courseSessions.some(s => s.status === 'completed');
+    return !hasScheduled && hasCompleted;
+  };
+
+  // Split courses into Active and Completed groups by instructor
+  const { activeCoursesGroups, completedCoursesGroups } = useMemo(() => {
+    const activeGroups = {};
+    const completedGroups = {};
+
+    myCoursesData.forEach(course => {
+      const instructorId = course.instructorId;
+      const instructor = getInstructorById(instructorId);
+      const isCompleted = isCourseCompleted(course.id) || course.progress === 100;
+
+      // Determine which group to add to
+      const targetGroups = isCompleted ? completedGroups : activeGroups;
+
+      if (!targetGroups[instructorId]) {
+        targetGroups[instructorId] = {
+          instructor,
+          courses: []
+        };
+      }
+      targetGroups[instructorId].courses.push(course);
+    });
+
+    return {
+      activeCoursesGroups: Object.values(activeGroups),
+      completedCoursesGroups: Object.values(completedGroups)
+    };
+  }, [myCoursesData, scheduledSessions]);
+
+  // Count active and completed courses
+  const activeCoursesCount = activeCoursesGroups.reduce((sum, g) => sum + g.courses.length, 0);
+  const completedCoursesCount = completedCoursesGroups.reduce((sum, g) => sum + g.courses.length, 0);
+
   // Highlight search matches
   const highlightMatch = (text, query) => {
     if (!query || !text) return text;
@@ -482,6 +525,380 @@ const MyCoursesView = ({
       ) : (
         part
       )
+    );
+  };
+
+  // Helper function to render an instructor group with courses
+  const renderInstructorGroup = (group, keyPrefix, isCompletedSection = false) => {
+    const { instructor, courses } = group;
+    const isFollowing = isCreatorFollowed ? isCreatorFollowed(instructor?.id) : false;
+
+    return (
+      <div
+        key={`${keyPrefix}-${instructor?.id || 'unknown'}`}
+        style={{
+          background: isDarkMode ? '#12121a' : '#fff',
+          borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb'
+        }}
+      >
+        {/* Instructor Profile Card */}
+        <div
+          onClick={() => {
+            if (onViewCreatorProfile) {
+              onViewCreatorProfile(instructor);
+            } else {
+              localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
+              localStorage.setItem('browseActiveTopMenu', 'creators');
+              onMenuChange && onMenuChange('Browse');
+            }
+          }}
+          style={{
+            padding: 20,
+            borderRadius: 16,
+            marginBottom: 4,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            background: isDarkMode
+              ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
+              : getUserBannerGradient()
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+        >
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 16,
+            marginBottom: 12
+          }}>
+            <div style={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              background: `linear-gradient(135deg, #6366f1 0%, #10b981 100%)`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 24,
+              fontWeight: 700,
+              color: '#fff',
+              flexShrink: 0,
+              overflow: 'hidden'
+            }}>
+              {instructor?.avatar ? (
+                <img src={instructor.avatar} alt={instructor.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                instructor?.name?.charAt(0) || '?'
+              )}
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 4,
+                marginBottom: 4
+              }}>
+                <span style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  color: isDarkMode ? '#f5f5f7' : '#111827'
+                }}>
+                  {highlightMatch(instructor?.name || 'Unknown Instructor', searchQuery)}
+                </span>
+                <span style={{
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  fontSize: 15
+                }}>
+                  @{instructor?.name?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
+                </span>
+              </div>
+              <div style={{
+                fontSize: 14,
+                color: isDarkMode ? '#a1a1aa' : '#6b7280',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+              }}>
+                <AiOutlineTeam style={{ fontSize: 16 }} />
+                <span>{(instructor?.stats?.studentsTaught || 0).toLocaleString()} followers</span>
+                <span style={{ margin: '0 4px' }}>•</span>
+                <span>{instructor?.title || 'Instructor'}</span>
+              </div>
+            </div>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleFollowInstructor && handleFollowInstructor(instructor?.id);
+              }}
+              style={{
+                background: isFollowing ? (isDarkMode ? '#2f3336' : '#eff3f4') : '#c6f432',
+                border: 'none',
+                color: isFollowing ? (isDarkMode ? '#71767b' : '#536471') : '#0f1419',
+                padding: '8px 16px',
+                borderRadius: 20,
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                transition: 'all 0.2s'
+              }}
+            >
+              {isFollowing ? 'Joined' : 'Join Community'}
+            </button>
+          </div>
+
+          {instructor?.bio && (
+            <div style={{
+              fontSize: 14,
+              lineHeight: 1.6,
+              color: isDarkMode ? '#a1a1aa' : '#4b5563',
+              paddingLeft: 72,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden'
+            }}>
+              {highlightMatch(instructor.bio, searchQuery)}
+            </div>
+          )}
+        </div>
+
+        {/* Courses List - Tree Style */}
+        <div style={{
+          paddingLeft: 48,
+          paddingRight: 20,
+          paddingBottom: 8
+        }}>
+          {courses.map((course, index) => {
+            const isLast = index === courses.length - 1;
+            const courseIsCompleted = isCourseCompleted(course.id) || course.progress === 100;
+            const isFollowed = isCourseFollowed ? isCourseFollowed(course.id) : false;
+            const thumbGradients = [
+              'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)',
+              'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
+              'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
+              'linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)'
+            ];
+
+            // Get completion date for completed courses
+            const completedSession = scheduledSessions
+              .filter(s => s.courseId === course.id && s.status === 'completed')
+              .sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0];
+
+            return (
+              <div
+                key={course.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  position: 'relative',
+                  paddingLeft: 24
+                }}
+              >
+                {/* Tree connector lines */}
+                <div style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  bottom: isLast ? '50%' : 0,
+                  width: 1,
+                  background: isDarkMode ? '#3f3f46' : '#e5e7eb'
+                }} />
+                <div style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '50%',
+                  width: 16,
+                  height: 1,
+                  background: isDarkMode ? '#3f3f46' : '#e5e7eb'
+                }} />
+
+                {/* Course Card */}
+                <div
+                  onClick={() => onViewCourse && onViewCourse(course.id)}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 12,
+                    padding: 12,
+                    marginBottom: 8,
+                    background: isDarkMode ? '#16181c' : '#f7f9f9',
+                    borderRadius: 12,
+                    cursor: 'pointer',
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
+                  }}
+                >
+                  {/* Course Thumbnail */}
+                  <div style={{
+                    width: 100,
+                    height: 70,
+                    borderRadius: 8,
+                    flexShrink: 0,
+                    background: thumbGradients[index % 4],
+                    position: 'relative'
+                  }}>
+                    {/* Certified Badge for completed courses */}
+                    {isCompletedSection && (
+                      <div style={{
+                        position: 'absolute',
+                        top: 4,
+                        right: 4,
+                        background: '#10b981',
+                        color: '#fff',
+                        padding: '2px 6px',
+                        borderRadius: 4,
+                        fontSize: 9,
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 3
+                      }}>
+                        <FaCheckCircle style={{ fontSize: 8 }} /> CERTIFIED
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Course Info */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: '#1d9bf0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8
+                    }}>
+                      {highlightMatch(course.title, searchQuery)}
+                    </div>
+                    <div style={{
+                      fontSize: 14,
+                      color: isDarkMode ? '#71767b' : '#536471',
+                      lineHeight: 1.4,
+                      marginTop: 4,
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
+                    }}>
+                      {highlightMatch(course.description, searchQuery)}
+                    </div>
+
+                    {/* Course Stats */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      marginTop: 8,
+                      fontSize: 12,
+                      color: isDarkMode ? '#71717a' : '#9ca3af'
+                    }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <AiOutlineStar style={{ color: '#fbbf24' }} /> {course.rating}
+                      </span>
+                      <span>·</span>
+                      <span>{course.students?.toLocaleString()} students</span>
+                      <span>·</span>
+                      <span>{course.duration}</span>
+                    </div>
+
+                    {/* Session Display - different for active vs completed */}
+                    {isCompletedSection ? (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        marginTop: 8,
+                        fontSize: 12,
+                        color: '#10b981'
+                      }}>
+                        <FaCheckCircle />
+                        <span>Completed: {completedSession ? formatDateForDisplay(completedSession.date) : 'Recently'}</span>
+                      </div>
+                    ) : (
+                      (() => {
+                        const nextSession = scheduledSessions
+                          .filter(s => s.courseId === course.id && s.status === 'scheduled')
+                          .sort((a, b) => a.date.localeCompare(b.date))[0];
+
+                        if (nextSession) {
+                          return (
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              marginTop: 8,
+                              fontSize: 12,
+                              color: '#1d9bf0'
+                            }}>
+                              <span>📅</span>
+                              <span>
+                                Next: {formatDateForDisplay(nextSession.date)} at {nextSession.time}
+                              </span>
+                              <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>
+                                with {nextSession.teacherName || nextSession.studentTeacherName || 'your teacher'}
+                              </span>
+                            </div>
+                          );
+                        }
+                        return (
+                          <div style={{
+                            marginTop: 8,
+                            fontSize: 12,
+                            color: isDarkMode ? '#71767b' : '#9ca3af',
+                            fontStyle: 'italic'
+                          }}>
+                            No scheduled session
+                          </div>
+                        );
+                      })()
+                    )}
+                  </div>
+
+                  {/* Action Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isCompletedSection) {
+                        // View Certificate action
+                        onViewCourse && onViewCourse(course.id);
+                      } else {
+                        handleFollowCourse && handleFollowCourse(course.id);
+                      }
+                    }}
+                    style={{
+                      background: isCompletedSection ? '#10b981' : (isDarkMode ? '#2f3336' : '#eff3f4'),
+                      border: 'none',
+                      color: isCompletedSection ? '#fff' : (isDarkMode ? '#71767b' : '#536471'),
+                      padding: '6px 16px',
+                      borderRadius: 20,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {isCompletedSection ? 'View Certificate' : (isFollowed ? 'Unfollow' : 'Follow')}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     );
   };
 
@@ -541,7 +958,7 @@ const MyCoursesView = ({
     <div className="main-content">
       <div className="three-column-layout browse-layout">
         <div className="center-column">
-          {/* Header Tabs */}
+          {/* Header - Title and Search */}
           <div className="top-menu-section" style={{
             borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
             padding: '0 16px',
@@ -554,60 +971,23 @@ const MyCoursesView = ({
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 8,
-            flexWrap: 'nowrap',
             minHeight: 52
           }}>
-            {/* Left spacer */}
-            <div style={{ flex: '1 1 0', minWidth: 0, maxWidth: 150 }} />
-
-            {/* Centered tabs */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              flex: '0 0 auto'
+            {/* Title */}
+            <h1 style={{
+              fontSize: 18,
+              fontWeight: 700,
+              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+              margin: 0
             }}>
-              {[
-                { id: 'all', label: `All (${myCoursesData.length})` },
-                { id: 'inprogress', label: `In Progress (${allInProgressCount})` },
-                { id: 'completed', label: `Completed (${allCompletedCount})` }
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  style={{
-                    flex: '0 0 auto',
-                    padding: '16px 12px',
-                    border: 'none',
-                    background: 'transparent',
-                    color: activeTab === tab.id
-                      ? (isDarkMode ? '#e7e9ea' : '#0f1419')
-                      : (isDarkMode ? '#71767b' : '#536471'),
-                    fontWeight: activeTab === tab.id ? 700 : 500,
-                    fontSize: 14,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    borderBottom: activeTab === tab.id
-                      ? '4px solid #1d9bf0'
-                      : '4px solid transparent',
-                    marginBottom: -1,
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+              My Courses
+            </h1>
 
             {/* Search box on right */}
             <div style={{
-              flex: '1 1 0',
-              minWidth: 80,
-              maxWidth: 150,
+              width: 150,
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end'
+              alignItems: 'center'
             }}>
               <div className="search-container" style={{ width: '100%', marginLeft: 0 }}>
                 <FaSearch className="search-icon" />
@@ -630,6 +1010,108 @@ const MyCoursesView = ({
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
           />
+
+          {/* Active/Completed Tabs */}
+          <div style={{
+            display: 'flex',
+            gap: 12,
+            padding: '16px 20px',
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+            background: isDarkMode ? '#000' : '#fff'
+          }}>
+            <button
+              onClick={() => setCourseViewTab('active')}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                background: courseViewTab === 'active'
+                  ? (isDarkMode ? '#1a1a1a' : '#f9fafb')
+                  : 'transparent',
+                border: 'none',
+                borderRadius: 8,
+                cursor: 'pointer',
+                position: 'relative',
+                transition: 'all 0.2s'
+              }}
+            >
+              <span style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: courseViewTab === 'active'
+                  ? (isDarkMode ? '#e7e9ea' : '#0f1419')
+                  : (isDarkMode ? '#71767b' : '#536471')
+              }}>
+                Active Courses
+              </span>
+              <span style={{
+                marginLeft: 6,
+                fontSize: 13,
+                color: courseViewTab === 'active'
+                  ? (isDarkMode ? '#a1a1aa' : '#6b7280')
+                  : (isDarkMode ? '#71767b' : '#9ca3af')
+              }}>
+                ({activeCoursesCount})
+              </span>
+              {courseViewTab === 'active' && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '60%',
+                  height: 3,
+                  background: '#c6f432',
+                  borderRadius: '3px 3px 0 0'
+                }} />
+              )}
+            </button>
+            <button
+              onClick={() => setCourseViewTab('completed')}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                background: courseViewTab === 'completed'
+                  ? (isDarkMode ? '#1a1a1a' : '#f9fafb')
+                  : 'transparent',
+                border: 'none',
+                borderRadius: 8,
+                cursor: 'pointer',
+                position: 'relative',
+                transition: 'all 0.2s'
+              }}
+            >
+              <span style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: courseViewTab === 'completed'
+                  ? (isDarkMode ? '#e7e9ea' : '#0f1419')
+                  : (isDarkMode ? '#71767b' : '#536471')
+              }}>
+                Completed Courses
+              </span>
+              <span style={{
+                marginLeft: 6,
+                fontSize: 13,
+                color: courseViewTab === 'completed'
+                  ? (isDarkMode ? '#a1a1aa' : '#6b7280')
+                  : (isDarkMode ? '#71767b' : '#9ca3af')
+              }}>
+                ({completedCoursesCount})
+              </span>
+              {courseViewTab === 'completed' && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '60%',
+                  height: 3,
+                  background: '#c6f432',
+                  borderRadius: '3px 3px 0 0'
+                }} />
+              )}
+            </button>
+          </div>
 
           {/* Sessions for Selected Date - Grouped by Instructor */}
           {selectedDate && scheduledGroupsByInstructor.length > 0 && (
@@ -976,372 +1458,36 @@ const MyCoursesView = ({
             </>
           )}
 
-          {/* Course List - Grouped by Instructor */}
-          <div style={{ padding: '0' }}>
-            {filteredGroups.length === 0 ? (
-              <div style={{
-                padding: 48,
-                textAlign: 'center',
-                color: isDarkMode ? '#71717a' : '#9ca3af'
-              }}>
-                {searchQuery ? (
-                  <>No courses found matching "{searchQuery}"</>
-                ) : activeTab === 'inprogress' ? (
-                  <>
-                    <FaPlay style={{ fontSize: 48, marginBottom: 16, opacity: 0.5 }} />
-                    <p>No courses in progress. Start a new course!</p>
-                  </>
-                ) : (
-                  <>
-                    <FaCheckCircle style={{ fontSize: 48, marginBottom: 16, opacity: 0.5 }} />
-                    <p>No completed courses yet. Keep learning!</p>
-                  </>
-                )}
-              </div>
+          {/* Course List - Based on Selected Tab */}
+          <div>
+            {courseViewTab === 'active' ? (
+              // ACTIVE COURSES
+              activeCoursesGroups.length === 0 ? (
+                <div style={{
+                  padding: 48,
+                  textAlign: 'center',
+                  color: isDarkMode ? '#71717a' : '#9ca3af'
+                }}>
+                  <FaPlay style={{ fontSize: 48, marginBottom: 16, opacity: 0.5 }} />
+                  <p>No active courses. Start learning something new!</p>
+                </div>
+              ) : (
+                activeCoursesGroups.map(group => renderInstructorGroup(group, 'active', false))
+              )
             ) : (
-              filteredGroups.map((group) => {
-                const { instructor, courses } = group;
-                const isFollowing = isCreatorFollowed ? isCreatorFollowed(instructor?.id) : false;
-
-                return (
-                  <div
-                    key={instructor?.id || 'unknown'}
-                    style={{
-                      background: isDarkMode ? '#12121a' : '#fff',
-                      borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb'
-                    }}
-                  >
-                    {/* Instructor Profile Card - Discovery Style with Gradient Background */}
-                    <div
-                      onClick={() => {
-                        // Navigate to creator profile via callback (handles history)
-                        if (onViewCreatorProfile) {
-                          onViewCreatorProfile(instructor);
-                        } else {
-                          // Fallback to old behavior
-                          localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                          localStorage.setItem('browseActiveTopMenu', 'creators');
-                          onMenuChange && onMenuChange('Browse');
-                        }
-                      }}
-                      style={{
-                        padding: 20,
-                        borderRadius: 16,
-                        marginBottom: 4,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        background: isDarkMode
-                          ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
-                          : getUserBannerGradient()
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
-                      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                    >
-                      {/* Top row: Avatar, Name, Join button */}
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 16,
-                        marginBottom: 12
-                      }}>
-                        <div style={{
-                          width: 56,
-                          height: 56,
-                          borderRadius: '50%',
-                          background: `linear-gradient(135deg, #6366f1 0%, #10b981 100%)`,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 24,
-                          fontWeight: 700,
-                          color: '#fff',
-                          flexShrink: 0,
-                          overflow: 'hidden'
-                        }}>
-                          {instructor?.avatar ? (
-                            <img src={instructor.avatar} alt={instructor.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : (
-                            instructor?.name?.charAt(0) || '?'
-                          )}
-                        </div>
-
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          {/* Name and Handle Row */}
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            flexWrap: 'wrap',
-                            gap: 4,
-                            marginBottom: 4
-                          }}>
-                            <span style={{
-                              fontSize: 18,
-                              fontWeight: 600,
-                              color: isDarkMode ? '#f5f5f7' : '#111827'
-                            }}>
-                              {highlightMatch(instructor?.name || 'Unknown Instructor', searchQuery)}
-                            </span>
-                            <span style={{
-                              color: isDarkMode ? '#71767b' : '#536471',
-                              fontSize: 15
-                            }}>
-                              @{instructor?.name?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
-                            </span>
-                          </div>
-                          <div style={{
-                            fontSize: 14,
-                            color: isDarkMode ? '#a1a1aa' : '#6b7280',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 4
-                          }}>
-                            <AiOutlineTeam style={{ fontSize: 16 }} />
-                            <span>{(instructor?.stats?.studentsTaught || 0).toLocaleString()} followers</span>
-                            <span style={{ margin: '0 4px' }}>•</span>
-                            <span>{instructor?.title || 'Instructor'}</span>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleFollowInstructor && handleFollowInstructor(instructor?.id);
-                          }}
-                          style={{
-                            background: isFollowing ? (isDarkMode ? '#2f3336' : '#eff3f4') : '#c6f432',
-                            border: 'none',
-                            color: isFollowing ? (isDarkMode ? '#71767b' : '#536471') : '#0f1419',
-                            padding: '8px 16px',
-                            borderRadius: 20,
-                            fontSize: 14,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                            flexShrink: 0,
-                            transition: 'all 0.2s'
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!isFollowing) {
-                              e.currentTarget.style.background = '#b8e62e';
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!isFollowing) {
-                              e.currentTarget.style.background = '#c6f432';
-                            }
-                          }}
-                        >
-                          {isFollowing ? 'Joined' : 'Join Community'}
-                        </button>
-                      </div>
-
-                      {/* Instructor Bio */}
-                      {instructor?.bio && (
-                        <div style={{
-                          fontSize: 14,
-                          lineHeight: 1.6,
-                          color: isDarkMode ? '#a1a1aa' : '#4b5563',
-                          paddingLeft: 72,
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden'
-                        }}>
-                          {highlightMatch(instructor.bio, searchQuery)}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Courses List - Tree Style */}
-                    <div style={{
-                      paddingLeft: 48,
-                      paddingRight: 20,
-                      paddingBottom: 8
-                    }}>
-                      {courses.map((course, index) => {
-                        const isLast = index === courses.length - 1;
-                        const isCompleted = course.progress === 100;
-                        const isFollowed = isCourseFollowed ? isCourseFollowed(course.id) : false;
-
-                        return (
-                          <div
-                            key={course.id}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'flex-start',
-                              position: 'relative',
-                              paddingLeft: 24
-                            }}
-                          >
-                            {/* Tree connector lines */}
-                            <div style={{
-                              position: 'absolute',
-                              left: 0,
-                              top: 0,
-                              bottom: isLast ? '50%' : 0,
-                              width: 1,
-                              background: isDarkMode ? '#3f3f46' : '#e5e7eb'
-                            }} />
-                            <div style={{
-                              position: 'absolute',
-                              left: 0,
-                              top: '50%',
-                              width: 16,
-                              height: 1,
-                              background: isDarkMode ? '#3f3f46' : '#e5e7eb'
-                            }} />
-
-                            {/* Course Card - Discovery Style */}
-                            <div
-                              onClick={() => onViewCourse && onViewCourse(course.id)}
-                              style={{
-                                flex: 1,
-                                display: 'flex',
-                                alignItems: 'flex-start',
-                                gap: 12,
-                                padding: 12,
-                                marginBottom: 8,
-                                background: isDarkMode ? '#16181c' : '#f7f9f9',
-                                borderRadius: 12,
-                                cursor: 'pointer',
-                                border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
-                                transition: 'all 0.2s'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
-                              }}
-                            >
-                              {/* Course Thumbnail - Gradient like Discovery */}
-                              {(() => {
-                                const thumbGradients = [
-                                  'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)',
-                                  'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
-                                  'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
-                                  'linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)'
-                                ];
-                                return (
-                                  <div style={{
-                                    width: 100,
-                                    height: 70,
-                                    borderRadius: 8,
-                                    flexShrink: 0,
-                                    background: thumbGradients[index % 4]
-                                  }} />
-                                );
-                              })()}
-
-                              {/* Course Info */}
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{
-                                  fontSize: 15,
-                                  fontWeight: 600,
-                                  color: '#1d9bf0'
-                                }}>
-                                  {highlightMatch(course.title, searchQuery)}
-                                </div>
-                                <div style={{
-                                  fontSize: 14,
-                                  color: isDarkMode ? '#71767b' : '#536471',
-                                  lineHeight: 1.4,
-                                  marginTop: 4,
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden'
-                                }}>
-                                  {highlightMatch(course.description, searchQuery)}
-                                </div>
-
-                                {/* Course Stats - Kept per user request */}
-                                <div style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 8,
-                                  marginTop: 8,
-                                  fontSize: 12,
-                                  color: isDarkMode ? '#71717a' : '#9ca3af'
-                                }}>
-                                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                    <AiOutlineStar style={{ color: '#fbbf24' }} /> {course.rating}
-                                  </span>
-                                  <span>·</span>
-                                  <span>{course.students?.toLocaleString()} students</span>
-                                  <span>·</span>
-                                  <span>{course.duration}</span>
-                                </div>
-
-                                {/* Scheduled Session Display */}
-                                {(() => {
-                                  const nextSession = scheduledSessions
-                                    .filter(s => s.courseId === course.id && s.status === 'scheduled')
-                                    .sort((a, b) => a.date.localeCompare(b.date))[0];
-
-                                  if (nextSession) {
-                                    return (
-                                      <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 6,
-                                        marginTop: 8,
-                                        fontSize: 12,
-                                        color: '#1d9bf0'
-                                      }}>
-                                        <span>📅</span>
-                                        <span>
-                                          Next: {formatDateForDisplay(nextSession.date)} at {nextSession.time}
-                                        </span>
-                                        <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>
-                                          with {nextSession.studentTeacherName}
-                                        </span>
-                                      </div>
-                                    );
-                                  }
-                                  return (
-                                    <div style={{
-                                      marginTop: 8,
-                                      fontSize: 12,
-                                      color: isDarkMode ? '#71767b' : '#9ca3af',
-                                      fontStyle: 'italic'
-                                    }}>
-                                      No scheduled session
-                                    </div>
-                                  );
-                                })()}
-                              </div>
-
-                              {/* Follow/Unfollow Button */}
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleFollowCourse && handleFollowCourse(course.id);
-                                }}
-                                style={{
-                                  background: isDarkMode ? '#2f3336' : '#eff3f4',
-                                  border: 'none',
-                                  color: isDarkMode ? '#71767b' : '#536471',
-                                  padding: '6px 16px',
-                                  borderRadius: 20,
-                                  fontSize: 14,
-                                  fontWeight: 600,
-                                  cursor: 'pointer',
-                                  whiteSpace: 'nowrap',
-                                  flexShrink: 0,
-                                  transition: 'all 0.2s'
-                                }}
-                              >
-                                {isFollowed ? 'Unfollow Course' : 'Follow Course'}
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })
+              // COMPLETED COURSES
+              completedCoursesGroups.length === 0 ? (
+                <div style={{
+                  padding: 48,
+                  textAlign: 'center',
+                  color: isDarkMode ? '#71717a' : '#9ca3af'
+                }}>
+                  <FaCheckCircle style={{ fontSize: 48, marginBottom: 16, opacity: 0.5 }} />
+                  <p>No completed courses yet. Keep learning!</p>
+                </div>
+              ) : (
+                completedCoursesGroups.map(group => renderInstructorGroup(group, 'completed', true))
+              )
             )}
           </div>
         </div>

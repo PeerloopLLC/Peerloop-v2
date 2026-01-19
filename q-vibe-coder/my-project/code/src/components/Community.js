@@ -2748,14 +2748,57 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 background: isDarkMode ? '#0a0a0a' : '#fff',
                 overflow: 'hidden',
                 boxSizing: 'border-box',
-                width: '100%'
+                width: '100%',
+                position: 'relative'
               }}>
+                {/* Locked Overlay for new users who haven't completed signup */}
+                {currentUser?.isNewUser && !signupCompleted && (
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: isDarkMode ? 'rgba(0, 0, 0, 0.75)' : 'rgba(255, 255, 255, 0.85)',
+                    backdropFilter: 'blur(2px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 10,
+                    borderRadius: 12
+                  }}>
+                    <div style={{
+                      textAlign: 'center',
+                      padding: '16px 24px'
+                    }}>
+                      <div style={{
+                        fontSize: 24,
+                        marginBottom: 8
+                      }}>🔒</div>
+                      <div style={{
+                        color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                        fontSize: 15,
+                        fontWeight: 600,
+                        marginBottom: 4
+                      }}>
+                        Complete signup to share a post
+                      </div>
+                      <div style={{
+                        color: isDarkMode ? '#71767b' : '#536471',
+                        fontSize: 13
+                      }}>
+                        Select your interests below to unlock posting
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {/* Text Area with Avatar */}
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-start',
                   padding: '12px 14px',
-                  gap: 10
+                  gap: 10,
+                  opacity: (currentUser?.isNewUser && !signupCompleted) ? 0.4 : 1
                 }}>
                   {/* User Avatar - clickable to go to profile */}
                   {currentUser?.avatar ? (
@@ -2814,6 +2857,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           ? `Discuss ${selectedCourseFilters[0].name}...`
                           : "Ask a question or share an insight..."
                     }
+                    disabled={currentUser?.isNewUser && !signupCompleted}
                     style={{
                       flex: 1,
                       border: 'none',
@@ -2843,17 +2887,19 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
                     background: isDarkMode ? '#16181c' : '#f7f9f9',
                     width: '100%',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    opacity: (currentUser?.isNewUser && !signupCompleted) ? 0.4 : 1
                   }}
                 >
                   {/* Media Icons */}
                   <div style={{ display: 'flex', gap: 4 }}>
                       <button
+                        disabled={currentUser?.isNewUser && !signupCompleted}
                         style={{
                           background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
                           border: 'none',
                           color: '#1d9bf0',
-                          cursor: 'pointer',
+                          cursor: (currentUser?.isNewUser && !signupCompleted) ? 'not-allowed' : 'pointer',
                           padding: '6px 8px',
                           borderRadius: 6,
                           display: 'flex',
@@ -2863,17 +2909,18 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           transition: 'background 0.2s'
                         }}
                         title="Add image"
-                        onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)'}
+                        onMouseEnter={e => !(currentUser?.isNewUser && !signupCompleted) && (e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)')}
                         onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)'}
                       >
                         <FaImage />
                       </button>
                       <button
+                        disabled={currentUser?.isNewUser && !signupCompleted}
                         style={{
                           background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
                           border: 'none',
                           color: '#1d9bf0',
-                          cursor: 'pointer',
+                          cursor: (currentUser?.isNewUser && !signupCompleted) ? 'not-allowed' : 'pointer',
                           padding: '6px 8px',
                           borderRadius: 6,
                           display: 'flex',
@@ -2883,17 +2930,18 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           transition: 'background 0.2s'
                         }}
                         title="Add link"
-                        onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)'}
+                        onMouseEnter={e => !(currentUser?.isNewUser && !signupCompleted) && (e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)')}
                         onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)'}
                       >
                         <FaLink />
                       </button>
                       <button
+                        disabled={currentUser?.isNewUser && !signupCompleted}
                         style={{
                           background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
                           border: 'none',
                           color: '#1d9bf0',
-                          cursor: 'pointer',
+                          cursor: (currentUser?.isNewUser && !signupCompleted) ? 'not-allowed' : 'pointer',
                           padding: '6px 8px',
                           borderRadius: 6,
                           display: 'flex',
@@ -2903,7 +2951,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           transition: 'background 0.2s'
                         }}
                         title="Attach file"
-                        onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)'}
+                        onMouseEnter={e => !(currentUser?.isNewUser && !signupCompleted) && (e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)')}
                         onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)'}
                       >
                         <FaPaperclip />
@@ -2912,7 +2960,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
 
                   {/* Post Button */}
                   <button
-                    disabled={!newPostText.trim() || isPosting}
+                    disabled={!newPostText.trim() || isPosting || (currentUser?.isNewUser && !signupCompleted)}
                     onClick={handleSubmitPost}
                     style={{
                       background: '#1d9bf0',
@@ -2922,8 +2970,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       padding: '8px 20px',
                       fontWeight: 600,
                       fontSize: 14,
-                      cursor: (newPostText.trim() && !isPosting) ? 'pointer' : 'not-allowed',
-                      opacity: (newPostText.trim() && !isPosting) ? 1 : 0.5,
+                      cursor: (newPostText.trim() && !isPosting && !(currentUser?.isNewUser && !signupCompleted)) ? 'pointer' : 'not-allowed',
+                      opacity: (newPostText.trim() && !isPosting && !(currentUser?.isNewUser && !signupCompleted)) ? 1 : 0.5,
                       transition: 'opacity 0.2s'
                     }}
                   >

@@ -72,7 +72,8 @@
       "Bash(start https://peerloopllc.github.io/Peerloop-v2/)",
       "Bash(pip show:*)",
       "WebFetch(domain:www.figma.com)",
-      "Bash(start:*)"
+      "Bash(start:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

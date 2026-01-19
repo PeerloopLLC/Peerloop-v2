@@ -23,7 +23,19 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
   const [bbbJoinUrl, setBbbJoinUrl] = useState(null);
   const [showHelpPanel, setShowHelpPanel] = useState(false);
 
-  // Mock enrollment data for enrolled users
+  // Find real scheduled session for this course
+  const realNextSession = scheduledSessions
+    .filter(s => s.courseId === course?.id && s.status === 'scheduled')
+    .sort((a, b) => (a.date || '').localeCompare(b.date || ''))[0];
+
+  // Format date for display
+  const formatSessionDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  };
+
+  // Mock enrollment data for enrolled users (with real session data if available)
   const enrollmentData = isCoursePurchased ? {
     enrolledDate: 'Dec 10, 2024',
     sessionsCompleted: 3,
@@ -47,7 +59,12 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
       { sessionId: 2, sessionTitle: 'Session 2: Core Concepts', files: ['Recording', 'Slides', 'Templates'] },
       { sessionId: 3, sessionTitle: 'Session 3: Advanced Topics', files: ['Recording', 'Slides', 'Examples'] }
     ],
-    nextSession: { title: 'Session 4: Applications', date: 'Dec 24', time: '2:00 PM EST' },
+    nextSession: realNextSession ? {
+      title: `Session with ${realNextSession.teacherName || realNextSession.studentTeacherName || 'your teacher'}`,
+      date: formatSessionDate(realNextSession.date),
+      time: realNextSession.time,
+      teacherName: realNextSession.teacherName || realNextSession.studentTeacherName
+    } : null,
     homeworkDue: { title: 'Session 3 Assignment', dueDate: 'Dec 23', daysLeft: 2 },
     certificateProgress: 37.5,
     newDiscussionPosts: 5
@@ -394,7 +411,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
                             color: isDarkMode ? '#71767b' : '#536471',
                             marginTop: 2
                           }}>
-                            {session.time} with {session.studentTeacherName}
+                            {session.time} with {session.teacherName || session.studentTeacherName || 'your teacher'}
                           </div>
                         </div>
                         {idx === 0 && (

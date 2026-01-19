@@ -27,7 +27,7 @@ const BottomNav = ({ onMenuChange, activeMenu, isDarkMode, toggleDarkMode, onLog
     { icon: <FaUsers />, label: 'My Community', displayLabel: 'Community' },
     { icon: <FaSearch />, label: 'Browse', displayLabel: 'Browse' },
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Alerts' },
-    { icon: <FaTachometerAlt />, label: 'Dashboard', displayLabel: 'Home' },
+    { icon: <FaTachometerAlt />, label: 'Workspace', displayLabel: 'Home' },
     { icon: <FaEllipsisH />, label: 'More', displayLabel: 'More' },
   ];
 

@@ -211,7 +211,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
     { icon: <FaBook />, label: 'My Courses', displayLabel: 'My Courses' }, // User's enrolled courses
     { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
-    ...(showDashboard ? [{ icon: <FaChalkboardTeacher />, label: 'Dashboard', displayLabel: 'Dashboard' }] : []), // User dashboard (only for creators/admins)
+    ...(showDashboard ? [{ icon: <FaChalkboardTeacher />, label: 'Workspace', displayLabel: 'Workspace' }] : []), // User workspace (only for creators/admins)
     { icon: <FaUser />, label: 'Profile', displayLabel: 'Profile' }, // User profile
     { icon: <FaCog />, label: 'Settings', displayLabel: 'Settings' }, // Settings menu
   ];

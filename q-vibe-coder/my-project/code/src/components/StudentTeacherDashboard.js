@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FaChevronDown,
   FaVideo,
@@ -8,9 +8,75 @@ import {
   FaSave
 } from 'react-icons/fa';
 
-const StudentTeacherDashboard = ({ isDarkMode = true, currentUser }) => {
+// Add spin animation for loading spinner
+const spinKeyframes = `
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
+
+const StudentTeacherDashboard = ({
+  isDarkMode = true,
+  currentUser,
+  stTeacherStats,
+  onAddActiveStudent,
+  onCompleteSession,
+  onCertifyStudent,
+  scheduledSessions = [],
+  onJoinSession
+}) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [timezone, setTimezone] = useState('America/Chicago');
+  const [joiningSessionId, setJoiningSessionId] = useState(null); // Track which session is loading
+
+  // Certify modal state
+  const [showCertifyModal, setShowCertifyModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [certifyNotes, setCertifyNotes] = useState('');
+  const [moduleChecks, setModuleChecks] = useState({
+    module1: false,
+    module2: false,
+    module3: false,
+    module4: false
+  });
+
+  // Inject spin animation CSS
+  useEffect(() => {
+    const styleId = 'st-dashboard-spin-animation';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = spinKeyframes;
+      document.head.appendChild(style);
+    }
+  }, []);
+
+  // Open certify modal for a student
+  const handleOpenCertify = (student) => {
+    setSelectedStudent(student);
+    setModuleChecks({ module1: false, module2: false, module3: false, module4: false });
+    setCertifyNotes('');
+    setShowCertifyModal(true);
+  };
+
+  // Handle certify submission
+  const handleCertifySubmit = () => {
+    if (selectedStudent && onCertifyStudent) {
+      onCertifyStudent(
+        selectedStudent.id,
+        selectedStudent.name,
+        selectedStudent.courseName
+      );
+    }
+    setShowCertifyModal(false);
+    setSelectedStudent(null);
+    setCertifyNotes('');
+    setModuleChecks({ module1: false, module2: false, module3: false, module4: false });
+  };
+
+  // Check if all modules are checked
+  const allModulesChecked = Object.values(moduleChecks).every(v => v);
 
   // Availability state - each day has an array of time slots
   const [availability, setAvailability] = useState({
@@ -39,41 +105,109 @@ const StudentTeacherDashboard = ({ isDarkMode = true, currentUser }) => {
 
   // Navigation tabs for this dashboard
   const navTabs = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'availability', label: 'Availability' },
-    { id: 'profile', label: 'Profile' }
+    { id: 'dashboard', label: 'Workspace' },
+    { id: 'availability', label: 'Availability' }
   ];
 
-  // Quick stats
+  // Quick stats - use real data from stTeacherStats prop
   const quickStats = [
-    { value: 4, label: 'Students', sublabel: 'Assigned' },
-    { value: 6, label: 'Sessions', sublabel: 'This Week' },
-    { value: 24, label: 'Sessions', sublabel: 'Total' }
+    { value: stTeacherStats?.activeStudents?.length || 0, label: 'Active', sublabel: 'Students' },
+    { value: stTeacherStats?.completedStudents?.length || 0, label: 'Total', sublabel: 'Taught' },
+    { value: `$${(stTeacherStats?.totalEarned || 0).toLocaleString()}`, label: 'Total', sublabel: 'Earned' }
   ];
 
-  // My Students data
-  const myStudents = [
-    { name: 'Sarah Johnson', progress: 40, nextSession: 'Dec 10, 7:00 PM' },
-    { name: 'Mike Chen', progress: 60, nextSession: 'Dec 11, 2:00 PM' },
-    { name: 'Alex Rivera', progress: 40, nextSession: 'Dec 12, 10:00 AM' },
-    { name: 'Jordan Lee', progress: 60, nextSession: null }
-  ];
+  // S-T Rating and earnings - use real data from stTeacherStats prop
+  const stRating = stTeacherStats?.rating || 0;
+  const pendingBalance = stTeacherStats?.pendingBalance || 0;
 
-  // Upcoming sessions
-  const upcomingSessions = [
-    {
-      date: 'Dec 10, 7:00 PM',
-      student: 'Sarah Johnson',
-      module: 'Module 3: Advanced Patterns',
-      canJoin: true
-    },
-    {
-      date: 'Dec 11, 2:00 PM',
-      student: 'Mike Chen',
-      module: 'Module 4: Specialization',
-      canJoin: false
+  // My Students data - derive from stTeacherStats.activeStudents
+  // Find next session for each student from scheduledSessions
+  const getNextSessionForStudent = (studentId) => {
+    const studentSessions = scheduledSessions
+      .filter(s => s.studentId === studentId && s.status === 'scheduled')
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    if (studentSessions.length > 0) {
+      const session = studentSessions[0];
+      // Format date nicely
+      const date = new Date(session.date);
+      const options = { month: 'short', day: 'numeric' };
+      return `${date.toLocaleDateString('en-US', options)}, ${session.time}`;
     }
-  ];
+    return null;
+  };
+
+  const myStudents = (stTeacherStats?.activeStudents || []).map(student => ({
+    id: student.id,
+    name: student.name,
+    courseName: student.courseName,
+    courseId: student.courseId,
+    progress: 0, // Start at 0%, will update as they complete modules
+    nextSession: getNextSessionForStudent(student.id),
+    enrolledDate: student.enrolledDate
+  }));
+
+  // Group students by name for display
+  const studentsGrouped = myStudents.reduce((groups, student) => {
+    const name = student.name;
+    if (!groups[name]) {
+      groups[name] = [];
+    }
+    groups[name].push(student);
+    return groups;
+  }, {});
+
+  // Convert to array for rendering
+  const studentGroups = Object.entries(studentsGrouped).map(([name, courses]) => ({
+    name,
+    courses
+  }));
+
+  // Upcoming sessions - derive from scheduledSessions where this S-T is the teacher
+  const upcomingSessions = scheduledSessions
+    .filter(s => s.teacherId === currentUser?.id && s.status === 'scheduled')
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .slice(0, 5) // Show max 5 upcoming
+    .map(session => {
+      const date = new Date(session.date);
+      const options = { month: 'short', day: 'numeric' };
+      const formattedDate = `${date.toLocaleDateString('en-US', options)}, ${session.time}`;
+
+      // Check if session is within 5 minutes of now (can join)
+      const sessionDateTime = new Date(`${session.date} ${session.time}`);
+      const now = new Date();
+      const timeDiff = sessionDateTime - now;
+      const canJoin = timeDiff <= 5 * 60 * 1000 && timeDiff >= -60 * 60 * 1000; // 5 min before to 1 hour after
+
+      return {
+        id: session.id,
+        courseId: session.courseId,
+        courseName: session.courseName,
+        date: formattedDate,
+        student: session.studentName || 'Unknown Student',
+        module: session.courseName || 'Course Session',
+        canJoin
+      };
+    });
+
+  // Completed sessions - derive from scheduledSessions where status is 'completed'
+  const completedSessions = scheduledSessions
+    .filter(s => s.teacherId === currentUser?.id && s.status === 'completed')
+    .sort((a, b) => new Date(b.date) - new Date(a.date)) // Most recent first
+    .slice(0, 5) // Show max 5 completed
+    .map(session => {
+      const date = new Date(session.date);
+      const options = { month: 'short', day: 'numeric' };
+      const formattedDate = `${date.toLocaleDateString('en-US', options)}, ${session.time}`;
+
+      return {
+        id: session.id,
+        courseName: session.courseName,
+        date: formattedDate,
+        student: session.studentName || 'Unknown Student',
+        module: session.courseName || 'Course Session'
+      };
+    });
 
   // Days of the week
   const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -323,17 +457,33 @@ const StudentTeacherDashboard = ({ isDarkMode = true, currentUser }) => {
     <div style={{ padding: 24, maxWidth: 800, margin: '0 auto' }}>
       {/* Welcome Section */}
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{
-          fontSize: 24,
-          fontWeight: 700,
-          color: textPrimary,
-          margin: 0,
+        <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 8
+          justifyContent: 'space-between'
         }}>
-          <span style={{ fontSize: 28 }}>👋</span> Welcome, {stInfo.name.split(' ')[0]}
-        </h1>
+          <h1 style={{
+            fontSize: 24,
+            fontWeight: 700,
+            color: textPrimary,
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
+          }}>
+            <span style={{ fontSize: 28 }}>👋</span> Welcome back, {stInfo.name.split(' ')[0]}!
+          </h1>
+          {/* Star Rating */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            color: '#fbbf24'
+          }}>
+            <span style={{ fontSize: 18 }}>★★★★★</span>
+            <span style={{ color: textPrimary, fontWeight: 600 }}>({stRating})</span>
+          </div>
+        </div>
         <p style={{
           fontSize: 15,
           color: textSecondary,
@@ -410,40 +560,88 @@ const StudentTeacherDashboard = ({ isDarkMode = true, currentUser }) => {
           border: `1px solid ${borderColor}`,
           overflow: 'hidden'
         }}>
-          {/* Table Header */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 120px 160px',
-            padding: '12px 16px',
-            borderBottom: `1px solid ${borderColor}`,
-            background: bgSecondary
-          }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary }}>Student</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary }}>Progress</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary }}>Next Session</div>
-          </div>
-
-          {/* Table Rows */}
-          {myStudents.map((student, index) => (
-            <div
-              key={index}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 120px 160px',
-                padding: '12px 16px',
-                borderBottom: index < myStudents.length - 1 ? `1px solid ${borderColor}` : 'none',
-                alignItems: 'center'
-              }}
-            >
-              <div style={{ fontSize: 14, fontWeight: 500, color: textPrimary }}>
-                {student.name}
-              </div>
-              <ProgressBar percent={student.progress} />
-              <div style={{ fontSize: 13, color: student.nextSession ? textPrimary : textSecondary }}>
-                {student.nextSession || 'Not scheduled'}
+          {/* Empty State */}
+          {studentGroups.length === 0 ? (
+            <div style={{
+              padding: '32px 16px',
+              textAlign: 'center',
+              color: textSecondary
+            }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>👥</div>
+              <div style={{ fontSize: 14 }}>No students yet</div>
+              <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
+                Students will appear here when they enroll with you
               </div>
             </div>
-          ))}
+          ) : (
+            /* Grouped by Student */
+            studentGroups.map((group, groupIndex) => (
+              <div key={group.name} style={{
+                borderBottom: groupIndex < studentGroups.length - 1 ? `1px solid ${borderColor}` : 'none'
+              }}>
+                {/* Student Name Header */}
+                <div style={{
+                  padding: '12px 16px 8px 16px',
+                  background: bgSecondary,
+                  borderBottom: `1px solid ${borderColor}`
+                }}>
+                  <div style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: textPrimary,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>
+                    {group.name}
+                  </div>
+                  <div style={{
+                    fontSize: 12,
+                    color: textSecondary,
+                    marginTop: 2
+                  }}>
+                    {group.courses.length} course{group.courses.length !== 1 ? 's' : ''}
+                  </div>
+                </div>
+
+                {/* Courses for this Student */}
+                {group.courses.map((course, courseIndex) => (
+                  <div
+                    key={course.id || courseIndex}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 140px 90px',
+                      padding: '12px 16px 12px 24px',
+                      borderBottom: courseIndex < group.courses.length - 1 ? `1px solid ${borderColor}` : 'none',
+                      alignItems: 'center',
+                      background: bgCard
+                    }}
+                  >
+                    <div style={{ fontSize: 14, color: textPrimary }}>
+                      {course.courseName || 'Untitled Course'}
+                    </div>
+                    <div style={{ fontSize: 13, color: course.nextSession ? textPrimary : textSecondary }}>
+                      {course.nextSession || 'Not scheduled'}
+                    </div>
+                    <button
+                      onClick={() => handleOpenCertify(course)}
+                      style={{
+                        padding: '6px 12px',
+                        background: accentGreen,
+                        border: 'none',
+                        borderRadius: 6,
+                        color: '#fff',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Certify
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -466,61 +664,99 @@ const StudentTeacherDashboard = ({ isDarkMode = true, currentUser }) => {
           border: `1px solid ${borderColor}`,
           overflow: 'hidden'
         }}>
-          {upcomingSessions.map((session, index) => (
-            <div
-              key={index}
-              style={{
-                padding: 16,
-                borderBottom: index < upcomingSessions.length - 1 ? `1px solid ${borderColor}` : 'none'
-              }}
-            >
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                marginBottom: 4
-              }}>
-                <FaCalendarAlt style={{ color: accentBlue, fontSize: 14 }} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>
-                  {session.date}
-                </span>
-                <span style={{ color: textSecondary }}>-</span>
-                <span style={{ fontSize: 14, color: textPrimary }}>
-                  {session.student}
-                </span>
+          {upcomingSessions.length === 0 ? (
+            <div style={{
+              padding: '32px 16px',
+              textAlign: 'center',
+              color: textSecondary
+            }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>📅</div>
+              <div style={{ fontSize: 14 }}>No upcoming sessions</div>
+              <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
+                Sessions will appear here when students book with you
               </div>
-              <div style={{
-                fontSize: 13,
-                color: textSecondary,
-                marginBottom: 12,
-                marginLeft: 22
-              }}>
-                {session.module}
-              </div>
-              <button style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '10px 16px',
-                background: session.canJoin ? accentBlue : bgSecondary,
-                border: session.canJoin ? 'none' : `1px solid ${borderColor}`,
-                borderRadius: 8,
-                color: session.canJoin ? '#fff' : textSecondary,
-                fontSize: 14,
-                fontWeight: 500,
-                cursor: session.canJoin ? 'pointer' : 'default',
-                width: '100%',
-                justifyContent: 'center'
-              }}>
-                <FaVideo style={{ fontSize: 14 }} />
-                {session.canJoin ? 'Join Session' : 'Join Session (available 5 min before)'}
-              </button>
             </div>
-          ))}
+          ) : (
+            upcomingSessions.map((session, index) => (
+              <div
+                key={session.id || index}
+                style={{
+                  padding: 16,
+                  borderBottom: index < upcomingSessions.length - 1 ? `1px solid ${borderColor}` : 'none'
+                }}
+              >
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  marginBottom: 4
+                }}>
+                  <FaCalendarAlt style={{ color: accentBlue, fontSize: 14 }} />
+                  <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>
+                    {session.date}
+                  </span>
+                  <span style={{ color: textSecondary }}>-</span>
+                  <span style={{ fontSize: 14, color: textPrimary }}>
+                    {session.student}
+                  </span>
+                </div>
+                <div style={{
+                  fontSize: 13,
+                  color: textSecondary,
+                  marginBottom: 12,
+                  marginLeft: 22
+                }}>
+                  {session.module}
+                </div>
+                <button
+                  onClick={() => {
+                    if (joiningSessionId) return; // Prevent double-click
+                    setJoiningSessionId(session.id);
+                    onJoinSession && onJoinSession(session);
+                  }}
+                  disabled={joiningSessionId === session.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '10px 16px',
+                    background: joiningSessionId === session.id ? '#64748b' : accentBlue,
+                    border: 'none',
+                    borderRadius: 8,
+                    color: '#fff',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    cursor: joiningSessionId === session.id ? 'wait' : 'pointer',
+                    width: '100%',
+                    justifyContent: 'center',
+                    opacity: joiningSessionId === session.id ? 0.8 : 1
+                  }}>
+                  {joiningSessionId === session.id ? (
+                    <>
+                      <span style={{
+                        width: 14,
+                        height: 14,
+                        border: '2px solid #fff',
+                        borderTopColor: 'transparent',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                      }} />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <FaVideo style={{ fontSize: 14 }} />
+                      Join Session
+                    </>
+                  )}
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
-      {/* My Availability */}
+      {/* Completed Sessions */}
       <div style={{ marginBottom: 24 }}>
         <h2 style={{
           fontSize: 14,
@@ -531,26 +767,163 @@ const StudentTeacherDashboard = ({ isDarkMode = true, currentUser }) => {
           alignItems: 'center',
           gap: 6
         }}>
-          ⚙️ MY AVAILABILITY
+          ✅ COMPLETED SESSIONS
         </h2>
-        <button
-          onClick={() => setActiveTab('availability')}
-          style={{
-            display: 'block',
-            width: '100%',
-            padding: '16px',
-            background: bgCard,
-            border: `1px solid ${borderColor}`,
-            borderRadius: 12,
-            color: accentBlue,
-            fontSize: 14,
-            fontWeight: 500,
-            cursor: 'pointer',
-            textAlign: 'left'
-          }}
-        >
-          Edit Availability →
-        </button>
+        <div style={{
+          background: bgCard,
+          borderRadius: 12,
+          border: `1px solid ${borderColor}`,
+          overflow: 'hidden'
+        }}>
+          {completedSessions.length === 0 ? (
+            <div style={{
+              padding: '32px 16px',
+              textAlign: 'center',
+              color: textSecondary
+            }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>✅</div>
+              <div style={{ fontSize: 14 }}>No completed sessions yet</div>
+              <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
+                Sessions will appear here after they're completed
+              </div>
+            </div>
+          ) : (
+            completedSessions.map((session, index) => (
+              <div
+                key={session.id || index}
+                style={{
+                  padding: 16,
+                  borderBottom: index < completedSessions.length - 1 ? `1px solid ${borderColor}` : 'none'
+                }}
+              >
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  marginBottom: 4
+                }}>
+                  <FaCalendarAlt style={{ color: accentGreen, fontSize: 14 }} />
+                  <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>
+                    {session.date}
+                  </span>
+                  <span style={{ color: textSecondary }}>-</span>
+                  <span style={{ fontSize: 14, color: textPrimary }}>
+                    {session.student}
+                  </span>
+                </div>
+                <div style={{
+                  fontSize: 13,
+                  color: textSecondary,
+                  marginLeft: 22
+                }}>
+                  {session.module}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Pending Balance */}
+      <div style={{
+        marginBottom: 24,
+        padding: 16,
+        background: bgCard,
+        borderRadius: 12,
+        border: `1px solid ${borderColor}`
+      }}>
+        <div style={{
+          fontSize: 14,
+          color: textSecondary,
+          marginBottom: 4
+        }}>
+          Pending Balance
+        </div>
+        <div style={{
+          fontSize: 24,
+          fontWeight: 700,
+          color: accentGreen,
+          marginBottom: 4
+        }}>
+          ${pendingBalance}.00
+        </div>
+        <div style={{
+          fontSize: 13,
+          color: textSecondary
+        }}>
+          (Released after student certification)
+        </div>
+      </div>
+
+      {/* Quick Links */}
+      <div style={{ marginBottom: 24 }}>
+        <h2 style={{
+          fontSize: 14,
+          fontWeight: 600,
+          color: textSecondary,
+          margin: '0 0 12px 0',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6
+        }}>
+          🔗 QUICK LINKS
+        </h2>
+        <div style={{
+          display: 'flex',
+          gap: 12
+        }}>
+          <button
+            onClick={() => setActiveTab('availability')}
+            style={{
+              flex: 1,
+              padding: '14px 16px',
+              background: bgCard,
+              border: `1px solid ${borderColor}`,
+              borderRadius: 12,
+              color: accentBlue,
+              fontSize: 14,
+              fontWeight: 500,
+              cursor: 'pointer',
+              textAlign: 'center'
+            }}
+          >
+            Set Availability
+          </button>
+          <button
+            style={{
+              flex: 1,
+              padding: '14px 16px',
+              background: bgCard,
+              border: `1px solid ${borderColor}`,
+              borderRadius: 12,
+              color: textSecondary,
+              fontSize: 14,
+              fontWeight: 500,
+              cursor: 'not-allowed',
+              textAlign: 'center',
+              opacity: 0.6
+            }}
+          >
+            My Students
+          </button>
+          <button
+            style={{
+              flex: 1,
+              padding: '14px 16px',
+              background: bgCard,
+              border: `1px solid ${borderColor}`,
+              borderRadius: 12,
+              color: textSecondary,
+              fontSize: 14,
+              fontWeight: 500,
+              cursor: 'not-allowed',
+              textAlign: 'center',
+              opacity: 0.6
+            }}
+          >
+            Earnings History
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -648,12 +1021,220 @@ const StudentTeacherDashboard = ({ isDarkMode = true, currentUser }) => {
       {/* Main Content - Switch based on active tab */}
       {activeTab === 'dashboard' && renderDashboardTab()}
       {activeTab === 'availability' && renderAvailabilityTab()}
-      {activeTab === 'profile' && (
-        <div style={{ padding: 24, maxWidth: 800, margin: '0 auto' }}>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: textPrimary }}>
-            Profile
-          </h1>
-          <p style={{ color: textSecondary }}>Profile settings coming soon...</p>
+
+      {/* Certify Student Modal */}
+      {showCertifyModal && selectedStudent && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: bgCard,
+            borderRadius: 16,
+            width: '90%',
+            maxWidth: 480,
+            maxHeight: '90vh',
+            overflow: 'auto',
+            border: `1px solid ${borderColor}`
+          }}>
+            {/* Modal Header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '16px 20px',
+              borderBottom: `1px solid ${borderColor}`
+            }}>
+              <h2 style={{
+                fontSize: 18,
+                fontWeight: 700,
+                color: textPrimary,
+                margin: 0
+              }}>
+                Certify {selectedStudent.name} for {selectedStudent.courseName || 'Course'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowCertifyModal(false);
+                  setSelectedStudent(null);
+                }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: textSecondary,
+                  fontSize: 20,
+                  cursor: 'pointer',
+                  padding: 4
+                }}
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div style={{ padding: 20 }}>
+              {/* Course Name */}
+              <div style={{
+                fontSize: 14,
+                color: textSecondary,
+                marginBottom: 20
+              }}>
+                Course: <span style={{ color: textPrimary, fontWeight: 500 }}>{selectedStudent.courseName || 'Course'}</span>
+              </div>
+
+              {/* Module Checklist */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: textPrimary,
+                  marginBottom: 12
+                }}>
+                  Module Completion:
+                </div>
+                {[
+                  { key: 'module1', label: 'Module 1: Introduction' },
+                  { key: 'module2', label: 'Module 2: Core Concepts' },
+                  { key: 'module3', label: 'Module 3: Advanced Topics' },
+                  { key: 'module4', label: 'Module 4: Final Project' }
+                ].map(module => (
+                  <label
+                    key={module.key}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: '10px 12px',
+                      background: bgSecondary,
+                      borderRadius: 8,
+                      marginBottom: 8,
+                      cursor: 'pointer',
+                      border: `1px solid ${moduleChecks[module.key] ? accentGreen : borderColor}`
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={moduleChecks[module.key]}
+                      onChange={(e) => setModuleChecks(prev => ({
+                        ...prev,
+                        [module.key]: e.target.checked
+                      }))}
+                      style={{
+                        width: 18,
+                        height: 18,
+                        accentColor: accentGreen,
+                        cursor: 'pointer'
+                      }}
+                    />
+                    <span style={{
+                      fontSize: 14,
+                      color: textPrimary
+                    }}>
+                      {module.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              {/* Certification Notes */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: textPrimary,
+                  marginBottom: 8
+                }}>
+                  Certification Notes:
+                </div>
+                <textarea
+                  value={certifyNotes}
+                  onChange={(e) => setCertifyNotes(e.target.value)}
+                  placeholder="Great progress, completed all modules..."
+                  style={{
+                    width: '100%',
+                    minHeight: 80,
+                    padding: 12,
+                    borderRadius: 8,
+                    border: `1px solid ${borderColor}`,
+                    background: bgSecondary,
+                    color: textPrimary,
+                    fontSize: 14,
+                    resize: 'vertical',
+                    fontFamily: 'inherit',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Warning */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 10,
+                padding: 12,
+                background: isDarkMode ? 'rgba(251, 191, 36, 0.1)' : 'rgba(251, 191, 36, 0.15)',
+                borderRadius: 8,
+                marginBottom: 20
+              }}>
+                <span style={{ fontSize: 18 }}>⚠️</span>
+                <div style={{ fontSize: 13, color: textPrimary }}>
+                  This will release <strong>$315</strong> to your pending balance
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex',
+                gap: 12
+              }}>
+                <button
+                  onClick={() => {
+                    setShowCertifyModal(false);
+                    setSelectedStudent(null);
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    background: 'transparent',
+                    border: `1px solid ${borderColor}`,
+                    borderRadius: 8,
+                    color: textPrimary,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCertifySubmit}
+                  disabled={!allModulesChecked}
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    background: allModulesChecked ? accentGreen : (isDarkMode ? '#2f3336' : '#e2e8f0'),
+                    border: 'none',
+                    borderRadius: 8,
+                    color: allModulesChecked ? '#fff' : textSecondary,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: allModulesChecked ? 'pointer' : 'not-allowed',
+                    opacity: allModulesChecked ? 1 : 0.6
+                  }}
+                >
+                  Certify Student
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Settings.css';
 import { 
   FaBookmark, 
@@ -21,6 +21,18 @@ import {
 
 const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) => {
   const [activeSection, setActiveSection] = useState('settings');
+
+  // Community navigation style preference
+  const [communityNavStyle, setCommunityNavStyle] = useState(() => {
+    const saved = localStorage.getItem('communityNavStyle');
+    return saved || 'slideout';
+  });
+
+  // Save community navigation preference when it changes
+  useEffect(() => {
+    localStorage.setItem('communityNavStyle', communityNavStyle);
+    window.dispatchEvent(new CustomEvent('communityNavStyleChanged', { detail: communityNavStyle }));
+  }, [communityNavStyle]);
 
   const settingsSections = [
     { id: 'settings', label: 'Settings', icon: <FaCog /> },
@@ -197,14 +209,67 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
         </div>
       </div>
 
+      {/* Community Navigation Section */}
+      <div style={{ marginBottom: 32 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+          Community Navigation
+        </h3>
+        <div style={{
+          background: 'var(--bg-secondary, #16181c)',
+          borderRadius: 12,
+          padding: '16px 20px'
+        }}>
+          <p style={{
+            color: 'var(--text-secondary, #71767b)',
+            fontSize: 13,
+            marginBottom: 12,
+            marginTop: 0
+          }}>
+            Choose how to switch between communities in the Feeds view
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {[
+              { value: 'pills', label: 'Pills (Top Bar)' },
+              { value: 'dropdown', label: 'Dropdown (Sidebar)' },
+              { value: 'selector', label: 'Selector (Card)' },
+              { value: 'slideout', label: 'Slide-out (Panel)' }
+            ].map(option => (
+              <button
+                key={option.value}
+                onClick={() => setCommunityNavStyle(option.value)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 20,
+                  border: communityNavStyle === option.value
+                    ? '2px solid #1d9bf0'
+                    : '1px solid var(--border-color, #2f3336)',
+                  background: communityNavStyle === option.value
+                    ? 'rgba(29, 155, 240, 0.15)'
+                    : 'transparent',
+                  color: communityNavStyle === option.value
+                    ? '#1d9bf0'
+                    : 'var(--text-primary, #e7e9ea)',
+                  fontSize: 13,
+                  fontWeight: communityNavStyle === option.value ? 600 : 400,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Notifications Section */}
       <div style={{ marginBottom: 32 }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
           Notifications
         </h3>
-        <div style={{ 
-          background: 'var(--bg-secondary, #16181c)', 
-          borderRadius: 12, 
+        <div style={{
+          background: 'var(--bg-secondary, #16181c)',
+          borderRadius: 12,
           overflow: 'hidden'
         }}>
           {[

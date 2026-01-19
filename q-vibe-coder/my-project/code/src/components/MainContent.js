@@ -190,7 +190,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     if (isPopstateRef.current) return; // Don't push if handling popstate
 
     // Only push for significant menu changes when not viewing course/instructor detail
-    const mainMenus = ['My Community', 'Discover', 'Browse', 'My Courses', 'Dashboard', 'Profile'];
+    const mainMenus = ['My Community', 'Discover', 'Browse', 'My Courses', 'Workspace', 'Profile'];
     if (mainMenus.includes(activeMenu) && !viewingCourseFromCommunity && !selectedInstructor) {
       window.history.pushState({
         activeMenu,
@@ -203,7 +203,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Clear course view when navigating to main menus (fixes navigation staying stuck on course detail)
   useEffect(() => {
-    const menusToReset = ['Discover', 'Dashboard', 'My Community', 'Profile', 'Settings', 'Browse', 'My Courses'];
+    const menusToReset = ['Discover', 'Workspace', 'My Community', 'Profile', 'Settings', 'Browse', 'My Courses'];
     if (menusToReset.includes(activeMenu)) {
       setViewingCourseFromCommunity(null);
       setViewingUserProfile(null);
@@ -369,8 +369,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Purchased courses - courses the user has bought (enables course-level follow/unfollow)
   const [purchasedCourses, setPurchasedCourses] = useState(() => {
-    // New User (demo_new) starts with no courses - completely fresh
-    if (currentUser?.id === 'demo_new') {
+    // New User and Sarah start with no courses - completely fresh
+    if (currentUser?.id === 'demo_new' || currentUser?.id === 'demo_sarah') {
       return [];
     }
     // All other users default to Guy Rymberg's courses
@@ -391,9 +391,20 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   React.useEffect(() => {
     if (!currentUser?.id) return;
 
-    // New User (demo_new) has no courses - completely fresh
-    if (currentUser.id === 'demo_new') {
-      setPurchasedCourses([]);
+    // New User and Sarah start with no courses - completely fresh
+    if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah') {
+      // Check localStorage first - they may have purchased courses
+      try {
+        const storageKey = `purchasedCourses_${currentUser.id}`;
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          setPurchasedCourses(JSON.parse(stored));
+        } else {
+          setPurchasedCourses([]);
+        }
+      } catch (e) {
+        setPurchasedCourses([]);
+      }
       return;
     }
 
@@ -438,7 +449,11 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           return parsed;
         }
       }
-      // Default: sample sessions for all Guy Rymberg courses
+      // demo_new and demo_sarah start with no default sessions (fresh users)
+      if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah') {
+        return [];
+      }
+      // Default: sample sessions for other users with Guy Rymberg courses
       // These match the purchased courses: [15, 22, 23, 24, 25]
       const today = new Date();
       const defaultSessions = [
@@ -500,12 +515,6 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   React.useEffect(() => {
     if (!currentUser?.id) return;
 
-    // demo_new starts with no courses, so no sessions
-    if (currentUser.id === 'demo_new') {
-      setScheduledSessions([]);
-      return;
-    }
-
     try {
       const storageKey = `scheduledSessions_${currentUser.id}`;
       const stored = localStorage.getItem(storageKey);
@@ -518,7 +527,13 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         }
       }
 
-      // Generate default sessions for all users with Guy Rymberg courses
+      // demo_new and demo_sarah start with no default sessions (fresh users)
+      if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah') {
+        setScheduledSessions([]);
+        return;
+      }
+
+      // Generate default sessions for other users with Guy Rymberg courses
       const today = new Date();
       const defaultSessions = [
         {
@@ -596,6 +611,252 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     setScheduledSessions(prev => prev.map(s =>
       s.id === sessionId ? { ...s, status: 'cancelled' } : s
     ));
+  };
+
+  // ========== S-T STATS DATA LAYER ==========
+  // Initialize empty stats for S-T users
+  const initializeStStats = () => ({
+    activeStudents: [],
+    completedStudents: [],
+    totalEarned: 0,
+    pendingBalance: 0,
+    sessionsCompleted: 0,
+    rating: 0,
+    ratingCount: 0,
+    earningsHistory: []
+  });
+
+  // S-T Teacher Stats state
+  const [stTeacherStats, setStTeacherStats] = useState(() => {
+    if (!currentUser?.id) return initializeStStats();
+    try {
+      const key = `stTeacherStats_${currentUser.id}`;
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : initializeStStats();
+    } catch {
+      return initializeStStats();
+    }
+  });
+
+  // Track if we just loaded to avoid persist race condition
+  const justLoadedStatsRef = React.useRef(false);
+
+  // Reload stTeacherStats when user changes
+  React.useEffect(() => {
+    if (!currentUser?.id) return;
+    try {
+      const key = `stTeacherStats_${currentUser.id}`;
+      const stored = localStorage.getItem(key);
+      const loadedStats = stored ? JSON.parse(stored) : initializeStStats();
+      justLoadedStatsRef.current = true; // Mark that we just loaded
+      setStTeacherStats(loadedStats);
+      console.log('Loaded stTeacherStats for', currentUser.id, loadedStats);
+    } catch {
+      justLoadedStatsRef.current = true;
+      setStTeacherStats(initializeStStats());
+    }
+  }, [currentUser?.id]);
+
+  // Persist stTeacherStats to localStorage (skip if we just loaded)
+  React.useEffect(() => {
+    if (justLoadedStatsRef.current) {
+      justLoadedStatsRef.current = false; // Reset flag
+      return; // Skip persist right after load
+    }
+    if (currentUser?.id) {
+      localStorage.setItem(
+        `stTeacherStats_${currentUser.id}`,
+        JSON.stringify(stTeacherStats)
+      );
+      console.log('Persisted stTeacherStats for', currentUser.id, stTeacherStats);
+    }
+  }, [stTeacherStats, currentUser?.id]);
+
+  // Teacher Sessions state - sessions where this user is the teacher
+  const [teacherSessions, setTeacherSessions] = useState([]);
+
+  // Load teacher sessions when user changes
+  React.useEffect(() => {
+    if (!currentUser?.id) {
+      setTeacherSessions([]);
+      return;
+    }
+    try {
+      const key = `teacherSessions_${currentUser.id}`;
+      const stored = localStorage.getItem(key);
+      setTeacherSessions(stored ? JSON.parse(stored) : []);
+    } catch {
+      setTeacherSessions([]);
+    }
+  }, [currentUser?.id]);
+
+  // Helper: When student enrolls with this S-T
+  const addActiveStudent = (studentId, studentName, courseName) => {
+    setStTeacherStats(prev => ({
+      ...prev,
+      activeStudents: [...prev.activeStudents, { id: studentId, name: studentName, course: courseName }],
+      pendingBalance: prev.pendingBalance + 315
+    }));
+  };
+
+  // Helper: When session is completed
+  const completeStSession = () => {
+    setStTeacherStats(prev => ({
+      ...prev,
+      sessionsCompleted: prev.sessionsCompleted + 1
+    }));
+  };
+
+  // Helper: When student is certified (releases $315 payout)
+  const certifyStudent = (studentId, studentName, courseName) => {
+    // Update S-T stats
+    setStTeacherStats(prev => ({
+      ...prev,
+      activeStudents: prev.activeStudents.filter(s => s.id !== studentId),
+      completedStudents: [...prev.completedStudents, studentId],
+      pendingBalance: Math.max(0, prev.pendingBalance - 315),
+      totalEarned: prev.totalEarned + 315,
+      earningsHistory: [
+        { studentId, studentName, courseName, amount: 315, date: new Date().toISOString() },
+        ...(prev.earningsHistory || [])
+      ]
+    }));
+
+    // Move student's sessions from upcoming to completed, or create a completed session if none exists
+    // IMPORTANT: Read from localStorage first to get any sessions added while we were viewing
+    // This prevents losing new bookings that were made while teacher had dashboard open
+    setTeacherSessions(prev => {
+      // Read latest from localStorage in case new sessions were added
+      let currentSessions = prev;
+      try {
+        const key = `teacherSessions_${currentUser?.id}`;
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          currentSessions = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.error('Error reading teacherSessions from localStorage:', e);
+      }
+
+      // Check if there are any sessions for this student
+      const hasSessionsForStudent = currentSessions.some(s => s.studentId === studentId);
+
+      let updated;
+      if (hasSessionsForStudent) {
+        // Mark existing sessions as completed
+        updated = currentSessions.map(session =>
+          session.studentId === studentId
+            ? { ...session, status: 'completed' }
+            : session
+        );
+      } else {
+        // No sessions exist - create a completed session record for certification
+        const completedSession = {
+          id: `cert-${studentId}-${Date.now()}`,
+          studentId,
+          studentName,
+          teacherId: currentUser?.id,
+          courseName,
+          date: new Date().toISOString().split('T')[0],
+          time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+          status: 'completed',
+          certifiedAt: new Date().toISOString()
+        };
+        updated = [...currentSessions, completedSession];
+      }
+
+      // Persist to localStorage
+      if (currentUser?.id) {
+        localStorage.setItem(`teacherSessions_${currentUser.id}`, JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    // Also update the student's scheduledSessions so their My Courses shows it as completed
+    // Parse enrollmentId to get actual userId and courseId
+    // Format: ${userId}-${courseId}
+    const lastDashIndex = studentId.lastIndexOf('-');
+    if (lastDashIndex > 0) {
+      const actualStudentId = studentId.substring(0, lastDashIndex);
+      const courseId = studentId.substring(lastDashIndex + 1);
+
+      // Update student's scheduled sessions
+      const studentSessionsKey = `scheduledSessions_${actualStudentId}`;
+      try {
+        const stored = localStorage.getItem(studentSessionsKey);
+        if (stored) {
+          const studentSessions = JSON.parse(stored);
+          const updatedStudentSessions = studentSessions.map(session =>
+            String(session.courseId) === String(courseId)
+              ? { ...session, status: 'completed', certifiedAt: new Date().toISOString() }
+              : session
+          );
+          localStorage.setItem(studentSessionsKey, JSON.stringify(updatedStudentSessions));
+        }
+      } catch (e) {
+        console.error('Error updating student sessions:', e);
+      }
+    }
+  };
+  // ========== END S-T STATS DATA LAYER ==========
+
+  // State for BBB modal (used by S-T Dashboard Join Session)
+  const [showBbbModal, setShowBbbModal] = useState(false);
+  const [bbbJoinUrl, setBbbJoinUrl] = useState(null);
+
+  // Helper to detect mobile/Safari for BBB
+  const isMobileOrSafari = () => {
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    const isIPadOS = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    return isIOS || isIPadOS || (isSafari && 'ontouchend' in document);
+  };
+
+  // Handle joining a BBB session from S-T Dashboard
+  const handleJoinBbbSession = async (session) => {
+    if (!session?.courseId) {
+      console.error('No course ID in session:', session);
+      return;
+    }
+
+    try {
+      const userName = currentUser?.name || 'Teacher';
+
+      // Call Supabase Edge Function to create meeting and get join URL
+      const response = await fetch('https://vnleonyfgwkfpvprpbqa.supabase.co/functions/v1/bbb-join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZubGVvbnlmZ3drZnB2cHJwYnFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNDM2OTIsImV4cCI6MjA4MDYxOTY5Mn0.aunUqqZJTYGBIXjPT2_V_CtaBpmF61-IkEhkPvJdEu8',
+        },
+        body: JSON.stringify({
+          courseId: session.courseId,
+          courseName: session.courseName || 'Course Session',
+          userName: userName
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to create meeting');
+      }
+
+      // On iOS/Safari, open in new tab (iframe restrictions)
+      // On desktop, use the iframe modal
+      if (isMobileOrSafari()) {
+        window.open(data.joinUrl, '_blank');
+      } else {
+        setBbbJoinUrl(null);
+        setShowBbbModal(true);
+        setBbbJoinUrl(data.joinUrl);
+      }
+    } catch (error) {
+      console.error('Failed to join session:', error);
+      alert('Failed to join session. Please try again.');
+      setShowBbbModal(false);
+    }
   };
 
   // Helper to check if a course is purchased
@@ -1139,7 +1400,115 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           setViewingCourseFromCommunity(course);
           onMenuChange('Discover'); // Exit Browse mode - course view will take precedence
         }}
-        onEnrollmentComplete={(course) => {
+        onEnrollmentComplete={(course, booking) => {
+          // Save the scheduled session (same logic as in viewingCourseFromCommunity enrollment)
+          if (booking) {
+            const newSession = addScheduledSession({
+              courseId: course.id,
+              courseName: course.title,
+              teacherId: booking.teacher?.id,
+              teacherName: booking.teacher?.name,
+              date: booking.date,
+              time: booking.time,
+              status: 'scheduled',
+              studentId: currentUser?.id,
+              studentName: currentUser?.name
+            });
+            console.log('BrowseView session scheduled:', newSession);
+
+            // Update the teacher's S-T stats (cross-user update)
+            if (booking.teacher?.id) {
+              const teacherStatsKey = `stTeacherStats_${booking.teacher.id}`;
+              try {
+                const existingStats = localStorage.getItem(teacherStatsKey);
+                const stats = existingStats ? JSON.parse(existingStats) : {
+                  activeStudents: [],
+                  completedStudents: [],
+                  totalEarned: 0,
+                  pendingBalance: 0,
+                  sessionsCompleted: 0,
+                  rating: 0,
+                  ratingCount: 0,
+                  earningsHistory: []
+                };
+
+                // Check if this student+course combo already exists (not just student)
+                const enrollmentId = `${currentUser?.id}-${course.id}`;
+                const enrollmentExists = stats.activeStudents.some(s => s.id === enrollmentId);
+                if (!enrollmentExists) {
+                  stats.activeStudents.push({
+                    id: enrollmentId,
+                    name: currentUser?.name,
+                    courseName: course.title,
+                    courseId: course.id,
+                    enrolledDate: new Date().toISOString()
+                  });
+                  stats.pendingBalance = (stats.pendingBalance || 0) + 315;
+                }
+
+                localStorage.setItem(teacherStatsKey, JSON.stringify(stats));
+
+                // Save session to teacher's session list
+                const teacherSessionsKey = `teacherSessions_${booking.teacher.id}`;
+                const existingTeacherSessions = localStorage.getItem(teacherSessionsKey);
+                const teacherSessionsList = existingTeacherSessions ? JSON.parse(existingTeacherSessions) : [];
+                teacherSessionsList.push({
+                  id: newSession.id,
+                  courseId: course.id,
+                  courseName: course.title,
+                  teacherId: booking.teacher.id,
+                  teacherName: booking.teacher.name,
+                  date: booking.date,
+                  time: booking.time,
+                  status: 'scheduled',
+                  studentId: currentUser?.id,
+                  studentName: currentUser?.name,
+                  createdAt: new Date().toISOString()
+                });
+                localStorage.setItem(teacherSessionsKey, JSON.stringify(teacherSessionsList));
+              } catch (e) {
+                console.error('Failed to update teacher stats:', e);
+              }
+            }
+          }
+
+          // Auto-join the course's community if not already following
+          if (course.instructorId) {
+            const creatorId = `creator-${course.instructorId}`;
+            const instructor = getInstructorById(course.instructorId);
+
+            // Use prev state inside callback to avoid stale closure issues
+            setFollowedCommunities(prev => {
+              const alreadyFollowing = prev.some(c => c.id === creatorId);
+              if (!alreadyFollowing && instructor) {
+                console.log('Auto-joined community:', instructor.name);
+                return [...prev, {
+                  id: creatorId,
+                  type: 'creator',
+                  name: instructor.name,
+                  instructorId: instructor.id,
+                  instructorName: instructor.name,
+                  courseIds: instructor.courses || [],
+                  followedCourseIds: [course.id],
+                  description: instructor.bio,
+                  avatar: instructor.avatar
+                }];
+              } else if (alreadyFollowing) {
+                // Already following - just add this course to followedCourseIds if not already there
+                return prev.map(c => {
+                  if (c.id === creatorId && !(c.followedCourseIds || []).includes(course.id)) {
+                    return {
+                      ...c,
+                      followedCourseIds: [...(c.followedCourseIds || []), course.id]
+                    };
+                  }
+                  return c;
+                });
+              }
+              return prev;
+            });
+          }
+
           // Navigate to My Courses and show the purchased course detail
           setViewingCourseFromCommunity(course);
           setNavigationHistory(prev => [...prev, 'My Courses']);
@@ -1241,6 +1610,121 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             onComplete={(booking) => {
               console.log('Booking complete:', booking);
               handleCoursePurchase(enrollingCourse.id);
+
+              // Save the scheduled session
+              const newSession = addScheduledSession({
+                courseId: enrollingCourse.id,
+                courseName: enrollingCourse.title,
+                teacherId: booking.teacher?.id,
+                teacherName: booking.teacher?.name,
+                date: booking.date,
+                time: booking.time,
+                status: 'scheduled',
+                studentId: currentUser?.id,
+                studentName: currentUser?.name
+              });
+              console.log('Session scheduled:', newSession);
+
+              // Update the teacher's S-T stats (cross-user update)
+              // This adds the student to the teacher's Active Students
+              if (booking.teacher?.id) {
+                const teacherStatsKey = `stTeacherStats_${booking.teacher.id}`;
+                try {
+                  const existingStats = localStorage.getItem(teacherStatsKey);
+                  const stats = existingStats ? JSON.parse(existingStats) : {
+                    activeStudents: [],
+                    completedStudents: [],
+                    totalEarned: 0,
+                    pendingBalance: 0,
+                    sessionsCompleted: 0,
+                    rating: 0,
+                    ratingCount: 0,
+                    earningsHistory: []
+                  };
+
+                  // Add student to activeStudents if this student+course combo doesn't exist
+                  const enrollmentId = `${currentUser?.id}-${enrollingCourse.id}`;
+                  const enrollmentExists = stats.activeStudents.some(s => s.id === enrollmentId);
+                  if (!enrollmentExists) {
+                    stats.activeStudents.push({
+                      id: enrollmentId,
+                      name: currentUser?.name,
+                      courseName: enrollingCourse.title,
+                      courseId: enrollingCourse.id,
+                      enrolledDate: new Date().toISOString()
+                    });
+                    stats.pendingBalance = (stats.pendingBalance || 0) + 315;
+                  }
+
+                  localStorage.setItem(teacherStatsKey, JSON.stringify(stats));
+                  console.log('Updated teacher stats for:', booking.teacher.name, stats);
+
+                  // If this is the current user (teacher viewing their own dashboard), update state too
+                  if (currentUser?.id === booking.teacher.id) {
+                    setStTeacherStats(stats);
+                  }
+
+                  // Also save the session to teacher's session list (so they can see it)
+                  const teacherSessionsKey = `teacherSessions_${booking.teacher.id}`;
+                  const existingTeacherSessions = localStorage.getItem(teacherSessionsKey);
+                  const teacherSessionsList = existingTeacherSessions ? JSON.parse(existingTeacherSessions) : [];
+                  teacherSessionsList.push({
+                    id: newSession.id,
+                    courseId: enrollingCourse.id,
+                    courseName: enrollingCourse.title,
+                    teacherId: booking.teacher.id,
+                    teacherName: booking.teacher.name,
+                    date: booking.date,
+                    time: booking.time,
+                    status: 'scheduled',
+                    studentId: currentUser?.id,
+                    studentName: currentUser?.name,
+                    createdAt: new Date().toISOString()
+                  });
+                  localStorage.setItem(teacherSessionsKey, JSON.stringify(teacherSessionsList));
+                  console.log('Saved session to teacher sessions:', teacherSessionsList);
+                } catch (e) {
+                  console.error('Failed to update teacher stats:', e);
+                }
+              }
+
+              // Auto-join the course's community if not already following
+              if (enrollingCourse.instructorId) {
+                const creatorId = `creator-${enrollingCourse.instructorId}`;
+                const instructor = getInstructorById(enrollingCourse.instructorId);
+
+                // Use prev state inside callback to avoid stale closure issues
+                setFollowedCommunities(prev => {
+                  const alreadyFollowing = prev.some(c => c.id === creatorId);
+                  if (!alreadyFollowing && instructor) {
+                    console.log('Auto-joined community:', instructor.name);
+                    return [...prev, {
+                      id: creatorId,
+                      type: 'creator',
+                      name: instructor.name,
+                      instructorId: instructor.id,
+                      instructorName: instructor.name,
+                      courseIds: instructor.courses || [],
+                      followedCourseIds: [enrollingCourse.id],
+                      description: instructor.bio,
+                      avatar: instructor.avatar
+                    }];
+                  } else if (alreadyFollowing) {
+                    // Already following - just add this course to followedCourseIds if not already there
+                    return prev.map(c => {
+                      if (c.id === creatorId && !(c.followedCourseIds || []).includes(enrollingCourse.id)) {
+                        return {
+                          ...c,
+                          followedCourseIds: [...(c.followedCourseIds || []), enrollingCourse.id]
+                        };
+                      }
+                      return c;
+                    });
+                  }
+                  return prev;
+                });
+              }
+
               setShowEnrollmentFlow(false);
               // Show the purchased course detail
               setViewingCourseFromCommunity(enrollingCourse);
@@ -1351,7 +1835,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   }
 
   // Show appropriate Dashboard based on user type
-  if (activeMenu === 'Dashboard') {
+  if (activeMenu === 'Workspace') {
     // New Users and Students see Student Dashboard
     if (currentUser?.isNewUser || currentUser?.userType === 'new_user' || currentUser?.userType === 'student') {
       return (
@@ -1374,7 +1858,74 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             isDarkMode={isDarkMode}
             currentUser={currentUser}
             onMenuChange={onMenuChange}
+            stTeacherStats={stTeacherStats}
+            onAddActiveStudent={addActiveStudent}
+            onCompleteSession={completeStSession}
+            onCertifyStudent={certifyStudent}
+            scheduledSessions={teacherSessions}
+            onJoinSession={handleJoinBbbSession}
           />
+          {/* BBB Video Session Modal */}
+          {showBbbModal && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.9)',
+              zIndex: 9999,
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px 20px',
+                background: isDarkMode ? '#16181c' : '#f8fafc',
+                borderBottom: `1px solid ${isDarkMode ? '#2f3336' : '#e2e8f0'}`
+              }}>
+                <span style={{ color: isDarkMode ? '#e7e9ea' : '#0f172a', fontWeight: 600 }}>
+                  Video Session
+                </span>
+                <button
+                  onClick={() => { setShowBbbModal(false); setBbbJoinUrl(null); }}
+                  style={{
+                    background: '#ef4444',
+                    border: 'none',
+                    borderRadius: 8,
+                    color: '#fff',
+                    padding: '8px 16px',
+                    cursor: 'pointer',
+                    fontWeight: 500
+                  }}
+                >
+                  Leave Session
+                </button>
+              </div>
+              <div style={{ flex: 1 }}>
+                {bbbJoinUrl ? (
+                  <iframe
+                    src={bbbJoinUrl}
+                    style={{ width: '100%', height: '100%', border: 'none' }}
+                    allow="camera; microphone; display-capture; fullscreen"
+                    title="BigBlueButton Session"
+                  />
+                ) : (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100%',
+                    color: '#fff'
+                  }}>
+                    Loading session...
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       );
     }

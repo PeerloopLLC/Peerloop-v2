@@ -65,10 +65,10 @@ const EnrollmentFlow = ({
       }
     },
     {
-      id: 3,
+      id: 'demo_alex',
       name: 'Alex Sanders',
       initials: 'AS',
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=face',
+      avatar: 'https://i.pravatar.cc/150?img=3',
       studentsTaught: 4,
       rating: 4.7,
       bio: 'Recently completed this course myself! I understand the learning curve and can help you avoid common pitfalls.',
@@ -325,7 +325,7 @@ const EnrollmentFlow = ({
           <h3 style={{ fontSize: 16, fontWeight: 600, color: textPrimary, marginBottom: 12 }}>About</h3>
           <p style={{ fontSize: 14, color: textSecondary, lineHeight: 1.6, margin: 0 }}>{teacher.bio}</p>
         </div>
-        <button onClick={() => { setSelectedTeacher(teacher.id); setViewingTeacherProfile(null); }} style={{
+        <button onClick={() => { setSelectedTeacher(teacher); setViewingTeacherProfile(null); }} style={{
           width: '100%', padding: 14, borderRadius: 8, border: 'none', background: accentBlue, color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer'
         }}>
           Select {teacher.name.split(' ')[0]} as Your Teacher
