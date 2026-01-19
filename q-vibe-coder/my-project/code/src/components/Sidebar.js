@@ -492,8 +492,10 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                   <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" className="community-avatar community-avatar-img" />
                   <span className="community-name">The Commons</span>
                 </div>
-                {/* Creator communities */}
-                {communities.map((community) => {
+                {/* Creator communities - only show instructor communities, not courses */}
+                {communities
+                  .filter(c => c.type === 'creator' || (typeof c.id === 'string' && c.id.startsWith('creator-')))
+                  .map((community) => {
                   const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
                   const initial = displayName.charAt(0).toUpperCase();
 
@@ -602,8 +604,10 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                   <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" className="community-avatar community-avatar-img" />
                   <span className="community-name">The Commons</span>
                 </div>
-                {/* Followed creator communities */}
-                {communities.map((community) => {
+                {/* Followed creator communities - only show instructor communities, not courses */}
+                {communities
+                  .filter(c => c.type === 'creator' || (typeof c.id === 'string' && c.id.startsWith('creator-')))
+                  .map((community) => {
                   const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
                   const initial = displayName.charAt(0).toUpperCase();
                   return (

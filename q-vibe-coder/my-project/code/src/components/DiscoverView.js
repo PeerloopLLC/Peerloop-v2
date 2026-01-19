@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FaSearch, FaBook, FaPlay } from 'react-icons/fa';
 import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
-import { getInstructorWithCourses } from '../data/database';
+import { getInstructorWithCourses, getAllCourses, getInstructorById } from '../data/database';
 
 /**
  * DiscoverView - Unified search for communities and courses
@@ -22,7 +22,9 @@ const DiscoverView = ({
   isCreatorFollowed,
   handleFollowInstructor,
   onViewCourse,
-  onViewCommunity
+  onViewCommunity,
+  signupCompleted = false,
+  setSignupCompleted = null
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState(() => {
@@ -40,6 +42,88 @@ const DiscoverView = ({
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
   const closeWelcomeVideo = () => setShowWelcomeVideo(false);
 
+  // Interests modal for new user signup
+  const [showInterestsModal, setShowInterestsModal] = useState(false);
+  const [selectedInterests, setSelectedInterests] = useState([]);
+
+  const availableInterests = [
+    'Culture', 'Technology', 'Health', 'Finance',
+    'Education', 'Travel', 'Food', 'Fashion', 'Sports',
+    'Art', 'Music', 'Environment', 'Politics', 'History',
+    'Literature', 'Science', 'Philosophy', 'Community',
+    'Networking', 'Sustainability', 'Wellness', 'Innovation',
+    'Support', 'Growth', 'Inclusion',
+    'Empowerment', 'Collaboration', 'Entrepreneurship',
+    'Leadership', 'Advocacy', 'Creativity', 'Engagement',
+    'Diversity', 'Service', 'Mentorship', 'Resilience'
+  ];
+
+  const toggleInterest = (interest) => {
+    setSelectedInterests(prev =>
+      prev.includes(interest)
+        ? prev.filter(i => i !== interest)
+        : [...prev, interest]
+    );
+  };
+
+  const closeInterestsModal = () => setShowInterestsModal(false);
+
+  // Communities you may like modal (step 2 of signup)
+  const [showCommunitiesModal, setShowCommunitiesModal] = useState(false);
+  const [selectedCommunities, setSelectedCommunities] = useState([]);
+
+  // signupCompleted and setSignupCompleted are now passed as props from MainContent
+  // This allows the state to be shared with Community.js
+
+  // Top 3 communities with most courses from the database
+  const suggestedCommunities = [
+    {
+      id: 8,
+      name: 'Guy Rymberg',
+      author: 'AI Prompting Specialist',
+      description: 'Master AI prompting, Claude Code, n8n automation, and vibe coding',
+      avatar: 'https://i.pravatar.cc/150?img=13',
+      avatarColor: '#1d9bf0',
+      courseCount: 5
+    },
+    {
+      id: 2,
+      name: 'Jane Doe',
+      author: 'Leading AI Strategist',
+      description: 'AI for Product Managers, Deep Learning, Computer Vision, and NLP',
+      avatar: 'https://i.pravatar.cc/150?img=32',
+      avatarColor: '#9333ea',
+      courseCount: 4
+    },
+    {
+      id: 4,
+      name: 'James Wilson',
+      author: 'Full-Stack & DevOps',
+      description: 'Full-Stack Web Development, DevOps & CI/CD, Microservices Architecture',
+      avatar: 'https://i.pravatar.cc/150?img=60',
+      avatarColor: '#10b981',
+      courseCount: 3
+    }
+  ];
+
+  const toggleCommunity = (communityId) => {
+    setSelectedCommunities(prev =>
+      prev.includes(communityId)
+        ? prev.filter(id => id !== communityId)
+        : [...prev, communityId]
+    );
+  };
+
+  const selectAllCommunities = () => {
+    if (selectedCommunities.length === suggestedCommunities.length) {
+      setSelectedCommunities([]);
+    } else {
+      setSelectedCommunities(suggestedCommunities.map(c => c.id));
+    }
+  };
+
+  const closeCommunitiesModal = () => setShowCommunitiesModal(false);
+
   // Persist activeFilter to localStorage when it changes
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
@@ -53,6 +137,12 @@ const DiscoverView = ({
   useEffect(() => {
     isHeaderCollapsedRef.current = isHeaderCollapsed;
   }, [isHeaderCollapsed]);
+
+  // Clear selections when user changes (for demo purposes)
+  useEffect(() => {
+    setSelectedInterests([]);
+    setSelectedCommunities([]);
+  }, [currentUser?.id]);
 
   // Handle scroll to collapse/expand header based on scroll position
   useEffect(() => {
@@ -95,6 +185,9 @@ const DiscoverView = ({
       }
 
       lastScrollY.current = currentScrollY;
+
+      // Save scroll position on every scroll for restoration when returning
+      sessionStorage.setItem('discoverScrollPosition', currentScrollY.toString());
     };
 
     const container = scrollContainerRef.current;
@@ -109,20 +202,40 @@ const DiscoverView = ({
     };
   }, []); // Empty dependency - handler uses refs for current values
 
-  // Restore scroll position on mount
+  // Restore scroll position on mount - only if returning from a detail view
+  // Use sessionStorage so it clears on new browser session
   useEffect(() => {
-    const savedScrollPosition = localStorage.getItem('discoverScrollPosition');
-    if (savedScrollPosition && scrollContainerRef.current) {
+    const savedScrollPosition = sessionStorage.getItem('discoverScrollPosition');
+    const isReturning = sessionStorage.getItem('discoverHasVisited');
+
+    if (savedScrollPosition && isReturning && scrollContainerRef.current) {
+      // Only restore scroll if user has visited Discover before in this session
       scrollContainerRef.current.scrollTop = parseInt(savedScrollPosition, 10);
+    } else if (scrollContainerRef.current) {
+      // First visit - ensure we start at the top
+      scrollContainerRef.current.scrollTop = 0;
     }
+
+    // Mark that user has visited Discover in this session
+    sessionStorage.setItem('discoverHasVisited', 'true');
   }, []);
 
   // Save scroll position before navigating away
   const saveScrollPosition = () => {
     if (scrollContainerRef.current) {
-      localStorage.setItem('discoverScrollPosition', scrollContainerRef.current.scrollTop);
+      sessionStorage.setItem('discoverScrollPosition', scrollContainerRef.current.scrollTop);
     }
   };
+
+  // Save scroll position when component unmounts (user navigates away)
+  useEffect(() => {
+    return () => {
+      // Cleanup: save scroll position before unmounting
+      if (scrollContainerRef.current) {
+        sessionStorage.setItem('discoverScrollPosition', scrollContainerRef.current.scrollTop);
+      }
+    };
+  }, []);
 
   // Banner color from Profile settings
   const userBannerColor = localStorage.getItem('profileBannerColor') || 'blue';
@@ -348,6 +461,343 @@ const DiscoverView = ({
         </div>
       )}
 
+      {/* Interests Selection Modal */}
+      {showInterestsModal && (
+        <div
+          onClick={closeInterestsModal}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: 20
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: 540,
+              maxHeight: '90vh',
+              background: isDarkMode ? '#16181c' : '#fff',
+              borderRadius: 16,
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3)'
+            }}
+          >
+            {/* Close button */}
+            <button
+              onClick={closeInterestsModal}
+              style={{
+                position: 'absolute',
+                top: 16,
+                right: 16,
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                border: 'none',
+                background: isDarkMode ? '#2f3336' : '#eff3f4',
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                fontSize: 18,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10
+              }}
+            >
+              ✕
+            </button>
+
+            {/* Content */}
+            <div style={{ padding: '40px 32px 32px', overflowY: 'auto', maxHeight: '90vh' }}>
+              <h2 style={{
+                fontSize: 24,
+                fontWeight: 700,
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                margin: '0 0 8px 0',
+                textAlign: 'center'
+              }}>
+                Dive into your interests
+              </h2>
+              <p style={{
+                fontSize: 15,
+                color: isDarkMode ? '#71767b' : '#536471',
+                margin: '0 0 24px 0',
+                textAlign: 'center'
+              }}>
+                We'll recommend top communities based on the topics you select.
+              </p>
+
+              {/* Interest Pills */}
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 10,
+                marginBottom: 24,
+                justifyContent: 'center'
+              }}>
+                {availableInterests.map(interest => {
+                  const isSelected = selectedInterests.includes(interest);
+                  return (
+                    <button
+                      key={interest}
+                      onClick={() => toggleInterest(interest)}
+                      style={{
+                        padding: '10px 18px',
+                        borderRadius: 9999,
+                        border: `1px solid ${isSelected ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#cfd9de')}`,
+                        background: isSelected ? '#1d9bf0' : 'transparent',
+                        color: isSelected ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                        fontSize: 14,
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {interest}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Continue Button */}
+              <button
+                onClick={() => {
+                  if (selectedInterests.length >= 3) {
+                    closeInterestsModal();
+                    setShowCommunitiesModal(true);
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  padding: '14px 24px',
+                  borderRadius: 9999,
+                  border: 'none',
+                  background: selectedInterests.length >= 3 ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#cfd9de'),
+                  color: selectedInterests.length >= 3 ? '#fff' : (isDarkMode ? '#71767b' : '#536471'),
+                  fontSize: 15,
+                  fontWeight: 600,
+                  cursor: selectedInterests.length >= 3 ? 'pointer' : 'default',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {selectedInterests.length >= 3
+                  ? 'Continue'
+                  : `Select ${3 - selectedInterests.length} more to continue`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Communities You May Like Modal */}
+      {showCommunitiesModal && (
+        <div
+          onClick={closeCommunitiesModal}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: 20
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: 480,
+              maxHeight: '90vh',
+              background: isDarkMode ? '#16181c' : '#fff',
+              borderRadius: 16,
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3)'
+            }}
+          >
+            {/* Content */}
+            <div style={{ padding: '32px 24px', overflowY: 'auto', maxHeight: '90vh' }}>
+              <h2 style={{
+                fontSize: 22,
+                fontWeight: 700,
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                margin: '0 0 8px 0',
+                textAlign: 'center'
+              }}>
+                Communities you may like
+              </h2>
+              <p style={{
+                fontSize: 14,
+                color: isDarkMode ? '#71767b' : '#536471',
+                margin: '0 0 20px 0',
+                textAlign: 'center'
+              }}>
+                We found some communities based on your interests.
+              </p>
+
+              {/* Select All */}
+              <div
+                onClick={selectAllCommunities}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  marginBottom: 16,
+                  cursor: 'pointer'
+                }}
+              >
+                <span style={{
+                  fontSize: 14,
+                  color: '#1d9bf0',
+                  fontWeight: 500
+                }}>
+                  {selectedCommunities.length === suggestedCommunities.length ? 'Deselect all' : 'Select all'}
+                </span>
+              </div>
+
+              {/* Community List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
+                {suggestedCommunities.map(community => {
+                  const isSelected = selectedCommunities.includes(community.id);
+                  return (
+                    <div
+                      key={community.id}
+                      onClick={() => toggleCommunity(community.id)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 12,
+                        padding: '12px 16px',
+                        borderRadius: 12,
+                        border: `1px solid ${isDarkMode ? '#2f3336' : '#eff3f4'}`,
+                        cursor: 'pointer',
+                        background: isDarkMode ? '#16181c' : '#fff',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {/* Avatar */}
+                      <div style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 8,
+                        background: community.avatar ? `url(${community.avatar}) center/cover` : community.avatarColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontWeight: 700,
+                        fontSize: 18,
+                        flexShrink: 0
+                      }}>
+                        {!community.avatar && community.name.charAt(0)}
+                      </div>
+
+                      {/* Info */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                        }}>
+                          {community.name}
+                        </div>
+                        <div style={{
+                          fontSize: 13,
+                          color: isDarkMode ? '#71767b' : '#536471',
+                          marginBottom: 4
+                        }}>
+                          by {community.author}
+                        </div>
+                        <div style={{
+                          fontSize: 13,
+                          color: isDarkMode ? '#71767b' : '#536471',
+                          lineHeight: 1.4
+                        }}>
+                          {community.description}
+                        </div>
+                      </div>
+
+                      {/* Checkbox */}
+                      <div style={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: 4,
+                        border: `2px solid ${isSelected ? '#1d9bf0' : (isDarkMode ? '#536471' : '#cfd9de')}`,
+                        background: isSelected ? '#1d9bf0' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        marginTop: 2
+                      }}>
+                        {isSelected && (
+                          <span style={{ color: '#fff', fontSize: 14, fontWeight: 700 }}>✓</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Continue Button */}
+              <button
+                onClick={() => {
+                  // Join selected instructor communities directly
+                  if (selectedCommunities.length > 0 && setFollowedCommunities) {
+                    const newCommunities = selectedCommunities.map(instructorId => {
+                      const instructor = getInstructorById(instructorId);
+                      return {
+                        id: `creator-${instructorId}`,
+                        name: instructor?.name || 'Community',
+                        type: 'creator',
+                        followedCourseIds: []
+                      };
+                    });
+                    setFollowedCommunities(prev => {
+                      const existingIds = new Set(prev.map(c => c.id));
+                      const uniqueNew = newCommunities.filter(c => !existingIds.has(c.id));
+                      return [...prev, ...uniqueNew];
+                    });
+                  }
+                  closeCommunitiesModal();
+                  // Mark signup as complete so welcome screen doesn't show again
+                  setSignupCompleted(true);
+                  // Navigate to My Community menu (will show The Commons by default)
+                  onMenuChange && onMenuChange('My Community');
+                }}
+                style={{
+                  width: '100%',
+                  padding: '14px 24px',
+                  borderRadius: 9999,
+                  border: 'none',
+                  background: '#1d9bf0',
+                  color: '#fff',
+                  fontSize: 15,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {selectedCommunities.length > 0 ? 'Continue' : 'Continue without subscribing'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="three-column-layout">
         <div className="center-column" ref={scrollContainerRef} style={{ maxWidth: 800, margin: '0 auto' }}>
           {/* Sticky Collapsible Header */}
@@ -504,8 +954,8 @@ const DiscoverView = ({
             </div>
           </div>
 
-          {/* Welcome Post - Only for new users */}
-          {currentUser?.isNewUser && (
+          {/* Welcome Post - Only for new users who haven't completed signup */}
+          {currentUser?.isNewUser && !signupCompleted && (
             <div
               className="welcome-post-card"
               style={{
@@ -586,7 +1036,9 @@ const DiscoverView = ({
                   Follow creators, take courses, and share your own knowledge when you're ready.
                 </p>
                 <button
-                  onClick={() => onMenuChange && onMenuChange('My Community')}
+                  onClick={() => {
+                    setShowInterestsModal(true);
+                  }}
                   style={{
                     background: '#1d9bf0',
                     color: '#fff',
@@ -603,7 +1055,7 @@ const DiscoverView = ({
                   onMouseEnter={e => e.currentTarget.style.background = '#1a8cd8'}
                   onMouseLeave={e => e.currentTarget.style.background = '#1d9bf0'}
                 >
-                  Start Exploring →
+                  Create an account
                 </button>
               </div>
             </div>

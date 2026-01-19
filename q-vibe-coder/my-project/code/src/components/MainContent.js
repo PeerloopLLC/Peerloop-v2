@@ -363,6 +363,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   const [showEnrollmentFlow, setShowEnrollmentFlow] = useState(false); // Track enrollment modal visibility
   const [enrollingCourse, setEnrollingCourse] = useState(null); // Course being enrolled in
 
+  // Signup completed state - shared between Community and DiscoverView
+  // This ensures the welcome card disappears in both views after completing signup
+  const [signupCompleted, setSignupCompleted] = useState(false);
+
   // Purchased courses - courses the user has bought (enables course-level follow/unfollow)
   const [purchasedCourses, setPurchasedCourses] = useState(() => {
     // New User (demo_new) starts with no courses - completely fresh
@@ -1045,6 +1049,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         handleFollowCourse={handleFollowCourse}
         isCreatorFollowed={isCreatorFollowed}
         handleFollowInstructor={handleFollowInstructor}
+        signupCompleted={signupCompleted}
+        setSignupCompleted={setSignupCompleted}
         onViewCourse={(course) => {
           // Push current Discover state to browser history BEFORE navigating
           // This ensures back button returns to Discover
@@ -1132,6 +1138,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           // Need to exit Browse mode so MainContent shows PurchasedCourseDetail
           setViewingCourseFromCommunity(course);
           onMenuChange('Discover'); // Exit Browse mode - course view will take precedence
+        }}
+        onEnrollmentComplete={(course) => {
+          // Navigate to My Courses and show the purchased course detail
+          setViewingCourseFromCommunity(course);
+          setNavigationHistory(prev => [...prev, 'My Courses']);
+          onMenuChange('My Courses');
         }}
       />
     );
@@ -1230,8 +1242,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               console.log('Booking complete:', booking);
               handleCoursePurchase(enrollingCourse.id);
               setShowEnrollmentFlow(false);
+              // Show the purchased course detail
+              setViewingCourseFromCommunity(enrollingCourse);
               setEnrollingCourse(null);
-              onMenuChange('Dashboard');
+              // Navigate to My Courses with proper back button support
+              setNavigationHistory(prev => [...prev, 'My Courses']);
+              onMenuChange('My Courses');
             }}
           />
         </CourseDetailWrapper>
@@ -1398,6 +1414,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           onMenuChange={onMenuChange}
           onViewUserProfile={handleViewUserProfile}
           onViewCourse={handleViewCourseFromCommunity}
+          signupCompleted={signupCompleted}
+          setSignupCompleted={setSignupCompleted}
           onViewCreatorProfile={(creator) => {
             // Navigate to creator profile in Browse with back navigation to Feeds
             const instructorId = creator.instructorId || (typeof creator.id === 'string' ? creator.id.replace('creator-', '') : creator.id);

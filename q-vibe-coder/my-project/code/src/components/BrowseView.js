@@ -52,7 +52,8 @@ const BrowseView = ({
   hasAnyCreatorCourseFollowed,
   handleFollowInstructor,
   handleFollowCourse,
-  onRestoreCourseView
+  onRestoreCourseView,
+  onEnrollmentComplete
 }) => {
   // State for profile tabs (courses vs general content)
   const [activeProfileTab, setActiveProfileTab] = useState('courses');
@@ -1197,8 +1198,14 @@ const BrowseView = ({
                   console.log('Booking complete:', booking);
                   handleCoursePurchase(enrollingCourse.id);
                   setShowEnrollmentFlow(false);
+                  const purchasedCourse = enrollingCourse;
                   setEnrollingCourse(null);
-                  onMenuChange('Dashboard');
+                  // Use callback to navigate to My Courses with course detail
+                  if (onEnrollmentComplete) {
+                    onEnrollmentComplete(purchasedCourse);
+                  } else {
+                    onMenuChange('My Courses');
+                  }
                 }}
               />
             ) : activeTopMenu === 'courses' ? (
@@ -1624,7 +1631,8 @@ BrowseView.propTypes = {
   hasAnyCreatorCourseFollowed: PropTypes.func.isRequired,
   handleFollowInstructor: PropTypes.func.isRequired,
   handleFollowCourse: PropTypes.func.isRequired,
-  onRestoreCourseView: PropTypes.func
+  onRestoreCourseView: PropTypes.func,
+  onEnrollmentComplete: PropTypes.func
 };
 
 export default BrowseView;
