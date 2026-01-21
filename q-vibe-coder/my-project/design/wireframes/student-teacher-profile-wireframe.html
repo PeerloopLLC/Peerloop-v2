@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Teacher Profile - Wireframe</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #e7e9ea;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Back Button */
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      color: #71767b;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 8px 0;
+      margin-bottom: 16px;
+    }
+
+    .back-btn:hover {
+      color: #1d9bf0;
+    }
+
+    /* Profile Header Card - Same as Community Creator */
+    .profile-card {
+      background: linear-gradient(135deg, #1a2332 0%, #1e293b 100%);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 25px 10px rgba(80, 80, 80, 0.3);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #1d9bf0;
+      flex-shrink: 0;
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #e7e9ea;
+      margin-bottom: 2px;
+    }
+
+    .profile-tagline {
+      font-size: 14px;
+      color: #8b5cf6;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+
+    .profile-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: #71767b;
+      flex-wrap: wrap;
+    }
+
+    .profile-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .star {
+      color: #fbbf24;
+    }
+
+    .rate-badge {
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #1d9bf0, #8b5cf6);
+      border-radius: 20px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    /* Stats Row - Same as Community */
+    .stats-row {
+      display: flex;
+      gap: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #2f3336;
+      font-size: 14px;
+    }
+
+    .stats-row span {
+      color: #71767b;
+    }
+
+    .stats-row strong {
+      color: #e7e9ea;
+    }
+
+    /* Content Cards - Same Style */
+    .content-card {
+      background: #16181c;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #2f3336;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e7e9ea;
+      margin-bottom: 12px;
+    }
+
+    .card-text {
+      font-size: 14px;
+      color: #71767b;
+      line-height: 1.6;
+    }
+
+    /* Quick Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .info-item label {
+      font-size: 12px;
+      color: #71767b;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .info-item value {
+      font-size: 14px;
+      color: #e7e9ea;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-green { color: #00ba7c; }
+    .icon-blue { color: #1d9bf0; }
+
+    /* List Items */
+    .card-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .card-list li {
+      font-size: 14px;
+      color: #71767b;
+      line-height: 1.8;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .card-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #1d9bf0;
+    }
+
+    /* Tags/Specialties */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 6px 12px;
+      background: rgba(139, 92, 246, 0.2);
+      color: #8b5cf6;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* Reviews */
+    .review {
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .review:last-child {
+      margin-bottom: 0;
+    }
+
+    .review-quote {
+      color: #536471;
+      font-size: 16px;
+      margin-bottom: 8px;
+      opacity: 0.5;
+    }
+
+    .review-text {
+      font-size: 14px;
+      color: #e7e9ea;
+      font-style: italic;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .review-author {
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    /* Action Button */
+    .book-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #1d9bf0, #8b5cf6);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .book-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Annotations */
+    .annotation {
+      background: #fbbf24;
+      color: #000;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      position: absolute;
+      right: -10px;
+      top: -10px;
+    }
+
+    .section-label {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Section Label -->
+    <div class="section-label">SAME FORMAT AS COMMUNITY CREATOR</div>
+
+    <!-- Back Button -->
+    <button class="back-btn">
+      <span>&larr;</span>
+      <span>Back to teachers</span>
+    </button>
+
+    <!-- Profile Header Card (Same as Community Creator Card) -->
+    <div class="profile-card">
+      <div class="profile-header">
+        <!-- Avatar -->
+        <img
+          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+          alt="Marcus Chen"
+          class="avatar"
+        />
+
+        <!-- Info -->
+        <div class="profile-info">
+          <div class="profile-name">Marcus Chen</div>
+          <div class="profile-tagline">"Making complex concepts simple"</div>
+          <div class="profile-meta">
+            <span><span class="star">&#9733;</span> 4.9 (47 reviews)</span>
+            <span>12 students taught</span>
+            <span>San Francisco, CA</span>
+          </div>
+        </div>
+
+        <!-- Rate Badge -->
+        <div class="rate-badge">$45/hr</div>
+      </div>
+
+      <!-- Stats Row (Same as Community "X members, X posts") -->
+      <div class="stats-row">
+        <span><strong>2 hrs</strong> response time</span>
+        <span><strong>English, Mandarin</strong></span>
+        <span><strong>18 months</strong> teaching</span>
+      </div>
+    </div>
+
+    <!-- About Card -->
+    <div class="content-card">
+      <div class="section-label">ABOUT SECTION</div>
+      <h3 class="card-title">About</h3>
+      <p class="card-text">
+        Software engineer with 5 years experience at tech startups. I love breaking down
+        complex concepts into simple steps. Patient and thorough teaching style - I won't
+        move on until you truly understand.
+      </p>
+    </div>
+
+    <!-- Quick Info Card -->
+    <div class="content-card">
+      <div class="section-label">QUICK INFO</div>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Response Time</label>
+          <value><span class="icon-green">&#9201;</span> Within 2 hours</value>
+        </div>
+        <div class="info-item">
+          <label>Languages</label>
+          <value><span class="icon-blue">&#127760;</span> English, Mandarin</value>
+        </div>
+      </div>
+    </div>
+
+    <!-- Background Card -->
+    <div class="content-card">
+      <div class="section-label">BACKGROUND</div>
+      <h3 class="card-title">Background</h3>
+      <ul class="card-list">
+        <li>B.S. Computer Science, UC Berkeley</li>
+        <li>Currently Senior Developer at a fintech startup</li>
+        <li>Completed this course 2 years ago, certified student-teacher for 18 months</li>
+      </ul>
+    </div>
+
+    <!-- Teaching Style Card -->
+    <div class="content-card">
+      <div class="section-label">TEACHING STYLE</div>
+      <h3 class="card-title">Teaching Style</h3>
+      <ul class="card-list">
+        <li>Step-by-step walkthroughs</li>
+        <li>Real-world examples from industry</li>
+        <li>Encourages questions - "no such thing as a dumb question"</li>
+        <li>Provides follow-up resources after sessions</li>
+      </ul>
+    </div>
+
+    <!-- Specialties Card -->
+    <div class="content-card">
+      <div class="section-label">SPECIALTIES (TAGS)</div>
+      <h3 class="card-title">Specialties</h3>
+      <div class="tags">
+        <span class="tag">Debugging and troubleshooting</span>
+        <span class="tag">System design concepts</span>
+        <span class="tag">Career advice for tech</span>
+      </div>
+    </div>
+
+    <!-- Reviews Card -->
+    <div class="content-card">
+      <div class="section-label">REVIEWS</div>
+      <h3 class="card-title">Reviews</h3>
+
+      <div class="review">
+        <div class="review-quote">&#10077;</div>
+        <p class="review-text">"Marcus explained things in a way my professor never could. Finally clicked!"</p>
+        <p class="review-author">— Jamie L.</p>
+      </div>
+
+      <div class="review">
+        <div class="review-quote">&#10077;</div>
+        <p class="review-text">"Super patient. I asked the same question 3 times and he found new ways to explain it."</p>
+        <p class="review-author">— Rosa M.</p>
+      </div>
+    </div>
+
+    <!-- Book Session Button -->
+    <button class="book-btn">
+      <span>&#128197;</span>
+      Book Session with Marcus
+    </button>
+
+    <br><br>
+
+    <!-- Comparison Note -->
+    <div style="background: rgba(251, 191, 36, 0.1); border: 1px dashed #fbbf24; border-radius: 8px; padding: 16px; margin-top: 24px;">
+      <h4 style="color: #fbbf24; margin-bottom: 8px;">Format Matches Community Creator:</h4>
+      <ul style="color: #71767b; font-size: 13px; padding-left: 20px; line-height: 1.8;">
+        <li><strong>Header Card:</strong> Gradient background, avatar, name, meta info, badge</li>
+        <li><strong>Stats Row:</strong> Quick stats with bold numbers (like "X members, X posts")</li>
+        <li><strong>Content Cards:</strong> Same rounded cards with titles</li>
+        <li><strong>No "Community" text:</strong> Just the teacher's name and info</li>
+        <li><strong>Action Button:</strong> Full-width gradient button at bottom</li>
+      </ul>
+    </div>
+
+  </div>
+</body>
+</html>

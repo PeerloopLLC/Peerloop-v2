@@ -33,6 +33,8 @@ const BrowseView = ({
   setCurrentInstructorForCourse,
   showEnrollmentFlow,
   setShowEnrollmentFlow,
+  showEnrollOptions,
+  setShowEnrollOptions,
   enrollingCourse,
   setEnrollingCourse,
   openCreatorFollowDropdown,
@@ -586,7 +588,7 @@ const BrowseView = ({
                           onClick={(e) => {
                             e.stopPropagation();
                             setEnrollingCourse(course);
-                            setShowEnrollmentFlow(true);
+                            setShowEnrollOptions(true);
                           }}
                           style={{
                             background: isDarkMode ? 'transparent' : 'white',
@@ -1229,7 +1231,7 @@ const BrowseView = ({
                     }}
                     onEnroll={(course) => {
                       setEnrollingCourse(course);
-                      setShowEnrollmentFlow(true);
+                      setShowEnrollOptions(true);
                     }}
                   />
                 ) : (
@@ -1578,7 +1580,7 @@ const BrowseView = ({
                     }}
                     onEnroll={(course) => {
                       setEnrollingCourse(course);
-                      setShowEnrollmentFlow(true);
+                      setShowEnrollOptions(true);
                     }}
                   />
                 ) : selectedInstructor ? (
@@ -1615,6 +1617,8 @@ BrowseView.propTypes = {
   setCurrentInstructorForCourse: PropTypes.func.isRequired,
   showEnrollmentFlow: PropTypes.bool.isRequired,
   setShowEnrollmentFlow: PropTypes.func.isRequired,
+  showEnrollOptions: PropTypes.bool,
+  setShowEnrollOptions: PropTypes.func,
   enrollingCourse: PropTypes.object,
   setEnrollingCourse: PropTypes.func.isRequired,
   openCreatorFollowDropdown: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

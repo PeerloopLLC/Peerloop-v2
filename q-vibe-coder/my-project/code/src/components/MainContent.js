@@ -26,6 +26,9 @@ import StudentTeacherDashboard from './StudentTeacherDashboard';
 import NewUserDashboard from './NewUserDashboard';
 import StudentDashboard from './StudentDashboard';
 import EnrollmentFlow from './EnrollmentFlow';
+import EnrollOptionsModal from './EnrollOptionsModal';
+import PurchaseModal from './PurchaseModal';
+import FindTeacherView from './FindTeacherView';
 import Notifications from './Notifications';
 import AboutView from './AboutView';
 import DiscoverView from './DiscoverView';
@@ -201,12 +204,18 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     }
   }, [activeMenu]);
 
-  // Clear course view when navigating to main menus (fixes navigation staying stuck on course detail)
+  // Clear course view and enrollment states when navigating to main menus (fixes navigation staying stuck on course detail)
   useEffect(() => {
     const menusToReset = ['Discover', 'Workspace', 'My Community', 'Profile', 'Settings', 'Browse', 'My Courses'];
     if (menusToReset.includes(activeMenu)) {
       setViewingCourseFromCommunity(null);
       setViewingUserProfile(null);
+      // Reset enrollment flow states to prevent stale calendar/modal showing
+      setShowEnrollmentFlow(false);
+      setShowEnrollOptions(false);
+      setShowPurchaseModal(false);
+      setShowFindTeacher(false);
+      setEnrollingCourse(null);
     }
   }, [activeMenu]);
 
@@ -362,6 +371,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false); // Track course description expansion
   const [showEnrollmentFlow, setShowEnrollmentFlow] = useState(false); // Track enrollment modal visibility
   const [enrollingCourse, setEnrollingCourse] = useState(null); // Course being enrolled in
+  const [showEnrollOptions, setShowEnrollOptions] = useState(false); // Track enroll options modal (3-option menu)
+  const [showFindTeacher, setShowFindTeacher] = useState(false); // Track find teacher full screen view
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false); // Track purchase modal visibility
 
   // Signup completed state - shared between Community and DiscoverView
   // This ensures the welcome card disappears in both views after completing signup
@@ -1377,6 +1389,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         setCurrentInstructorForCourse={setCurrentInstructorForCourse}
         showEnrollmentFlow={showEnrollmentFlow}
         setShowEnrollmentFlow={setShowEnrollmentFlow}
+        showEnrollOptions={showEnrollOptions}
+        setShowEnrollOptions={setShowEnrollOptions}
         enrollingCourse={enrollingCourse}
         setEnrollingCourse={setEnrollingCourse}
         openCreatorFollowDropdown={openCreatorFollowDropdown}
@@ -1568,6 +1582,27 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       </div>
     );
 
+    // Show FindTeacherView when browsing student teachers from course detail
+    if (showFindTeacher && enrollingCourse) {
+      return (
+        <CourseDetailWrapper>
+          <FindTeacherView
+            course={enrollingCourse}
+            isDarkMode={isDarkMode}
+            onClose={() => {
+              setShowFindTeacher(false);
+              setEnrollingCourse(null);
+            }}
+            onSelectTeacher={(teacher) => {
+              // Close find teacher view and open enrollment flow
+              setShowFindTeacher(false);
+              setShowEnrollmentFlow(true);
+            }}
+          />
+        </CourseDetailWrapper>
+      );
+    }
+
     if (isPurchased) {
       return (
         <CourseDetailWrapper>
@@ -1590,12 +1625,164 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             currentUser={currentUser}
             onMenuChange={onMenuChange}
             scheduledSessions={scheduledSessions}
+            onBrowseStudentTeachers={() => {
+              setEnrollingCourse(viewingCourseFromCommunity);
+              setShowFindTeacher(true);
+            }}
           />
         </CourseDetailWrapper>
       );
     }
 
-    // Show EnrollmentFlow modal when active
+    // Show EnrollOptionsModal when user clicks Enroll (before EnrollmentFlow)
+    if (showEnrollOptions && enrollingCourse) {
+      return (
+        <CourseDetailWrapper>
+          <CourseDetailView
+            course={enrollingCourse}
+            instructor={getInstructorById(enrollingCourse.instructorId)}
+            isDarkMode={isDarkMode}
+            onClose={() => {
+              setShowEnrollOptions(false);
+              setEnrollingCourse(null);
+            }}
+            isCoursePurchased={false}
+            currentUser={currentUser}
+            onMenuChange={onMenuChange}
+            scheduledSessions={scheduledSessions}
+            onEnroll={() => {}} // Disabled since we're already showing options
+          />
+          <EnrollOptionsModal
+            course={enrollingCourse}
+            instructor={getInstructorById(enrollingCourse.instructorId)}
+            isDarkMode={isDarkMode}
+            onClose={() => {
+              setShowEnrollOptions(false);
+              setEnrollingCourse(null);
+            }}
+            onSelectPurchase={() => {
+              // Option 1: Purchase now, schedule later - show payment modal
+              setShowEnrollOptions(false);
+              setShowPurchaseModal(true);
+            }}
+            onSelectFindTeacher={() => {
+              // Option 2: Find a student teacher (full screen list)
+              setShowEnrollOptions(false);
+              setShowFindTeacher(true);
+            }}
+            onSelectPickDate={() => {
+              // Option 3: Pick a date first (existing calendar flow)
+              setShowEnrollOptions(false);
+              setShowEnrollmentFlow(true);
+            }}
+          />
+        </CourseDetailWrapper>
+      );
+    }
+
+    // Show PurchaseModal when user selects "Purchase Course Now, Schedule Later"
+    if (showPurchaseModal && enrollingCourse) {
+      return (
+        <CourseDetailWrapper>
+          <CourseDetailView
+            course={enrollingCourse}
+            instructor={getInstructorById(enrollingCourse.instructorId)}
+            isDarkMode={isDarkMode}
+            onClose={() => {
+              setShowPurchaseModal(false);
+              setEnrollingCourse(null);
+            }}
+            isCoursePurchased={false}
+            currentUser={currentUser}
+            onMenuChange={onMenuChange}
+            scheduledSessions={scheduledSessions}
+            onEnroll={() => {}} // Disabled since we're in purchase flow
+          />
+          <PurchaseModal
+            course={enrollingCourse}
+            instructor={getInstructorById(enrollingCourse.instructorId)}
+            isDarkMode={isDarkMode}
+            onClose={() => {
+              setShowPurchaseModal(false);
+              setEnrollingCourse(null);
+            }}
+            onPurchaseComplete={(destination) => {
+              // Complete the purchase
+              handleCoursePurchase(enrollingCourse.id);
+
+              // Auto-join the course's community
+              if (enrollingCourse.instructorId) {
+                const creatorId = `creator-${enrollingCourse.instructorId}`;
+                const instructor = getInstructorById(enrollingCourse.instructorId);
+
+                setFollowedCommunities(prev => {
+                  const existingCommunity = prev.find(c => c.id === creatorId);
+                  if (!existingCommunity) {
+                    return [...prev, {
+                      id: creatorId,
+                      instructorId: enrollingCourse.instructorId,
+                      instructorName: instructor.name,
+                      courseIds: instructor.courses || [],
+                      followedCourseIds: [enrollingCourse.id],
+                      description: instructor.bio,
+                      avatar: instructor.avatar
+                    }];
+                  } else {
+                    return prev.map(c => {
+                      if (c.id === creatorId && !(c.followedCourseIds || []).includes(enrollingCourse.id)) {
+                        return {
+                          ...c,
+                          followedCourseIds: [...(c.followedCourseIds || []), enrollingCourse.id]
+                        };
+                      }
+                      return c;
+                    });
+                  }
+                });
+              }
+
+              setShowPurchaseModal(false);
+
+              if (destination === 'schedule') {
+                // Open enrollment flow to schedule a session
+                setShowEnrollmentFlow(true);
+              } else {
+                // Go to My Courses
+                setViewingCourseFromCommunity(enrollingCourse);
+                setEnrollingCourse(null);
+                setNavigationHistory(prev => [...prev, 'My Courses']);
+                onMenuChange('My Courses');
+              }
+            }}
+          />
+        </CourseDetailWrapper>
+      );
+    }
+
+    // Show FindTeacherView when user selects "Find a Student Teacher"
+    if (showFindTeacher && enrollingCourse) {
+      return (
+        <CourseDetailWrapper>
+          <FindTeacherView
+            course={enrollingCourse}
+            isDarkMode={isDarkMode}
+            onClose={() => {
+              setShowFindTeacher(false);
+              setEnrollingCourse(null);
+            }}
+            onSelectTeacher={(teacher) => {
+              // Close find teacher view and open enrollment flow
+              setShowFindTeacher(false);
+              setShowEnrollmentFlow(true);
+              // Note: EnrollmentFlow will handle the rest
+              // Teacher selection happens in EnrollmentFlow's calendar view
+            }}
+          />
+        </CourseDetailWrapper>
+      );
+    }
+
+    // Show EnrollmentFlow modal when active (Pick a Date First option)
     if (showEnrollmentFlow && enrollingCourse) {
       return (
         <CourseDetailWrapper>
@@ -1760,10 +1947,53 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           scheduledSessions={scheduledSessions}
           onEnroll={(course) => {
             setEnrollingCourse(course);
-            setShowEnrollmentFlow(true);
+            setShowEnrollOptions(true); // Show options modal first
           }}
         />
       </CourseDetailWrapper>
+    );
+  }
+
+  // Show EnrollmentFlow when scheduling from My Courses (Schedule Now button)
+  if (showEnrollmentFlow && enrollingCourse && activeMenu === 'My Courses') {
+    return (
+      <div className="main-content">
+        <div className="three-column-layout browse-layout">
+          <EnrollmentFlow
+            course={enrollingCourse}
+            instructor={getInstructorById(enrollingCourse.instructorId)}
+            isDarkMode={isDarkMode}
+            isAlreadyPurchased={true}
+            onClose={() => {
+              setShowEnrollmentFlow(false);
+              setEnrollingCourse(null);
+            }}
+            onComplete={(booking) => {
+              console.log('Booking complete from My Courses:', booking);
+
+              // Save the scheduled session
+              const newSession = addScheduledSession({
+                courseId: enrollingCourse.id,
+                courseName: enrollingCourse.title,
+                teacherId: booking.teacher?.id,
+                teacherName: booking.teacher?.name,
+                date: booking.date,
+                time: booking.time,
+                status: 'scheduled',
+                studentId: currentUser?.id,
+                studentName: currentUser?.name
+              });
+              console.log('Session scheduled:', newSession);
+
+              setShowEnrollmentFlow(false);
+              setEnrollingCourse(null);
+            }}
+            purchasedCourses={purchasedCourses}
+            scheduledSessions={scheduledSessions}
+            currentUser={currentUser}
+          />
+        </div>
+      </div>
     );
   }
 
@@ -1817,6 +2047,11 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         scheduledSessions={scheduledSessions}
         addScheduledSession={addScheduledSession}
         cancelScheduledSession={cancelScheduledSession}
+        onScheduleSession={(course) => {
+          // Open enrollment flow for scheduling a session
+          setEnrollingCourse(course);
+          setShowEnrollmentFlow(true);
+        }}
       />
     );
   }

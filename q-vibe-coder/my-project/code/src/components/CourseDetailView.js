@@ -8,7 +8,7 @@ import './MainContent.css';
  * Shows detailed view of a course with tabs and two-column layout
  * Merged design: combines marketing view (pre-enrollment) with learning dashboard (post-enrollment)
  */
-const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange, scheduledSessions = [] }) => {
+const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange, scheduledSessions = [], onBrowseStudentTeachers }) => {
   // Check if this specific course is being followed (within creator's followedCourseIds)
   const [isFollowing, setIsFollowing] = useState(() => {
     if (!course) return false;
@@ -1777,11 +1777,15 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
               </p>
               <a
                 href="#"
-                onClick={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onBrowseStudentTeachers) onBrowseStudentTeachers();
+                }}
                 style={{
                   color: '#1d9bf0',
                   fontSize: 14,
-                  textDecoration: 'none'
+                  textDecoration: 'none',
+                  cursor: 'pointer'
                 }}
                 onMouseEnter={e => e.target.style.textDecoration = 'underline'}
                 onMouseLeave={e => e.target.style.textDecoration = 'none'}

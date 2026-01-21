@@ -73,7 +73,8 @@
       "Bash(pip show:*)",
       "WebFetch(domain:www.figma.com)",
       "Bash(start:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "mcp__plugin_playwright_playwright__browser_resize"
     ],
     "deny": [],
     "ask": []

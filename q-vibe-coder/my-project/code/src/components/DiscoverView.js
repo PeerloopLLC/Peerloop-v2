@@ -27,16 +27,19 @@ const DiscoverView = ({
   setSignupCompleted = null
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState(() => {
-    // Restore from localStorage to preserve selection when navigating back
-    return localStorage.getItem('discoverActiveFilter') || 'All';
-  });
+  const [activeFilter, setActiveFilter] = useState('All');
 
   // Collapsible header state
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const isHeaderCollapsedRef = useRef(false); // Ref to track current collapsed state for scroll handler
   const lastScrollY = useRef(0);
   const lastToggleTime = useRef(0);
+
+  // Pills drag scrolling state
+  const discoverPillsRef = useRef(null);
+  const [isPillsDragging, setIsPillsDragging] = useState(false);
+  const [pillsDragStartX, setPillsDragStartX] = useState(0);
+  const [pillsDragScrollLeft, setPillsDragScrollLeft] = useState(0);
 
   // Welcome video popup - opens when user clicks thumbnail
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
@@ -124,10 +127,41 @@ const DiscoverView = ({
 
   const closeCommunitiesModal = () => setShowCommunitiesModal(false);
 
-  // Persist activeFilter to localStorage when it changes
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
-    localStorage.setItem('discoverActiveFilter', filter);
+  };
+
+  // Pills drag scroll handlers (match Community.js behavior)
+  const handlePillsMouseDown = (e) => {
+    if (!discoverPillsRef.current) return;
+    setIsPillsDragging(true);
+    setPillsDragStartX(e.pageX - discoverPillsRef.current.offsetLeft);
+    setPillsDragScrollLeft(discoverPillsRef.current.scrollLeft);
+    discoverPillsRef.current.style.cursor = 'grabbing';
+  };
+
+  const handlePillsMouseMove = (e) => {
+    if (!isPillsDragging || !discoverPillsRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - discoverPillsRef.current.offsetLeft;
+    const walk = (x - pillsDragStartX) * 1.5;
+    discoverPillsRef.current.scrollLeft = pillsDragScrollLeft - walk;
+  };
+
+  const handlePillsMouseUp = () => {
+    setIsPillsDragging(false);
+    if (discoverPillsRef.current) {
+      discoverPillsRef.current.style.cursor = 'grab';
+    }
+  };
+
+  const handlePillsMouseLeave = () => {
+    if (isPillsDragging) {
+      setIsPillsDragging(false);
+      if (discoverPillsRef.current) {
+        discoverPillsRef.current.style.cursor = 'grab';
+      }
+    }
   };
 
   // Ref for scroll container
@@ -869,7 +903,12 @@ const DiscoverView = ({
 
             {/* Filter Pills - Scrollable Row, adjusts size when collapsed */}
             <div
+              ref={discoverPillsRef}
               className="discover-pills-scroll"
+              onMouseDown={handlePillsMouseDown}
+              onMouseMove={handlePillsMouseMove}
+              onMouseUp={handlePillsMouseUp}
+              onMouseLeave={handlePillsMouseLeave}
               style={{
                 marginTop: isHeaderCollapsed ? 10 : 16,
                 display: 'flex',
@@ -882,7 +921,8 @@ const DiscoverView = ({
                 msOverflowStyle: 'none',
                 WebkitOverflowScrolling: 'touch',
                 cursor: 'grab',
-                transition: 'all 0.3s ease-out'
+                transition: 'all 0.3s ease-out',
+                userSelect: 'none'
               }}
             >
               <style>{`

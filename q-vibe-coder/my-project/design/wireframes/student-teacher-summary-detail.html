@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Teacher Summary Detail</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Back Button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #fff;
+      border: 1px solid #e1e8ed;
+      border-radius: 20px;
+      font-size: 14px;
+      color: #0f1419;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    .back-btn:hover {
+      background: #f7f9fa;
+    }
+
+    /* Profile Card */
+    .profile-card {
+      background: linear-gradient(180deg, #e8f4fc 0%, #fff 100%);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid #e1e8ed;
+      position: relative;
+    }
+
+    /* Header Row: Avatar + Name + Badge + Button */
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .name-section {
+      flex: 1;
+    }
+
+    .name-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f1419;
+    }
+
+    .badge {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #8b5cf6;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .book-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: #8b5cf6;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .book-btn:hover {
+      background: #7c3aed;
+    }
+
+    /* Tagline */
+    .tagline {
+      font-size: 14px;
+      color: #536471;
+      font-style: italic;
+      margin-bottom: 8px;
+      padding-left: 68px;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      font-size: 14px;
+      color: #536471;
+      margin-bottom: 16px;
+      padding-left: 68px;
+    }
+
+    .stats-row span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Bio */
+    .bio {
+      font-size: 14px;
+      color: #0f1419;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    /* Credentials */
+    .credentials {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 0;
+    }
+
+    .credentials li {
+      font-size: 14px;
+      color: #0f1419;
+      line-height: 1.8;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .credentials li::before {
+      content: "✓";
+      color: #059669;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* Action area on right */
+    .action-area {
+      position: absolute;
+      right: 20px;
+      top: 100px;
+    }
+
+    .archive-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: #8b5cf6;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e1e8ed;
+      background: #fff;
+      border-radius: 12px 12px 0 0;
+      margin-bottom: 0;
+    }
+
+    .tab {
+      padding: 16px 24px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #536471;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: #f7f9fa;
+    }
+
+    .tab.active {
+      color: #0f1419;
+      font-weight: 700;
+      border-bottom-color: #1d9bf0;
+    }
+
+    /* Content List */
+    .content-list {
+      background: #fff;
+      border-radius: 0 0 12px 12px;
+      border: 1px solid #e1e8ed;
+      border-top: none;
+    }
+
+    .content-item {
+      display: flex;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #eff3f4;
+      align-items: flex-start;
+    }
+
+    .content-item:last-child {
+      border-bottom: none;
+    }
+
+    .content-thumb {
+      width: 80px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .content-info {
+      flex: 1;
+    }
+
+    .content-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1d9bf0;
+      margin-bottom: 4px;
+      cursor: pointer;
+    }
+
+    .content-title:hover {
+      text-decoration: underline;
+    }
+
+    .content-desc {
+      font-size: 13px;
+      color: #536471;
+      line-height: 1.4;
+    }
+
+    .content-action {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #536471;
+      background: transparent;
+      color: #536471;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .content-action:hover {
+      background: #f7f9fa;
+    }
+
+    /* Annotation */
+    .annotation {
+      background: #fbbf24;
+      color: #000;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="annotation">MATCHES SUMMARY DETAIL FORMAT EXACTLY</div>
+
+    <!-- Back Button -->
+    <button class="back-btn">
+      <span>←</span>
+      <span>Back to Student Teachers</span>
+    </button>
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+
+      <!-- Header Row -->
+      <div class="header-row">
+        <img
+          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+          alt="Marcus Chen"
+          class="avatar"
+        />
+        <div class="name-section">
+          <div class="name-badge-row">
+            <span class="name">Marcus Chen</span>
+            <span class="badge">Student Teacher</span>
+          </div>
+        </div>
+        <button class="book-btn">Book Session +</button>
+      </div>
+
+      <!-- Tagline -->
+      <div class="tagline">Making complex concepts simple</div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <span>⭐ 4.9</span>
+        <span>👥 12 students</span>
+        <span>📚 3 courses completed</span>
+      </div>
+
+      <!-- Bio -->
+      <p class="bio">
+        Software engineer with 5 years experience at tech startups. I love breaking down complex concepts into simple steps. Patient and thorough teaching style - I won't move on until you truly understand. Passionate about helping others succeed in their coding journey.
+      </p>
+
+      <!-- Credentials -->
+      <ul class="credentials">
+        <li>B.S. Computer Science, UC Berkeley</li>
+        <li>Senior Developer at fintech startup</li>
+        <li>Certified student-teacher for 18 months</li>
+      </ul>
+
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active">Sessions</div>
+      <div class="tab">Reviews</div>
+    </div>
+
+    <!-- Content List -->
+    <div class="content-list">
+      <div class="content-item">
+        <div class="content-thumb"></div>
+        <div class="content-info">
+          <div class="content-title">AI Prompting Mastery - 1:1 Help</div>
+          <p class="content-desc">Get personalized help with any module. I'll walk you through concepts step by step until they click.</p>
+        </div>
+        <button class="content-action">Available</button>
+      </div>
+
+      <div class="content-item">
+        <div class="content-thumb" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+        <div class="content-info">
+          <div class="content-title">AI Tools Overview - Deep Dive</div>
+          <p class="content-desc">Explore AI tools hands-on. We'll try different tools together and I'll show you real-world use cases.</p>
+        </div>
+        <button class="content-action">Available</button>
+      </div>
+
+      <div class="content-item">
+        <div class="content-thumb" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+        <div class="content-info">
+          <div class="content-title">Intro to Claude Code - Hands On</div>
+          <p class="content-desc">Learn Claude Code by building. We'll work through exercises together in real-time.</p>
+        </div>
+        <button class="content-action">Available</button>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

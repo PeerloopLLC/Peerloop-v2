@@ -17,7 +17,8 @@ const PurchasedCourseDetail = ({
   isCreatorFollowed,
   onFollowCreator,
   onViewCreatorProfile,
-  onGoToCommunity
+  onGoToCommunity,
+  onBrowseStudentTeachers
 }) => {
   if (!course) return null;
 
@@ -254,7 +255,7 @@ const PurchasedCourseDetail = ({
               </div>
               <p>Book a 1-on-1 tutoring session with a Student-Teacher who completed this course</p>
             </div>
-            <button className="pcd-btn-primary">Browse Student-Teachers →</button>
+            <button className="pcd-btn-primary" onClick={onBrowseStudentTeachers}>Browse Student-Teachers →</button>
           </div>
         </div>
 

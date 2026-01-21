@@ -6,7 +6,8 @@ const EnrollmentFlow = ({
   instructor,
   isDarkMode = true,
   onClose,
-  onComplete
+  onComplete,
+  isAlreadyPurchased = false
 }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
@@ -614,7 +615,7 @@ const EnrollmentFlow = ({
                                     transition: 'all 0.15s ease'
                                   }}
                                 >
-                                  {isProcessing ? 'Processing...' : <><FaCreditCard /> Pay Now</>}
+                                  {isProcessing ? 'Processing...' : isAlreadyPurchased ? <><FaCalendarAlt /> Schedule</> : <><FaCreditCard /> Pay Now</>}
                                 </button>
                               )}
                             </React.Fragment>

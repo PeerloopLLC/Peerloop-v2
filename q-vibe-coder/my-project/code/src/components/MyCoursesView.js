@@ -286,7 +286,8 @@ const MyCoursesView = ({
   handleFollowInstructor,
   scheduledSessions = [],
   addScheduledSession,
-  cancelScheduledSession
+  cancelScheduledSession,
+  onScheduleSession
 }) => {
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'inprogress', or 'completed'
   const [searchQuery, setSearchQuery] = useState('');
@@ -866,33 +867,67 @@ const MyCoursesView = ({
                     )}
                   </div>
 
-                  {/* Action Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (isCompletedSection) {
-                        // View Certificate action
-                        onViewCourse && onViewCourse(course.id);
-                      } else {
-                        handleFollowCourse && handleFollowCourse(course.id);
+                  {/* Action Buttons */}
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+                    {/* Schedule Now button - only show for active courses without scheduled sessions */}
+                    {!isCompletedSection && (() => {
+                      const hasScheduledSession = scheduledSessions
+                        .filter(s => s.courseId === course.id && s.status === 'scheduled')
+                        .length > 0;
+
+                      if (!hasScheduledSession) {
+                        return (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onScheduleSession && onScheduleSession(course);
+                            }}
+                            style={{
+                              background: isDarkMode ? '#2f3336' : '#eff3f4',
+                              border: 'none',
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              padding: '6px 16px',
+                              borderRadius: 20,
+                              fontSize: 14,
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            Schedule Now
+                          </button>
+                        );
                       }
-                    }}
-                    style={{
-                      background: isCompletedSection ? '#10b981' : (isDarkMode ? '#2f3336' : '#eff3f4'),
-                      border: 'none',
-                      color: isCompletedSection ? '#fff' : (isDarkMode ? '#71767b' : '#536471'),
-                      padding: '6px 16px',
-                      borderRadius: 20,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    {isCompletedSection ? 'View Certificate' : (isFollowed ? 'Unfollow' : 'Follow')}
-                  </button>
+                      return null;
+                    })()}
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isCompletedSection) {
+                          // View Certificate action
+                          onViewCourse && onViewCourse(course.id);
+                        } else {
+                          handleFollowCourse && handleFollowCourse(course.id);
+                        }
+                      }}
+                      style={{
+                        background: isCompletedSection ? '#10b981' : (isDarkMode ? '#2f3336' : '#eff3f4'),
+                        border: 'none',
+                        color: isCompletedSection ? '#fff' : (isDarkMode ? '#71767b' : '#536471'),
+                        padding: '6px 16px',
+                        borderRadius: 20,
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {isCompletedSection ? 'View Certificate' : (isFollowed ? 'Unfollow' : 'Follow')}
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -1510,7 +1545,8 @@ MyCoursesView.propTypes = {
   handleFollowInstructor: PropTypes.func,
   scheduledSessions: PropTypes.array,
   addScheduledSession: PropTypes.func,
-  cancelScheduledSession: PropTypes.func
+  cancelScheduledSession: PropTypes.func,
+  onScheduleSession: PropTypes.func
 };
 
 export default MyCoursesView;

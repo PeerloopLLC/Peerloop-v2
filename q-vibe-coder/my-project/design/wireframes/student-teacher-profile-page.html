@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Teacher Profile Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #fff;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Banner */
+    .banner {
+      height: 120px;
+      background: linear-gradient(180deg, #b8d4e8 0%, #d4e8f4 100%);
+      border-radius: 8px 8px 0 0;
+      position: relative;
+    }
+
+    /* Avatar overlapping banner */
+    .avatar-section {
+      position: relative;
+      margin-top: -40px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .avatar-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      object-fit: cover;
+      background: #e1e8ed;
+    }
+
+    .avatar-label {
+      background: #fff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #1d9bf0;
+      border: 1px solid #e1e8ed;
+      position: absolute;
+      top: -30px;
+      left: 28px;
+    }
+
+    .edit-profile {
+      font-size: 13px;
+      color: #536471;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .edit-profile:hover {
+      text-decoration: underline;
+    }
+
+    /* Profile Info */
+    .profile-info {
+      padding: 16px 20px;
+    }
+
+    .name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+
+    .name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f1419;
+    }
+
+    .handle {
+      font-size: 15px;
+      color: #536471;
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #8b5cf6;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .bio {
+      font-size: 15px;
+      color: #0f1419;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    /* Meta row with icons */
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 14px;
+      color: #536471;
+      margin-bottom: 12px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .meta-item a {
+      color: #1d9bf0;
+      text-decoration: none;
+    }
+
+    .meta-item a:hover {
+      text-decoration: underline;
+    }
+
+    /* Following/Followers */
+    .follow-stats {
+      display: flex;
+      gap: 20px;
+      font-size: 14px;
+      color: #536471;
+      margin-bottom: 12px;
+    }
+
+    .follow-stats strong {
+      color: #0f1419;
+    }
+
+    /* Profile Stats */
+    .profile-stats {
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+      color: #536471;
+      margin-bottom: 16px;
+    }
+
+    .profile-stats strong {
+      color: #0f1419;
+    }
+
+    /* Action button area */
+    .action-area {
+      position: absolute;
+      right: 20px;
+      top: 180px;
+    }
+
+    .book-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: #8b5cf6;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .book-btn:hover {
+      background: #7c3aed;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #eff3f4;
+      margin-bottom: 0;
+    }
+
+    .tab {
+      padding: 16px 24px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #536471;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: #f7f9fa;
+    }
+
+    .tab.active {
+      color: #0f1419;
+      font-weight: 700;
+      border-bottom-color: #1d9bf0;
+    }
+
+    /* Activity Feed */
+    .feed {
+      padding: 0;
+    }
+
+    .feed-item {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eff3f4;
+    }
+
+    .feed-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .feed-tag {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .feed-tag.tip {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .feed-tag.helpful {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .feed-tag.review {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+
+    .feed-course {
+      font-size: 13px;
+      color: #1d9bf0;
+    }
+
+    .feed-time {
+      font-size: 13px;
+      color: #536471;
+      margin-left: auto;
+    }
+
+    .feed-text {
+      font-size: 15px;
+      color: #0f1419;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .feed-actions {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: #536471;
+    }
+
+    .feed-action {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .feed-action:hover {
+      color: #1d9bf0;
+    }
+
+    .feed-action.helpful-count {
+      color: #059669;
+    }
+
+    /* Annotation */
+    .annotation {
+      background: #fbbf24;
+      color: #000;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .wrapper {
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="annotation">MATCHES PROFILE PAGE FORMAT EXACTLY</div>
+
+    <div class="wrapper">
+      <!-- Banner -->
+      <div class="banner"></div>
+
+      <!-- Avatar Section -->
+      <div class="avatar-section">
+        <div class="avatar-wrapper">
+          <div class="avatar-label">Profile</div>
+          <img
+            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+            alt="Marcus Chen"
+            class="avatar"
+          />
+        </div>
+        <a class="edit-profile">Edit profile</a>
+      </div>
+
+      <!-- Action Button -->
+      <div class="action-area">
+        <button class="book-btn">Book Session</button>
+      </div>
+
+      <!-- Profile Info -->
+      <div class="profile-info">
+        <div class="name-row">
+          <span class="name">Marcus Chen</span>
+        </div>
+        <div class="handle">@MarcusChen</div>
+        <div class="badge">Student Teacher</div>
+        <p class="bio">Making complex concepts simple. Software engineer helping students master coding fundamentals through patient, step-by-step guidance.</p>
+
+        <!-- Meta Row -->
+        <div class="meta-row">
+          <span class="meta-item">📍 San Francisco, CA</span>
+          <span class="meta-item">⏱️ Responds in 2hrs</span>
+          <span class="meta-item">📅 Teaching since Jan 2024</span>
+        </div>
+
+        <!-- Following/Followers -->
+        <div class="follow-stats">
+          <span><strong>24</strong> Following</span>
+          <span><strong>156</strong> Followers</span>
+        </div>
+
+        <!-- Profile Stats -->
+        <div class="profile-stats">
+          <span><strong>3</strong> Courses Completed</span>
+          <span><strong>12</strong> Students Helped</span>
+          <span><strong>4.9</strong> Rating</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active">Posts</div>
+        <div class="tab">Sessions</div>
+        <div class="tab">Reviews</div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="feed">
+        <div class="feed-item">
+          <div class="feed-header">
+            <span class="feed-tag tip">TIP</span>
+            <span class="feed-course">AI Prompting Mastery > Module 3</span>
+            <span class="feed-time">2h ago</span>
+          </div>
+          <p class="feed-text">"The key to understanding recursion is to trace through a simple example by hand first. Here's how I explain it to my students..."</p>
+          <div class="feed-actions">
+            <span class="feed-action helpful-count">👍 45 Helpful</span>
+            <span class="feed-action">💬 12</span>
+            <span class="feed-action">+30 Goodwill</span>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-header">
+            <span class="feed-tag helpful">HELPFUL</span>
+            <span class="feed-course">The Commons > Career Advice</span>
+            <span class="feed-time">1d ago</span>
+          </div>
+          <p class="feed-text">"Don't just watch tutorials - build projects. Even small ones. That's what got me my first job."</p>
+          <div class="feed-actions">
+            <span class="feed-action helpful-count">👍 89 Helpful</span>
+            <span class="feed-action">💬 23</span>
+            <span class="feed-action">+50 Goodwill</span>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-header">
+            <span class="feed-tag review">REVIEW</span>
+            <span class="feed-course">Session with Jamie L.</span>
+            <span class="feed-time">3d ago</span>
+          </div>
+          <p class="feed-text">"Great session! Marcus explained things in a way my professor never could. Finally clicked!"</p>
+          <div class="feed-actions">
+            <span class="feed-action">⭐ 5.0</span>
+            <span class="feed-action">💬 2</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
