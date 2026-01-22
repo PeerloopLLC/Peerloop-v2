@@ -695,14 +695,48 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // Track if we just loaded to avoid persist race condition
   const justLoadedStatsRef = React.useRef(false);
 
-  // Reload stTeacherStats when user changes
+  // Reload stTeacherStats when user changes, sync active students from all scheduled sessions
   React.useEffect(() => {
     if (!currentUser?.id) return;
     try {
       const key = `stTeacherStats_${currentUser.id}`;
       const stored = localStorage.getItem(key);
       const loadedStats = stored ? JSON.parse(stored) : initializeStStats();
-      justLoadedStatsRef.current = true; // Mark that we just loaded
+
+      // Sync: scan scheduledSessions_* to find students booked with this teacher
+      const existingIds = new Set((loadedStats.activeStudents || []).map(s => s.id));
+      let synced = false;
+      for (let i = 0; i < localStorage.length; i++) {
+        const storageKey = localStorage.key(i);
+        if (storageKey?.startsWith('scheduledSessions_') && !storageKey.endsWith(currentUser.id)) {
+          try {
+            const studentSessions = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            studentSessions.forEach(s => {
+              if (s.teacherId === currentUser.id && s.status === 'scheduled') {
+                const enrollmentId = `${s.studentId}-${s.courseId}`;
+                if (!existingIds.has(enrollmentId)) {
+                  loadedStats.activeStudents.push({
+                    id: enrollmentId,
+                    name: s.studentName || 'Unknown',
+                    courseName: s.courseName,
+                    courseId: s.courseId,
+                    enrolledDate: s.createdAt || new Date().toISOString()
+                  });
+                  loadedStats.pendingBalance = (loadedStats.pendingBalance || 0) + 315;
+                  existingIds.add(enrollmentId);
+                  synced = true;
+                }
+              }
+            });
+          } catch { /* skip malformed entries */ }
+        }
+      }
+
+      if (synced) {
+        localStorage.setItem(key, JSON.stringify(loadedStats));
+      }
+
+      justLoadedStatsRef.current = true;
       setStTeacherStats(loadedStats);
       console.log('Loaded stTeacherStats for', currentUser.id, loadedStats);
     } catch {
@@ -729,7 +763,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // Teacher Sessions state - sessions where this user is the teacher
   const [teacherSessions, setTeacherSessions] = useState([]);
 
-  // Load teacher sessions when user changes
+  // Load teacher sessions when user changes, and sync from all students' scheduled sessions
   React.useEffect(() => {
     if (!currentUser?.id) {
       setTeacherSessions([]);
@@ -738,7 +772,40 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     try {
       const key = `teacherSessions_${currentUser.id}`;
       const stored = localStorage.getItem(key);
-      setTeacherSessions(stored ? JSON.parse(stored) : []);
+      let sessions = stored ? JSON.parse(stored) : [];
+
+      // Sync: scan all scheduledSessions_* in localStorage to find sessions assigned to this teacher
+      const existingIds = new Set(sessions.map(s => s.id));
+      for (let i = 0; i < localStorage.length; i++) {
+        const storageKey = localStorage.key(i);
+        if (storageKey?.startsWith('scheduledSessions_') && !storageKey.endsWith(currentUser.id)) {
+          try {
+            const studentSessions = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            studentSessions.forEach(s => {
+              if (s.teacherId === currentUser.id && !existingIds.has(s.id)) {
+                sessions.push({
+                  id: s.id,
+                  courseId: s.courseId,
+                  courseName: s.courseName,
+                  teacherId: s.teacherId,
+                  teacherName: s.teacherName || s.studentTeacherName,
+                  date: s.date,
+                  time: s.time,
+                  status: s.status || 'scheduled',
+                  studentId: s.studentId,
+                  studentName: s.studentName,
+                  createdAt: s.createdAt || new Date().toISOString()
+                });
+                existingIds.add(s.id);
+              }
+            });
+          } catch { /* skip malformed entries */ }
+        }
+      }
+
+      // Persist synced sessions
+      localStorage.setItem(key, JSON.stringify(sessions));
+      setTeacherSessions(sessions);
     } catch {
       setTeacherSessions([]);
     }
@@ -792,14 +859,22 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         console.error('Error reading teacherSessions from localStorage:', e);
       }
 
-      // Check if there are any sessions for this student
-      const hasSessionsForStudent = currentSessions.some(s => s.studentId === studentId);
+      // Parse enrollment ID to get actual studentId and courseId
+      // Format: ${userId}-${courseId}
+      const lastDash = studentId.lastIndexOf('-');
+      const actualStudentId = lastDash > 0 ? studentId.substring(0, lastDash) : studentId;
+      const courseId = lastDash > 0 ? studentId.substring(lastDash + 1) : null;
+
+      // Check if there are any sessions for this student (match by actual user ID and course)
+      const hasSessionsForStudent = currentSessions.some(s =>
+        s.studentId === actualStudentId && (!courseId || String(s.courseId) === courseId)
+      );
 
       let updated;
       if (hasSessionsForStudent) {
-        // Mark existing sessions as completed
+        // Mark matching sessions as completed
         updated = currentSessions.map(session =>
-          session.studentId === studentId
+          session.studentId === actualStudentId && (!courseId || String(session.courseId) === courseId)
             ? { ...session, status: 'completed' }
             : session
         );
@@ -2071,6 +2146,66 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                 studentName: currentUser?.name
               });
               console.log('Session scheduled:', newSession);
+
+              // Update the teacher's S-T stats (cross-user update)
+              if (booking.teacher?.id) {
+                const teacherStatsKey = `stTeacherStats_${booking.teacher.id}`;
+                try {
+                  const existingStats = localStorage.getItem(teacherStatsKey);
+                  const stats = existingStats ? JSON.parse(existingStats) : {
+                    activeStudents: [],
+                    completedStudents: [],
+                    totalEarned: 0,
+                    pendingBalance: 0,
+                    sessionsCompleted: 0,
+                    rating: 0,
+                    ratingCount: 0,
+                    earningsHistory: []
+                  };
+
+                  const enrollmentId = `${currentUser?.id}-${enrollingCourse.id}`;
+                  const enrollmentExists = stats.activeStudents.some(s => s.id === enrollmentId);
+                  if (!enrollmentExists) {
+                    stats.activeStudents.push({
+                      id: enrollmentId,
+                      name: currentUser?.name,
+                      courseName: enrollingCourse.title,
+                      courseId: enrollingCourse.id,
+                      enrolledDate: new Date().toISOString()
+                    });
+                    stats.pendingBalance = (stats.pendingBalance || 0) + 315;
+                  }
+
+                  localStorage.setItem(teacherStatsKey, JSON.stringify(stats));
+                  console.log('Updated teacher stats from My Courses:', booking.teacher.name, stats);
+
+                  if (currentUser?.id === booking.teacher.id) {
+                    setStTeacherStats(stats);
+                  }
+
+                  // Save session to teacher's session list
+                  const teacherSessionsKey = `teacherSessions_${booking.teacher.id}`;
+                  const existingTeacherSessions = localStorage.getItem(teacherSessionsKey);
+                  const teacherSessionsList = existingTeacherSessions ? JSON.parse(existingTeacherSessions) : [];
+                  teacherSessionsList.push({
+                    id: newSession.id,
+                    courseId: enrollingCourse.id,
+                    courseName: enrollingCourse.title,
+                    teacherId: booking.teacher.id,
+                    teacherName: booking.teacher.name,
+                    date: booking.date,
+                    time: booking.time,
+                    status: 'scheduled',
+                    studentId: currentUser?.id,
+                    studentName: currentUser?.name,
+                    createdAt: new Date().toISOString()
+                  });
+                  localStorage.setItem(teacherSessionsKey, JSON.stringify(teacherSessionsList));
+                  console.log('Saved session to teacher sessions from My Courses:', teacherSessionsList);
+                } catch (e) {
+                  console.error('Failed to update teacher stats from My Courses:', e);
+                }
+              }
 
               setShowEnrollmentFlow(false);
               setEnrollingCourse(null);

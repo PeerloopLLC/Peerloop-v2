@@ -114,8 +114,7 @@ const FindTeacherView = ({
           // Keep original user data for profile view
           _originalUser: user
         };
-      })
-      .slice(0, 8); // Limit to 8 teachers for better UX
+      });
   }, []);
 
   // Filter teachers based on search query
@@ -467,7 +466,7 @@ const FindTeacherView = ({
           {filteredTeachers.map(teacher => (
             <div
               key={teacher.id}
-              onClick={() => onViewTeacherProfile && onViewTeacherProfile(teacher._originalUser)}
+              onClick={() => onSelectTeacher(teacher)}
               style={{
                 background: bgCard,
                 borderRadius: 12,
