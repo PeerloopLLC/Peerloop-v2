@@ -287,6 +287,7 @@ const MyCoursesView = ({
   scheduledSessions = [],
   addScheduledSession,
   cancelScheduledSession,
+  onRescheduleSession,
   onScheduleSession
 }) => {
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'inprogress', or 'completed'
@@ -841,7 +842,8 @@ const MyCoursesView = ({
                               gap: 6,
                               marginTop: 8,
                               fontSize: 12,
-                              color: '#1d9bf0'
+                              color: '#1d9bf0',
+                              flexWrap: 'wrap'
                             }}>
                               <span>📅</span>
                               <span>
@@ -871,11 +873,11 @@ const MyCoursesView = ({
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
                     {/* Schedule Now button - only show for active courses without scheduled sessions */}
                     {!isCompletedSection && (() => {
-                      const hasScheduledSession = scheduledSessions
+                      const scheduledSession = scheduledSessions
                         .filter(s => s.courseId === course.id && s.status === 'scheduled')
-                        .length > 0;
+                        .sort((a, b) => a.date.localeCompare(b.date))[0];
 
-                      if (!hasScheduledSession) {
+                      if (!scheduledSession) {
                         return (
                           <button
                             onClick={(e) => {
@@ -899,7 +901,28 @@ const MyCoursesView = ({
                           </button>
                         );
                       }
-                      return null;
+                      return (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRescheduleSession && onRescheduleSession(scheduledSession);
+                          }}
+                          style={{
+                            background: isDarkMode ? '#2f3336' : '#eff3f4',
+                            border: 'none',
+                            color: isDarkMode ? '#71767b' : '#536471',
+                            padding: '6px 16px',
+                            borderRadius: 20,
+                            fontSize: 14,
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          Reschedule
+                        </button>
+                      );
                     })()}
 
                     <button
@@ -1439,8 +1462,28 @@ const MyCoursesView = ({
                                     <span>🕐</span>
                                     <span>{course.session.time}</span>
                                     <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontWeight: 400 }}>
-                                      with {course.session.studentTeacherName}
+                                      with {course.session.teacherName || course.session.studentTeacherName}
                                     </span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onRescheduleSession && onRescheduleSession(course.session);
+                                      }}
+                                      style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        color: isDarkMode ? '#71767b' : '#6b7280',
+                                        fontSize: 11,
+                                        cursor: 'pointer',
+                                        padding: '2px 6px',
+                                        textDecoration: 'underline',
+                                        fontWeight: 400
+                                      }}
+                                      onMouseEnter={(e) => { e.currentTarget.style.color = '#1d9bf0'; }}
+                                      onMouseLeave={(e) => { e.currentTarget.style.color = isDarkMode ? '#71767b' : '#6b7280'; }}
+                                    >
+                                      Reschedule
+                                    </button>
                                   </div>
                                 )}
                               </div>

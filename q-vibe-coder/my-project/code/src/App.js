@@ -78,16 +78,9 @@ function App() {
     // Note: followedCommunities are now stored per-user in MainContent.js
     // New users will automatically start with empty follows
 
+    // Pass through ALL user data from communityUsers, plus demo-specific flags
     setCurrentUser({
-      id: demoUser.id,
-      name: demoUser.name,
-      username: demoUser.username,
-      roles: demoUser.roles,
-      avatar: demoUser.avatar,
-      bio: demoUser.bio,
-      userType: demoUser.userType,
-      location: demoUser.location,
-      stats: demoUser.stats,
+      ...demoUser, // Spread all user data (joinedDate, posts, courses, etc.)
       isDemo: true, // Flag to know this is a demo user
       isNewUser: demoUser.isNewUser || false, // Pass through the new user flag
       interests: demoUser.interests || [] // Pass through selected interests

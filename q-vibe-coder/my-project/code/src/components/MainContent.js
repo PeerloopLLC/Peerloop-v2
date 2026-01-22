@@ -29,6 +29,7 @@ import EnrollmentFlow from './EnrollmentFlow';
 import EnrollOptionsModal from './EnrollOptionsModal';
 import PurchaseModal from './PurchaseModal';
 import FindTeacherView from './FindTeacherView';
+import RescheduleModal from './RescheduleModal';
 import Notifications from './Notifications';
 import AboutView from './AboutView';
 import DiscoverView from './DiscoverView';
@@ -665,6 +666,60 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     setScheduledSessions(prev => prev.map(s =>
       s.id === sessionId ? { ...s, status: 'cancelled' } : s
     ));
+  };
+
+  // Reschedule modal state
+  const [rescheduleModalSession, setRescheduleModalSession] = useState(null);
+  const [rescheduleToast, setRescheduleToast] = useState(null);
+
+  // Helper to reschedule a session (update date/time, notify teacher)
+  const rescheduleSession = ({ sessionId, oldDate, oldTime, newDate, newTime, teacherId, teacherName }) => {
+    // Update student's scheduled sessions
+    setScheduledSessions(prev => prev.map(s =>
+      s.id === sessionId ? { ...s, date: newDate, time: newTime, rescheduledFrom: { date: oldDate, time: oldTime, at: new Date().toISOString() } } : s
+    ));
+
+    // Update teacher's session list in localStorage
+    if (teacherId) {
+      try {
+        const teacherSessionsKey = `teacherSessions_${teacherId}`;
+        const existing = localStorage.getItem(teacherSessionsKey);
+        const teacherSessionsList = existing ? JSON.parse(existing) : [];
+        const updated = teacherSessionsList.map(s =>
+          s.id === sessionId ? { ...s, date: newDate, time: newTime, rescheduledFrom: { date: oldDate, time: oldTime, at: new Date().toISOString() } } : s
+        );
+        localStorage.setItem(teacherSessionsKey, JSON.stringify(updated));
+
+        // Also store a reschedule notification for the teacher
+        const notifKey = `rescheduleNotifications_${teacherId}`;
+        const existingNotifs = JSON.parse(localStorage.getItem(notifKey) || '[]');
+        existingNotifs.push({
+          id: `resched_${Date.now()}`,
+          sessionId,
+          studentName: currentUser?.name || 'A student',
+          courseName: scheduledSessions.find(s => s.id === sessionId)?.courseName || 'Course',
+          oldDate,
+          oldTime,
+          newDate,
+          newTime,
+          createdAt: new Date().toISOString(),
+          acknowledged: false
+        });
+        localStorage.setItem(notifKey, JSON.stringify(existingNotifs));
+      } catch (e) {
+        console.error('Failed to update teacher sessions for reschedule:', e);
+      }
+    }
+
+    // Close the modal and show toast
+    setRescheduleModalSession(null);
+    const formatToastDate = (d) => {
+      const date = new Date(d + 'T00:00:00');
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${months[date.getMonth()]} ${date.getDate()}`;
+    };
+    setRescheduleToast(`Session rescheduled to ${formatToastDate(newDate)} at ${newTime}`);
+    setTimeout(() => setRescheduleToast(null), 4000);
   };
 
   // ========== S-T STATS DATA LAYER ==========
@@ -1738,7 +1793,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     }
 
     if (isPurchased) {
-      return (
+      return (<>
         <CourseDetailWrapper>
           <CourseDetailView
             course={viewingCourseFromCommunity}
@@ -1759,13 +1814,22 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             currentUser={currentUser}
             onMenuChange={onMenuChange}
             scheduledSessions={scheduledSessions}
+            onRescheduleSession={(session) => setRescheduleModalSession(session)}
             onBrowseStudentTeachers={() => {
               setEnrollingCourse(viewingCourseFromCommunity);
               setShowFindTeacher(true);
             }}
           />
         </CourseDetailWrapper>
-      );
+        {rescheduleModalSession && (
+          <RescheduleModal
+            session={rescheduleModalSession}
+            isDarkMode={isDarkMode}
+            onClose={() => setRescheduleModalSession(null)}
+            onConfirm={rescheduleSession}
+          />
+        )}
+      </>);
     }
 
     // Show EnrollOptionsModal when user clicks Enroll (before EnrollmentFlow)
@@ -2243,7 +2307,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Show My Courses when My Courses is active
   if (activeMenu === 'My Courses') {
-    return (
+    return (<>
       <MyCoursesView
         isDarkMode={isDarkMode}
         currentUser={currentUser}
@@ -2291,12 +2355,74 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         scheduledSessions={scheduledSessions}
         addScheduledSession={addScheduledSession}
         cancelScheduledSession={cancelScheduledSession}
+        onRescheduleSession={(session) => setRescheduleModalSession(session)}
         onScheduleSession={(course) => {
           // Open enrollment flow for scheduling a session
           setEnrollingCourse(course);
           setShowEnrollmentFlow(true);
         }}
       />
+      {rescheduleModalSession && (
+        <RescheduleModal
+          session={rescheduleModalSession}
+          isDarkMode={isDarkMode}
+          onClose={() => setRescheduleModalSession(null)}
+          onConfirm={rescheduleSession}
+          onMoreOptions={(session) => {
+            setRescheduleModalSession(null);
+            const course = getCourseById(session.courseId);
+            if (course) {
+              setEnrollingCourse(course);
+              setShowEnrollOptions(true);
+            }
+          }}
+        />
+      )}
+      {rescheduleToast && (
+        <div style={{
+          position: 'fixed',
+          bottom: 24,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#10b981',
+          color: '#fff',
+          padding: '12px 24px',
+          borderRadius: 10,
+          fontSize: 14,
+          fontWeight: 600,
+          boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
+          zIndex: 10000,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8
+        }}>
+          <span>&#10003;</span> {rescheduleToast}
+        </div>
+      )}
+      {showEnrollOptions && enrollingCourse && (
+        <EnrollOptionsModal
+          course={enrollingCourse}
+          instructor={getInstructorById(enrollingCourse.instructorId)}
+          isDarkMode={isDarkMode}
+          onClose={() => {
+            setShowEnrollOptions(false);
+            setEnrollingCourse(null);
+          }}
+          onSelectPurchase={() => {
+            setShowEnrollOptions(false);
+            setShowPurchaseModal(true);
+          }}
+          onSelectFindTeacher={() => {
+            setShowEnrollOptions(false);
+            setShowFindTeacher(true);
+          }}
+          onSelectPickDate={() => {
+            setShowEnrollOptions(false);
+            setShowEnrollmentFlow(true);
+          }}
+        />
+      )}
+    </>
     );
   }
 
@@ -2595,6 +2721,48 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           </div>
         )}
       </div>
+
+      {/* Reschedule Modal */}
+      {rescheduleModalSession && (
+        <RescheduleModal
+          session={rescheduleModalSession}
+          isDarkMode={isDarkMode}
+          onClose={() => setRescheduleModalSession(null)}
+          onConfirm={rescheduleSession}
+          onMoreOptions={(session) => {
+            setRescheduleModalSession(null);
+            const course = getCourseById(session.courseId);
+            if (course) {
+              setEnrollingCourse(course);
+              setShowEnrollOptions(true);
+            }
+          }}
+        />
+      )}
+
+      {/* Reschedule Toast */}
+      {rescheduleToast && (
+        <div style={{
+          position: 'fixed',
+          bottom: 24,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#10b981',
+          color: '#fff',
+          padding: '12px 24px',
+          borderRadius: 10,
+          fontSize: 14,
+          fontWeight: 600,
+          boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
+          zIndex: 10000,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          animation: 'fadeInUp 0.3s ease'
+        }}>
+          <span>&#10003;</span> {rescheduleToast}
+        </div>
+      )}
     </div>
   );
 };

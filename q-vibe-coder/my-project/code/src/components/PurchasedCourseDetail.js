@@ -18,7 +18,9 @@ const PurchasedCourseDetail = ({
   onFollowCreator,
   onViewCreatorProfile,
   onGoToCommunity,
-  onBrowseStudentTeachers
+  onBrowseStudentTeachers,
+  onRescheduleSession,
+  scheduledSessions = []
 }) => {
   if (!course) return null;
 
@@ -48,8 +50,13 @@ const PurchasedCourseDetail = ({
     { id: 8, title: 'Session 8: Final Project', date: 'TBD', status: 'locked', hwStatus: 'locked' },
   ];
 
-  // Get upcoming session
-  const upcomingSession = sessions.find(s => s.status === 'upcoming');
+  // Get upcoming session - prefer real scheduled session, fall back to mock
+  const realSession = scheduledSessions
+    .filter(s => s.courseId === course.id && s.status === 'scheduled')
+    .sort((a, b) => (a.date || '').localeCompare(b.date || ''))[0];
+  const upcomingSession = realSession
+    ? { ...sessions.find(s => s.status === 'upcoming') || {}, title: realSession.courseName || 'Upcoming Session', date: realSession.date, time: realSession.time, status: 'upcoming', _realSession: realSession }
+    : sessions.find(s => s.status === 'upcoming');
 
   // Get homework due
   const homeworkDue = sessions.find(s => s.hwStatus === 'due');
@@ -144,7 +151,14 @@ const PurchasedCourseDetail = ({
               <button className="pcd-btn-secondary">
                 <FaCalendar /> Add to Calendar
               </button>
-              <button className="pcd-btn-secondary">Reschedule</button>
+              <button
+                className="pcd-btn-secondary"
+                onClick={() => {
+                  if (onRescheduleSession && upcomingSession?._realSession) {
+                    onRescheduleSession(upcomingSession._realSession);
+                  }
+                }}
+              >Reschedule</button>
             </div>
           </div>
         )}

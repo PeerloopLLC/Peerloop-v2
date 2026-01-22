@@ -8,7 +8,7 @@ import './MainContent.css';
  * Shows detailed view of a course with tabs and two-column layout
  * Merged design: combines marketing view (pre-enrollment) with learning dashboard (post-enrollment)
  */
-const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange, scheduledSessions = [], onBrowseStudentTeachers }) => {
+const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange, scheduledSessions = [], onBrowseStudentTeachers, onRescheduleSession }) => {
   // Check if this specific course is being followed (within creator's followedCourseIds)
   const [isFollowing, setIsFollowing] = useState(() => {
     if (!course) return false;
@@ -1483,6 +1483,25 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
               }}>
                 <FaPlay style={{ fontSize: 10 }} /> {isJoiningSession ? 'Joining...' : 'Join Session'}
               </button>
+              {realNextSession && onRescheduleSession && (
+                <button
+                  onClick={() => onRescheduleSession(realNextSession)}
+                  style={{
+                    marginTop: 6,
+                    background: 'none',
+                    border: 'none',
+                    color: isDarkMode ? '#71767b' : '#6b7280',
+                    fontSize: 12,
+                    cursor: 'pointer',
+                    padding: '4px 0',
+                    textDecoration: 'underline'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = '#1d9bf0'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = isDarkMode ? '#71767b' : '#6b7280'; }}
+                >
+                  Reschedule
+                </button>
+              )}
             </div>
           )}
 

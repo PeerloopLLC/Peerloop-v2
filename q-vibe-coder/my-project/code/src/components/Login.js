@@ -1,71 +1,10 @@
 import React, { useState } from 'react';
 // import { signIn, signUp, createProfile } from '../services/supabase'; // Disabled for demo mode
 import './Login.css';
+import { getDemoUsers } from '../data/users';
 
-// Demo users for testing different user types
-const demoUsers = [
-  {
-    id: 'demo_new',
-    name: 'New User',
-    username: '@newuser',
-    email: 'newuser@demo.com',
-    roles: ['student'],
-    userType: 'new_user',
-    avatar: 'https://i.pravatar.cc/150?img=33',
-    bio: 'Just joined PeerLoop! Excited to start learning.',
-    location: '',
-    stats: { coursesCompleted: 0, coursesTeaching: 0, studentsHelped: 0, avgRating: 0, totalEarnings: 0 }
-  },
-  {
-    id: 'demo_alex',
-    name: 'Alex Sanders',
-    username: '@alexsanders',
-    email: 'alex@demo.com',
-    roles: ['student', 'teacher'],
-    userType: 'student_teacher',
-    avatar: 'https://i.pravatar.cc/150?img=3',
-    bio: 'Lifelong learner passionate about AI and machine learning.',
-    location: 'San Francisco, CA',
-    stats: { coursesCompleted: 12, coursesTeaching: 3, studentsHelped: 47, avgRating: 4.9, totalEarnings: 2340 }
-  },
-  {
-    id: 'GuyRymberg',
-    name: 'Guy Rymberg',
-    username: '@GuyRymberg',
-    email: 'guy@demo.com',
-    roles: ['creator'],
-    userType: 'creator',
-    avatar: null,
-    avatarColor: '#1d9bf0',
-    bio: 'AI teaching specialist. Created AI Prompting Mastery. Learn, Teach, Earn.',
-    location: 'San Francisco, CA',
-    stats: { coursesCompleted: 0, coursesCreated: 1, studentsEnrolled: 127, studentTeachers: 3, avgRating: 4.9, totalEarnings: 8573 }
-  },
-  {
-    id: 'demo_sarah',
-    name: 'Sarah Miller',
-    username: '@sarahmiller',
-    email: 'sarah@demo.com',
-    roles: ['student'],
-    userType: 'student',
-    avatar: 'https://i.pravatar.cc/150?img=44',
-    bio: 'New to coding, excited to learn web development!',
-    location: 'Austin, TX',
-    stats: { coursesCompleted: 3, coursesTeaching: 0, studentsHelped: 0, avgRating: 0, totalEarnings: 0 }
-  },
-  {
-    id: 'demo_marcus',
-    name: 'Marcus Johnson',
-    username: '@marcusj',
-    email: 'marcus@demo.com',
-    roles: ['creator', 'instructor', 'student', 'teacher'],
-    userType: 'admin',
-    avatar: 'https://i.pravatar.cc/150?img=53',
-    bio: 'Platform admin and senior instructor. Here to help!',
-    location: 'Chicago, IL',
-    stats: { coursesCompleted: 45, coursesTeaching: 15, studentsHelped: 890, avgRating: 4.98, totalEarnings: 45000 }
-  }
-];
+// Get demo users from the unified user database
+const demoUsers = getDemoUsers();
 
 const Login = ({ onLoginSuccess, onDemoLogin }) => {
   const [showDemoUsers, setShowDemoUsers] = useState(true); // Default to demo mode

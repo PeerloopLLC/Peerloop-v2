@@ -52,6 +52,31 @@ const StudentTeacherDashboard = ({
     }
   }, []);
 
+  // Reschedule notifications state
+  const [rescheduleNotifications, setRescheduleNotifications] = useState([]);
+
+  // Load reschedule notifications from localStorage
+  useEffect(() => {
+    if (!currentUser?.id) return;
+    try {
+      const notifKey = `rescheduleNotifications_${currentUser.id}`;
+      const notifs = JSON.parse(localStorage.getItem(notifKey) || '[]');
+      setRescheduleNotifications(notifs.filter(n => !n.acknowledged));
+    } catch (e) {
+      setRescheduleNotifications([]);
+    }
+  }, [currentUser?.id]);
+
+  // Acknowledge a reschedule notification
+  const acknowledgeReschedule = (notifId) => {
+    if (!currentUser?.id) return;
+    const notifKey = `rescheduleNotifications_${currentUser.id}`;
+    const allNotifs = JSON.parse(localStorage.getItem(notifKey) || '[]');
+    const updated = allNotifs.map(n => n.id === notifId ? { ...n, acknowledged: true } : n);
+    localStorage.setItem(notifKey, JSON.stringify(updated));
+    setRescheduleNotifications(prev => prev.filter(n => n.id !== notifId));
+  };
+
   // Open certify modal for a student
   const handleOpenCertify = (student) => {
     setSelectedStudent(student);
@@ -644,6 +669,60 @@ const StudentTeacherDashboard = ({
           )}
         </div>
       </div>
+
+      {/* Reschedule Notifications */}
+      {rescheduleNotifications.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          {rescheduleNotifications.map(notif => {
+            const formatNotifDate = (dateStr) => {
+              if (!dateStr) return '';
+              const d = new Date(dateStr + 'T00:00:00');
+              const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              return `${months[d.getMonth()]} ${d.getDate()}`;
+            };
+            return (
+              <div
+                key={notif.id}
+                style={{
+                  background: isDarkMode ? '#1a2332' : '#eff6ff',
+                  border: `1px solid ${isDarkMode ? '#1d4ed8' : '#bfdbfe'}`,
+                  borderRadius: 10,
+                  padding: '12px 16px',
+                  marginBottom: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12
+                }}
+              >
+                <div style={{ fontSize: 20 }}>🔄</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#1e293b', marginBottom: 2 }}>
+                    {notif.studentName} rescheduled
+                  </div>
+                  <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#64748b' }}>
+                    {notif.courseName}: {formatNotifDate(notif.oldDate)} {notif.oldTime} → {formatNotifDate(notif.newDate)} {notif.newTime}
+                  </div>
+                </div>
+                <button
+                  onClick={() => acknowledgeReschedule(notif.id)}
+                  style={{
+                    background: isDarkMode ? '#2f3336' : '#e5e7eb',
+                    border: 'none',
+                    color: isDarkMode ? '#e7e9ea' : '#374151',
+                    padding: '6px 12px',
+                    borderRadius: 6,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Upcoming Sessions */}
       <div style={{ marginBottom: 24 }}>
