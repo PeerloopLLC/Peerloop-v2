@@ -22,33 +22,37 @@ import {
   FaUsers
 } from 'react-icons/fa';
 
-const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDarkMode }) => {
+const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDarkMode, viewingUser, onBack }) => {
+  // Determine which user to display - viewingUser (from Member Search) or currentUser (own profile)
+  const displayUser = viewingUser || currentUser;
+  const isViewingOther = !!viewingUser;
+
   const [activeSection, setActiveSection] = useState('edit-profile');
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    name: currentUser?.name || '',
-    handle: currentUser?.username || '',
-    email: currentUser?.email || '',
-    bio: currentUser?.bio || '',
-    location: currentUser?.location || '',
-    website: currentUser?.website || '',
-    avatar: currentUser?.avatar || ''
+    name: displayUser?.name || '',
+    handle: displayUser?.username || '',
+    email: displayUser?.email || '',
+    bio: displayUser?.bio || '',
+    location: displayUser?.location || '',
+    website: displayUser?.website || '',
+    avatar: displayUser?.avatar || ''
   });
 
-  // Sync profileData when currentUser changes
+  // Sync profileData when displayUser changes
   useEffect(() => {
-    if (currentUser) {
+    if (displayUser) {
       setProfileData({
-        name: currentUser.name || '',
-        handle: currentUser.username || '',
-        email: currentUser.email || '',
-        bio: currentUser.bio || '',
-        location: currentUser.location || '',
-        website: currentUser.website || '',
-        avatar: currentUser.avatar || ''
+        name: displayUser.name || '',
+        handle: displayUser.username || '',
+        email: displayUser.email || '',
+        bio: displayUser.bio || '',
+        location: displayUser.location || '',
+        website: displayUser.website || '',
+        avatar: displayUser.avatar || ''
       });
     }
-  }, [currentUser]);
+  }, [displayUser]);
 
   // Text darkness level for light mode (1-5, where 1 is lightest, 5 is darkest)
   const [textDarkness, setTextDarkness] = useState(() => {
@@ -120,118 +124,44 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
   // Sub-tab state for Edit Profile section
   const [profileSubTab, setProfileSubTab] = useState('posts');
 
-  // User-specific profile data based on user type
+  // User-specific profile data - pulls from actual user data
   const getUserProfileData = () => {
-    const userType = currentUser?.userType || 'student';
+    const userType = displayUser?.userType || 'student';
 
-    // Profile data for each user type
-    const profileDataByType = {
-      student: {
-        role: 'Student',
-        roleColor: '#1d9bf0',
-        followers: 23,
-        following: 45,
-        joinedDate: 'January 2025',
-        website: '',
-        posts: [
-          { type: 'question', time: '2h ago', context: 'The Commons > Web Development', content: 'What\'s the best way to learn React hooks?', stats: { replies: 5, resolved: false } },
-          { type: 'win', time: '1d ago', context: 'Code Academy > JavaScript', content: 'Just completed my first JavaScript course!', badge: 'JavaScript Basics', stats: { likes: 12, replies: 3 } }
-        ],
-        coursesTaken: [
-          { community: 'Code Academy', courses: [
-            { title: 'JavaScript Basics', status: 'completed', hours: 15, date: 'Jan 2025', score: 88, rank: 'Top 15%', skills: ['Variables', 'Functions', 'Arrays'] },
-            { title: 'HTML & CSS Fundamentals', status: 'completed', hours: 10, date: 'Dec 2024', score: 92, rank: 'Top 10%', skills: ['HTML5', 'CSS3', 'Flexbox'] },
-            { title: 'React Basics', status: 'in-progress', hours: 8, progress: 45, skills: ['Components', 'Props', 'State'] }
-          ]}
-        ],
-        coursesTaught: [] // Students don't teach
-      },
-      student_teacher: {
-        role: 'Student-Teacher',
-        roleColor: '#22c55e',
-        followers: 847,
-        following: 128,
-        joinedDate: 'March 2024',
-        website: 'alexsanders.dev',
-        posts: [
-          { type: 'answer', time: '2h ago', context: 'Einstein Community > Relativity 101', content: 'The key to understanding E=mc² is thinking about mass and energy as two forms of the same thing...', replyTo: 'Can someone explain E=mc² simply?', stats: { helpful: 12, replies: 3, goodwill: 15 } },
-          { type: 'win', time: '1d ago', context: 'Jane\'s AI Academy > Deep Learning', content: 'Just completed the Neural Networks module! Finally understand backpropagation!', badge: 'Neural Network Basics', stats: { likes: 8, replies: 5 } },
-          { type: 'question', time: '3d ago', context: 'The Commons > General', content: 'What\'s the best way to visualize gradient descent? Looking for intuitive explanations.', stats: { replies: 7, resolved: true } },
-          { type: 'tip', time: '5d ago', context: 'The Commons > Python', content: 'Pro tip: Use print(type(variable)) to debug. 90% of beginner errors are type mismatches!', stats: { helpful: 24, replies: 8, goodwill: 20 } }
-        ],
-        coursesTaken: [
-          { community: 'Einstein Community', courses: [
-            { title: 'Relativity 101: Understanding Space-Time', status: 'completed', hours: 18, date: 'Dec 2024', score: 94, rank: 'Top 5%', skills: ['Special Relativity', 'Spacetime', 'Lorentz'] },
-            { title: 'Quantum Mechanics Fundamentals', status: 'in-progress', hours: 12, progress: 60, skills: ['Wave Functions', 'Uncertainty'] }
-          ]},
-          { community: 'Jane\'s AI Academy', courses: [
-            { title: 'Deep Learning Fundamentals', status: 'completed', hours: 24, date: 'Nov 2024', score: 91, rank: 'Top 10%', skills: ['Neural Networks', 'Backprop', 'TensorFlow'] }
-          ]}
-        ],
-        coursesTaught: [
-          { title: 'Python Basics for Beginners', community: 'The Commons', students: 28, rating: 4.9, reviews: 89, hoursTaught: 45, topReview: { stars: 5, text: 'Alex explained loops so clearly!', author: '@newcoder' } }
-        ],
-        teachingStats: { students: 47, rating: 4.9, comeback: 89, earned: 2340 },
-        canTeach: [
-          { title: 'Relativity 101', score: 94 },
-          { title: 'Deep Learning', score: 91 }
-        ]
-      },
-      creator: {
-        role: 'Creator',
-        roleColor: '#a855f7',
-        followers: 2340,
-        following: 156,
-        joinedDate: 'June 2023',
-        website: 'jamiechen.io',
-        posts: [
-          { type: 'tip', time: '4h ago', context: 'Jamie\'s Coding Academy > Full Stack', content: 'New course module released! Check out the advanced TypeScript patterns section.', stats: { helpful: 45, replies: 12, goodwill: 30 } },
-          { type: 'answer', time: '1d ago', context: 'The Commons > Career Advice', content: 'The best investment in your career is building projects, not just watching tutorials. Ship something!', stats: { helpful: 89, replies: 23, goodwill: 50 } },
-          { type: 'win', time: '3d ago', context: 'Jamie\'s Coding Academy', content: 'Just hit 1000 students in my React course! Thank you all for the amazing support!', stats: { likes: 234, replies: 67 } }
-        ],
-        coursesTaken: [
-          { community: 'AI Masters', courses: [
-            { title: 'Advanced Machine Learning', status: 'completed', hours: 40, date: 'Oct 2024', score: 96, rank: 'Top 2%', skills: ['Deep Learning', 'NLP', 'Computer Vision'] }
-          ]}
-        ],
-        coursesTaught: [
-          { title: 'Full Stack Web Development', community: 'Jamie\'s Coding Academy', students: 1234, rating: 4.95, reviews: 567, hoursTaught: 450, topReview: { stars: 5, text: 'Best web dev course on the platform!', author: '@devpro' } },
-          { title: 'React Masterclass', community: 'Jamie\'s Coding Academy', students: 890, rating: 4.92, reviews: 412, hoursTaught: 320, topReview: { stars: 5, text: 'Finally understand React hooks!', author: '@learner42' } },
-          { title: 'TypeScript Deep Dive', community: 'Jamie\'s Coding Academy', students: 456, rating: 4.88, reviews: 198, hoursTaught: 180, topReview: { stars: 5, text: 'Production-ready TypeScript skills!', author: '@codewiz' } }
-        ],
-        teachingStats: { students: 234, rating: 4.95, comeback: 94, earned: 12500 },
-        canTeach: []
-      },
-      admin: {
-        role: 'Admin',
-        roleColor: '#f59e0b',
-        followers: 5670,
-        following: 234,
-        joinedDate: 'January 2023',
-        website: 'peerloop.com/team',
-        posts: [
-          { type: 'tip', time: '1h ago', context: 'Platform Updates', content: 'New feature alert: Video rooms are now available in all communities! Start live sessions with your students.', stats: { helpful: 156, replies: 34, goodwill: 100 } },
-          { type: 'answer', time: '6h ago', context: 'The Commons > Support', content: 'If you\'re experiencing issues with video playback, try clearing your cache and refreshing. We\'ve pushed a fix.', stats: { helpful: 23, replies: 8, goodwill: 15 } },
-          { type: 'win', time: '2d ago', context: 'PeerLoop Milestones', content: 'PeerLoop just crossed 100,000 active learners! Thank you for being part of this journey!', stats: { likes: 890, replies: 234 } }
-        ],
-        coursesTaken: [
-          { community: 'Leadership Academy', courses: [
-            { title: 'Educational Platform Management', status: 'completed', hours: 30, date: 'Aug 2024', score: 98, rank: 'Top 1%', skills: ['EdTech', 'UX', 'Community'] }
-          ]},
-          { community: 'AI Masters', courses: [
-            { title: 'AI in Education', status: 'completed', hours: 25, date: 'Sep 2024', score: 95, rank: 'Top 3%', skills: ['AI', 'Personalization', 'Analytics'] }
-          ]}
-        ],
-        coursesTaught: [
-          { title: 'Platform Best Practices', community: 'PeerLoop Official', students: 890, rating: 4.98, reviews: 456, hoursTaught: 200, topReview: { stars: 5, text: 'Essential for new creators!', author: '@newcreator' } },
-          { title: 'Community Building 101', community: 'PeerLoop Official', students: 567, rating: 4.96, reviews: 234, hoursTaught: 150, topReview: { stars: 5, text: 'Built my community using these tips!', author: '@educator' } }
-        ],
-        teachingStats: { students: 890, rating: 4.98, comeback: 96, earned: 45000 },
-        canTeach: []
-      }
+    // Role labels and colors by user type
+    const roleConfig = {
+      new_user: { role: 'New User', roleColor: '#6b7280' },
+      student: { role: 'Student', roleColor: '#1d9bf0' },
+      student_teacher: { role: 'Student-Teacher', roleColor: '#22c55e' },
+      creator: { role: 'Creator', roleColor: '#a855f7' },
+      admin: { role: 'Admin', roleColor: '#f59e0b' }
     };
 
-    return profileDataByType[userType] || profileDataByType.student;
+    const { role, roleColor } = roleConfig[userType] || roleConfig.student;
+
+    // Use actual user data with sensible fallbacks
+    return {
+      role,
+      roleColor,
+      followers: displayUser?.stats?.followers || Math.floor(Math.random() * 100) + 10,
+      following: displayUser?.stats?.following || Math.floor(Math.random() * 50) + 5,
+      joinedDate: displayUser?.joinedDate || 'January 2025',
+      website: displayUser?.website ? displayUser.website.replace(/^https?:\/\//, '') : '',
+      // Use actual posts from user data, or empty array
+      posts: displayUser?.posts || [],
+      // Use actual courses data
+      coursesTaken: displayUser?.coursesTaken || [],
+      coursesTaught: displayUser?.coursesTaught || [],
+      // Teaching stats for student-teachers and creators
+      teachingStats: displayUser?.teachingStats || (displayUser?.stats ? {
+        students: displayUser.stats.studentsHelped || 0,
+        rating: displayUser.stats.avgRating || 0,
+        comeback: 85,
+        earned: displayUser.stats.totalEarnings || 0
+      } : null),
+      // Courses they can teach (for student-teachers)
+      canTeach: displayUser?.canTeach || []
+    };
   };
 
   const userProfileData = getUserProfileData();
@@ -412,7 +342,7 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
             <div className="profile-meta">
               <div className="meta-item">
                 <FaCalendar />
-                <span>Joined {currentUser?.joinedDate || 'Unknown'}</span>
+                <span>Joined {displayUser?.joinedDate || 'Unknown'}</span>
               </div>
               <div className="meta-item">
                 <FaClock />
@@ -435,11 +365,11 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
       </div>
       {/* Stats row at the bottom */}
       <div className="profile-stats-inline" style={{marginTop: 8}}>
-        <span><FaGraduationCap style={{marginRight: 4}}/> {currentUser?.stats?.coursesCompleted || 0} Courses</span>
-        <span style={{marginLeft: 18}}><FaTrophy style={{marginRight: 4}}/> {currentUser?.stats?.studentsHelped || 0} Students Helped</span>
-        <span style={{marginLeft: 18}}><FaStar style={{marginRight: 4}}/> {currentUser?.stats?.avgRating || 'N/A'} Rating</span>
+        <span><FaGraduationCap style={{marginRight: 4}}/> {displayUser?.stats?.coursesCompleted || 0} Courses</span>
+        <span style={{marginLeft: 18}}><FaTrophy style={{marginRight: 4}}/> {displayUser?.stats?.studentsHelped || 0} Students Helped</span>
+        <span style={{marginLeft: 18}}><FaStar style={{marginRight: 4}}/> {displayUser?.stats?.avgRating || 'N/A'} Rating</span>
       </div>
-      {renderLogoutButton()}
+      {!isViewingOther && renderLogoutButton()}
     </div>
   );
 
@@ -778,7 +708,7 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
 
   // Render Edit Profile section with X/Twitter-style layout
   const renderEditProfile = () => {
-    const showTeachingTab = currentUser?.userType !== 'student' && currentUser?.userType !== 'new_user';
+    const showTeachingTab = displayUser?.userType !== 'student' && displayUser?.userType !== 'new_user';
 
     // Get the selected banner gradient
     const selectedBanner = bannerColors.find(c => c.id === bannerColor) || bannerColors[0];
@@ -835,64 +765,66 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
           {/* Avatar */}
           <div className="ep-avatar-container">
             <img
-              src={currentUser?.avatar || 'https://via.placeholder.com/120'}
+              src={displayUser?.avatar || 'https://via.placeholder.com/120'}
               alt="Profile"
               className="ep-avatar"
             />
           </div>
 
           {/* Edit Profile Button (own profile only) */}
-          {!isEditing ? (
-            <button className="ep-edit-btn" onClick={() => setIsEditing(true)}>
-              Edit profile
-            </button>
-          ) : (
-            <div style={{ position: 'absolute', top: 12, right: 16, display: 'flex', gap: 8 }}>
-              <button
-                onClick={handleCancel}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: 9999,
-                  border: '1px solid #ccc',
-                  background: '#fff',
-                  color: '#374151',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
+          {!isViewingOther && (
+            !isEditing ? (
+              <button className="ep-edit-btn" onClick={() => setIsEditing(true)}>
+                Edit profile
               </button>
-              <button
-                onClick={handleSave}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: 9999,
-                  border: 'none',
-                  background: '#1d9bf0',
-                  color: '#fff',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  cursor: 'pointer'
-                }}
-              >
-                Save
-              </button>
-            </div>
+            ) : (
+              <div style={{ position: 'absolute', top: 12, right: 16, display: 'flex', gap: 8 }}>
+                <button
+                  onClick={handleCancel}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: 9999,
+                    border: '1px solid #ccc',
+                    background: '#fff',
+                    color: '#374151',
+                    fontWeight: 600,
+                    fontSize: 14,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: 9999,
+                    border: 'none',
+                    background: '#1d9bf0',
+                    color: '#fff',
+                    fontWeight: 600,
+                    fontSize: 14,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Save
+                </button>
+              </div>
+            )
           )}
 
           {/* Profile Details */}
           <div className="ep-profile-details">
-            <h1 className="ep-profile-name">{currentUser?.name || 'User'}</h1>
-            <p className="ep-profile-handle">{currentUser?.username || '@user'}</p>
+            <h1 className="ep-profile-name">{displayUser?.name || 'User'}</h1>
+            <p className="ep-profile-handle">{displayUser?.username || '@user'}</p>
             <span className="ep-profile-role" style={{ background: `${userProfileData.roleColor}15`, color: userProfileData.roleColor }}>
               {userProfileData.role}
             </span>
-            <p className="ep-profile-bio">{currentUser?.bio || 'No bio yet.'}</p>
+            <p className="ep-profile-bio">{displayUser?.bio || 'No bio yet.'}</p>
 
             {/* Meta Info */}
             <div className="ep-profile-meta">
-              {currentUser?.location && <span>📍 {currentUser.location}</span>}
+              {displayUser?.location && <span>📍 {displayUser.location}</span>}
               {userProfileData.website && <span>🔗 <a href={`https://${userProfileData.website}`} target="_blank" rel="noopener noreferrer">{userProfileData.website}</a></span>}
               <span>📅 Joined {userProfileData.joinedDate}</span>
             </div>
@@ -912,15 +844,15 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
             {/* Stats Row */}
             <div className="ep-stats-row">
               <div className="ep-stat-item">
-                <span className="ep-stat-value">{currentUser?.stats?.coursesCompleted || 0}</span>
+                <span className="ep-stat-value">{displayUser?.stats?.coursesCompleted || 0}</span>
                 <span className="ep-stat-label">Courses Taken</span>
               </div>
               <div className="ep-stat-item">
-                <span className="ep-stat-value">{currentUser?.stats?.studentsHelped || 0}</span>
+                <span className="ep-stat-value">{displayUser?.stats?.studentsHelped || 0}</span>
                 <span className="ep-stat-label">Students Helped</span>
               </div>
               <div className="ep-stat-item">
-                <span className="ep-stat-value">{currentUser?.stats?.avgRating || 'N/A'}</span>
+                <span className="ep-stat-value">{displayUser?.stats?.avgRating || 'N/A'}</span>
                 <span className="ep-stat-label">Rating</span>
               </div>
             </div>
@@ -1147,7 +1079,50 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
 
   return (
     <div className="profile">
-      {renderTabBar()}
+      {/* Back button header when viewing another user */}
+      {isViewingOther && onBack && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
+          padding: '12px 16px',
+          borderBottom: `1px solid ${isDarkMode ? '#2f3336' : '#e5e7eb'}`,
+          background: isDarkMode ? '#000' : '#fff',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10
+        }}>
+          <button
+            onClick={onBack}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+              fontSize: 20,
+              cursor: 'pointer',
+              padding: 8,
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+            title="Go back"
+          >
+            ←
+          </button>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+              {displayUser?.name || 'Profile'}
+            </h1>
+            <p style={{ margin: 0, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+              {displayUser?.stats?.coursesCompleted || 0} courses completed
+            </p>
+          </div>
+        </div>
+      )}
+      {!isViewingOther && renderTabBar()}
       <div className="profile-main">
         {renderContent()}
       </div>

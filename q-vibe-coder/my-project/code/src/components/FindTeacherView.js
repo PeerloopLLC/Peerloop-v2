@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { FaArrowLeft, FaStar, FaCheck, FaCalendarAlt } from 'react-icons/fa';
+import React, { useState, useMemo } from 'react';
+import { FaArrowLeft, FaStar, FaCheck, FaCalendarAlt, FaSearch } from 'react-icons/fa';
+import { communityUsers } from '../data/users';
 
 /**
  * FindTeacherView - Browse and select a student teacher for a course
@@ -12,11 +13,12 @@ const FindTeacherView = ({
   course,
   isDarkMode = true,
   onClose,
-  onSelectTeacher
+  onSelectTeacher,
+  onViewTeacherProfile
 }) => {
   const [viewingProfile, setViewingProfile] = useState(null);
-  const [activeTab, setActiveTab] = useState('sessions');
   const [profileTab, setProfileTab] = useState('posts');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Colors
   const bgPrimary = isDarkMode ? '#000' : '#fff';
@@ -28,159 +30,107 @@ const FindTeacherView = ({
   const accentPurple = '#8b5cf6';
   const bannerBg = isDarkMode ? 'linear-gradient(180deg, #1a3a5c 0%, #2a4a6c 100%)' : 'linear-gradient(180deg, #b8d4e8 0%, #d4e8f4 100%)';
 
-  // Student teachers data with full profiles
-  const studentTeachers = [
-    {
-      id: 1,
-      name: 'Marcus Chen',
-      handle: '@MarcusChen',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      tagline: 'Making complex concepts simple',
-      rating: 4.9,
-      reviewCount: 47,
-      studentsTaught: 12,
-      coursesCompleted: 3,
-      responseTime: '2 hours',
-      languages: ['English', 'Mandarin'],
-      location: 'San Francisco, CA',
-      teachingSince: 'Jan 2024',
-      rate: 45,
-      following: 24,
-      followers: 156,
-      bio: "Software engineer with 5 years experience at tech startups. I love breaking down complex concepts into simple steps. Patient and thorough teaching style - I won't move on until you truly understand. Passionate about helping others succeed in their coding journey.",
-      credentials: [
-        'B.S. Computer Science, UC Berkeley',
-        'Senior Developer at fintech startup',
-        'Certified student-teacher for 18 months'
-      ],
-      specialties: ['Debugging and troubleshooting', 'System design concepts', 'Career advice for tech'],
-      posts: [
-        { type: 'TIP', course: 'AI Prompting Mastery > Module 3', text: 'The key to understanding recursion is to trace through a simple example by hand first. Here\'s how I explain it to my students...', helpful: 45, comments: 12, goodwill: 30, time: '2h ago' },
-        { type: 'HELPFUL', course: 'The Commons > Career Advice', text: 'Don\'t just watch tutorials - build projects. Even small ones. That\'s what got me my first job.', helpful: 89, comments: 23, goodwill: 50, time: '1d ago' },
-        { type: 'REVIEW', course: 'Session with Jamie L.', text: 'Great session! Marcus explained things in a way my professor never could. Finally clicked!', rating: 5.0, comments: 2, time: '3d ago' }
-      ],
-      sessions: [
-        { title: 'AI Prompting Mastery - 1:1 Help', desc: 'Get personalized help with any module. I\'ll walk you through concepts step by step until they click.', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-        { title: 'AI Tools Overview - Deep Dive', desc: 'Explore AI tools hands-on. We\'ll try different tools together and I\'ll show you real-world use cases.', color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-        { title: 'Intro to Claude Code - Hands On', desc: 'Learn Claude Code by building. We\'ll work through exercises together in real-time.', color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }
-      ],
-      availability: {
-        '2025-12-10': ['8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM', '8:00 PM'],
-        '2025-12-11': ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM', '7:00 PM'],
-        '2025-12-12': ['11:00 AM', '3:00 PM'],
-      }
-    },
-    {
-      id: 2,
-      name: 'Jessica Torres',
-      handle: '@JessicaTorres',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face',
-      tagline: 'Learn by doing, not just watching',
-      rating: 4.8,
-      reviewCount: 32,
-      studentsTaught: 8,
-      coursesCompleted: 2,
-      responseTime: '1 hour',
-      languages: ['English', 'Spanish'],
-      location: 'Austin, TX',
-      teachingSince: 'Mar 2024',
-      rate: 40,
-      following: 45,
-      followers: 89,
-      bio: "Full-stack developer passionate about web technologies. I focus on practical, hands-on learning with real-world examples. We'll build something together in every session. I believe the best way to learn is by doing.",
-      credentials: [
-        'Self-taught developer, bootcamp graduate',
-        '4 years professional experience',
-        'Completed this course 1 year ago'
-      ],
-      specialties: ['Frontend frameworks (React, Vue)', 'Making things look good (CSS/design)', 'Bootcamp-style intensive learning'],
-      posts: [
-        { type: 'TIP', course: 'AI Tools Overview > Getting Started', text: 'Start with one tool and master it before moving on. Trying to learn everything at once is overwhelming.', helpful: 67, comments: 18, goodwill: 40, time: '5h ago' },
-        { type: 'HELPFUL', course: 'The Commons > Learning Tips', text: 'Set a timer for 25 minutes and just code. No distractions. You\'ll be amazed what you can do.', helpful: 54, comments: 15, goodwill: 35, time: '2d ago' }
-      ],
-      sessions: [
-        { title: 'React Fundamentals - Pair Programming', desc: 'We\'ll build a real component together. Learn by coding alongside me.', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-        { title: 'CSS & Design - Make It Pretty', desc: 'Turn your functional app into something beautiful. I\'ll teach you my design tricks.', color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }
-      ],
-      availability: {
-        '2025-12-10': ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'],
-        '2025-12-11': ['10:00 AM', '2:00 PM', '6:00 PM'],
-      }
-    },
-    {
-      id: 'demo_alex',
-      name: 'Alex Sanders',
-      handle: '@AlexSanders',
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&h=150&fit=crop&crop=face',
-      tagline: "I just went through this - I get it",
-      rating: 4.7,
-      reviewCount: 18,
-      studentsTaught: 4,
-      coursesCompleted: 1,
-      responseTime: '30 minutes',
-      languages: ['English'],
-      location: 'Portland, OR',
-      teachingSince: 'Aug 2024',
-      rate: 35,
-      following: 67,
-      followers: 42,
-      bio: "Recently completed this course myself! I understand the learning curve and can help you avoid common pitfalls. Fresh perspective on what's confusing and what clicks. Still remember exactly where I got stuck.",
-      credentials: [
-        'Career changer from marketing',
-        'Completed this course 6 months ago',
-        'New to teaching but highly rated'
-      ],
-      specialties: ['Explaining beginner concepts', 'Study strategies and time management', 'Motivation and accountability'],
-      posts: [
-        { type: 'TIP', course: 'AI Prompting Mastery > Basics', text: 'I was stuck on this exact concept last month. Here\'s what finally made it click for me...', helpful: 34, comments: 9, goodwill: 25, time: '1d ago' }
-      ],
-      sessions: [
-        { title: 'Beginner-Friendly Help', desc: 'No question is too basic. I remember being confused too.', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }
-      ],
-      availability: {
-        '2025-12-10': ['9:00 AM', '1:00 PM', '6:00 PM'],
-        '2025-12-11': ['11:00 AM', '4:00 PM'],
-      }
-    },
-    {
-      id: 4,
-      name: 'Sarah Kim',
-      handle: '@SarahKim',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-      tagline: "Understand the 'why', not just the 'how'",
-      rating: 4.9,
-      reviewCount: 52,
-      studentsTaught: 6,
-      coursesCompleted: 4,
-      responseTime: '3 hours',
-      languages: ['English', 'Korean'],
-      location: 'Seattle, WA',
-      teachingSince: 'Nov 2023',
-      rate: 50,
-      following: 31,
-      followers: 234,
-      bio: 'Data scientist who loves teaching. I emphasize understanding the "why" behind concepts, not just memorizing steps. When you understand the foundation, everything else makes sense. Former TA in grad school.',
-      credentials: [
-        'M.S. Data Science, University of Washington',
-        '6 years in data/analytics roles',
-        'Former teaching assistant in grad school'
-      ],
-      specialties: ['Data and analytics concepts', 'Mathematical foundations', 'Structured learning plans'],
-      posts: [
-        { type: 'TIP', course: 'AI Prompting Mastery > Advanced', text: 'Before jumping to the solution, always ask yourself: what problem am I actually trying to solve?', helpful: 112, comments: 31, goodwill: 65, time: '4h ago' },
-        { type: 'HELPFUL', course: 'The Commons > Data Science', text: 'Statistics doesn\'t have to be scary. Here\'s a visual way to think about it...', helpful: 78, comments: 19, goodwill: 45, time: '1d ago' }
-      ],
-      sessions: [
-        { title: 'Conceptual Deep Dive', desc: 'We\'ll go beyond the surface. Understand why things work, not just how.', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-        { title: 'Data & Analytics Help', desc: 'Make sense of data concepts. I\'ll draw diagrams and explain visually.', color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-        { title: 'Advanced Topics', desc: 'Ready to go deeper? Let\'s tackle the challenging material together.', color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }
-      ],
-      availability: {
-        '2025-12-10': ['2:00 PM', '5:00 PM'],
-        '2025-12-11': ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM', '7:00 PM'],
+  // Generate availability slots for teachers (simulated - in real app would come from backend)
+  const generateAvailability = (userId) => {
+    // Use a hash of the userId to generate consistent but different availability per teacher
+    const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const baseSlots = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM'];
+    const availability = {};
+
+    // Generate for next 7 days
+    for (let i = 10; i <= 17; i++) {
+      const dateStr = `2025-12-${i}`;
+      // Each teacher has different slots based on their hash
+      const numSlots = 3 + (hash % 5);
+      const startIdx = hash % 4;
+      const slots = baseSlots.slice(startIdx, startIdx + numSlots);
+      if (slots.length > 0) {
+        availability[dateStr] = slots;
       }
     }
-  ];
+    return availability;
+  };
+
+  // Get student teachers from the real user database
+  const studentTeachers = useMemo(() => {
+    return Object.values(communityUsers)
+      .filter(user => user.userType === 'student_teacher')
+      .map(user => {
+        // Get initials for avatar fallback
+        const initials = user.name.split(' ').map(n => n[0]).join('');
+
+        // Map the real user data to the format expected by the component
+        return {
+          id: user.id,
+          name: user.name,
+          handle: user.username,
+          avatar: user.avatar, // May be null - component handles this with initials
+          avatarColor: user.avatarColor || '#1d9bf0',
+          initials: initials,
+          tagline: user.expertise?.[0] || 'Student Teacher',
+          rating: user.stats?.avgRating || user.teachingStats?.rating || 4.5,
+          reviewCount: user.coursesTaught?.[0]?.reviews || Math.floor((user.teachingStats?.students || 0) * 0.8),
+          studentsTaught: user.stats?.studentsHelped || user.teachingStats?.students || 0,
+          coursesCompleted: user.stats?.coursesCompleted || 1,
+          responseTime: '2 hours',
+          languages: ['English'],
+          location: user.location || 'United States',
+          teachingSince: user.joinedDate || 'Jan 2024',
+          rate: 45,
+          following: Math.floor(Math.random() * 50) + 20,
+          followers: Math.floor(Math.random() * 200) + 50,
+          bio: user.bio || 'Passionate about teaching and helping others learn.',
+          credentials: [
+            `${user.stats?.coursesCompleted || 1} courses completed`,
+            `${user.stats?.studentsHelped || user.teachingStats?.students || 0} students helped`,
+            `${user.teachingStats?.rating || user.stats?.avgRating || 4.5} star rating`
+          ],
+          specialties: user.expertise || ['Teaching', 'Mentoring'],
+          posts: (user.posts || []).map(post => ({
+            type: (post.type || 'tip').toUpperCase(),
+            course: post.context || 'General',
+            text: post.content || '',
+            helpful: post.stats?.helpful || 0,
+            comments: post.stats?.replies || 0,
+            goodwill: post.stats?.goodwill || 0,
+            time: post.time || '1d ago'
+          })),
+          sessions: (user.coursesTaught || []).map((course, idx) => ({
+            title: `${course.title} - 1:1 Help`,
+            desc: course.topReview?.text || `Get personalized help with ${course.title}`,
+            color: idx % 3 === 0
+              ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+              : idx % 3 === 1
+              ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+              : 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+          })),
+          // Add default sessions if none from courses
+          ...((!user.coursesTaught || user.coursesTaught.length === 0) ? {
+            sessions: [
+              { title: '1-on-1 Help Session', desc: 'Get personalized help with any topic', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }
+            ]
+          } : {}),
+          availability: generateAvailability(user.id),
+          // Keep original user data for profile view
+          _originalUser: user
+        };
+      })
+      .slice(0, 8); // Limit to 8 teachers for better UX
+  }, []);
+
+  // Filter teachers based on search query
+  const filteredTeachers = useMemo(() => {
+    if (!searchQuery.trim()) return studentTeachers;
+    const query = searchQuery.toLowerCase();
+    return studentTeachers.filter(teacher =>
+      teacher.name.toLowerCase().includes(query) ||
+      teacher.tagline.toLowerCase().includes(query) ||
+      teacher.bio.toLowerCase().includes(query) ||
+      teacher.location.toLowerCase().includes(query) ||
+      teacher.specialties.some(s => s.toLowerCase().includes(query)) ||
+      teacher.languages.some(l => l.toLowerCase().includes(query))
+    );
+  }, [searchQuery]);
 
   // =====================================================
   // PROFILE PAGE VIEW (matches Guy Rymberg Profile page)
@@ -223,18 +173,36 @@ const FindTeacherView = ({
               }}>
                 Profile
               </div>
-              <img
-                src={teacher.avatar}
-                alt={teacher.name}
-                style={{
+              {teacher.avatar ? (
+                <img
+                  src={teacher.avatar}
+                  alt={teacher.name}
+                  style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: '50%',
+                    border: `4px solid ${isDarkMode ? '#000' : '#fff'}`,
+                    objectFit: 'cover',
+                    background: borderColor
+                  }}
+                />
+              ) : (
+                <div style={{
                   width: 80,
                   height: 80,
                   borderRadius: '50%',
                   border: `4px solid ${isDarkMode ? '#000' : '#fff'}`,
-                  objectFit: 'cover',
-                  background: borderColor
-                }}
-              />
+                  background: teacher.avatarColor || '#1d9bf0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  fontSize: 28,
+                  fontWeight: 700
+                }}>
+                  {teacher.initials}
+                </div>
+              )}
             </div>
             <span
               onClick={() => setViewingProfile(null)}
@@ -431,16 +399,90 @@ const FindTeacherView = ({
           <span>Back to {course?.title || 'Course'}</span>
         </button>
 
+        {/* Search Bar */}
+        <div style={{
+          position: 'relative',
+          marginBottom: 20
+        }}>
+          <FaSearch style={{
+            position: 'absolute',
+            left: 16,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: textSecondary,
+            fontSize: 16
+          }} />
+          <input
+            type="text"
+            placeholder="Search by name, specialty, language, location..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '14px 16px 14px 44px',
+              borderRadius: 24,
+              border: `1px solid ${borderColor}`,
+              background: isDarkMode ? '#16181c' : '#fff',
+              color: textPrimary,
+              fontSize: 15,
+              outline: 'none',
+              boxSizing: 'border-box'
+            }}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              style={{
+                position: 'absolute',
+                right: 16,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: textSecondary,
+                fontSize: 18,
+                cursor: 'pointer',
+                padding: 0,
+                lineHeight: 1
+              }}
+            >
+              ×
+            </button>
+          )}
+        </div>
+
+        {/* Results count */}
+        {searchQuery && (
+          <div style={{
+            fontSize: 14,
+            color: textSecondary,
+            marginBottom: 12
+          }}>
+            {filteredTeachers.length} teacher{filteredTeachers.length !== 1 ? 's' : ''} found
+          </div>
+        )}
+
         {/* Teacher Cards - Summary Detail format */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {studentTeachers.map(teacher => (
+          {filteredTeachers.map(teacher => (
             <div
               key={teacher.id}
+              onClick={() => onViewTeacherProfile && onViewTeacherProfile(teacher._originalUser)}
               style={{
                 background: bgCard,
                 borderRadius: 12,
                 padding: 20,
-                border: `1px solid ${borderColor}`
+                border: `1px solid ${borderColor}`,
+                cursor: 'pointer',
+                transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
               }}
             >
               {/* Header Row: Avatar + Name + Badge + Button */}
@@ -450,17 +492,35 @@ const FindTeacherView = ({
                 gap: 12,
                 marginBottom: 4
               }}>
-                <img
-                  src={teacher.avatar}
-                  alt={teacher.name}
-                  style={{
+                {teacher.avatar ? (
+                  <img
+                    src={teacher.avatar}
+                    alt={teacher.name}
+                    style={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      flexShrink: 0
+                    }}
+                  />
+                ) : (
+                  <div style={{
                     width: 56,
                     height: 56,
                     borderRadius: '50%',
-                    objectFit: 'cover',
+                    background: teacher.avatarColor || '#1d9bf0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontSize: 20,
+                    fontWeight: 700,
                     flexShrink: 0
-                  }}
-                />
+                  }}>
+                    {teacher.initials}
+                  </div>
+                )}
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
                     <span style={{ fontSize: 18, fontWeight: 700, color: textPrimary }}>{teacher.name}</span>
@@ -478,7 +538,10 @@ const FindTeacherView = ({
                   </div>
                 </div>
                 <button
-                  onClick={() => onSelectTeacher(teacher)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectTeacher(teacher);
+                  }}
                   style={{
                     padding: '8px 16px',
                     borderRadius: 20,
@@ -531,7 +594,7 @@ const FindTeacherView = ({
               </p>
 
               {/* Credentials */}
-              <ul style={{ listStyle: 'none', padding: 0, marginBottom: 16 }}>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 {teacher.credentials.map((cred, i) => (
                   <li key={i} style={{
                     fontSize: 14,
@@ -547,115 +610,25 @@ const FindTeacherView = ({
                 ))}
               </ul>
 
-              {/* Tabs */}
-              <div style={{
-                display: 'flex',
-                borderBottom: `1px solid ${borderColor}`,
-                marginBottom: 0
-              }}>
-                <div
-                  onClick={() => setActiveTab('sessions')}
-                  style={{
-                    padding: '12px 20px',
-                    fontSize: 14,
-                    fontWeight: activeTab === 'sessions' ? 700 : 500,
-                    color: activeTab === 'sessions' ? textPrimary : textSecondary,
-                    cursor: 'pointer',
-                    borderBottom: activeTab === 'sessions' ? `2px solid ${accentBlue}` : '2px solid transparent'
-                  }}
-                >
-                  Sessions
-                </div>
-                <div
-                  onClick={() => setActiveTab('reviews')}
-                  style={{
-                    padding: '12px 20px',
-                    fontSize: 14,
-                    fontWeight: activeTab === 'reviews' ? 700 : 500,
-                    color: activeTab === 'reviews' ? textSecondary : textSecondary,
-                    cursor: 'pointer',
-                    borderBottom: activeTab === 'reviews' ? `2px solid ${accentBlue}` : '2px solid transparent'
-                  }}
-                >
-                  Reviews
-                </div>
-              </div>
-
-              {/* Sessions List */}
-              <div style={{
-                background: isDarkMode ? 'rgba(0,0,0,0.2)' : '#fff',
-                borderRadius: '0 0 8px 8px',
-                border: `1px solid ${borderColor}`,
-                borderTop: 'none'
-              }}>
-                {teacher.sessions.map((session, i) => (
-                  <div key={i} style={{
-                    display: 'flex',
-                    gap: 12,
-                    padding: '16px 20px',
-                    borderBottom: i < teacher.sessions.length - 1 ? `1px solid ${borderColor}` : 'none',
-                    alignItems: 'flex-start'
-                  }}>
-                    {/* Thumbnail */}
-                    <div style={{
-                      width: 80,
-                      height: 50,
-                      borderRadius: 8,
-                      background: session.color,
-                      flexShrink: 0
-                    }} />
-                    {/* Info */}
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        fontSize: 15,
-                        fontWeight: 600,
-                        color: accentBlue,
-                        marginBottom: 4,
-                        cursor: 'pointer'
-                      }}>
-                        {session.title}
-                      </div>
-                      <p style={{ fontSize: 13, color: textSecondary, lineHeight: 1.4, margin: 0 }}>
-                        {session.desc}
-                      </p>
-                    </div>
-                    {/* Action */}
-                    <button style={{
-                      padding: '6px 14px',
-                      borderRadius: 20,
-                      border: `1px solid ${textSecondary}`,
-                      background: 'transparent',
-                      color: textSecondary,
-                      fontSize: 13,
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap'
-                    }}>
-                      Available
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* Go to Profile link */}
-              <div style={{
-                textAlign: 'center',
-                marginTop: 12
-              }}>
-                <span
-                  onClick={() => setViewingProfile(teacher)}
-                  style={{
-                    fontSize: 13,
-                    color: accentBlue,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Go to Profile →
-                </span>
-              </div>
-
             </div>
           ))}
+
+          {/* No Results */}
+          {filteredTeachers.length === 0 && searchQuery && (
+            <div style={{
+              textAlign: 'center',
+              padding: '40px 20px',
+              color: textSecondary
+            }}>
+              <FaSearch style={{ fontSize: 32, marginBottom: 12, opacity: 0.5 }} />
+              <p style={{ fontSize: 16, margin: 0 }}>
+                No teachers found matching "{searchQuery}"
+              </p>
+              <p style={{ fontSize: 14, margin: '8px 0 0 0' }}>
+                Try a different search term
+              </p>
+            </div>
+          )}
         </div>
 
       </div>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FaCalendarAlt, FaChevronLeft, FaChevronRight, FaCheck, FaTimes, FaUser, FaClock, FaCreditCard, FaArrowLeft } from 'react-icons/fa';
+import { communityUsers } from '../data/users';
 
 const EnrollmentFlow = ({
   course,
@@ -7,17 +8,36 @@ const EnrollmentFlow = ({
   isDarkMode = true,
   onClose,
   onComplete,
-  isAlreadyPurchased = false
+  isAlreadyPurchased = false,
+  preSelectedTeacher = null,
+  onViewTeacherProfile = null
 }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 11, 1)); // December 2025
+  const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 1)); // January 2026
   const [isProcessing, setIsProcessing] = useState(false);
   const [expandedTeachers, setExpandedTeachers] = useState({}); // Track which teachers have expanded time slots
   const [viewingTeacherProfile, setViewingTeacherProfile] = useState(null); // Track which teacher profile page is being viewed
-  
+
   const MAX_VISIBLE_TIMES = 4; // Show this many times before "Show more"
+
+  // Handle viewing teacher profile - navigate to common Profile component
+  const handleViewTeacherProfile = (teacher) => {
+    if (onViewTeacherProfile) {
+      // Look up the full user object from communityUsers
+      const fullUser = communityUsers[teacher.id];
+      if (fullUser) {
+        onViewTeacherProfile(fullUser);
+      } else {
+        // Fallback to internal profile if user not found
+        setViewingTeacherProfile(teacher);
+      }
+    } else {
+      // Fallback to internal profile if no handler provided
+      setViewingTeacherProfile(teacher);
+    }
+  };
 
   // Colors
   const bgPrimary = isDarkMode ? '#000' : '#fff';
@@ -29,82 +49,97 @@ const EnrollmentFlow = ({
   const accentBlue = '#1d9bf0';
   const accentGreen = '#00ba7c';
 
-  // Mock student-teachers data
-  const studentTeachers = [
-    {
-      id: 1,
-      name: 'Marcus Chen',
-      initials: 'MC',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
-      studentsTaught: 12,
-      rating: 4.9,
-      bio: 'Software engineer with 5 years experience. I love breaking down complex concepts into simple steps. Patient and thorough teaching style.',
-      availability: {
-        '2025-12-10': ['8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM', '8:00 PM'],
-        '2025-12-11': ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM', '7:00 PM'],
-        '2025-12-12': ['11:00 AM', '3:00 PM'],
-        '2025-12-13': ['10:00 AM', '4:00 PM', '6:00 PM'],
-        '2025-12-16': ['9:00 AM', '2:00 PM'],
-        '2025-12-17': ['10:00 AM', '1:00 PM', '7:00 PM'],
-      }
-    },
-    {
-      id: 2,
-      name: 'Jessica Torres',
-      initials: 'JT',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
-      studentsTaught: 8,
-      rating: 4.8,
-      bio: 'Full-stack developer passionate about web technologies. I focus on practical, hands-on learning with real-world examples.',
-      availability: {
-        '2025-12-10': ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'],
-        '2025-12-11': ['10:00 AM', '2:00 PM', '6:00 PM'],
-        '2025-12-12': ['8:00 AM', '9:00 AM', '10:00 AM', '1:00 PM', '2:00 PM', '5:00 PM', '6:00 PM', '7:00 PM'],
-        '2025-12-13': ['11:00 AM', '4:00 PM'],
-        '2025-12-16': ['10:00 AM', '3:00 PM', '7:00 PM'],
-        '2025-12-17': ['9:00 AM', '2:00 PM'],
-      }
-    },
-    {
-      id: 'demo_alex',
-      name: 'Alex Sanders',
-      initials: 'AS',
-      avatar: 'https://i.pravatar.cc/150?img=3',
-      studentsTaught: 4,
-      rating: 4.7,
-      bio: 'Recently completed this course myself! I understand the learning curve and can help you avoid common pitfalls.',
-      availability: {
-        '2025-12-10': ['9:00 AM', '1:00 PM', '6:00 PM'],
-        '2025-12-11': ['11:00 AM', '4:00 PM'],
-        '2025-12-12': ['10:00 AM', '2:00 PM', '7:00 PM'],
-        '2025-12-13': ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM', '7:00 PM'],
-        '2025-12-16': ['11:00 AM', '1:00 PM'],
-        '2025-12-17': ['8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM'],
-      }
-    },
-    {
-      id: 4,
-      name: 'Sarah Kim',
-      initials: 'SK',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
-      studentsTaught: 6,
-      rating: 4.9,
-      bio: 'Data scientist who loves teaching. I emphasize understanding the "why" behind concepts, not just the "how".',
-      availability: {
-        '2025-12-10': ['2:00 PM', '5:00 PM'],
-        '2025-12-11': ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM', '7:00 PM'],
-        '2025-12-12': ['9:00 AM', '12:00 PM', '4:00 PM'],
-        '2025-12-13': ['11:00 AM', '2:00 PM'],
-        '2025-12-16': ['10:00 AM', '5:00 PM', '7:00 PM'],
-        '2025-12-17': ['9:00 AM', '1:00 PM', '3:00 PM'],
+  // Generate availability slots for teachers (simulated - in real app would come from backend)
+  const generateAvailability = (userId) => {
+    const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const baseSlots = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM'];
+    const availability = {};
+
+    // January 2026 (23-31)
+    for (let i = 23; i <= 31; i++) {
+      const dateStr = `2026-01-${String(i).padStart(2, '0')}`;
+      const numSlots = 3 + (hash % 5);
+      const startIdx = hash % 4;
+      const slots = baseSlots.slice(startIdx, startIdx + numSlots);
+      if (slots.length > 0) {
+        availability[dateStr] = slots;
       }
     }
-  ];
 
-  // Get available dates
+    // February 2026 (1-28)
+    for (let i = 1; i <= 28; i++) {
+      const dateStr = `2026-02-${String(i).padStart(2, '0')}`;
+      const numSlots = 3 + ((hash + i) % 5);
+      const startIdx = (hash + i) % 4;
+      const slots = baseSlots.slice(startIdx, startIdx + numSlots);
+      if (slots.length > 0) {
+        availability[dateStr] = slots;
+      }
+    }
+
+    // March 2026 (1-31)
+    for (let i = 1; i <= 31; i++) {
+      const dateStr = `2026-03-${String(i).padStart(2, '0')}`;
+      const numSlots = 3 + ((hash + i * 2) % 5);
+      const startIdx = (hash + i) % 4;
+      const slots = baseSlots.slice(startIdx, startIdx + numSlots);
+      if (slots.length > 0) {
+        availability[dateStr] = slots;
+      }
+    }
+
+    return availability;
+  };
+
+  // Get student teachers from the real user database
+  // Always include Alex Sanders (demo_alex) first, then other student teachers
+  const studentTeachers = useMemo(() => {
+    const allStudentTeachers = Object.values(communityUsers)
+      .filter(user => user.userType === 'student_teacher');
+
+    // Find Alex and put him first
+    const alex = allStudentTeachers.find(user => user.id === 'demo_alex');
+    const others = allStudentTeachers.filter(user => user.id !== 'demo_alex');
+
+    // Alex first, then others (up to 8 total)
+    const orderedTeachers = alex ? [alex, ...others] : others;
+
+    return orderedTeachers
+      .slice(0, 8)
+      .map(user => {
+        const initials = user.name.split(' ').map(n => n[0]).join('');
+        return {
+          id: user.id,
+          name: user.name,
+          initials: initials,
+          avatar: user.avatar, // May be null
+          avatarColor: user.avatarColor || '#1d9bf0',
+          studentsTaught: user.stats?.studentsHelped || user.teachingStats?.students || 0,
+          rating: user.stats?.avgRating || user.teachingStats?.rating || 4.5,
+          bio: user.bio || 'Passionate about teaching and helping others learn.',
+          availability: generateAvailability(user.id)
+        };
+      });
+  }, []);
+
+  // Get the list of teachers to show (filtered if pre-selected)
+  const getTeachersToShow = () => {
+    if (preSelectedTeacher) {
+      // Find matching teacher by id or name
+      const matched = studentTeachers.find(t =>
+        t.id === preSelectedTeacher.id || t.name === preSelectedTeacher.name
+      );
+      return matched ? [matched] : studentTeachers;
+    }
+    return studentTeachers;
+  };
+
+  const teachersToShow = getTeachersToShow();
+
+  // Get available dates (only from teachers being shown)
   const getAvailableDates = () => {
     const dates = new Set();
-    studentTeachers.forEach(teacher => {
+    teachersToShow.forEach(teacher => {
       Object.keys(teacher.availability).forEach(date => {
         dates.add(date);
       });
@@ -114,9 +149,9 @@ const EnrollmentFlow = ({
 
   const availableDates = getAvailableDates();
 
-  // Get teachers available on selected date
+  // Get teachers available on selected date (filtered by teachersToShow)
   const getTeachersForDate = (dateStr) => {
-    return studentTeachers.filter(teacher =>
+    return teachersToShow.filter(teacher =>
       teacher.availability[dateStr] && teacher.availability[dateStr].length > 0
     );
   };
@@ -307,12 +342,12 @@ const EnrollmentFlow = ({
           <FaArrowLeft /><span>Back to scheduling</span>
         </button>
         <div style={{ background: bgSecondary, borderRadius: 16, padding: 24, border: `1px solid ${borderColor}`, textAlign: 'center', marginBottom: 20 }}>
-          <div style={{ width: 100, height: 100, borderRadius: '50%', margin: '0 auto 16px', overflow: 'hidden', background: accentBlue }}>
+          <div style={{ width: 100, height: 100, borderRadius: '50%', margin: '0 auto 16px', overflow: 'hidden', background: teacher.avatarColor || accentBlue }}>
             {teacher.avatar ? (
               <img src={teacher.avatar} alt={teacher.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
               <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 36, fontWeight: 700 }}>
-                {teacher.name.split(' ').map(n => n[0]).join('')}
+                {teacher.initials || teacher.name.split(' ').map(n => n[0]).join('')}
               </div>
             )}
           </div>
@@ -335,9 +370,300 @@ const EnrollmentFlow = ({
     </div>
   );
 
+  // Render side-by-side layout for pre-selected teacher
+  const renderSideBySideLayout = () => {
+    const teacher = preSelectedTeacher;
+    const matchedTeacher = studentTeachers.find(t =>
+      t.id === teacher.id || t.name === teacher.name
+    );
+
+    if (!matchedTeacher) return null;
+
+    const availableTimes = selectedDate ? (matchedTeacher.availability[selectedDate] || []) : [];
+
+    return (
+      <div style={{
+        background: bgPrimary,
+        minHeight: '100vh',
+        width: '100%'
+      }}>
+        <div style={{
+          maxWidth: 800,
+          margin: '0 auto',
+          padding: 20
+        }}>
+          {/* Header with teacher info */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            marginBottom: 24,
+            paddingBottom: 16,
+            borderBottom: `1px solid ${borderColor}`
+          }}>
+            <button
+              onClick={onClose}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: 8,
+                cursor: 'pointer',
+                color: textSecondary,
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              <FaArrowLeft />
+            </button>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color: textPrimary }}>
+                Book a Session with {matchedTeacher.name}
+              </div>
+              <div style={{ fontSize: 14, color: textSecondary }}>
+                {course?.title}
+              </div>
+            </div>
+            {matchedTeacher.avatar ? (
+              <img
+                src={matchedTeacher.avatar}
+                alt={matchedTeacher.name}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: '50%',
+                  objectFit: 'cover'
+                }}
+              />
+            ) : (
+              <div style={{
+                width: 44,
+                height: 44,
+                borderRadius: '50%',
+                background: matchedTeacher.avatarColor || accentBlue,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontWeight: 600,
+                fontSize: 14
+              }}>
+                {matchedTeacher.initials}
+              </div>
+            )}
+          </div>
+
+          {/* Side-by-side layout */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(280px, 1fr) minmax(200px, 280px)',
+            gap: 24,
+            alignItems: 'start'
+          }}>
+            {/* Left: Calendar */}
+            <div style={{
+              background: bgSecondary,
+              borderRadius: 16,
+              padding: 20,
+              border: `1px solid ${borderColor}`
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                marginBottom: 16
+              }}>
+                <FaCalendarAlt style={{ color: accentBlue }} />
+                <span style={{ fontWeight: 600, color: textPrimary }}>Select a Date</span>
+                {selectedDate && (
+                  <span style={{ marginLeft: 'auto', color: accentGreen, fontSize: 14 }}>
+                    <FaCheck />
+                  </span>
+                )}
+              </div>
+              {renderCalendar()}
+              <div style={{
+                marginTop: 12,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                fontSize: 12,
+                color: textMuted
+              }}>
+                <div style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: accentGreen
+                }} />
+                <span>Available dates</span>
+              </div>
+            </div>
+
+            {/* Right: Available Times */}
+            <div style={{
+              background: bgSecondary,
+              borderRadius: 16,
+              padding: 20,
+              border: `1px solid ${borderColor}`,
+              minHeight: 300
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                marginBottom: 16
+              }}>
+                <FaClock style={{ color: accentBlue }} />
+                <span style={{ fontWeight: 600, color: textPrimary }}>Available Times</span>
+                {selectedTime && (
+                  <span style={{ marginLeft: 'auto', color: accentGreen, fontSize: 14 }}>
+                    <FaCheck />
+                  </span>
+                )}
+              </div>
+
+              {!selectedDate ? (
+                <div style={{
+                  color: textMuted,
+                  textAlign: 'center',
+                  padding: '40px 20px',
+                  fontSize: 14
+                }}>
+                  Select a date to see available times
+                </div>
+              ) : availableTimes.length === 0 ? (
+                <div style={{
+                  color: textMuted,
+                  textAlign: 'center',
+                  padding: '40px 20px',
+                  fontSize: 14
+                }}>
+                  No available times on this date
+                </div>
+              ) : (
+                <>
+                  <div style={{
+                    fontSize: 13,
+                    color: textSecondary,
+                    marginBottom: 12
+                  }}>
+                    {formatDisplayDate(selectedDate)}
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 8
+                  }}>
+                    {availableTimes.map(time => {
+                      const isSelected = selectedTime === time;
+                      return (
+                        <button
+                          key={time}
+                          onClick={() => {
+                            setSelectedTeacher(matchedTeacher);
+                            handleTimeSelect(time);
+                          }}
+                          style={{
+                            padding: '12px 16px',
+                            borderRadius: 8,
+                            border: isSelected
+                              ? `2px solid ${accentBlue}`
+                              : `1px solid ${borderColor}`,
+                            background: isSelected
+                              ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                              : 'transparent',
+                            color: isSelected ? accentBlue : textPrimary,
+                            fontWeight: isSelected ? 600 : 500,
+                            fontSize: 14,
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            transition: 'all 0.15s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                          }}
+                        >
+                          <span>{time}</span>
+                          {isSelected && <FaCheck style={{ fontSize: 12 }} />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Confirm Button */}
+          {selectedDate && selectedTime && (
+            <div style={{
+              marginTop: 24,
+              display: 'flex',
+              justifyContent: 'center'
+            }}>
+              <button
+                onClick={handlePayment}
+                disabled={isProcessing}
+                style={{
+                  padding: '14px 32px',
+                  borderRadius: 8,
+                  border: 'none',
+                  background: isProcessing ? textMuted : accentGreen,
+                  color: '#fff',
+                  fontWeight: 600,
+                  fontSize: 16,
+                  cursor: isProcessing ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                {isProcessing ? (
+                  'Processing...'
+                ) : isAlreadyPurchased ? (
+                  <><FaCalendarAlt /> Confirm Session</>
+                ) : (
+                  <><FaCreditCard /> Confirm & Pay</>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* Selection Summary */}
+          {selectedDate && selectedTime && (
+            <div style={{
+              marginTop: 16,
+              padding: 16,
+              background: isDarkMode ? 'rgba(0, 186, 124, 0.1)' : 'rgba(0, 186, 124, 0.1)',
+              borderRadius: 12,
+              border: `1px solid ${accentGreen}`,
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: 14, color: textSecondary, marginBottom: 4 }}>
+                Your session:
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: textPrimary }}>
+                {formatDisplayDate(selectedDate)} at {selectedTime}
+              </div>
+              <div style={{ fontSize: 14, color: textSecondary, marginTop: 4 }}>
+                with {matchedTeacher.name}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   // If viewing a teacher profile, show the profile page
   if (viewingTeacherProfile) {
     return renderTeacherProfile(viewingTeacherProfile);
+  }
+
+  // Use side-by-side layout when teacher is pre-selected (from Find Teacher flow)
+  if (preSelectedTeacher) {
+    return renderSideBySideLayout();
   }
 
   return (
@@ -492,7 +818,7 @@ const EnrollmentFlow = ({
                       width: 44,
                       height: 44,
                       borderRadius: '50%',
-                      background: `linear-gradient(135deg, ${accentBlue}, #1a73e8)`,
+                      background: teacher.avatarColor || accentBlue,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -509,7 +835,7 @@ const EnrollmentFlow = ({
                       <span 
                         onClick={(e) => {
                           e.stopPropagation();
-                          setViewingTeacherProfile(teacher);
+                          handleViewTeacherProfile(teacher);
                         }}
                         className="link-hover"
                         style={{ 
@@ -524,7 +850,7 @@ const EnrollmentFlow = ({
                       <span 
                         onClick={(e) => {
                           e.stopPropagation();
-                          setViewingTeacherProfile(teacher);
+                          handleViewTeacherProfile(teacher);
                         }}
                         className="link-hover"
                         style={{ 

@@ -1,13 +1,311 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import './Community.css';
-import { FaUsers, FaStar, FaClock, FaPlay, FaBook, FaGraduationCap, FaHome, FaChevronLeft, FaChevronRight, FaHeart, FaComment, FaRetweet, FaBookmark, FaShare, FaChevronDown, FaInfoCircle, FaImage, FaLink, FaPaperclip, FaLandmark } from 'react-icons/fa';
-import { getAllCourses, getInstructorById, getCourseById } from '../data/database';
+import { FaUsers, FaStar, FaClock, FaPlay, FaBook, FaGraduationCap, FaHome, FaChevronLeft, FaChevronRight, FaHeart, FaComment, FaRetweet, FaBookmark, FaShare, FaChevronDown, FaInfoCircle, FaImage, FaLink, FaPaperclip, FaLandmark, FaSearch, FaUserGraduate, FaChalkboardTeacher } from 'react-icons/fa';
+import { getAllCourses, getInstructorById, getCourseById, getAllInstructors } from '../data/database';
 import { createPost, getPosts, likePost } from '../services/posts';
 import { initGetStream } from '../services/getstream';
 import { fakePosts } from '../data/communityPosts';
+import { communityUsers } from '../data/users';
 
-const Community = ({ followedCommunities = [], setFollowedCommunities = null, isDarkMode = false, currentUser = null, onMenuChange = null, onViewUserProfile = null, onViewCourse = null, onViewCreatorProfile = null, signupCompleted = false, setSignupCompleted = null }) => {
+/**
+ * MemberSearchView - Search for members (creators, student teachers, students)
+ * Shows in The Commons when "Member Search" pill is selected
+ * All members navigate to the same Profile page format
+ */
+const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMemberProfile }) => {
+  // Get all members from communityUsers
+  const allMembers = useMemo(() => {
+    return Object.values(communityUsers).map(user => {
+      // Determine member type from roles
+      let type = 'student';
+      let userType = 'student'; // For Profile component
+      if (user.roles?.includes('creator')) {
+        type = 'creator';
+        userType = 'creator';
+      } else if (user.roles?.includes('teacher') && user.roles?.includes('student')) {
+        type = 'student_teacher';
+        userType = 'student_teacher';
+      }
+
+      // Get specialty/expertise
+      const specialty = user.expertise?.[0] || user.bio?.substring(0, 50) + '...' || 'PeerLoop Member';
+
+      return {
+        // Original user data for Profile component
+        ...user,
+        userType, // Add userType for Profile component
+        // Display properties
+        type,
+        specialty,
+        username: user.username?.replace('@', '') || user.id,
+      };
+    });
+  }, []);
+
+  // Filter members based on search query
+  const filteredMembers = useMemo(() => {
+    if (!searchQuery.trim()) return allMembers;
+
+    const query = searchQuery.toLowerCase();
+    return allMembers.filter(member =>
+      member.name.toLowerCase().includes(query) ||
+      (member.specialty && member.specialty.toLowerCase().includes(query)) ||
+      (member.expertise && member.expertise.some(e => e.toLowerCase().includes(query))) ||
+      (member.bio && member.bio.toLowerCase().includes(query))
+    );
+  }, [allMembers, searchQuery]);
+
+  // Handle viewing a member profile - ALL members go to the same Profile page
+  const handleViewMember = (member) => {
+    if (onViewMemberProfile) {
+      // Pass the full user object to navigate to their profile
+      onViewMemberProfile(member);
+    }
+  };
+
+  // Get member type label and icon
+  const getMemberTypeInfo = (type) => {
+    switch (type) {
+      case 'creator':
+        return { label: 'Creator', icon: <FaChalkboardTeacher />, color: '#1d9bf0' };
+      case 'student_teacher':
+        return { label: 'Student Teacher', icon: <FaUserGraduate />, color: '#10b981' };
+      case 'student':
+        return { label: 'Student', icon: <FaUsers />, color: '#8b5cf6' };
+      default:
+        return { label: 'Member', icon: <FaUsers />, color: '#6b7280' };
+    }
+  };
+
+  return (
+    <div style={{ padding: '16px' }}>
+      {/* Search Bar */}
+      <div style={{
+        position: 'relative',
+        marginBottom: 20
+      }}>
+        <FaSearch style={{
+          position: 'absolute',
+          left: 14,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          color: isDarkMode ? '#71767b' : '#536471',
+          fontSize: 16
+        }} />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search members, creators, student teachers..."
+          style={{
+            width: '100%',
+            padding: '14px 14px 14px 44px',
+            fontSize: 15,
+            border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+            borderRadius: 9999,
+            background: isDarkMode ? '#16181c' : '#f7f9f9',
+            color: isDarkMode ? '#e7e9ea' : '#0f1419',
+            outline: 'none',
+            boxSizing: 'border-box'
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = '#1d9bf0';
+            e.target.style.boxShadow = '0 0 0 1px #1d9bf0';
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = isDarkMode ? '#2f3336' : '#cfd9de';
+            e.target.style.boxShadow = 'none';
+          }}
+        />
+      </div>
+
+      {/* Results Count */}
+      <div style={{
+        fontSize: 14,
+        color: isDarkMode ? '#71767b' : '#536471',
+        marginBottom: 16
+      }}>
+        {filteredMembers.length} member{filteredMembers.length !== 1 ? 's' : ''} found
+        {searchQuery && <span> for "<strong style={{ color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{searchQuery}</strong>"</span>}
+      </div>
+
+      {/* Results List */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {filteredMembers.map(member => {
+          const typeInfo = getMemberTypeInfo(member.type);
+
+          return (
+            <div
+              key={member.id}
+              onClick={() => handleViewMember(member)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 14,
+                padding: 16,
+                background: isDarkMode ? '#16181c' : '#fff',
+                border: isDarkMode ? '1px solid #2f3336' : '1px solid #e1e8ed',
+                borderRadius: 12,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
+                e.currentTarget.style.borderColor = '#1d9bf0';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = isDarkMode ? '#16181c' : '#fff';
+                e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#e1e8ed';
+              }}
+            >
+              {/* Avatar */}
+              {member.avatar ? (
+                <img
+                  src={member.avatar}
+                  alt={member.name}
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    flexShrink: 0
+                  }}
+                />
+              ) : (
+                <div style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: '50%',
+                  background: typeInfo.color,
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 20,
+                  fontWeight: 700,
+                  flexShrink: 0
+                }}>
+                  {member.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+
+              {/* Member Info */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  marginBottom: 4
+                }}>
+                  <span style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                  }}>
+                    {member.name}
+                  </span>
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    padding: '2px 8px',
+                    borderRadius: 9999,
+                    background: `${typeInfo.color}20`,
+                    color: typeInfo.color,
+                    fontSize: 12,
+                    fontWeight: 600
+                  }}>
+                    {typeInfo.icon}
+                    {typeInfo.label}
+                  </span>
+                </div>
+
+                <div style={{
+                  fontSize: 14,
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  marginBottom: 6
+                }}>
+                  {member.specialty || (member.interests && member.interests.join(', ')) || 'PeerLoop Member'}
+                </div>
+
+                <div style={{
+                  fontSize: 13,
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  display: 'flex',
+                  gap: 16
+                }}>
+                  {member.type === 'creator' && (
+                    <>
+                      <span>{member.stats.coursesCreated || 0} course{(member.stats.coursesCreated || 0) !== 1 ? 's' : ''} created</span>
+                      <span>{(member.stats.studentsEnrolled || 0).toLocaleString()} students</span>
+                    </>
+                  )}
+                  {member.type === 'student_teacher' && (
+                    <>
+                      <span>{member.stats.coursesTeaching || 0} course{(member.stats.coursesTeaching || 0) !== 1 ? 's' : ''} teaching</span>
+                      <span>{(member.stats.studentsHelped || 0).toLocaleString()} students helped</span>
+                    </>
+                  )}
+                  {member.type === 'student' && (
+                    <span>Completed {member.stats.coursesCompleted || 0} course{(member.stats.coursesCompleted || 0) !== 1 ? 's' : ''}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* View Profile Button */}
+              <button
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 9999,
+                  border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                  background: 'transparent',
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  flexShrink: 0
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = isDarkMode ? '#181818' : '#f7f9f9';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleViewMember(member);
+                }}
+              >
+                View Profile
+              </button>
+            </div>
+          );
+        })}
+
+        {/* No Results */}
+        {filteredMembers.length === 0 && (
+          <div style={{
+            textAlign: 'center',
+            padding: '40px 20px',
+            color: isDarkMode ? '#71767b' : '#536471'
+          }}>
+            <FaSearch style={{ fontSize: 32, marginBottom: 12, opacity: 0.5 }} />
+            <p style={{ fontSize: 16, margin: 0 }}>
+              No members found matching "{searchQuery}"
+            </p>
+            <p style={{ fontSize: 14, margin: '8px 0 0 0' }}>
+              Try a different search term
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const Community = ({ followedCommunities = [], setFollowedCommunities = null, isDarkMode = false, currentUser = null, onMenuChange = null, onViewUserProfile = null, onViewMemberProfile = null, onViewCourse = null, onViewCreatorProfile = null, signupCompleted = false, setSignupCompleted = null, commonsActiveFeed = 'main', setCommonsActiveFeed = null }) => {
   const [selectedCommunity, setSelectedCommunity] = useState(null);
   const [activeTab, setActiveTab] = useState('Home'); // 'Home' or community id
   const [isFollowingLoading, setIsFollowingLoading] = useState(false);
@@ -40,8 +338,11 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   const [dragStartX, setDragStartX] = useState(0); // Starting X position of drag
   const [dragScrollLeft, setDragScrollLeft] = useState(0); // Starting scroll position of drag
 
-  // Commons feed selection (permanent pills in The Commons)
-  const [commonsSelectedFeed, setCommonsSelectedFeed] = useState('main'); // 'main', '1', '2', or '3'
+  // Commons feed selection - use props from MainContent for navigation persistence
+  // commonsActiveFeed and setCommonsActiveFeed come from props
+
+  // Member Search state
+  const [memberSearchQuery, setMemberSearchQuery] = useState('');
 
   // Welcome video popup - opens when user clicks thumbnail
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
@@ -839,7 +1140,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   // Filter posts based on active tab - memoized for performance
   const displayedPosts = React.useMemo(() => {
     // If in Commons hub mode and one of the placeholder feeds (1, 2, 3) is selected, show blank
-    if (communityMode === 'hub' && commonsSelectedFeed !== 'main') {
+    if (communityMode === 'hub' && commonsActiveFeed !== 'main') {
       return [];
     }
 
@@ -942,7 +1243,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
       // Combine engagement and recency (recent + high engagement first)
       return (engagementB / (timeB + 1)) - (engagementA / (timeA + 1));
     });
-  }, [communityMode, selectedCreatorId, groupedByCreator, realPosts, selectedCourseFilters, commonsSelectedFeed]);
+  }, [communityMode, selectedCreatorId, groupedByCreator, realPosts, selectedCourseFilters, commonsActiveFeed]);
 
   if (selectedCommunity) {
     // Get posts for this community
@@ -2290,20 +2591,20 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 transition: 'padding 0.3s ease-out'
               }}>
                 <button
-                  onClick={() => setCommonsSelectedFeed('main')}
+                  onClick={() => setCommonsActiveFeed('main')}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 6,
                     padding: isProfileCollapsed ? '6px 12px' : '8px 16px',
                     borderRadius: isProfileCollapsed ? 16 : 20,
-                    border: commonsSelectedFeed === 'main'
+                    border: commonsActiveFeed === 'main'
                       ? '2px solid #10b981'
                       : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                    background: commonsSelectedFeed === 'main'
+                    background: commonsActiveFeed === 'main'
                       ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
                       : (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                    color: commonsSelectedFeed === 'main'
+                    color: commonsActiveFeed === 'main'
                       ? '#10b981'
                       : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                     fontSize: isProfileCollapsed ? 13 : 14,
@@ -2316,23 +2617,23 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 >
                   Main Hall
                 </button>
-                {['Ask AI'].map(num => (
+                {['Member Search'].map(num => (
                   <button
                     key={num}
-                    onClick={() => setCommonsSelectedFeed(num)}
+                    onClick={() => setCommonsActiveFeed(num)}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 6,
                       padding: isProfileCollapsed ? '6px 12px' : '8px 16px',
                       borderRadius: isProfileCollapsed ? 16 : 20,
-                      border: commonsSelectedFeed === num
+                      border: commonsActiveFeed === num
                         ? '2px solid #10b981'
                         : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                      background: commonsSelectedFeed === num
+                      background: commonsActiveFeed === num
                         ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
                         : (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                      color: commonsSelectedFeed === num
+                      color: commonsActiveFeed === num
                         ? '#10b981'
                         : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                       fontSize: isProfileCollapsed ? 13 : 14,
@@ -2728,8 +3029,19 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
 
           {/* Feed Content - slightly lighter to show card shadow */}
           <div className="community-feed-content" style={{ background: isDarkMode ? '#050505' : '#fff' }}>
-            {/* Post Box - Clean Card Design */}
-            <div
+
+            {/* Member Search View - Shows when Member Search pill is selected */}
+            {communityMode === 'hub' && commonsActiveFeed === 'Member Search' && (
+              <MemberSearchView
+                isDarkMode={isDarkMode}
+                searchQuery={memberSearchQuery}
+                setSearchQuery={setMemberSearchQuery}
+                onViewMemberProfile={onViewMemberProfile}
+              />
+            )}
+
+            {/* Post Box - Clean Card Design (hidden when Member Search is active) */}
+            {commonsActiveFeed !== 'Member Search' && <div
               className="post-composer"
               style={{
                 borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
@@ -2982,10 +3294,10 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   <div style={{ color: '#f44', fontSize: 12, padding: '0 12px 8px' }}>{postError}</div>
                 )}
               </div>
-            </div>
-            
-            {/* Welcome Post - Only for new users who haven't completed signup */}
-            {currentUser?.isNewUser && communityMode === 'hub' && !signupCompleted && (
+            </div>}
+
+            {/* Welcome Post - Only for new users who haven't completed signup (hidden when Member Search is active) */}
+            {commonsActiveFeed !== 'Member Search' && currentUser?.isNewUser && communityMode === 'hub' && !signupCompleted && (
               <div
                 className="welcome-post-card"
                 style={{
@@ -3091,7 +3403,8 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               </div>
             )}
 
-            {(groupedByCreator.length > 0 || realPosts.length > 0 || communityMode === 'hub' || (communityMode === 'creators' && selectedCreatorId)) ? (
+            {/* Posts Feed (hidden when Member Search is active) */}
+            {commonsActiveFeed !== 'Member Search' && (groupedByCreator.length > 0 || realPosts.length > 0 || communityMode === 'hub' || (communityMode === 'creators' && selectedCreatorId)) ? (
               <div className="posts-feed">
                 {displayedPosts.length > 0 ? (
                   displayedPosts.map(post => {

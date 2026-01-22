@@ -105,8 +105,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   
   // User profile viewing state
   const [viewingUserProfile, setViewingUserProfile] = useState(null); // username of user being viewed
+  const [viewingMemberProfile, setViewingMemberProfile] = useState(null); // user object for Profile component view
   const [navigationHistory, setNavigationHistory] = useState([]); // track where user came from
   const [viewingCourseFromCommunity, setViewingCourseFromCommunity] = useState(null); // course being viewed from community
+  const [commonsActiveFeed, setCommonsActiveFeed] = useState('main'); // Track which pill is active in The Commons
 
   // Browser History Management - enables browser back/forward buttons
   useEffect(() => {
@@ -234,7 +236,46 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     setViewingUserProfile(null);
     onMenuChange(previousPage);
   };
-  
+
+  // Function to view a member's profile (using Profile component, not UserProfile)
+  const handleViewMemberProfile = (user) => {
+    // Save current location AND commons feed state to history
+    setNavigationHistory(prev => [...prev, { menu: activeMenu, feed: commonsActiveFeed }]);
+    setViewingMemberProfile(user);
+  };
+
+  // Function to go back from member profile
+  const handleBackFromMemberProfile = () => {
+    const history = [...navigationHistory];
+    const previousState = history.pop() || { menu: 'My Community', feed: 'main' };
+    setNavigationHistory(history);
+    setViewingMemberProfile(null);
+    // Restore both the menu and the feed state
+    if (typeof previousState === 'object' && previousState !== null) {
+      setCommonsActiveFeed(previousState.feed || 'main');
+      // Restore additional navigation states if they exist (for Find Teacher flow)
+      if ('showFindTeacher' in previousState) {
+        setShowFindTeacher(previousState.showFindTeacher);
+      }
+      if ('enrollingCourse' in previousState) {
+        setEnrollingCourse(previousState.enrollingCourse);
+      }
+      if ('viewingCourseFromCommunity' in previousState) {
+        setViewingCourseFromCommunity(previousState.viewingCourseFromCommunity);
+        // DON'T call onMenuChange when restoring Find Teacher state!
+        // There's a useEffect that clears viewingCourseFromCommunity when activeMenu changes.
+        // Since viewingCourseFromCommunity check takes precedence in render order, we don't need
+        // to change the menu - just restoring these states is enough.
+        return;
+      }
+      // Only call onMenuChange for normal navigation (not Find Teacher flow)
+      onMenuChange(previousState.menu || 'My Community');
+    } else {
+      // Backwards compatibility for old history format
+      onMenuChange(previousState);
+    }
+  };
+
   // Function to view a course from community
   const handleViewCourseFromCommunity = (courseId) => {
     const course = getCourseById(courseId);
@@ -374,6 +415,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   const [showEnrollOptions, setShowEnrollOptions] = useState(false); // Track enroll options modal (3-option menu)
   const [showFindTeacher, setShowFindTeacher] = useState(false); // Track find teacher full screen view
   const [showPurchaseModal, setShowPurchaseModal] = useState(false); // Track purchase modal visibility
+  const [preSelectedTeacher, setPreSelectedTeacher] = useState(null); // Teacher selected from FindTeacherView
 
   // Signup completed state - shared between Community and DiscoverView
   // This ensures the welcome card disappears in both views after completing signup
@@ -1594,9 +1636,26 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               setEnrollingCourse(null);
             }}
             onSelectTeacher={(teacher) => {
-              // Close find teacher view and open enrollment flow
+              // Close find teacher view and open enrollment flow with pre-selected teacher
               setShowFindTeacher(false);
+              setPreSelectedTeacher(teacher);
               setShowEnrollmentFlow(true);
+            }}
+            onViewTeacherProfile={(user) => {
+              // Save FULL navigation state BEFORE modifying anything
+              setNavigationHistory(prev => [...prev, {
+                menu: 'Discover',
+                feed: commonsActiveFeed,
+                showFindTeacher: true,
+                enrollingCourse: enrollingCourse,
+                viewingCourseFromCommunity: viewingCourseFromCommunity
+              }]);
+              // Now clear the states and navigate to profile
+              setShowFindTeacher(false);
+              setViewingCourseFromCommunity(null);
+              setEnrollingCourse(null);
+              onMenuChange('Profile');
+              setViewingMemberProfile(user);
             }}
           />
         </CourseDetailWrapper>
@@ -1771,11 +1830,26 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               setEnrollingCourse(null);
             }}
             onSelectTeacher={(teacher) => {
-              // Close find teacher view and open enrollment flow
+              // Close find teacher view and open enrollment flow with pre-selected teacher
               setShowFindTeacher(false);
+              setPreSelectedTeacher(teacher);
               setShowEnrollmentFlow(true);
-              // Note: EnrollmentFlow will handle the rest
-              // Teacher selection happens in EnrollmentFlow's calendar view
+            }}
+            onViewTeacherProfile={(user) => {
+              // Save FULL navigation state BEFORE modifying anything
+              setNavigationHistory(prev => [...prev, {
+                menu: 'Discover',
+                feed: commonsActiveFeed,
+                showFindTeacher: true,
+                enrollingCourse: enrollingCourse,
+                viewingCourseFromCommunity: viewingCourseFromCommunity
+              }]);
+              // Now clear the states and navigate to profile
+              setShowFindTeacher(false);
+              setViewingCourseFromCommunity(null);
+              setEnrollingCourse(null);
+              onMenuChange('Profile');
+              setViewingMemberProfile(user);
             }}
           />
         </CourseDetailWrapper>
@@ -1790,13 +1864,16 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             course={enrollingCourse}
             instructor={getInstructorById(enrollingCourse.instructorId)}
             isDarkMode={isDarkMode}
+            preSelectedTeacher={preSelectedTeacher}
             onClose={() => {
               setShowEnrollmentFlow(false);
               setEnrollingCourse(null);
+              setPreSelectedTeacher(null);
             }}
             onComplete={(booking) => {
               console.log('Booking complete:', booking);
               handleCoursePurchase(enrollingCourse.id);
+              setPreSelectedTeacher(null);
 
               // Save the scheduled session
               const newSession = addScheduledSession({
@@ -1920,6 +1997,13 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               setNavigationHistory(prev => [...prev, 'My Courses']);
               onMenuChange('My Courses');
             }}
+            onViewTeacherProfile={(user) => {
+              // Close enrollment flow and navigate to profile
+              setShowEnrollmentFlow(false);
+              setEnrollingCourse(null);
+              setPreSelectedTeacher(null);
+              setViewingMemberProfile(user);
+            }}
           />
         </CourseDetailWrapper>
       );
@@ -1964,12 +2048,15 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             instructor={getInstructorById(enrollingCourse.instructorId)}
             isDarkMode={isDarkMode}
             isAlreadyPurchased={true}
+            preSelectedTeacher={preSelectedTeacher}
             onClose={() => {
               setShowEnrollmentFlow(false);
               setEnrollingCourse(null);
+              setPreSelectedTeacher(null);
             }}
             onComplete={(booking) => {
               console.log('Booking complete from My Courses:', booking);
+              setPreSelectedTeacher(null);
 
               // Save the scheduled session
               const newSession = addScheduledSession({
@@ -1991,8 +2078,30 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             purchasedCourses={purchasedCourses}
             scheduledSessions={scheduledSessions}
             currentUser={currentUser}
+            onViewTeacherProfile={(user) => {
+              // Close enrollment flow and navigate to profile
+              setShowEnrollmentFlow(false);
+              setEnrollingCourse(null);
+              setPreSelectedTeacher(null);
+              setViewingMemberProfile(user);
+            }}
           />
         </div>
+      </div>
+    );
+  }
+
+  // Show Profile when viewing a member (check before My Courses to allow profile from scheduling flow)
+  if (viewingMemberProfile) {
+    return (
+      <div className="main-content">
+        <Profile
+          currentUser={currentUser}
+          viewingUser={viewingMemberProfile}
+          onBack={handleBackFromMemberProfile}
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
+        />
       </div>
     );
   }
@@ -2056,7 +2165,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     );
   }
 
-  // Show UserProfile when viewing another user's profile
+  // Show UserProfile when viewing another user's profile (legacy - from direct username lookup)
   if (viewingUserProfile) {
     return (
       <div className="main-content">
@@ -2199,9 +2308,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           currentUser={currentUser}
           onMenuChange={onMenuChange}
           onViewUserProfile={handleViewUserProfile}
+          onViewMemberProfile={handleViewMemberProfile}
           onViewCourse={handleViewCourseFromCommunity}
           signupCompleted={signupCompleted}
           setSignupCompleted={setSignupCompleted}
+          commonsActiveFeed={commonsActiveFeed}
+          setCommonsActiveFeed={setCommonsActiveFeed}
           onViewCreatorProfile={(creator) => {
             // Navigate to creator profile in Browse with back navigation to Feeds
             const instructorId = creator.instructorId || (typeof creator.id === 'string' ? creator.id.replace('creator-', '') : creator.id);
