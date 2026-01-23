@@ -197,7 +197,7 @@ const CourseCalendar = ({ isDarkMode, scheduledDates, selectedDate, onSelectDate
               }}
             >
               <span style={{
-                fontSize: 11,
+                fontSize: 14,
                 fontWeight: today || selected ? 600 : 400,
                 color: selected
                   ? '#fff'

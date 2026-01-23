@@ -424,8 +424,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Purchased courses - courses the user has bought (enables course-level follow/unfollow)
   const [purchasedCourses, setPurchasedCourses] = useState(() => {
-    // New User and Sarah start with no courses - completely fresh
-    if (currentUser?.id === 'demo_new' || currentUser?.id === 'demo_sarah') {
+    // New User, Sarah, and Alex start with no courses - completely fresh
+    if (currentUser?.id === 'demo_new' || currentUser?.id === 'demo_sarah' || currentUser?.id === 'demo_alex') {
       return [];
     }
     // All other users default to Guy Rymberg's courses
@@ -446,8 +446,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   React.useEffect(() => {
     if (!currentUser?.id) return;
 
-    // New User and Sarah start with no courses - completely fresh
-    if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah') {
+    // New User, Sarah, and Alex start with no courses - completely fresh
+    if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah' || currentUser.id === 'demo_alex') {
       // Check localStorage first - they may have purchased courses
       try {
         const storageKey = `purchasedCourses_${currentUser.id}`;
@@ -460,12 +460,6 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       } catch (e) {
         setPurchasedCourses([]);
       }
-      return;
-    }
-
-    // Alex (demo_alex) always has all of Guy Rymberg's courses - hardcoded
-    if (currentUser.id === 'demo_alex') {
-      setPurchasedCourses(GUY_RYMBERG_COURSES);
       return;
     }
 
@@ -504,8 +498,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           return parsed;
         }
       }
-      // demo_new and demo_sarah start with no default sessions (fresh users)
-      if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah') {
+      // demo_new, demo_sarah, and demo_alex start with no default sessions (fresh users)
+      if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah' || currentUser.id === 'demo_alex') {
         return [];
       }
       // Default: sample sessions for other users with Guy Rymberg courses
@@ -582,8 +576,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         }
       }
 
-      // demo_new and demo_sarah start with no default sessions (fresh users)
-      if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah') {
+      // demo_new, demo_sarah, and demo_alex start with no default sessions (fresh users)
+      if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah' || currentUser.id === 'demo_alex') {
         setScheduledSessions([]);
         return;
       }

@@ -839,32 +839,15 @@ const DiscoverView = ({
             position: 'sticky',
             top: 0,
             zIndex: 100,
-            padding: isHeaderCollapsed ? '12px 16px' : '24px 16px',
+            padding: isHeaderCollapsed ? '8px 16px' : '16px 16px',
             borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
             background: isDarkMode ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.85)',
             backdropFilter: 'saturate(180%) blur(20px)',
             WebkitBackdropFilter: 'saturate(180%) blur(20px)',
             transition: 'padding 0.3s ease-out'
           }}>
-            {/* Collapsible Title Section */}
-            <div style={{
-              maxHeight: isHeaderCollapsed ? 0 : 50,
-              overflow: 'hidden',
-              opacity: isHeaderCollapsed ? 0 : 1,
-              transition: 'max-height 0.3s ease-out, opacity 0.2s ease-out'
-            }}>
-              <h1 style={{
-                fontSize: 28,
-                fontWeight: 700,
-                marginBottom: 16,
-                color: isDarkMode ? '#f5f5f7' : '#111827'
-              }}>
-                Discover Communities and Courses
-              </h1>
-            </div>
-
-            {/* Search Bar - Always visible but adjusts size */}
-            <div style={{ position: 'relative', maxWidth: 600 }}>
+            {/* Search Bar - Above the card, always visible */}
+            <div style={{ position: 'relative', maxWidth: 600, marginBottom: isHeaderCollapsed ? 8 : 12, transition: 'margin 0.3s ease-out' }}>
               <FaSearch style={{
                 position: 'absolute',
                 left: isHeaderCollapsed ? 12 : 16,
@@ -901,78 +884,108 @@ const DiscoverView = ({
               />
             </div>
 
-            {/* Filter Pills - Scrollable Row, adjusts size when collapsed */}
-            <div
-              ref={discoverPillsRef}
-              className="discover-pills-scroll"
-              onMouseDown={handlePillsMouseDown}
-              onMouseMove={handlePillsMouseMove}
-              onMouseUp={handlePillsMouseUp}
-              onMouseLeave={handlePillsMouseLeave}
-              style={{
-                marginTop: isHeaderCollapsed ? 10 : 16,
-                display: 'flex',
-                alignItems: 'center',
-                gap: isHeaderCollapsed ? 6 : 8,
-                overflowX: 'auto',
-                overflowY: 'hidden',
-                paddingBottom: isHeaderCollapsed ? 4 : 8,
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                WebkitOverflowScrolling: 'touch',
-                cursor: 'grab',
-                transition: 'all 0.3s ease-out',
-                userSelect: 'none'
-              }}
-            >
-              <style>{`
-                .discover-pills-scroll::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
-                {filterPills.map((pill) => {
-                  const isActive = activeFilter === pill.id;
-                  const isAllPill = pill.id === 'All';
-                  return (
-                    <button
-                      key={pill.id}
-                      onClick={() => handleFilterChange(pill.id)}
-                      style={{
-                        padding: isHeaderCollapsed ? '6px 12px' : '8px 16px',
-                        borderRadius: isHeaderCollapsed ? 16 : 20,
-                        fontSize: isHeaderCollapsed ? 13 : 14,
-                        fontWeight: 600,
-                        border: isActive
-                          ? '2px solid #1d9bf0'
-                          : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease-out',
-                        flexShrink: 0,
-                        background: isActive
-                          ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                          : (isDarkMode ? '#2f3336' : '#ffffff'),
-                        color: isActive
-                          ? '#1d9bf0'
-                          : (isDarkMode ? '#e7e9ea' : '#0f1419')
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive) {
-                          e.currentTarget.style.background = isDarkMode ? '#3f3f46' : '#eef0f1';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive) {
-                          e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#ffffff';
-                        }
-                      }}
-                    >
-                      {pill.label}
-                    </button>
-                  );
-                })}
+            {/* Card container with gradient */}
+            <div style={{
+              borderRadius: 12,
+              overflow: 'hidden',
+              background: 'linear-gradient(135deg, #e8f4f8 0%, #d0e8f0 100%)',
+              transition: 'all 0.3s ease-out'
+            }}>
+              {/* Text section - collapses on scroll */}
+              <div style={{
+                maxHeight: isHeaderCollapsed ? 0 : 100,
+                overflow: 'hidden',
+                opacity: isHeaderCollapsed ? 0 : 1,
+                transition: 'max-height 0.3s ease-out, opacity 0.2s ease-out',
+                padding: isHeaderCollapsed ? '0 20px' : '20px 20px 12px 20px'
+              }}>
+                <p style={{
+                  color: '#0f1419',
+                  fontSize: 15,
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                  margin: 0
+                }}>
+                  Join a community and get access to that community feed. Enroll in a course and get access to that course feed.
+                </p>
+              </div>
+
+              {/* Pills inside gradient card */}
+              <div style={{
+                padding: isHeaderCollapsed ? '8px 12px' : '0 20px 14px 20px',
+                transition: 'padding 0.3s ease-out'
+              }}>
+                <div
+                  ref={discoverPillsRef}
+                  className="discover-pills-scroll"
+                  onMouseDown={handlePillsMouseDown}
+                  onMouseMove={handlePillsMouseMove}
+                  onMouseUp={handlePillsMouseUp}
+                  onMouseLeave={handlePillsMouseLeave}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: isHeaderCollapsed ? 6 : 8,
+                    overflowX: 'auto',
+                    overflowY: 'hidden',
+                    paddingBottom: 4,
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                    WebkitOverflowScrolling: 'touch',
+                    cursor: 'grab',
+                    transition: 'all 0.3s ease-out',
+                    userSelect: 'none'
+                  }}
+                >
+                  <style>{`
+                    .discover-pills-scroll::-webkit-scrollbar {
+                      display: none;
+                    }
+                  `}</style>
+                    {filterPills.map((pill) => {
+                      const isActive = activeFilter === pill.id;
+                      const isAllPill = pill.id === 'All';
+                      return (
+                        <button
+                          key={pill.id}
+                          onClick={() => handleFilterChange(pill.id)}
+                          style={{
+                            padding: isHeaderCollapsed ? '6px 12px' : '8px 16px',
+                            borderRadius: isHeaderCollapsed ? 16 : 20,
+                            fontSize: isHeaderCollapsed ? 13 : 14,
+                            fontWeight: 600,
+                            border: isActive
+                              ? '2px solid #1d9bf0'
+                              : '2px solid #cfd9de',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            flexShrink: 0,
+                            background: isActive
+                              ? 'rgba(29, 155, 240, 0.1)'
+                              : '#f7f9f9',
+                            color: isActive ? '#1d9bf0' : '#0f1419',
+                            whiteSpace: 'nowrap'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isActive) {
+                              e.currentTarget.style.background = '#eef1f2';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isActive) {
+                              e.currentTarget.style.background = '#f7f9f9';
+                            }
+                          }}
+                        >
+                          {pill.label}
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
             </div>
 
-            {/* Search results text - collapses with title */}
+            {/* Search results text - collapses with banner */}
             <div style={{
               maxHeight: isHeaderCollapsed ? 0 : (searchQuery ? 30 : 0),
               overflow: 'hidden',

@@ -440,7 +440,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   // Community navigation style preference from Profile settings
   const [communityNavStyle, setCommunityNavStyle] = useState(() => {
     const saved = localStorage.getItem('communityNavStyle');
-    return saved || 'slideout'; // Default to slideout (pills disabled by default)
+    return saved || 'selector'; // Default to selector card interface
   });
 
   // Banner color from Profile settings
@@ -559,12 +559,12 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     // Handle changes from other tabs
     const handleStorageChange = (e) => {
       if (e.key === 'communityNavStyle') {
-        setCommunityNavStyle(e.newValue || 'pills');
+        setCommunityNavStyle(e.newValue || 'selector');
       }
     };
     // Handle changes from same tab (custom event from Profile)
     const handleNavStyleChange = (e) => {
-      setCommunityNavStyle(e.detail || 'pills');
+      setCommunityNavStyle(e.detail || 'selector');
     };
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('communityNavStyleChanged', handleNavStyleChange);
