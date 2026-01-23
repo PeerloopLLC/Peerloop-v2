@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover - Option D2 (More Detail)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+            color: #666;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .pill:hover {
+            border-color: #999;
+        }
+
+        .pill.active {
+            background: #1a1a1a;
+            color: white;
+            border-color: #1a1a1a;
+        }
+
+        /* Creator Group */
+        .creator-group {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .creator-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .creator-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+
+        .creator-header:hover {
+            background: #f8f8f8;
+        }
+
+        .creator-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .creator-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .creator-top-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .creator-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .creator-header:hover .creator-name {
+            color: #4f46e5;
+        }
+
+        .creator-handle {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .creator-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .creator-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .creator-stats span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .join-btn {
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #e0e0e0;
+            background: white;
+            color: #333;
+            transition: all 0.15s;
+            white-space: nowrap;
+            align-self: flex-start;
+            margin-top: 4px;
+        }
+
+        .join-btn:hover {
+            border-color: #333;
+        }
+
+        .join-btn.joined {
+            background: #f0f0f0;
+            color: #666;
+            border-color: transparent;
+        }
+
+        /* Course List */
+        .course-list {
+            margin-left: 52px;
+            margin-top: 8px;
+        }
+
+        .course-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px 12px;
+            gap: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .course-item:hover {
+            background: #f8f9ff;
+            border-color: #e8e8ff;
+        }
+
+        .course-thumbnail {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .course-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .course-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 3px;
+        }
+
+        .course-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .course-item:hover .course-title {
+            color: #4f46e5;
+        }
+
+        .course-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            white-space: nowrap;
+        }
+
+        .course-description {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .course-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #999;
+            flex-wrap: wrap;
+        }
+
+        .course-meta .rating {
+            color: #f59e0b;
+            font-weight: 500;
+        }
+
+        .course-meta .students {
+            color: #888;
+        }
+
+        .course-meta .modules {
+            color: #888;
+        }
+
+        .course-meta .level {
+            padding: 1px 6px;
+            border-radius: 3px;
+            background: #f0fdf4;
+            color: #16a34a;
+            font-weight: 500;
+            font-size: 10px;
+        }
+
+        .course-meta .level.intermediate {
+            background: #fef9c3;
+            color: #ca8a04;
+        }
+
+        .course-meta .level.advanced {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .dot {
+            color: #ddd;
+        }
+
+        .course-features {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .course-features span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .course-features .check {
+            color: #10b981;
+            font-size: 10px;
+        }
+
+        /* Thumbnail colors */
+        .thumb-purple { background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #7c3aed; }
+        .thumb-blue { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #2563eb; }
+        .thumb-green { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
+        .thumb-orange { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706; }
+        .thumb-pink { background: linear-gradient(135deg, #fce7f3, #fbcfe8); color: #db2777; }
+        .thumb-teal { background: linear-gradient(135deg, #ccfbf1, #99f6e4); color: #0d9488; }
+        .thumb-red { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; }
+        .thumb-slate { background: linear-gradient(135deg, #f1f5f9, #e2e8f0); color: #475569; }
+
+        /* Avatar colors */
+        .creator-avatar.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .creator-avatar.green { background: linear-gradient(135deg, #10b981, #059669); }
+        .creator-avatar.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .creator-avatar.pink { background: linear-gradient(135deg, #ec4899, #be185d); }
+        .creator-avatar.teal { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+        .creator-avatar.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .creator-avatar.indigo { background: linear-gradient(135deg, #6366f1, #4338ca); }
+        .creator-avatar.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .creator-avatar.slate { background: linear-gradient(135deg, #64748b, #475569); }
+
+        /* See all link */
+        .see-all {
+            display: inline-block;
+            margin-left: 52px;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #4f46e5;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .see-all:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Discover Communities and Courses</h1>
+
+        <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="Search communities & courses...">
+        </div>
+
+        <div class="filter-pills">
+            <span class="pill active">All</span>
+            <span class="pill">AI Fundamentals</span>
+            <span class="pill">Machine Learning</span>
+            <span class="pill">Generative AI</span>
+            <span class="pill">Prompt Engineering</span>
+            <span class="pill">Data Science</span>
+            <span class="pill">DevOps</span>
+        </div>
+
+        <!-- Guy Rymberg -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar purple">GR</div>
+                <div class="creator-details">
+                    <div class="creator-top-row">
+                        <span class="creator-name">Guy Rymberg</span>
+                        <span class="creator-handle">@guyrymberg</span>
+                    </div>
+                    <div class="creator-subtitle">AI Prompting Specialist & Business AI Expert</div>
+                    <div class="creator-stats">
+                        <span>👥 527 followers</span>
+                        <span>📚 5 courses</span>
+                        <span>⭐ 4.8 avg rating</span>
+                    </div>
+                </div>
+                <button class="join-btn joined">Joined ▾</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <div class="course-thumbnail thumb-purple">🎯</div>
+                    <div class="course-content">
+                        <div class="course-title-row">
+                            <span class="course-title">AI Prompting Mastery</span>
+                            <span class="course-price">$450</span>
+                        </div>
+                        <div class="course-description">Learn to write effective AI prompts for business use. Master the art of communicating with AI.</div>
+                        <div class="course-meta">
+                            <span class="rating">★ 4.8 (234)</span>
+                            <span class="dot">·</span>
+                            <span class="students">1,250 students</span>
+                            <span class="dot">·</span>
+                            <span class="modules">5 Modules · 12 hrs</span>
+                            <span class="level">Beginner</span>
+                        </div>
+                        <div class="course-features">
+                            <span><span class="check">✓</span> 1-on-1 sessions</span>
+                            <span><span class="check">✓</span> Community</span>
+                            <span><span class="check">✓</span> Certificate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-item">
+                    <div class="course-thumbnail thumb-blue">🛠</div>
+                    <div class="course-content">
+                        <div class="course-title-row">
+                            <span class="course-title">AI Tools Overview</span>
+                            <span class="course-price">$249</span>
+                        </div>
+                        <div class="course-description">Navigate the AI tools landscape with confidence. Understand what tools exist and how to choose.</div>
+                        <div class="course-meta">
+                            <span class="rating">★ 4.8 (189)</span>
+                            <span class="dot">·</span>
+                            <span class="students">980 students</span>
+                            <span class="dot">·</span>
+                            <span class="modules">8 Modules · 10 hrs</span>
+                            <span class="level">Beginner</span>
+                        </div>
+                        <div class="course-features">
+                            <span><span class="check">✓</span> 1-on-1 sessions</span>
+                            <span><span class="check">✓</span> Community</span>
+                            <span><span class="check">✓</span> Certificate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-item">
+                    <div class="course-thumbnail thumb-teal">💻</div>
+                    <div class="course-content">
+                        <div class="course-title-row">
+                            <span class="course-title">Intro to Claude Code</span>
+                            <span class="course-price">$249</span>
+                        </div>
+                        <div class="course-description">Harness AI-assisted development with Claude Code. Build real apps through natural conversation.</div>
+                        <div class="course-meta">
+                            <span class="rating">★ 4.9 (156)</span>
+                            <span class="dot">·</span>
+                            <span class="students">720 students</span>
+                            <span class="dot">·</span>
+                            <span class="modules">8 Modules · 14 hrs</span>
+                            <span class="level">Beginner</span>
+                        </div>
+                        <div class="course-features">
+                            <span><span class="check">✓</span> 1-on-1 sessions</span>
+                            <span><span class="check">✓</span> Community</span>
+                            <span><span class="check">✓</span> Certificate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span class="see-all">See all 5 courses →</span>
+        </div>
+
+        <!-- Jane Doe -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar blue">JD</div>
+                <div class="creator-details">
+                    <div class="creator-top-row">
+                        <span class="creator-name">Jane Doe</span>
+                        <span class="creator-handle">@janedoe</span>
+                    </div>
+                    <div class="creator-subtitle">Leading AI Strategist at TechCorp</div>
+                    <div class="creator-stats">
+                        <span>👥 19.9k followers</span>
+                        <span>📚 4 courses</span>
+                        <span>⭐ 4.8 avg rating</span>
+                    </div>
+                </div>
+                <button class="join-btn joined">Joined ▾</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <div class="course-thumbnail thumb-orange">📊</div>
+                    <div class="course-content">
+                        <div class="course-title-row">
+                            <span class="course-title">AI for Product Managers</span>
+                            <span class="course-price">$399</span>
+                        </div>
+                        <div class="course-description">Master the skills to lead AI-driven products. Evaluate AI technologies and build roadmaps.</div>
+                        <div class="course-meta">
+                            <span class="rating">★ 4.8 (312)</span>
+                            <span class="dot">·</span>
+                            <span class="students">1,890 students</span>
+                            <span class="dot">·</span>
+                            <span class="modules">6 Modules · 12 hrs</span>
+                            <span class="level intermediate">Intermediate</span>
+                        </div>
+                        <div class="course-features">
+                            <span><span class="check">✓</span> 1-on-1 sessions</span>
+                            <span><span class="check">✓</span> Community</span>
+                            <span><span class="check">✓</span> Certificate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-item">
+                    <div class="course-thumbnail thumb-red">🧠</div>
+                    <div class="course-content">
+                        <div class="course-title-row">
+                            <span class="course-title">Deep Learning Fundamentals</span>
+                            <span class="course-price">$399</span>
+                        </div>
+                        <div class="course-description">Master neural networks and modern AI architectures. Build and deploy real-world AI applications.</div>
+                        <div class="course-meta">
+                            <span class="rating">★ 4.7 (267)</span>
+                            <span class="dot">·</span>
+                            <span class="students">1,450 students</span>
+                            <span class="dot">·</span>
+                            <span class="modules">3 Modules · 12 hrs</span>
+                            <span class="level intermediate">Intermediate</span>
+                        </div>
+                        <div class="course-features">
+                            <span><span class="check">✓</span> 1-on-1 sessions</span>
+                            <span><span class="check">✓</span> Community</span>
+                            <span><span class="check">✓</span> Certificate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-item">
+                    <div class="course-thumbnail thumb-green">👁</div>
+                    <div class="course-content">
+                        <div class="course-title-row">
+                            <span class="course-title">Computer Vision with Python</span>
+                            <span class="course-price">$349</span>
+                        </div>
+                        <div class="course-description">Learn computer vision using OpenCV, TensorFlow, and PyTorch. Build image recognition systems.</div>
+                        <div class="course-meta">
+                            <span class="rating">★ 4.9 (198)</span>
+                            <span class="dot">·</span>
+                            <span class="students">920 students</span>
+                            <span class="dot">·</span>
+                            <span class="modules">3 Modules · 10 hrs</span>
+                            <span class="level advanced">Advanced</span>
+                        </div>
+                        <div class="course-features">
+                            <span><span class="check">✓</span> 1-on-1 sessions</span>
+                            <span><span class="check">✓</span> Community</span>
+                            <span><span class="check">✓</span> Certificate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span class="see-all">See all 4 courses →</span>
+        </div>
+
+        <!-- Dr. Sarah Chen -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar green">SC</div>
+                <div class="creator-details">
+                    <div class="creator-top-row">
+                        <span class="creator-name">Dr. Sarah Chen</span>
+                        <span class="creator-handle">@drsarahchen</span>
+                    </div>
+                    <div class="creator-subtitle">AI Research Scientist & Educator</div>
+                    <div class="creator-stats">
+                        <span>👥 8.5k followers</span>
+                        <span>📚 2 courses</span>
+                        <span>⭐ 4.8 avg rating</span>
+                    </div>
+                </div>
+                <button class="join-btn">Join</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <div class="course-thumbnail thumb-blue">🌟</div>
+                    <div class="course-content">
+                        <div class="course-title-row">
+                            <span class="course-title">AI for Beginners</span>
+                            <span class="course-price">$249</span>
+                        </div>
+                        <div class="course-description">Understand AI fundamentals without coding. Perfect for professionals wanting to grasp AI concepts.</div>
+                        <div class="course-meta">
+                            <span class="rating">★ 4.9 (445)</span>
+                            <span class="dot">·</span>
+                            <span class="students">3,200 students</span>
+                            <span class="dot">·</span>
+                            <span class="modules">4 Modules · 8 hrs</span>
+                            <span class="level">Beginner</span>
+                        </div>
+                        <div class="course-features">
+                            <span><span class="check">✓</span> 1-on-1 sessions</span>
+                            <span><span class="check">✓</span> Community</span>
+                            <span><span class="check">✓</span> Certificate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-item">
+                    <div class="course-thumbnail thumb-purple">⚡</div>
+                    <div class="course-content">
+                        <div class="course-title-row">
+                            <span class="course-title">Machine Learning Essentials</span>
+                            <span class="course-price">$399</span>
+                        </div>
+                        <div class="course-description">Core concepts of ML algorithms and when to use them. Bridges theory and practice for data scientists.</div>
+                        <div class="course-meta">
+                            <span class="rating">★ 4.8 (289)</span>
+                            <span class="dot">·</span>
+                            <span class="students">1,680 students</span>
+                            <span class="dot">·</span>
+                            <span class="modules">4 Modules · 12 hrs</span>
+                            <span class="level intermediate">Intermediate</span>
+                        </div>
+                        <div class="course-features">
+                            <span><span class="check">✓</span> 1-on-1 sessions</span>
+                            <span><span class="check">✓</span> Community</span>
+                            <span><span class="check">✓</span> Certificate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prof. Maria Rodriguez -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar orange">MR</div>
+                <div class="creator-details">
+                    <div class="creator-top-row">
+                        <span class="creator-name">Prof. Maria Rodriguez</span>
+                        <span class="creator-handle">@profmariarodriguez</span>
+                    </div>
+                    <div class="creator-subtitle">Data Science & Analytics Specialist</div>
+                    <div class="creator-stats">
+                        <span>👥 2.4k followers</span>
+                        <span>📚 2 courses</span>
+                        <span>⭐ 4.7 avg rating</span>
+                    </div>
+                </div>
+                <button class="join-btn">Join</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <div class="course-thumbnail thumb-slate">📈</div>
+                    <div class="course-content">
+                        <div class="course-title-row">
+                            <span class="course-title">Data Science Fundamentals</span>
+                            <span class="course-price">$299</span>
+                        </div>
+                        <div class="course-description">Core data science concepts, statistical analysis, and data visualization. Master Python for analytics.</div>
+                        <div class="course-meta">
+                            <span class="rating">★ 4.7 (178)</span>
+                            <span class="dot">·</span>
+                            <span class="students">1,100 students</span>
+                            <span class="dot">·</span>
+                            <span class="modules">3 Modules · 10 hrs</span>
+                            <span class="level">Beginner</span>
+                        </div>
+                        <div class="course-features">
+                            <span><span class="check">✓</span> 1-on-1 sessions</span>
+                            <span><span class="check">✓</span> Community</span>
+                            <span><span class="check">✓</span> Certificate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-item">
+                    <div class="course-thumbnail thumb-orange">📋</div>
+                    <div class="course-content">
+                        <div class="course-title-row">
+                            <span class="course-title">Business Intelligence & Analytics</span>
+                            <span class="course-price">$349</span>
+                        </div>
+                        <div class="course-description">Transform raw data into actionable insights. Create dashboards and reports for decision-making.</div>
+                        <div class="course-meta">
+                            <span class="rating">★ 4.7 (145)</span>
+                            <span class="dot">·</span>
+                            <span class="students">870 students</span>
+                            <span class="dot">·</span>
+                            <span class="modules">3 Modules · 10 hrs</span>
+                            <span class="level intermediate">Intermediate</span>
+                        </div>
+                        <div class="course-features">
+                            <span><span class="check">✓</span> 1-on-1 sessions</span>
+                            <span><span class="check">✓</span> Community</span>
+                            <span><span class="check">✓</span> Certificate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

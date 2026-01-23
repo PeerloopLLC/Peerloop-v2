@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Selector - Option B</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #e7e9ea;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .label {
+      font-size: 11px;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    /* The selector bar */
+    .selector-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border: 1px solid #3b4148;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #16181c;
+      margin-bottom: 12px;
+    }
+    .selector-bar:hover {
+      border-color: #1d9bf0;
+      background: #1a2634;
+    }
+
+    .selector-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1d9bf0, #0d8ae0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .selector-text {
+      flex: 1;
+    }
+    .selector-text .name {
+      font-weight: 700;
+      font-size: 15px;
+      color: #e7e9ea;
+    }
+    .selector-text .subtitle {
+      font-size: 12px;
+      color: #71767b;
+      margin-top: 2px;
+    }
+
+    .selector-arrow {
+      font-size: 18px;
+      color: #71767b;
+      transition: transform 0.2s;
+    }
+    .selector-bar:hover .selector-arrow {
+      color: #1d9bf0;
+    }
+    .selector-bar.open .selector-arrow {
+      transform: rotate(180deg);
+      color: #1d9bf0;
+    }
+
+    /* Dropdown menu */
+    .dropdown {
+      display: none;
+      border: 1px solid #3b4148;
+      border-radius: 12px;
+      background: #16181c;
+      overflow: hidden;
+      margin-bottom: 12px;
+      animation: slideDown 0.2s ease;
+    }
+    .dropdown.show {
+      display: block;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .dropdown-item:hover {
+      background: #1a2634;
+    }
+    .dropdown-item + .dropdown-item {
+      border-top: 1px solid #2f3336;
+    }
+    .dropdown-item .item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .dropdown-item .item-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e7e9ea;
+    }
+    .dropdown-item .item-sub {
+      font-size: 12px;
+      color: #71767b;
+    }
+    .dropdown-item .check {
+      margin-left: auto;
+      color: #1d9bf0;
+      font-size: 16px;
+    }
+
+    /* Description text below */
+    .community-desc {
+      font-size: 14px;
+      color: #71767b;
+      line-height: 1.5;
+      padding: 0 4px;
+      margin-bottom: 20px;
+    }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid #2f3336;
+      margin: 20px 0;
+    }
+
+    /* Comparison: current vs new */
+    .comparison {
+      display: flex;
+      gap: 32px;
+      margin-top: 40px;
+    }
+    .comp-col {
+      flex: 1;
+    }
+    .comp-col h3 {
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Current style (for comparison) */
+    .current-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: #16181c;
+      border-radius: 12px;
+    }
+    .current-card .switch-btn {
+      background: rgba(29, 155, 240, 0.15);
+      color: #1d9bf0;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p class="label">Option B: Full-Width Select Bar</p>
+
+    <!-- The new selector -->
+    <div class="selector-bar" id="selectorBar" onclick="toggleDropdown()">
+      <div class="selector-icon">🌐</div>
+      <div class="selector-text">
+        <div class="name">The Commons</div>
+        <div class="subtitle">Community Discussion Hub</div>
+      </div>
+      <div class="selector-arrow" id="arrow">▾</div>
+    </div>
+
+    <!-- Dropdown options -->
+    <div class="dropdown" id="dropdown">
+      <div class="dropdown-item">
+        <div class="item-icon" style="background: linear-gradient(135deg, #1d9bf0, #0d8ae0);">🌐</div>
+        <div>
+          <div class="item-name">The Commons</div>
+          <div class="item-sub">Community Discussion Hub</div>
+        </div>
+        <div class="check">✓</div>
+      </div>
+      <div class="dropdown-item">
+        <div class="item-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">AE</div>
+        <div>
+          <div class="item-name">Albert Einstein Community</div>
+          <div class="item-sub">Physics & Mathematics</div>
+        </div>
+      </div>
+      <div class="dropdown-item">
+        <div class="item-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">JD</div>
+        <div>
+          <div class="item-name">Jane Doe Community</div>
+          <div class="item-sub">AI & Machine Learning</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="community-desc">
+      Welcome to The Commons — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners.
+    </div>
+
+    <hr class="divider">
+
+    <!-- Comparison -->
+    <div class="comparison">
+      <div class="comp-col">
+        <h3>Current</h3>
+        <div class="current-card">
+          <div class="selector-icon">🌐</div>
+          <div class="selector-text">
+            <div class="name">The Commons</div>
+            <div class="subtitle">Community Discussion Hub</div>
+          </div>
+          <button class="switch-btn">Switch ▾</button>
+        </div>
+      </div>
+      <div class="comp-col">
+        <h3>Proposed</h3>
+        <div class="selector-bar" style="pointer-events: none;">
+          <div class="selector-icon">🌐</div>
+          <div class="selector-text">
+            <div class="name">The Commons</div>
+            <div class="subtitle">Community Discussion Hub</div>
+          </div>
+          <div class="selector-arrow">▾</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById('dropdown');
+      const bar = document.getElementById('selectorBar');
+      dropdown.classList.toggle('show');
+      bar.classList.toggle('open');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#selectorBar') && !e.target.closest('#dropdown')) {
+        document.getElementById('dropdown').classList.remove('show');
+        document.getElementById('selectorBar').classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>
