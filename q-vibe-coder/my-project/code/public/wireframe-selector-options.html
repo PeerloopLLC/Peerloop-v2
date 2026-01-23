@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Selector - All Options</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #e7e9ea;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 32px;
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #e7e9ea;
+    }
+    .page-subtitle {
+      font-size: 14px;
+      color: #71767b;
+      margin-bottom: 40px;
+    }
+    .option {
+      margin-bottom: 48px;
+      max-width: 580px;
+    }
+    .option-label {
+      font-size: 11px;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .option-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e7e9ea;
+      margin-bottom: 4px;
+    }
+    .option-desc {
+      font-size: 13px;
+      color: #71767b;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .demo-container {
+      background: #16181c;
+      border: 1px solid #2f3336;
+      border-radius: 16px;
+      padding: 16px;
+      position: relative;
+    }
+    .community-desc {
+      font-size: 13px;
+      color: #71767b;
+      margin-top: 12px;
+      line-height: 1.4;
+    }
+
+    /* ===== OPTION 1: Discord Banner ===== */
+    .discord-banner {
+      background: linear-gradient(135deg, #1d9bf0 0%, #0d7fd4 100%);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .discord-banner:hover {
+      filter: brightness(1.1);
+    }
+    .discord-banner .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .discord-banner .info {
+      flex: 1;
+    }
+    .discord-banner .name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .discord-banner .sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 2px;
+    }
+    .discord-banner .arrow {
+      color: rgba(255,255,255,0.8);
+      font-size: 16px;
+    }
+
+    /* ===== OPTION 2: Slack Accent ===== */
+    .slack-accent {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: rgba(29, 155, 240, 0.08);
+      border-left: 4px solid #1d9bf0;
+      border-radius: 0 12px 12px 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .slack-accent:hover {
+      background: rgba(29, 155, 240, 0.15);
+    }
+    .slack-accent .icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1d9bf0, #0d8ae0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .slack-accent .info { flex: 1; }
+    .slack-accent .name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #e7e9ea;
+    }
+    .slack-accent .sub {
+      font-size: 12px;
+      color: #71767b;
+      margin-top: 2px;
+    }
+    .slack-accent .arrow {
+      color: #71767b;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .slack-accent:hover .arrow { color: #1d9bf0; }
+
+    /* ===== OPTION 3: Reddit Search Bar ===== */
+    .reddit-search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: #202327;
+      border: 1px solid #3b4148;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .reddit-search:hover {
+      border-color: #1d9bf0;
+      background: #1a2634;
+    }
+    .reddit-search .search-icon {
+      color: #71767b;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .reddit-search .icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1d9bf0, #0d8ae0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .reddit-search .name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: #e7e9ea;
+    }
+    .reddit-search .arrow {
+      color: #71767b;
+      font-size: 12px;
+    }
+    .reddit-search:hover .arrow { color: #1d9bf0; }
+
+    /* ===== OPTION 4: Notion Underline ===== */
+    .notion-style {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 4px;
+      cursor: pointer;
+      position: relative;
+    }
+    .notion-style .icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #1d9bf0, #0d8ae0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .notion-style .name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #e7e9ea;
+      border-bottom: 2px dashed transparent;
+      transition: border-color 0.2s;
+      padding-bottom: 2px;
+    }
+    .notion-style:hover .name {
+      border-bottom-color: #1d9bf0;
+    }
+    .notion-style .arrow {
+      color: #71767b;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .notion-style:hover .arrow { color: #1d9bf0; }
+    .notion-sub {
+      font-size: 13px;
+      color: #71767b;
+      margin-top: 4px;
+      padding-left: 46px;
+    }
+
+    /* ===== OPTION 5: YouTube Pills ===== */
+    .pill-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pill-tab {
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pill-tab.active {
+      background: #1d9bf0;
+      color: #fff;
+    }
+    .pill-tab.inactive {
+      background: #202327;
+      color: #e7e9ea;
+      border: 1px solid #3b4148;
+    }
+    .pill-tab.inactive:hover {
+      background: #2a2e33;
+      border-color: #71767b;
+    }
+    .pill-tab .pill-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+    .pill-tab.active .pill-icon {
+      background: rgba(255,255,255,0.2);
+    }
+    .pill-tab.inactive .pill-icon {
+      background: #3b4148;
+    }
+
+    /* ===== OPTION 6: iOS Segmented ===== */
+    .segmented-control {
+      display: flex;
+      background: #202327;
+      border-radius: 10px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .segment {
+      flex: 1;
+      padding: 10px 16px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #71767b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .segment.active {
+      background: #1d9bf0;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(29, 155, 240, 0.3);
+    }
+    .segment:not(.active):hover {
+      color: #e7e9ea;
+      background: #2a2e33;
+    }
+    .segment .seg-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+    }
+    .segment.active .seg-icon { background: rgba(255,255,255,0.2); }
+    .segment:not(.active) .seg-icon { background: #3b4148; }
+
+    /* ===== OPTION 7: Gmail Big Icon ===== */
+    .gmail-style {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 0;
+      cursor: pointer;
+    }
+    .gmail-style .big-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #1d9bf0, #0d8ae0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(29, 155, 240, 0.3);
+    }
+    .gmail-style .info { flex: 1; }
+    .gmail-style .name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .gmail-style .name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #e7e9ea;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .gmail-style:hover .name {
+      border-bottom-color: #1d9bf0;
+    }
+    .gmail-style .arrow {
+      color: #71767b;
+      font-size: 16px;
+      transition: color 0.2s;
+    }
+    .gmail-style:hover .arrow { color: #1d9bf0; }
+    .gmail-style .sub {
+      font-size: 13px;
+      color: #71767b;
+      margin-top: 4px;
+    }
+
+    /* Dividers */
+    .divider {
+      border: none;
+      border-top: 1px solid #2f3336;
+      margin: 48px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-title">Community Selector Options</div>
+  <div class="page-subtitle">Click each to see hover states. Compare which feels most "obviously a dropdown."</div>
+
+  <!-- OPTION 1: Discord Banner -->
+  <div class="option">
+    <div class="option-label">Option 1</div>
+    <div class="option-title">Discord-style: Colored Banner</div>
+    <div class="option-desc">Full-width colored header. Impossible to miss. Anchors your context visually.</div>
+    <div class="demo-container">
+      <div class="discord-banner">
+        <div class="icon">🌐</div>
+        <div class="info">
+          <div class="name">The Commons</div>
+          <div class="sub">Community Discussion Hub</div>
+        </div>
+        <div class="arrow">▾</div>
+      </div>
+      <div class="community-desc">Welcome to The Commons — the open forum where all community members come together.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- OPTION 2: Slack Accent -->
+  <div class="option">
+    <div class="option-label">Option 2</div>
+    <div class="option-title">Slack-style: Left Accent Bar</div>
+    <div class="option-desc">Colored left border + tinted background. Feels like a "you are here" marker.</div>
+    <div class="demo-container">
+      <div class="slack-accent">
+        <div class="icon">🌐</div>
+        <div class="info">
+          <div class="name">The Commons</div>
+          <div class="sub">Community Discussion Hub</div>
+        </div>
+        <div class="arrow">▾</div>
+      </div>
+      <div class="community-desc">Welcome to The Commons — the open forum where all community members come together.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- OPTION 3: Reddit Search Bar -->
+  <div class="option">
+    <div class="option-label">Option 3</div>
+    <div class="option-title">Reddit-style: Search Bar Shape</div>
+    <div class="option-desc">Rounded pill shape like a search input. Everyone knows these are interactive.</div>
+    <div class="demo-container">
+      <div class="reddit-search">
+        <div class="search-icon">🔍</div>
+        <div class="icon">🌐</div>
+        <div class="name">The Commons</div>
+        <div class="arrow">▾</div>
+      </div>
+      <div class="community-desc">Welcome to The Commons — the open forum where all community members come together.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- OPTION 4: Notion Underline -->
+  <div class="option">
+    <div class="option-label">Option 4</div>
+    <div class="option-title">Notion-style: Hover Underline</div>
+    <div class="option-desc">Minimal — name gets a dashed underline on hover. Clean but signals "click me."</div>
+    <div class="demo-container">
+      <div class="notion-style">
+        <div class="icon">🌐</div>
+        <div class="name">The Commons</div>
+        <div class="arrow">▾</div>
+      </div>
+      <div class="notion-sub">Community Discussion Hub</div>
+      <div class="community-desc" style="padding-left: 0; margin-top: 12px;">Welcome to The Commons — the open forum where all community members come together.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- OPTION 5: YouTube Pills -->
+  <div class="option">
+    <div class="option-label">Option 5</div>
+    <div class="option-title">YouTube/Spotify-style: Pill Tabs</div>
+    <div class="option-desc">All options visible as pills. Active one is filled, others are outlined. Zero guessing.</div>
+    <div class="demo-container">
+      <div class="pill-tabs">
+        <div class="pill-tab active">
+          <div class="pill-icon">🌐</div>
+          The Commons
+        </div>
+        <div class="pill-tab inactive">
+          <div class="pill-icon">AE</div>
+          Albert Einstein
+        </div>
+        <div class="pill-tab inactive">
+          <div class="pill-icon">JD</div>
+          Jane Doe
+        </div>
+      </div>
+      <div class="community-desc">Welcome to The Commons — the open forum where all community members come together.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- OPTION 6: iOS Segmented -->
+  <div class="option">
+    <div class="option-label">Option 6</div>
+    <div class="option-title">iOS-style: Segmented Control</div>
+    <div class="option-desc">All options in a segmented bar. Selected one slides/highlights. Very mobile-friendly.</div>
+    <div class="demo-container">
+      <div class="segmented-control">
+        <div class="segment active" onclick="selectSegment(this)">
+          <div class="seg-icon">🌐</div>
+          Commons
+        </div>
+        <div class="segment" onclick="selectSegment(this)">
+          <div class="seg-icon">AE</div>
+          Einstein
+        </div>
+        <div class="segment" onclick="selectSegment(this)">
+          <div class="seg-icon">JD</div>
+          Jane Doe
+        </div>
+      </div>
+      <div class="community-desc">Welcome to The Commons — the open forum where all community members come together.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- OPTION 7: Gmail Big Icon -->
+  <div class="option">
+    <div class="option-label">Option 7</div>
+    <div class="option-title">Gmail-style: Big Icon + Title Trigger</div>
+    <div class="option-desc">Large icon draws attention, the name itself is the dropdown trigger with underline on hover.</div>
+    <div class="demo-container">
+      <div class="gmail-style">
+        <div class="big-icon">🌐</div>
+        <div class="info">
+          <div class="name-row">
+            <div class="name">The Commons</div>
+            <div class="arrow">▾</div>
+          </div>
+          <div class="sub">Community Discussion Hub</div>
+        </div>
+      </div>
+      <div class="community-desc">Welcome to The Commons — the open forum where all community members come together.</div>
+    </div>
+  </div>
+
+  <script>
+    function selectSegment(el) {
+      const parent = el.parentElement;
+      parent.querySelectorAll('.segment').forEach(s => s.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
+</body>
+</html>

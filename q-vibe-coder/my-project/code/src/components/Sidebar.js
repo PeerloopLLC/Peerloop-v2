@@ -396,8 +396,8 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           ) : (
             /* Expanded sidebar: Feeds group with shared background */
             <div className="feeds-group">
-            {/* TOP: Community selector - shows selected community name + count + arrow */}
-            <div
+            {/* TOP: Community selector - shows selected community name + count + arrow (hidden in selector card mode) */}
+            {communityNavStyle !== 'selector' && <div
               className={`community-selector ${isFlyoutOpen ? 'flyout-open' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
@@ -452,7 +452,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               {hasFollowedCommunities && (
                 <span className="community-selector-arrow">&rarr;</span>
               )}
-            </div>
+            </div>}
 
             {/* SECOND: My Feeds static label - no arrow */}
             <div

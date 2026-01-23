@@ -1982,68 +1982,68 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
           {communityNavStyle === 'selector' && (() => {
             return (
             <div style={{
-              background: communityMode === 'creators' && selectedCreatorId
-                ? (isDarkMode
-                    ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
-                    : getUserBannerGradient())
-                : (isDarkMode ? '#1f2937' : '#f9fafb'),
+              background: isDarkMode ? '#1f2937' : '#f9fafb',
               borderRadius: 16,
-              padding: '12px 16px',
               margin: '8px 16px 0 16px',
               position: 'sticky',
               top: 0,
               zIndex: 10,
-              border: communityMode === 'creators' && selectedCreatorId ? 'none' : (isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb'),
+              border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
               boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.06)'
             }}>
-              {/* Selector Bar - Clickable row */}
+              <div style={{ padding: '12px 16px 12px 16px', position: 'relative', zIndex: 20 }}>
+              {/* Selector Bar - Reddit-style pill */}
               <div
                 className="community-selector-bar"
                 onClick={() => setShowSelectorDropdown(!showSelectorDropdown)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 12,
+                  gap: 10,
                   padding: '10px 14px',
-                  background: isDarkMode ? '#374151' : '#fff',
-                  border: `2px solid ${showSelectorDropdown ? '#1d9bf0' : (isDarkMode ? '#4b5563' : '#e5e7eb')}`,
-                  borderRadius: 12,
+                  background: isDarkMode ? '#16181c' : '#ffffff',
+                  border: `2px solid ${showSelectorDropdown ? '#1d9bf0' : (isDarkMode ? '#4a5158' : '#b0b8c1')}`,
+                  borderRadius: 24,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
-                  position: 'relative'
+                  position: 'relative',
+                  boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)'
                 }}
                 onMouseEnter={e => {
                   if (!showSelectorDropdown) {
                     e.currentTarget.style.borderColor = '#1d9bf0';
-                    e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.03)';
+                    e.currentTarget.style.background = isDarkMode ? '#1a2634' : '#e8f4fd';
                   }
                 }}
                 onMouseLeave={e => {
                   if (!showSelectorDropdown) {
-                    e.currentTarget.style.borderColor = isDarkMode ? '#4b5563' : '#e5e7eb';
-                    e.currentTarget.style.background = isDarkMode ? '#374151' : '#fff';
+                    e.currentTarget.style.borderColor = isDarkMode ? '#4a5158' : '#b0b8c1';
+                    e.currentTarget.style.background = isDarkMode ? '#16181c' : '#ffffff';
                   }
                 }}
               >
+                {/* Search Icon */}
+                <FaSearch size={14} style={{ color: isDarkMode ? '#71767b' : '#536471', flexShrink: 0 }} />
+
                 {/* Avatar */}
                 {communityMode === 'hub' ? (
-                  <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=80&h=80&fit=crop" alt="The Commons" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                  <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=80&h=80&fit=crop" alt="The Commons" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                 ) : (() => {
                   const selectedCreator = groupedByCreator.find(c => c.id === selectedCreatorId);
                   const instructor = selectedCreator ? getInstructorById(selectedCreator.instructorId) : null;
                   return instructor?.avatar ? (
-                    <img src={instructor.avatar} alt={instructor.name} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                    <img src={instructor.avatar} alt={instructor.name} style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                   ) : (
                     <div style={{
-                      width: 36,
-                      height: 36,
+                      width: 28,
+                      height: 28,
                       borderRadius: '50%',
                       background: '#1d9bf0',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       color: '#fff',
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: 600,
                       flexShrink: 0
                     }}>
@@ -2052,30 +2052,29 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   );
                 })()}
 
-                {/* Info */}
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: communityMode === 'hub' ? '#10b981' : '#1d9bf0' }}>
-                    {communityMode === 'hub' ? 'The Commons' : (groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'Select Community')}
-                  </div>
-                  <div style={{ fontSize: 12, color: isDarkMode ? '#9ca3af' : '#536471' }}>
-                    {communityMode === 'hub' ? 'Community Discussion Hub' : 'Creator Community'}
-                  </div>
+                {/* Name only */}
+                <div style={{ fontSize: 14, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                  {communityMode === 'hub' ? 'The Commons' : (groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'Select Community')}
                 </div>
 
-                {/* Switch Button */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '6px 12px',
-                  background: 'rgba(29, 155, 240, 0.1)',
-                  color: '#1d9bf0',
-                  borderRadius: 16,
-                  fontSize: 13,
-                  fontWeight: 600
-                }}>
-                  Switch <FaChevronDown size={10} style={{ transform: showSelectorDropdown ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
-                </div>
+                {/* Dropdown Arrow (next to name) */}
+                <FaChevronDown size={12} style={{
+                  color: showSelectorDropdown ? '#1d9bf0' : (isDarkMode ? '#9ca3af' : '#71767b'),
+                  transform: showSelectorDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'all 0.2s',
+                  flexShrink: 0
+                }} />
+
+                {/* Spacer */}
+                <div style={{ flex: 1 }} />
+
+                {/* Dropdown Arrow (far right) */}
+                <FaChevronDown size={12} style={{
+                  color: showSelectorDropdown ? '#1d9bf0' : (isDarkMode ? '#9ca3af' : '#71767b'),
+                  transform: showSelectorDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'all 0.2s',
+                  flexShrink: 0
+                }} />
 
                 {/* Dropdown */}
                 {showSelectorDropdown && (
@@ -2092,7 +2091,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
                       marginTop: 8,
                       zIndex: 100,
-                      maxHeight: 300,
+                      maxHeight: 'calc(100vh - 75px)',
                       overflowY: 'auto'
                     }}
                     onClick={e => e.stopPropagation()}
@@ -2117,9 +2116,12 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       onMouseEnter={e => { if (communityMode !== 'hub') e.currentTarget.style.background = isDarkMode ? '#374151' : '#f7f9f9'; }}
                       onMouseLeave={e => { if (communityMode !== 'hub') e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <span style={{ width: 20, color: '#1d9bf0', fontWeight: 700 }}>{communityMode === 'hub' ? '\u2713' : ''}</span>
-                      <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
-                      <span style={{ fontWeight: 600, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>The Commons</span>
+                      <span style={{ width: 20, color: '#1d9bf0', fontWeight: 700, flexShrink: 0 }}>{communityMode === 'hub' ? '\u2713' : ''}</span>
+                      <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>The Commons Community</div>
+                        <div style={{ fontSize: 12, color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: 2 }}>Open forum for all members</div>
+                      </div>
                     </div>
 
                     {/* Divider */}
@@ -2152,9 +2154,9 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = isDarkMode ? '#374151' : '#f7f9f9'; }}
                           onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                         >
-                          <span style={{ width: 20, color: '#1d9bf0', fontWeight: 700 }}>{isSelected ? '\u2713' : ''}</span>
+                          <span style={{ width: 20, color: '#1d9bf0', fontWeight: 700, flexShrink: 0 }}>{isSelected ? '\u2713' : ''}</span>
                           {instructor?.avatar ? (
-                            <img src={instructor.avatar} alt={creator.name} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+                            <img src={instructor.avatar} alt={creator.name} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                           ) : (
                             <div style={{
                               width: 32,
@@ -2166,29 +2168,123 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                               justifyContent: 'center',
                               color: '#fff',
                               fontSize: 12,
-                              fontWeight: 600
+                              fontWeight: 600,
+                              flexShrink: 0
                             }}>
                               {creator.name.charAt(0)}
                             </div>
                           )}
-                          <span style={{ fontWeight: 600, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.name}</span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontWeight: 600, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.name} Community</div>
+                            {instructor?.title && <div style={{ fontSize: 12, color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{instructor.title}</div>}
+                          </div>
                         </div>
                       );
                     })}
                   </div>
                 )}
               </div>
-
+              </div>
+              {/* Banner Image - only for The Commons hub mode */}
+              {communityMode === 'hub' && (
+                <div style={{
+                  maxHeight: isProfileCollapsed ? 0 : 120,
+                  overflow: 'hidden',
+                  transition: 'max-height 0.3s ease-out'
+                }}>
+                  <img
+                    src={process.env.PUBLIC_URL + '/commons-banner.png'}
+                    alt="The Commons"
+                    style={{
+                      width: '100%',
+                      height: 120,
+                      objectFit: 'cover'
+                    }}
+                  />
+                </div>
+              )}
+              <div style={{
+                padding: isProfileCollapsed ? '0 16px 8px 16px' : '0 16px 12px 16px',
+                transition: 'all 0.3s ease-out',
+                ...(communityMode === 'creators' && selectedCreatorId && !isProfileCollapsed ? {
+                  background: isDarkMode
+                    ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
+                    : getUserBannerGradient()
+                } : {})
+              }}>
                             {/* Profile Info below selector bar */}
               {communityMode === 'hub' ? (
-                /* The Commons description */
-                <div style={{
-                  fontSize: 14,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                  marginTop: 12,
-                  lineHeight: 1.4
-                }}>
-                  Welcome to The Commons \u2014 the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners.
+                /* The Commons description + feed pills */
+                <div style={{ marginTop: isProfileCollapsed ? 8 : 12, transition: 'margin 0.3s ease-out' }}>
+                  <div style={{
+                    fontSize: 14,
+                    color: isDarkMode ? '#9ca3af' : '#4a5568',
+                    lineHeight: 1.4,
+                    marginBottom: isProfileCollapsed ? 0 : 12,
+                    maxHeight: isProfileCollapsed ? 0 : 100,
+                    overflow: 'hidden',
+                    opacity: isProfileCollapsed ? 0 : 1,
+                    transition: 'all 0.3s ease-out'
+                  }}>
+                    Welcome to The Commons — the open forum where all community members come together. Share ideas, ask questions, and connect with fellow learners.
+                  </div>
+                  {/* Main Hall / Member Search pills */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8
+                  }}>
+                    <button
+                      onClick={() => setCommonsActiveFeed('main')}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: '8px 16px',
+                        borderRadius: 20,
+                        border: commonsActiveFeed === 'main'
+                          ? '2px solid #10b981'
+                          : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                        background: commonsActiveFeed === 'main'
+                          ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+                          : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                        color: commonsActiveFeed === 'main'
+                          ? '#10b981'
+                          : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      Main Hall
+                    </button>
+                    <button
+                      onClick={() => setCommonsActiveFeed('Member Search')}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: '8px 16px',
+                        borderRadius: 20,
+                        border: commonsActiveFeed === 'Member Search'
+                          ? '2px solid #10b981'
+                          : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                        background: commonsActiveFeed === 'Member Search'
+                          ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+                          : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                        color: commonsActiveFeed === 'Member Search'
+                          ? '#10b981'
+                          : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      Member Search
+                    </button>
+                  </div>
                 </div>
               ) : (() => {
                 /* Creator Profile Info - matches pills mode layout */
@@ -2209,7 +2305,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 };
 
                 return (
-                  <div style={{ marginTop: 12 }}>
+                  <div style={{
+                    marginTop: isProfileCollapsed ? 0 : 12,
+                    maxHeight: isProfileCollapsed ? 0 : 500,
+                    overflow: 'hidden',
+                    opacity: isProfileCollapsed ? 0 : 1,
+                    transition: 'all 0.3s ease-out'
+                  }}>
                     {/* First Row: Name, Go to Profile, View All Courses */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <div
@@ -2263,25 +2365,17 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                           display: 'flex',
                           alignItems: 'center',
                           gap: 6,
-                          padding: '6px 14px',
-                          borderRadius: 16,
-                          border: '2px solid #6366f1',
-                          background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
-                          color: '#6366f1',
-                          fontSize: 13,
+                          padding: '8px 16px',
+                          borderRadius: 20,
+                          border: isDarkMode ? '2px solid #536471' : '2px solid #cfd9de',
+                          background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                          color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                          fontSize: 14,
                           fontWeight: 600,
                           cursor: 'pointer',
                           whiteSpace: 'nowrap',
                           flexShrink: 0,
                           transition: 'all 0.2s ease'
-                        }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.background = '#6366f1';
-                          e.currentTarget.style.color = '#fff';
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.background = isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)';
-                          e.currentTarget.style.color = '#6366f1';
                         }}
                       >
                         View All Courses
@@ -2484,6 +2578,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   </div>
                 );
               })()}
+              </div>
             </div>
           );
           })()}
