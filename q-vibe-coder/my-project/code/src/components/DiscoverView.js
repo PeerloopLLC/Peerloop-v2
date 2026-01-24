@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { FaSearch, FaBook, FaPlay } from 'react-icons/fa';
+import { FaSearch, FaBook, FaPlay, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
 import { getInstructorWithCourses, getAllCourses, getInstructorById } from '../data/database';
 
@@ -833,13 +833,13 @@ const DiscoverView = ({
       )}
 
       <div className="three-column-layout">
-        <div className="center-column" ref={scrollContainerRef} style={{ maxWidth: 800, margin: '0 auto' }}>
+        <div className="center-column" ref={scrollContainerRef} style={{ maxWidth: 800, flex: '0 0 auto', width: '100%' }}>
           {/* Sticky Collapsible Header */}
           <div style={{
             position: 'sticky',
             top: 0,
             zIndex: 100,
-            padding: isHeaderCollapsed ? '8px 16px' : '16px 16px',
+            padding: isHeaderCollapsed ? '8px 0' : '16px 0',
             borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
             background: isDarkMode ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.85)',
             backdropFilter: 'saturate(180%) blur(20px)',
@@ -847,7 +847,7 @@ const DiscoverView = ({
             transition: 'padding 0.3s ease-out'
           }}>
             {/* Search Bar - Above the card, always visible */}
-            <div style={{ position: 'relative', maxWidth: 600, marginBottom: isHeaderCollapsed ? 8 : 12, transition: 'margin 0.3s ease-out' }}>
+            <div style={{ position: 'relative', marginBottom: isHeaderCollapsed ? 8 : 12, transition: 'margin 0.3s ease-out' }}>
               <FaSearch style={{
                 position: 'absolute',
                 left: isHeaderCollapsed ? 12 : 16,
@@ -867,7 +867,7 @@ const DiscoverView = ({
                   padding: isHeaderCollapsed ? '10px 14px 10px 40px' : '14px 16px 14px 48px',
                   fontSize: isHeaderCollapsed ? 14 : 16,
                   border: isDarkMode ? '2px solid #27272a' : '2px solid #e5e7eb',
-                  borderRadius: 9999,
+                  borderRadius: 0,
                   background: isDarkMode ? '#1a1a24' : '#f9fafb',
                   color: isDarkMode ? '#f5f5f7' : '#111827',
                   outline: 'none',
@@ -884,21 +884,149 @@ const DiscoverView = ({
               />
             </div>
 
+            {/* Pills with scroll arrows - above the card */}
+            <div style={{
+              padding: isHeaderCollapsed ? '8px 0' : '0 0 12px 0',
+              transition: 'padding 0.3s ease-out',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              {/* Left scroll arrow */}
+              <button
+                onClick={() => {
+                  if (discoverPillsRef.current) {
+                    discoverPillsRef.current.scrollBy({ left: -150, behavior: 'smooth' });
+                  }
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#536471',
+                  flexShrink: 0
+                }}
+              >
+                <FaChevronLeft size={12} />
+              </button>
+              <div
+                ref={discoverPillsRef}
+                className="discover-pills-scroll"
+                onMouseDown={handlePillsMouseDown}
+                onMouseMove={handlePillsMouseMove}
+                onMouseUp={handlePillsMouseUp}
+                onMouseLeave={handlePillsMouseLeave}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: isHeaderCollapsed ? 6 : 8,
+                  overflowX: 'auto',
+                  overflowY: 'hidden',
+                  paddingBottom: 4,
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch',
+                  cursor: 'grab',
+                  transition: 'all 0.3s ease-out',
+                  userSelect: 'none'
+                }}
+              >
+                <style>{`
+                  .discover-pills-scroll::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                  {filterPills.map((pill) => {
+                    const isActive = activeFilter === pill.id;
+                    const isAllPill = pill.id === 'All';
+                    return (
+                      <button
+                        key={pill.id}
+                        onClick={() => handleFilterChange(pill.id)}
+                        style={{
+                          padding: isHeaderCollapsed ? '6px 12px' : '8px 16px',
+                          borderRadius: isHeaderCollapsed ? 16 : 20,
+                          fontSize: isHeaderCollapsed ? 13 : 14,
+                          fontWeight: 600,
+                          border: isActive
+                            ? '2px solid #1d9bf0'
+                            : '2px solid #cfd9de',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          flexShrink: 0,
+                          background: isActive
+                            ? 'rgba(29, 155, 240, 0.1)'
+                            : '#f7f9f9',
+                          color: isActive ? '#1d9bf0' : '#0f1419',
+                          whiteSpace: 'nowrap'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isActive) {
+                            e.currentTarget.style.background = '#eef1f2';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isActive) {
+                            e.currentTarget.style.background = '#f7f9f9';
+                          }
+                        }}
+                      >
+                        {pill.label}
+                      </button>
+                    );
+                  })}
+              </div>
+              {/* Right scroll arrow */}
+              <button
+                onClick={() => {
+                  if (discoverPillsRef.current) {
+                    discoverPillsRef.current.scrollBy({ left: 150, behavior: 'smooth' });
+                  }
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#536471',
+                  flexShrink: 0
+                }}
+              >
+                <FaChevronRight size={12} />
+              </button>
+            </div>
+
             {/* Card container with gradient */}
             <div style={{
-              borderRadius: 12,
+              borderRadius: 0,
               overflow: 'hidden',
               background: 'linear-gradient(135deg, #e8f4f8 0%, #d0e8f0 100%)',
               transition: 'all 0.3s ease-out'
             }}>
               {/* Text section - collapses on scroll */}
               <div style={{
-                maxHeight: isHeaderCollapsed ? 0 : 100,
+                maxHeight: isHeaderCollapsed ? 0 : 120,
                 overflow: 'hidden',
                 opacity: isHeaderCollapsed ? 0 : 1,
                 transition: 'max-height 0.3s ease-out, opacity 0.2s ease-out',
                 padding: isHeaderCollapsed ? '0 20px' : '20px 20px 12px 20px'
               }}>
+                <h2 style={{
+                  color: '#0f1419',
+                  fontSize: 20,
+                  fontWeight: 700,
+                  lineHeight: 1.4,
+                  margin: '0 0 8px 0'
+                }}>
+                  Discover Communities and Courses
+                </h2>
                 <p style={{
                   color: '#0f1419',
                   fontSize: 15,
@@ -908,80 +1036,6 @@ const DiscoverView = ({
                 }}>
                   Join a community and get access to that community feed. Enroll in a course and get access to that course feed.
                 </p>
-              </div>
-
-              {/* Pills inside gradient card */}
-              <div style={{
-                padding: isHeaderCollapsed ? '8px 12px' : '0 20px 14px 20px',
-                transition: 'padding 0.3s ease-out'
-              }}>
-                <div
-                  ref={discoverPillsRef}
-                  className="discover-pills-scroll"
-                  onMouseDown={handlePillsMouseDown}
-                  onMouseMove={handlePillsMouseMove}
-                  onMouseUp={handlePillsMouseUp}
-                  onMouseLeave={handlePillsMouseLeave}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: isHeaderCollapsed ? 6 : 8,
-                    overflowX: 'auto',
-                    overflowY: 'hidden',
-                    paddingBottom: 4,
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none',
-                    WebkitOverflowScrolling: 'touch',
-                    cursor: 'grab',
-                    transition: 'all 0.3s ease-out',
-                    userSelect: 'none'
-                  }}
-                >
-                  <style>{`
-                    .discover-pills-scroll::-webkit-scrollbar {
-                      display: none;
-                    }
-                  `}</style>
-                    {filterPills.map((pill) => {
-                      const isActive = activeFilter === pill.id;
-                      const isAllPill = pill.id === 'All';
-                      return (
-                        <button
-                          key={pill.id}
-                          onClick={() => handleFilterChange(pill.id)}
-                          style={{
-                            padding: isHeaderCollapsed ? '6px 12px' : '8px 16px',
-                            borderRadius: isHeaderCollapsed ? 16 : 20,
-                            fontSize: isHeaderCollapsed ? 13 : 14,
-                            fontWeight: 600,
-                            border: isActive
-                              ? '2px solid #1d9bf0'
-                              : '2px solid #cfd9de',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease',
-                            flexShrink: 0,
-                            background: isActive
-                              ? 'rgba(29, 155, 240, 0.1)'
-                              : '#f7f9f9',
-                            color: isActive ? '#1d9bf0' : '#0f1419',
-                            whiteSpace: 'nowrap'
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!isActive) {
-                              e.currentTarget.style.background = '#eef1f2';
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!isActive) {
-                              e.currentTarget.style.background = '#f7f9f9';
-                            }
-                          }}
-                        >
-                          {pill.label}
-                        </button>
-                      );
-                    })}
-                </div>
               </div>
             </div>
 
@@ -1494,6 +1548,98 @@ const DiscoverView = ({
                 );
               })
             )}
+          </div>
+
+        </div>
+
+        {/* Right Sidebar - Suggested Courses */}
+        <div style={{
+          width: 280,
+          flexShrink: 0,
+          padding: '16px 16px 16px 16px'
+        }} className="discover-right-sidebar">
+          <div style={{
+            position: 'sticky',
+            top: 16
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 16
+            }}>
+              <span style={{
+                fontSize: 15,
+                fontWeight: 700,
+                color: isDarkMode ? '#e7e9ea' : '#0f1419'
+              }}>
+                Suggested Courses
+              </span>
+              <span style={{
+                fontSize: 13,
+                color: '#1d9bf0',
+                cursor: 'pointer'
+              }}>
+                See all
+              </span>
+            </div>
+
+            {indexedCourses.filter(c => !isCoursePurchased(c.id)).slice(0, 2).map((course, index) => (
+              <div
+                key={course.id}
+                onClick={() => onViewCourse && onViewCourse(course)}
+                style={{
+                  padding: 12,
+                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                  borderRadius: 12,
+                  marginBottom: 12,
+                  cursor: 'pointer',
+                  background: isDarkMode ? '#16181c' : '#f9fafb',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f9fafb';
+                }}
+              >
+                <div style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: '#1d9bf0',
+                  marginBottom: 4
+                }}>
+                  {course.title}
+                </div>
+                <div style={{
+                  fontSize: 12,
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  marginBottom: 8
+                }}>
+                  1,250 students enrolled
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewCourse && onViewCourse(course);
+                  }}
+                  style={{
+                    background: isDarkMode ? 'transparent' : 'white',
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    padding: '6px 14px',
+                    borderRadius: 20,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  Enroll {course.price}
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -1983,16 +1983,17 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
             return (
             <div style={{
               background: isDarkMode ? '#1f2937' : '#f9fafb',
-              borderRadius: 16,
-              margin: '8px 16px 0 16px',
+              borderRadius: 0,
+              margin: '0',
+              width: '100%',
               position: 'sticky',
               top: 0,
               zIndex: 10,
-              border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-              boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.06)'
+              border: 'none',
+              boxShadow: 'none'
             }}>
-              <div style={{ padding: '12px 16px 12px 16px', position: 'relative', zIndex: 20 }}>
-              {/* Selector Bar - Reddit-style pill */}
+              <div style={{ padding: '12px 0 12px 0', position: 'relative', zIndex: 20 }}>
+              {/* Selector Bar */}
               <div
                 className="community-selector-bar"
                 onClick={() => setShowSelectorDropdown(!showSelectorDropdown)}
@@ -2002,22 +2003,21 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   gap: 10,
                   padding: '10px 14px',
                   background: isDarkMode ? '#16181c' : '#ffffff',
-                  border: `2px solid ${showSelectorDropdown ? '#1d9bf0' : (isDarkMode ? '#4a5158' : '#b0b8c1')}`,
-                  borderRadius: 24,
+                  border: 'none',
+                  borderBottom: `1px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`,
+                  borderRadius: 0,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   position: 'relative',
-                  boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)'
+                  boxShadow: 'none'
                 }}
                 onMouseEnter={e => {
                   if (!showSelectorDropdown) {
-                    e.currentTarget.style.borderColor = '#1d9bf0';
                     e.currentTarget.style.background = isDarkMode ? '#1a2634' : '#e8f4fd';
                   }
                 }}
                 onMouseLeave={e => {
                   if (!showSelectorDropdown) {
-                    e.currentTarget.style.borderColor = isDarkMode ? '#4a5158' : '#b0b8c1';
                     e.currentTarget.style.background = isDarkMode ? '#16181c' : '#ffffff';
                   }
                 }}
@@ -2196,6 +2196,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     src={process.env.PUBLIC_URL + '/commons-banner.png'}
                     alt="The Commons"
                     style={{
+                      display: 'block',
                       width: '100%',
                       height: 120,
                       objectFit: 'cover'
@@ -2204,7 +2205,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 </div>
               )}
               <div style={{
-                padding: isProfileCollapsed ? '0 16px 8px 16px' : '0 16px 12px 16px',
+                padding: isProfileCollapsed ? '0 0 8px 0' : '0 0 12px 0',
                 transition: 'all 0.3s ease-out',
                 ...(communityMode === 'creators' && selectedCreatorId && !isProfileCollapsed ? {
                   background: isDarkMode
