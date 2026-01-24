@@ -192,6 +192,52 @@
   text-overflow: ellipsis;
 }
 
+/* Post button - prominent like X.com */
+.nav-post-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 12px;
+  margin: 12px 0 8px 0;
+  border-radius: 9999px;
+  background-color: #1d9bf0;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.nav-post-button:hover {
+  background-color: #1a8cd8;
+}
+
+.nav-post-label {
+  white-space: nowrap;
+}
+
+.nav-post-icon {
+  display: none;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Collapsed sidebar: show + icon, hide label */
+.sidebar.sidebar-collapsed .nav-post-button {
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  margin: 12px auto 8px auto;
+}
+
+.sidebar.sidebar-collapsed .nav-post-label {
+  display: none;
+}
+
+.sidebar.sidebar-collapsed .nav-post-icon {
+  display: block;
+}
+
 /* Tooltip styles - hidden by default */
 .nav-tooltip {
   position: absolute;
@@ -1506,6 +1552,114 @@
 
 .dark-mode .community-selector:hover .community-selector-arrow {
   color: #1d9bf0;
+}
+
+/* ===== MORE POPUP MENU ===== */
+.more-popup-menu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1200;
+  overflow: hidden;
+  padding: 8px 0;
+  animation: morePopupSlideUp 0.15s ease-out;
+  min-width: 200px;
+}
+
+@keyframes morePopupSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.more-popup-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0f1419;
+}
+
+.more-popup-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.more-popup-item-danger {
+  color: #f4212e;
+}
+
+.more-popup-item-danger:hover {
+  background-color: rgba(244, 33, 46, 0.06);
+}
+
+.more-popup-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.more-popup-divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 4px 0;
+}
+
+/* Dark mode More popup */
+.dark-mode .more-popup-menu {
+  background: #16181c;
+  border-color: #2f3336;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .more-popup-item {
+  color: #e7e9ea;
+}
+
+.dark-mode .more-popup-item:hover {
+  background-color: rgba(231, 233, 234, 0.08);
+}
+
+.dark-mode .more-popup-item-danger {
+  color: #f4212e;
+}
+
+.dark-mode .more-popup-item-danger:hover {
+  background-color: rgba(244, 33, 46, 0.1);
+}
+
+.dark-mode .more-popup-divider {
+  background-color: #2f3336;
+}
+
+/* Collapsed sidebar More popup - show to the right */
+.sidebar.sidebar-collapsed .more-popup-menu {
+  bottom: auto;
+  top: 0;
+  left: 100%;
+  right: auto;
+  margin-bottom: 0;
+  margin-left: 8px;
+  min-width: 180px;
 }
 
 /* ===== MY FEEDS LABEL (SECOND - static label) ===== */

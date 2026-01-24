@@ -529,6 +529,17 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
     init();
   }, [currentUser?.id]);
 
+  // Listen for posts created from the compose modal
+  useEffect(() => {
+    const handleNewPost = (e) => {
+      if (e.detail) {
+        setRealPosts(prev => [e.detail, ...prev]);
+      }
+    };
+    window.addEventListener('newPostCreated', handleNewPost);
+    return () => window.removeEventListener('newPostCreated', handleNewPost);
+  }, []);
+
   // Initialize pills arrow visibility (course pills within creator)
   useEffect(() => {
     // Small delay to ensure DOM is ready
@@ -2205,7 +2216,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 </div>
               )}
               <div style={{
-                padding: isProfileCollapsed ? '0 0 8px 0' : '0 0 12px 0',
+                padding: isProfileCollapsed ? '0 16px 8px 16px' : '0 16px 12px 16px',
                 transition: 'all 0.3s ease-out',
                 ...(communityMode === 'creators' && selectedCreatorId && !isProfileCollapsed ? {
                   background: isDarkMode

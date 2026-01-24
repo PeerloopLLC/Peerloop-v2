@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import './Sidebar.css';
-import {  FaSearch,  FaBell,  FaEnvelope,  FaUser,  FaUsers,  FaChalkboardTeacher,  FaBook,  FaInfoCircle,  FaCog} from 'react-icons/fa';
+import {  FaSearch,  FaBell,  FaEnvelope,  FaUser,  FaUsers,  FaChalkboardTeacher,  FaBook,  FaInfoCircle,  FaCog,  FaEllipsisH} from 'react-icons/fa';
 import useDeviceDetect from '../hooks/useDeviceDetect';
+import PostComposeModal from './PostComposeModal';
 
 /**
  * Sidebar Component
@@ -42,6 +43,14 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
 
   // Track if flyout is open
   const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
+
+  // Track if More popup menu is open
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const moreMenuRef = useRef(null);
+  const moreButtonRef = useRef(null);
+
+  // Track if Post compose modal is open
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
 
   // Timer for auto-closing flyout after inactivity
   const flyoutInactivityTimerRef = useRef(null);
@@ -153,6 +162,23 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
     };
   }, [currentUser?.id]);
 
+  // Click-outside handler for More popup menu
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        isMoreMenuOpen &&
+        moreMenuRef.current &&
+        !moreMenuRef.current.contains(e.target) &&
+        moreButtonRef.current &&
+        !moreButtonRef.current.contains(e.target)
+      ) {
+        setIsMoreMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMoreMenuOpen]);
+
   // Cleanup timers on unmount
   useEffect(() => {
     return () => {
@@ -213,7 +239,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
     ...(showDashboard ? [{ icon: <FaChalkboardTeacher />, label: 'Workspace', displayLabel: 'Workspace' }] : []), // User workspace (only for creators/admins)
     { icon: <FaUser />, label: 'Profile', displayLabel: 'Profile' }, // User profile
-    { icon: <FaCog />, label: 'Settings', displayLabel: 'Settings' }, // Settings menu
   ];
 
   /**
@@ -564,6 +589,80 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           </div>
         ))}
 
+        {/* More menu - opens popup */}
+        <div style={{ position: 'relative' }}>
+          <div
+            ref={moreButtonRef}
+            className={`nav-item ${isMoreMenuOpen ? 'active' : ''}`}
+            onClick={() => {
+              setIsFlyoutOpen(false);
+              setIsMoreMenuOpen(!isMoreMenuOpen);
+            }}
+          >
+            <div className="nav-icon"><FaEllipsisH /></div>
+            <span className="nav-label">More</span>
+          </div>
+
+          {/* More popup menu */}
+          {isMoreMenuOpen && (
+            <div ref={moreMenuRef} className="more-popup-menu">
+              <div
+                className="more-popup-item"
+                onClick={() => { setIsMoreMenuOpen(false); handleMenuClick('Settings'); }}
+              >
+                <FaCog className="more-popup-icon" />
+                <span>Settings</span>
+              </div>
+              <div
+                className="more-popup-item"
+                onClick={() => { setIsMoreMenuOpen(false); handleMenuClick('Bookmarks'); }}
+              >
+                <span className="more-popup-icon" role="img" aria-label="bookmarks">&#x1F516;</span>
+                <span>Bookmarks</span>
+              </div>
+              <div
+                className="more-popup-item"
+                onClick={() => {
+                  setIsMoreMenuOpen(false);
+                  // Toggle dark mode
+                  document.body.classList.toggle('dark-mode');
+                }}
+              >
+                <span className="more-popup-icon" role="img" aria-label="dark mode">&#x1F319;</span>
+                <span>Dark Mode</span>
+              </div>
+              <div
+                className="more-popup-item"
+                onClick={() => { setIsMoreMenuOpen(false); handleMenuClick('About'); }}
+              >
+                <FaInfoCircle className="more-popup-icon" />
+                <span>Help</span>
+              </div>
+              <div className="more-popup-divider" />
+              <div
+                className="more-popup-item more-popup-item-danger"
+                onClick={() => { setIsMoreMenuOpen(false); /* Log out action */ }}
+              >
+                <span className="more-popup-icon" role="img" aria-label="log out">&#x1F6AA;</span>
+                <span>Log out</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Post Button - prominent like X.com */}
+        <div
+          className="nav-post-button"
+          onClick={() => {
+            setIsFlyoutOpen(false);
+            setIsMoreMenuOpen(false);
+            setIsPostModalOpen(true);
+          }}
+        >
+          <span className="nav-post-label">Post</span>
+          <span className="nav-post-icon">+</span>
+        </div>
+
         {/* Footer items - How It Works */}
         {footerItems.map((item, index) => (
           <div
@@ -635,6 +734,14 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
         )}
 
       </nav>
+
+      {/* Post Compose Modal */}
+      <PostComposeModal
+        isOpen={isPostModalOpen}
+        onClose={() => setIsPostModalOpen(false)}
+        currentUser={currentUser}
+        communities={communities}
+      />
     </div>
   );
 };

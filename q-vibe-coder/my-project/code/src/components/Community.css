@@ -34,10 +34,16 @@
 .community-center-column {
   width: 100%;
   max-width: 810px;
-  border-right: none;
-  border-left: none;
+  border-right: 1px solid var(--border-color, #e2e8f0);
+  border-left: 1px solid var(--border-color, #e2e8f0);
   overflow-y: auto;
   height: 100vh;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.community-center-column::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 
 .no-communities-text {

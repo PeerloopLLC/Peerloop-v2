@@ -261,6 +261,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       if ('enrollingCourse' in previousState) {
         setEnrollingCourse(previousState.enrollingCourse);
       }
+      if ('showEnrollmentFlow' in previousState) {
+        setShowEnrollmentFlow(previousState.showEnrollmentFlow);
+      }
+      if ('preSelectedTeacher' in previousState) {
+        setPreSelectedTeacher(previousState.preSelectedTeacher);
+      }
       if ('viewingCourseFromCommunity' in previousState) {
         setViewingCourseFromCommunity(previousState.viewingCourseFromCommunity);
         // DON'T call onMenuChange when restoring Find Teacher state!
@@ -2131,6 +2137,15 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               onMenuChange('My Courses');
             }}
             onViewTeacherProfile={(user) => {
+              // Save current enrollment state to navigation history so back returns here
+              setNavigationHistory(prev => [...prev, {
+                menu: activeMenu,
+                feed: 'main',
+                showEnrollmentFlow: true,
+                enrollingCourse: enrollingCourse,
+                preSelectedTeacher: preSelectedTeacher,
+                viewingCourseFromCommunity: viewingCourseFromCommunity
+              }]);
               // Close enrollment flow and navigate to profile
               setShowEnrollmentFlow(false);
               setEnrollingCourse(null);
@@ -2272,6 +2287,14 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             scheduledSessions={scheduledSessions}
             currentUser={currentUser}
             onViewTeacherProfile={(user) => {
+              // Save current enrollment state to navigation history so back returns here
+              setNavigationHistory(prev => [...prev, {
+                menu: 'My Courses',
+                feed: 'main',
+                showEnrollmentFlow: true,
+                enrollingCourse: enrollingCourse,
+                preSelectedTeacher: preSelectedTeacher
+              }]);
               // Close enrollment flow and navigate to profile
               setShowEnrollmentFlow(false);
               setEnrollingCourse(null);

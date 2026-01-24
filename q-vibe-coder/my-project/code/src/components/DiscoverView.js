@@ -1003,62 +1003,6 @@ const DiscoverView = ({
               </button>
             </div>
 
-            {/* Card container with gradient */}
-            <div style={{
-              borderRadius: 0,
-              overflow: 'hidden',
-              background: 'linear-gradient(135deg, #e8f4f8 0%, #d0e8f0 100%)',
-              transition: 'all 0.3s ease-out'
-            }}>
-              {/* Text section - collapses on scroll */}
-              <div style={{
-                maxHeight: isHeaderCollapsed ? 0 : 120,
-                overflow: 'hidden',
-                opacity: isHeaderCollapsed ? 0 : 1,
-                transition: 'max-height 0.3s ease-out, opacity 0.2s ease-out',
-                padding: isHeaderCollapsed ? '0 20px' : '20px 20px 12px 20px'
-              }}>
-                <h2 style={{
-                  color: '#0f1419',
-                  fontSize: 20,
-                  fontWeight: 700,
-                  lineHeight: 1.4,
-                  margin: '0 0 8px 0'
-                }}>
-                  Discover Communities and Courses
-                </h2>
-                <p style={{
-                  color: '#0f1419',
-                  fontSize: 15,
-                  fontWeight: 500,
-                  lineHeight: 1.5,
-                  margin: 0
-                }}>
-                  Join a community and get access to that community feed. Enroll in a course and get access to that course feed.
-                </p>
-              </div>
-            </div>
-
-            {/* Search results text - collapses with banner */}
-            <div style={{
-              maxHeight: isHeaderCollapsed ? 0 : (searchQuery ? 30 : 0),
-              overflow: 'hidden',
-              opacity: isHeaderCollapsed ? 0 : 1,
-              transition: 'max-height 0.3s ease-out, opacity 0.2s ease-out'
-            }}>
-              {searchQuery && (
-                <p style={{
-                  marginTop: 12,
-                  fontSize: 14,
-                  color: isDarkMode ? '#71717a' : '#6b7280'
-                }}>
-                  Showing results for "<span style={{ color: '#6366f1' }}>{searchQuery}</span>"
-                  {activeFilter !== 'All' && (
-                    <span> filtered by <span style={{ color: '#6366f1' }}>{activeFilter}</span></span>
-                  )}
-                </p>
-              )}
-            </div>
           </div>
 
           {/* Welcome Post - Only for new users who haven't completed signup */}
@@ -1513,36 +1457,35 @@ const DiscoverView = ({
 
                     {/* See All Courses Link */}
                     {totalCourses > matchingCourses.length && (
-                      <a
-                        href="#"
+                      <button
                         onClick={(e) => {
-                          e.preventDefault();
                           e.stopPropagation();
                           saveScrollPosition();
                           onViewCommunity && onViewCommunity(instructor);
                         }}
                         style={{
-                          display: 'inline-block',
                           marginTop: 8,
                           marginLeft: 60,
                           padding: '8px 16px',
-                          border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
                           borderRadius: 20,
                           fontSize: 14,
-                          color: isDarkMode ? '#71767b' : '#536471',
-                          textDecoration: 'none',
+                          fontWeight: 600,
+                          border: isDarkMode ? '2px solid #2f3336' : '2px solid #cfd9de',
+                          background: isDarkMode ? '#1d1f23' : '#f7f9f9',
+                          color: isDarkMode ? '#e7e9ea' : '#0f1419',
                           cursor: 'pointer',
-                          transition: 'all 0.2s'
+                          transition: 'all 0.2s',
+                          whiteSpace: 'nowrap'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
+                          e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#eef1f2';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
+                          e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
                         }}
                       >
                         See all {totalCourses} courses
-                      </a>
+                      </button>
                     )}
                   </div>
                 );
