@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
 import { FaStar, FaUsers, FaClock, FaPlay, FaBook, FaCertificate, FaChalkboardTeacher, FaCheck, FaPlus, FaInfinity, FaGraduationCap, FaHeart, FaComment, FaRetweet, FaShare, FaImage, FaLink, FaPaperclip, FaVideo, FaFileAlt, FaDownload, FaExclamationTriangle, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { getInstructorById } from '../data/database';
+import SessionTimelineCards from './SessionTimelineCards';
 import './MainContent.css';
 
 /**
- * CourseCurriculumSection - Expandable module accordion
+ * CourseCurriculumSection - Expandable module accordion grouped by sessions
  */
 const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpandedModules }) => {
+  const [expandedSessions, setExpandedSessions] = useState({ 1: true, 2: true });
+
   // Module details data (would come from course data in real implementation)
   const getModuleDetails = (moduleIndex, moduleTitle) => {
-    // Default module details - in real app this would come from course.curriculum
     const defaultDetails = {
       learningObjectives: `Master the core concepts covered in ${moduleTitle}`,
       topics: ['Key concepts and fundamentals', 'Practical applications', 'Best practices and tips'],
       handsOnExercise: 'Apply what you learned with a hands-on exercise'
     };
 
-    // Check if course has detailed curriculum data
     const curriculumItem = course.curriculum?.[moduleIndex];
     if (curriculumItem && typeof curriculumItem === 'object') {
       return {
-        learningObjectives: curriculumItem.learningObjectives || defaultDetails.learningObjectives,
+        learningObjectives: curriculumItem.learningObjectives || curriculumItem.description || defaultDetails.learningObjectives,
         topics: curriculumItem.topics || defaultDetails.topics,
         handsOnExercise: curriculumItem.handsOnExercise || defaultDetails.handsOnExercise
       };
@@ -35,6 +36,202 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
     }));
   };
 
+  const toggleSession = (sessionNum) => {
+    setExpandedSessions(prev => ({
+      ...prev,
+      [sessionNum]: !prev[sessionNum]
+    }));
+  };
+
+  // Check if course has sessions defined - if so, group by session
+  const hasSessions = course?.sessions?.list && course.sessions.list.length > 0;
+
+  // Group curriculum items by session number
+  const getModulesBySession = (sessionNum) => {
+    return (course.curriculum || [])
+      .map((item, idx) => ({ ...item, originalIndex: idx }))
+      .filter(item => item.sessionNumber === sessionNum);
+  };
+
+  // Render a single module row
+  const renderModule = (item, idx, isLastInGroup) => {
+    const title = typeof item === 'object' ? item.title : item;
+    const duration = typeof item === 'object' ? item.duration : '15 min';
+    const originalIdx = item.originalIndex !== undefined ? item.originalIndex : idx;
+    const isExpanded = expandedModules[originalIdx];
+    const details = getModuleDetails(originalIdx, title);
+
+    return (
+      <div key={originalIdx} style={{
+        borderBottom: !isLastInGroup
+          ? (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb')
+          : 'none'
+      }}>
+        {/* Module Header - Clickable */}
+        <div
+          onClick={() => toggleModule(originalIdx)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '12px 0 12px 20px',
+            cursor: 'pointer'
+          }}
+        >
+          {/* Expand/Collapse Icon */}
+          <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 12 }}>
+            {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
+          </div>
+
+          {/* Module Title */}
+          <div style={{ flex: 1 }}>
+            <span style={{
+              fontWeight: 500,
+              fontSize: 14,
+              color: isDarkMode ? '#e7e9ea' : '#0f1419'
+            }}>
+              {title}
+            </span>
+          </div>
+
+          {/* Duration Badge */}
+          <span style={{
+            background: isDarkMode ? '#2f3336' : '#e5e7eb',
+            color: isDarkMode ? '#9ca3af' : '#536471',
+            padding: '4px 10px',
+            borderRadius: 12,
+            fontSize: 12,
+            fontWeight: 500
+          }}>
+            {duration}
+          </span>
+        </div>
+
+        {/* Expanded Content */}
+        {isExpanded && (
+          <div style={{
+            padding: '0 0 16px 48px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12
+          }}>
+            {/* Description / Learning Objectives */}
+            <div style={{
+              fontSize: 14,
+              color: isDarkMode ? '#a1a1aa' : '#536471',
+              lineHeight: 1.5
+            }}>
+              {details.learningObjectives}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // If course has sessions, render grouped by session
+  if (hasSessions) {
+    return (
+      <div style={{
+        background: isDarkMode ? '#16181c' : '#f7f9f9',
+        borderRadius: 12,
+        padding: 20,
+        border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+      }}>
+        <h3 style={{
+          fontSize: 18,
+          fontWeight: 700,
+          marginBottom: 20,
+          color: isDarkMode ? '#e7e9ea' : '#0f1419'
+        }}>
+          Course Curriculum
+        </h3>
+
+        {course.sessions.list.map((session, sessionIdx) => {
+          const sessionModules = getModulesBySession(session.number);
+          const isSessionExpanded = expandedSessions[session.number];
+
+          return (
+            <div key={session.number} style={{
+              marginBottom: sessionIdx < course.sessions.list.length - 1 ? 16 : 0
+            }}>
+              {/* Session Header */}
+              <div
+                onClick={() => toggleSession(session.number)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '14px 16px',
+                  background: isDarkMode ? '#1a1d21' : '#eef2f5',
+                  borderRadius: isSessionExpanded ? '8px 8px 0 0' : 8,
+                  cursor: 'pointer',
+                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #dce3e8',
+                  borderBottom: isSessionExpanded ? 'none' : (isDarkMode ? '1px solid #2f3336' : '1px solid #dce3e8')
+                }}
+              >
+                {/* Session Number Circle */}
+                <div style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  background: '#1d9bf0',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  flexShrink: 0
+                }}>
+                  {session.number}
+                </div>
+
+                {/* Session Title */}
+                <div style={{ flex: 1 }}>
+                  <span style={{
+                    fontWeight: 700,
+                    fontSize: 15,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                  }}>
+                    Session {session.number}: {session.title}
+                  </span>
+                  <div style={{
+                    fontSize: 12,
+                    color: isDarkMode ? '#71767b' : '#536471',
+                    marginTop: 2
+                  }}>
+                    {session.duration} • {sessionModules.length} modules
+                  </div>
+                </div>
+
+                {/* Expand/Collapse Icon */}
+                <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 12 }}>
+                  {isSessionExpanded ? <FaChevronDown /> : <FaChevronRight />}
+                </div>
+              </div>
+
+              {/* Session Modules */}
+              {isSessionExpanded && (
+                <div style={{
+                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #dce3e8',
+                  borderTop: 'none',
+                  borderRadius: '0 0 8px 8px',
+                  overflow: 'hidden'
+                }}>
+                  {sessionModules.map((module, idx) =>
+                    renderModule(module, idx, idx === sessionModules.length - 1)
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Fallback: Original flat list for courses without sessions
   return (
     <div style={{
       background: isDarkMode ? '#16181c' : '#f7f9f9',
@@ -111,72 +308,12 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                 flexDirection: 'column',
                 gap: 16
               }}>
-                {/* Learning Objectives */}
-                <div>
-                  <div style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: isDarkMode ? '#71767b' : '#536471',
-                    textTransform: 'uppercase',
-                    letterSpacing: 0.5,
-                    marginBottom: 6
-                  }}>
-                    Learning Objectives
-                  </div>
-                  <div style={{
-                    fontSize: 14,
-                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                    lineHeight: 1.5
-                  }}>
-                    {details.learningObjectives}
-                  </div>
-                </div>
-
-                {/* Topics */}
-                <div>
-                  <div style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: isDarkMode ? '#71767b' : '#536471',
-                    textTransform: 'uppercase',
-                    letterSpacing: 0.5,
-                    marginBottom: 6
-                  }}>
-                    Topics
-                  </div>
-                  <ul style={{
-                    margin: 0,
-                    paddingLeft: 20,
-                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                    fontSize: 14,
-                    lineHeight: 1.8
-                  }}>
-                    {details.topics.map((topic, tidx) => (
-                      <li key={tidx}>{topic}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Hands-On Exercise */}
-                <div>
-                  <div style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: isDarkMode ? '#71767b' : '#536471',
-                    textTransform: 'uppercase',
-                    letterSpacing: 0.5,
-                    marginBottom: 6
-                  }}>
-                    Hands-On Exercise
-                  </div>
-                  <div style={{
-                    fontSize: 14,
-                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                    lineHeight: 1.5,
-                    fontStyle: 'italic'
-                  }}>
-                    {details.handsOnExercise}
-                  </div>
+                <div style={{
+                  fontSize: 14,
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                  lineHeight: 1.5
+                }}>
+                  {details.learningObjectives}
                 </div>
               </div>
             )}
@@ -192,14 +329,14 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
  * Shows detailed view of a course with tabs and two-column layout
  * Merged design: combines marketing view (pre-enrollment) with learning dashboard (post-enrollment)
  */
-const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange, scheduledSessions = [], onBrowseStudentTeachers, onRescheduleSession }) => {
+const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange, scheduledSessions = [], sessionCompletion = {}, onBrowseStudentTeachers, onRescheduleSession }) => {
   // Check if this specific course is being followed (within creator's followedCourseIds)
   const [isFollowing, setIsFollowing] = useState(() => {
     if (!course) return false;
     const creatorFollow = followedCommunities.find(c => c.instructorId === course.instructorId);
     return creatorFollow?.followedCourseIds?.includes(course.id) || false;
   });
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('curriculum');
   const [expandedModules, setExpandedModules] = useState({});
   const [newPostText, setNewPostText] = useState('');
   const [isPosting, setIsPosting] = useState(false);
@@ -207,6 +344,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
   const [showBbbModal, setShowBbbModal] = useState(false);
   const [bbbJoinUrl, setBbbJoinUrl] = useState(null);
   const [showHelpPanel, setShowHelpPanel] = useState(false);
+  const [expandedFileSessions, setExpandedFileSessions] = useState({ 1: true }); // Session 1 expanded by default
 
   // Find real scheduled session for this course
   const realNextSession = scheduledSessions
@@ -437,12 +575,13 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
 
   // Different tabs for enrolled vs non-enrolled users
   const tabs = isCoursePurchased ? [
-    { id: 'overview', label: 'Overview' },
-    { id: 'sessions', label: 'Sessions & Progress' },
+    { id: 'curriculum', label: 'Curriculum' },
+    { id: 'sessions', label: 'Session Files' },
     { id: 'feed', label: 'Course Feed' },
-    { id: 'reviews', label: 'Reviews' }
+    { id: 'reviews', label: 'Reviews' },
+    { id: 'about', label: 'About Course' }
   ] : [
-    { id: 'overview', label: 'Overview' },
+    { id: 'curriculum', label: 'Curriculum' },
     { id: 'feed', label: 'Course Feed' },
     { id: 'reviews', label: 'Reviews' }
   ];
@@ -455,7 +594,9 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
       {/* Header Section */}
       <div style={{
         padding: '24px 24px 0 24px',
-        borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+        borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+        overflow: 'visible',
+        maxWidth: '100%'
       }}>
         {/* Title and Actions Row */}
         <div style={{
@@ -463,10 +604,12 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
           justifyContent: 'space-between',
           alignItems: 'flex-start',
           gap: 24,
-          marginBottom: 20
+          marginBottom: 20,
+          maxWidth: '100%',
+          overflow: 'visible'
         }}>
           {/* Title & Subtitle */}
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <h1 style={{
               fontSize: 28,
               fontWeight: 700,
@@ -513,216 +656,12 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
                 {instructor?.name}
               </span>
             </div>
-
-            <p style={{
-              fontSize: 16,
-              color: isDarkMode ? '#71767b' : '#536471',
-              margin: '0 0 8px 0'
-            }}>
-              {course.description}
-            </p>
-
-            {/* Enrolled Badge - Only for purchased courses */}
-            {isCoursePurchased && enrollmentData && (
-              <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'rgba(16, 185, 129, 0.15)',
-                color: '#10b981',
-                padding: '6px 12px',
-                borderRadius: 20,
-                fontSize: 13,
-                fontWeight: 600,
-                marginBottom: 12
-              }}>
-                <FaCheck style={{ fontSize: 10 }} /> ENROLLED · Started {enrollmentData.enrolledDate}
-              </span>
-            )}
-
-            {/* Scheduled Session Section - For enrolled users */}
-            {isCoursePurchased && (
-              <div style={{
-                background: courseScheduledSessions.length > 0
-                  ? 'rgba(29, 155, 240, 0.08)'
-                  : (isDarkMode ? '#16181c' : '#f7f9f9'),
-                border: courseScheduledSessions.length > 0
-                  ? '1px solid rgba(29, 155, 240, 0.3)'
-                  : (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb'),
-                borderRadius: 12,
-                padding: 16,
-                marginTop: 12,
-                marginBottom: 12
-              }}>
-                {courseScheduledSessions.length > 0 ? (
-                  <>
-                    <div style={{
-                      fontSize: 12,
-                      fontWeight: 700,
-                      color: '#1d9bf0',
-                      textTransform: 'uppercase',
-                      letterSpacing: 0.5,
-                      marginBottom: 8,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6
-                    }}>
-                      📅 {courseScheduledSessions.length === 1 ? 'YOUR NEXT SESSION' : 'YOUR UPCOMING SESSIONS'}
-                    </div>
-                    {courseScheduledSessions.slice(0, 3).map((session, idx) => (
-                      <div
-                        key={session.id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: idx > 0 ? '8px 0 0 0' : 0,
-                          borderTop: idx > 0 ? (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb') : 'none',
-                          marginTop: idx > 0 ? 8 : 0
-                        }}
-                      >
-                        <div>
-                          <div style={{
-                            fontSize: 15,
-                            fontWeight: 600,
-                            color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                          }}>
-                            {formatDateForDisplay(session.date)}
-                          </div>
-                          <div style={{
-                            fontSize: 14,
-                            color: isDarkMode ? '#71767b' : '#536471',
-                            marginTop: 2
-                          }}>
-                            {session.time} with {session.teacherName || session.studentTeacherName || 'your teacher'}
-                          </div>
-                        </div>
-                        {idx === 0 && (
-                          <div style={{ display: 'flex', gap: 8 }}>
-                            <button
-                              onClick={handleJoinSession}
-                              disabled={isJoiningSession}
-                              style={{
-                                background: '#1d9bf0',
-                                color: '#fff',
-                                border: 'none',
-                                padding: '8px 16px',
-                                borderRadius: 20,
-                                fontSize: 13,
-                                fontWeight: 600,
-                                cursor: isJoiningSession ? 'wait' : 'pointer',
-                                opacity: isJoiningSession ? 0.7 : 1
-                              }}
-                            >
-                              {isJoiningSession ? 'Joining...' : 'Join Session'}
-                            </button>
-                            <button
-                              style={{
-                                background: 'transparent',
-                                color: isDarkMode ? '#71767b' : '#536471',
-                                border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                                padding: '8px 12px',
-                                borderRadius: 20,
-                                fontSize: 13,
-                                fontWeight: 500,
-                                cursor: 'pointer'
-                              }}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                    {courseScheduledSessions.length > 3 && (
-                      <div style={{
-                        marginTop: 12,
-                        fontSize: 13,
-                        color: '#1d9bf0',
-                        cursor: 'pointer'
-                      }}>
-                        +{courseScheduledSessions.length - 3} more sessions
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <div style={{
-                      fontSize: 12,
-                      fontWeight: 700,
-                      color: isDarkMode ? '#71767b' : '#6b7280',
-                      textTransform: 'uppercase',
-                      letterSpacing: 0.5,
-                      marginBottom: 8
-                    }}>
-                      📅 NO UPCOMING SESSION
-                    </div>
-                    <div style={{
-                      fontSize: 14,
-                      color: isDarkMode ? '#9ca3af' : '#536471',
-                      marginBottom: 12
-                    }}>
-                      You haven't scheduled a session for this course yet.
-                    </div>
-                    <button
-                      style={{
-                        background: '#1d9bf0',
-                        color: '#fff',
-                        border: 'none',
-                        padding: '10px 20px',
-                        borderRadius: 20,
-                        fontSize: 14,
-                        fontWeight: 600,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Schedule a Session
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Stats Line */}
-            <div style={{
-              fontSize: 15,
-              color: isDarkMode ? '#e7e9ea' : '#0f1419',
-              marginTop: 12,
-              paddingTop: 12,
-              borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-            }}>
-              <span style={{ color: '#fbbf24' }}>★</span> 4.8 (234) <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> 1,250 students <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> {course.curriculum?.length || 5} Modules <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> {(course.curriculum?.length || 5) * 4} Lessons <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> 12 hours
-            </div>
-
-            {/* What's Included - Horizontal */}
-            <div style={{ marginTop: 16 }}>
-              <h4 style={{
-                fontSize: 14,
-                fontWeight: 700,
-                color: isDarkMode ? '#71767b' : '#6b7280',
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
-                marginBottom: 8
-              }}>
-                What's Included
-              </h4>
-              <div style={{
-                fontSize: 15,
-                color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '4px 16px'
-              }}>
-                <span>• 1-on-1 sessions with Student-Teacher</span>
-                <span>• Access to AI Prompters Community</span>
-                <span>• Certificate</span>
-              </div>
-            </div>
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flexShrink: 0 }}>
+          <div style={{ flexShrink: 0, display: 'flex', gap: 10 }}>
             {!isCoursePurchased ? (
+              /* Non-enrolled: Show Enroll button */
               <button
                 onClick={() => onEnroll && onEnroll(course)}
                 style={{
@@ -740,75 +679,218 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
                 Enroll for {course.price}
               </button>
             ) : (
-              <>
-                {/* Join Session Button for enrolled users */}
-                <button
-                  onClick={handleJoinSession}
-                  disabled={isJoiningSession}
-                  style={{
-                    background: isDarkMode ? 'transparent' : 'white',
-                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                    padding: '10px 20px',
-                    borderRadius: 20,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: isJoiningSession ? 'wait' : 'pointer',
-                    whiteSpace: 'nowrap',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    transition: 'all 0.2s',
-                    opacity: isJoiningSession ? 0.7 : 1
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isJoiningSession) e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isJoiningSession) e.currentTarget.style.background = isDarkMode ? 'transparent' : 'white';
-                  }}
-                >
-                  <FaPlay style={{ fontSize: 12 }} /> {isJoiningSession ? 'Joining...' : 'Join Session'}
-                </button>
-
-                {/* Go to Community Button */}
-                <button
-                  onClick={() => {
-                    if (onMenuChange) {
-                      localStorage.setItem('pendingCommunityCreator', JSON.stringify({
-                        id: `creator-${course.instructorId}`,
-                        name: instructor?.name,
-                        courseId: course.id,
-                        courseTitle: course.title
-                      }));
-                      onMenuChange('My Community');
-                    }
-                  }}
-                  style={{
-                    background: isDarkMode ? 'transparent' : 'white',
-                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                    padding: '10px 20px',
-                    borderRadius: 20,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = isDarkMode ? 'transparent' : 'white';
-                  }}
-                >
-                  Go to Community
-                </button>
-              </>
+              /* Enrolled: Show Follow/Unfollow Community button */
+              <button
+                onClick={handleFollowToggle}
+                style={{
+                  background: '#f7f9f9',
+                  border: '1px solid #cfd9de',
+                  color: '#0f1419',
+                  padding: '10px 20px',
+                  borderRadius: 20,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  if (isFollowing) {
+                    e.currentTarget.style.borderColor = '#f4212e';
+                    e.currentTarget.style.color = '#f4212e';
+                    e.currentTarget.textContent = 'Unfollow Course';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (isFollowing) {
+                    e.currentTarget.style.borderColor = '#cfd9de';
+                    e.currentTarget.style.color = '#0f1419';
+                    e.currentTarget.textContent = 'Following Course';
+                  }
+                }}
+              >
+                {isFollowing ? 'Following Course' : 'Follow Course'}
+              </button>
             )}
           </div>
         </div>
+
+        {/* Description - Full Width */}
+        <p style={{
+          fontSize: 16,
+          color: isDarkMode ? '#71767b' : '#536471',
+          margin: '0 0 8px 0'
+        }}>
+          {course.description}
+        </p>
+
+        {/* Stats Line - Right below description */}
+        <div style={{
+          fontSize: 15,
+          color: isDarkMode ? '#e7e9ea' : '#0f1419',
+          marginBottom: 16
+        }}>
+          <span style={{ color: '#fbbf24' }}>★</span> 4.8 (234) <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> 1,250 students <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> {course.curriculum?.length || 5} Modules <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> {(course.curriculum?.length || 5) * 4} Lessons <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> 12 hours
+        </div>
+
+        {/* Video and What You'll Learn - Only for NON-enrolled users (enrolled users see this in About tab) */}
+        {!isCoursePurchased && (
+        <div style={{
+          display: 'flex',
+          gap: 20,
+          marginBottom: 16
+        }}>
+          {/* Video Player */}
+          <div style={{
+            flex: 2,
+            minWidth: 300,
+            background: isDarkMode ? '#16181c' : '#f7f9f9',
+            borderRadius: 12,
+            aspectRatio: '16/9',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+            position: 'relative',
+            overflow: 'hidden',
+            minHeight: 200
+          }}>
+            <div style={{
+              width: 70,
+              height: 70,
+              borderRadius: '50%',
+              background: 'rgba(0,0,0,0.7)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}>
+              <FaPlay style={{ color: '#fff', fontSize: 24, marginLeft: 4 }} />
+            </div>
+            {/* Video controls bar */}
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              background: 'rgba(0,0,0,0.8)',
+              padding: '8px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12
+            }}>
+              <FaPlay style={{ color: '#fff', fontSize: 14 }} />
+              <div style={{ flex: 1, height: 4, background: '#333', borderRadius: 2 }}>
+                <div style={{ width: '0%', height: '100%', background: '#fff', borderRadius: 2 }} />
+              </div>
+              <span style={{ color: '#fff', fontSize: 12 }}>0:00 / {course.duration || '4-6 weeks'}</span>
+            </div>
+          </div>
+
+          {/* What You'll Learn */}
+          <div style={{
+            flex: 1,
+            minWidth: 240,
+            maxWidth: 320,
+            background: isDarkMode ? '#16181c' : '#f7f9f9',
+            borderRadius: 12,
+            padding: 20,
+            border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+          }}>
+            <h3 style={{
+              fontSize: 16,
+              fontWeight: 700,
+              marginBottom: 16,
+              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              <span style={{ fontSize: 18 }}>🎯</span> What You'll Learn
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                'Fundamentals of prompt engineering',
+                'Advanced techniques for business apps',
+                'Building your own prompt library',
+                'Iteration and refinement',
+                'Context and constraint design',
+                'Real-world use cases'
+              ].map((item, idx) => (
+                <div key={idx} style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 10,
+                  fontSize: 14,
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                }}>
+                  <FaCheck style={{ color: '#10b981', fontSize: 12, marginTop: 4, flexShrink: 0 }} />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        )}
+
+        {/* What's Included - Only for NON-enrolled users (enrolled users see this in About tab) */}
+        {!isCoursePurchased && (
+        <div style={{ marginTop: 16, marginBottom: 16 }}>
+          <h4 style={{
+            fontSize: 14,
+            fontWeight: 700,
+            color: isDarkMode ? '#71767b' : '#6b7280',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+            marginBottom: 8
+          }}>
+            What's Included
+          </h4>
+          <div style={{
+            fontSize: 15,
+            color: isDarkMode ? '#e7e9ea' : '#0f1419',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '4px 16px'
+          }}>
+            <span>• 1-on-1 sessions with Student-Teacher</span>
+            <span>• Access to AI Prompters Community</span>
+            <span>• Certificate</span>
+          </div>
+        </div>
+        )}
+
+        {/* Session Timeline Cards - Only for enrolled users with sessions defined */}
+        {isCoursePurchased && course?.sessions?.list && (
+          <SessionTimelineCards
+            course={course}
+            scheduledSessions={courseScheduledSessions}
+            sessionCompletion={sessionCompletion}
+            onScheduleSession={(sessionNum) => onBrowseStudentTeachers && onBrowseStudentTeachers(course, sessionNum)}
+            onJoinSession={handleJoinSession}
+            onRescheduleSession={onRescheduleSession}
+            isDarkMode={isDarkMode}
+          />
+        )}
+
+        {/* Enrolled Badge - Only for purchased courses */}
+        {isCoursePurchased && enrollmentData && (
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            background: 'rgba(16, 185, 129, 0.15)',
+            color: '#10b981',
+            padding: '6px 12px',
+            borderRadius: 20,
+            fontSize: 13,
+            fontWeight: 600,
+            marginBottom: 12
+          }}>
+            <FaCheck style={{ fontSize: 10 }} /> ENROLLED · Started {enrollmentData.enrolledDate}
+          </span>
+        )}
+
 
         {/* Tabs */}
         <div 
@@ -855,366 +937,618 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
       }}>
         {/* Left Column - Main Content (Full width on feed tab) */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          {activeTab === 'overview' && (
-            <>
-              {/* Video Player - Full Width */}
+          {/* Session Files Tab - Accordion Style */}
+          {activeTab === 'sessions' && isCoursePurchased && (
+            <div>
+              {/* Header */}
               <div style={{
+                padding: '16px 20px',
                 background: isDarkMode ? '#16181c' : '#f7f9f9',
-                borderRadius: 12,
-                aspectRatio: '16/9',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: 24,
+                borderRadius: '12px 12px 0 0',
                 border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                position: 'relative',
+                borderBottom: 'none'
+              }}>
+                <h3 style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  margin: 0,
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.5
+                }}>
+                  Session Files
+                </h3>
+              </div>
+
+              {/* Session Accordions */}
+              <div style={{
+                border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                borderRadius: '0 0 12px 12px',
                 overflow: 'hidden'
               }}>
-                <div style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: '50%',
-                  background: 'rgba(0,0,0,0.7)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer'
-                }}>
-                  <FaPlay style={{ color: '#fff', fontSize: 28, marginLeft: 4 }} />
-                </div>
-                {/* Video controls bar */}
-                <div style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  background: 'rgba(0,0,0,0.8)',
-                  padding: '8px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12
-                }}>
-                  <FaPlay style={{ color: '#fff', fontSize: 14 }} />
-                  <div style={{ flex: 1, height: 4, background: '#333', borderRadius: 2 }}>
-                    <div style={{ width: '30%', height: '100%', background: '#fff', borderRadius: 2 }} />
-                  </div>
-                  <span style={{ color: '#fff', fontSize: 12 }}>0:00 / {course.duration}</span>
-                </div>
-              </div>
+                {/* Session 1 - Completed */}
+                {(() => {
+                  const sessionNum = 1;
+                  const isCompleted = sessionCompletion[course?.id]?.[sessionNum]?.completed;
+                  const isExpanded = expandedFileSessions[sessionNum];
+                  const sessionData = course?.sessions?.list?.find(s => s.number === sessionNum);
 
-            </>
-          )}
-
-          {/* Sessions & Progress Tab - Only for enrolled users */}
-          {activeTab === 'sessions' && isCoursePurchased && enrollmentData && (
-            <div>
-              {/* Your Progress Section */}
-              <div style={{ marginBottom: 32 }}>
-                <h3 style={{
-                  fontSize: 20,
-                  fontWeight: 700,
-                  marginBottom: 20,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                }}>
-                  Your Progress
-                </h3>
-
-                {/* Progress Stats Row */}
-                <div style={{
-                  display: 'flex',
-                  gap: 24,
-                  marginBottom: 16,
-                  padding: 20,
-                  background: isDarkMode ? '#16181c' : '#f7f9f9',
-                  borderRadius: 12,
-                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-                }}>
-                  <div style={{ textAlign: 'center', flex: 1 }}>
-                    <div style={{ fontSize: 28, fontWeight: 700, color: '#1d9bf0' }}>
-                      {enrollmentData.sessionsCompleted}/{enrollmentData.totalSessions}
-                    </div>
-                    <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>Sessions</div>
-                  </div>
-                  <div style={{ textAlign: 'center', flex: 1 }}>
-                    <div style={{ fontSize: 28, fontWeight: 700, color: '#1d9bf0' }}>
-                      {enrollmentData.homeworkCompleted}/{enrollmentData.totalHomework}
-                    </div>
-                    <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>Homework</div>
-                  </div>
-                  <div style={{ textAlign: 'center', flex: 1 }}>
-                    <div style={{ fontSize: 28, fontWeight: 700, color: '#1d9bf0' }}>
-                      {enrollmentData.avgScore}%
-                    </div>
-                    <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>Avg Score</div>
-                  </div>
-                  <div style={{ textAlign: 'center', flex: 1 }}>
-                    <div style={{ fontSize: 28, fontWeight: 700, color: '#1d9bf0' }}>
-                      {enrollmentData.lastActive}
-                    </div>
-                    <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>Last Active</div>
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div style={{
-                  height: 10,
-                  background: isDarkMode ? '#2f3336' : '#e5e7eb',
-                  borderRadius: 5,
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    height: '100%',
-                    background: 'linear-gradient(90deg, #1d9bf0, #10b981)',
-                    borderRadius: 5,
-                    width: `${enrollmentData.certificateProgress}%`
-                  }} />
-                </div>
-                <p style={{
-                  fontSize: 14,
-                  color: isDarkMode ? '#71767b' : '#536471',
-                  marginTop: 10
-                }}>
-                  {enrollmentData.certificateProgress}% complete · {enrollmentData.totalSessions - enrollmentData.sessionsCompleted} sessions remaining for certificate
-                </p>
-              </div>
-
-              {/* Sessions Section */}
-              <div style={{ marginBottom: 32 }}>
-                <h3 style={{
-                  fontSize: 20,
-                  fontWeight: 700,
-                  marginBottom: 20,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                }}>
-                  Sessions
-                </h3>
-                <div style={{
-                  background: isDarkMode ? '#16181c' : '#f7f9f9',
-                  borderRadius: 12,
-                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                  overflow: 'hidden'
-                }}>
-                  {enrollmentData.sessions.map((session, idx) => (
-                    <div key={session.id} style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 16,
-                      padding: '16px 20px',
-                      borderBottom: idx < enrollmentData.sessions.length - 1 ? (isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4') : 'none'
+                  return (
+                    <div style={{
+                      borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
                     }}>
-                      {/* Session Number Circle */}
-                      <div style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 14,
-                        fontWeight: 600,
-                        flexShrink: 0,
-                        background: session.status === 'completed' ? '#10b981' :
-                                    session.status === 'upcoming' ? '#1d9bf0' :
-                                    isDarkMode ? '#2f3336' : '#e5e7eb',
-                        color: session.status === 'locked' ? (isDarkMode ? '#71767b' : '#9ca3af') : '#fff'
-                      }}>
-                        {session.status === 'completed' ? <FaCheck style={{ fontSize: 14 }} /> : idx + 1}
+                      {/* Session Header - Clickable */}
+                      <div
+                        onClick={() => setExpandedFileSessions(prev => ({ ...prev, [sessionNum]: !prev[sessionNum] }))}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 16,
+                          padding: '16px 20px',
+                          cursor: 'pointer',
+                          background: isCompleted
+                            ? (isDarkMode ? 'rgba(16, 185, 129, 0.08)' : 'rgba(16, 185, 129, 0.05)')
+                            : 'transparent'
+                        }}
+                      >
+                        {/* Expand/Collapse Arrow */}
+                        <div style={{
+                          color: isDarkMode ? '#71767b' : '#536471',
+                          fontSize: 12,
+                          transition: 'transform 0.2s',
+                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'
+                        }}>
+                          <FaChevronRight />
+                        </div>
+
+                        {/* Session Title */}
+                        <div style={{ flex: 1 }}>
+                          <span style={{
+                            fontWeight: 600,
+                            fontSize: 15,
+                            color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                          }}>
+                            Session {sessionNum}: {sessionData?.title || 'Foundation & Core Concepts'}
+                          </span>
+                        </div>
+
+                        {/* Status Badge */}
+                        <span style={{
+                          fontSize: 12,
+                          padding: '6px 12px',
+                          borderRadius: 20,
+                          background: isCompleted
+                            ? 'rgba(16, 185, 129, 0.15)'
+                            : (isDarkMode ? '#2f3336' : '#e5e7eb'),
+                          color: isCompleted ? '#10b981' : (isDarkMode ? '#71767b' : '#536471'),
+                          fontWeight: 600
+                        }}>
+                          {isCompleted ? 'Completed' : 'In Progress'}
+                        </span>
                       </div>
 
-                      {/* Session Info */}
-                      <div style={{ flex: 1 }}>
+                      {/* Expanded Content */}
+                      {isExpanded && (
                         <div style={{
-                          fontWeight: 600,
-                          marginBottom: 4,
-                          color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                          padding: '0 20px 20px 52px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 20
                         }}>
-                          {session.title}
-                        </div>
-                        <div style={{
-                          fontSize: 13,
-                          color: isDarkMode ? '#71767b' : '#536471'
-                        }}>
-                          {session.status === 'completed' && `${session.date} · Completed`}
-                          {session.status === 'upcoming' && `${session.date} · Upcoming`}
-                          {session.status === 'locked' && 'Complete previous session to unlock'}
-                          {!session.status && 'Not scheduled'}
-                        </div>
-                      </div>
+                          {/* RECORDING Section */}
+                          <div>
+                            <div style={{
+                              fontSize: 12,
+                              fontWeight: 700,
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              textTransform: 'uppercase',
+                              letterSpacing: 0.5,
+                              marginBottom: 10
+                            }}>
+                              Recording
+                            </div>
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '12px 16px',
+                              background: isDarkMode ? '#0a0a0a' : '#fff',
+                              border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                              borderRadius: 8
+                            }}>
+                              <div>
+                                <div style={{
+                                  fontWeight: 500,
+                                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                  fontSize: 14
+                                }}>
+                                  Session Recording (Jan 20, 2026)
+                                </div>
+                                <div style={{
+                                  fontSize: 13,
+                                  color: isDarkMode ? '#71767b' : '#536471',
+                                  marginTop: 2
+                                }}>
+                                  1:32:45
+                                </div>
+                              </div>
+                              <button style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                background: '#1d9bf0',
+                                color: '#fff',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: 6,
+                                fontSize: 13,
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                              }}>
+                                <FaDownload style={{ fontSize: 12 }} /> Download
+                              </button>
+                            </div>
+                          </div>
 
-                      {/* Status Badge / Action */}
-                      <div>
-                        {session.status === 'completed' && (
+                          {/* DOCUMENTS Section */}
+                          <div>
+                            <div style={{
+                              fontSize: 12,
+                              fontWeight: 700,
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              textTransform: 'uppercase',
+                              letterSpacing: 0.5,
+                              marginBottom: 10
+                            }}>
+                              Documents
+                            </div>
+                            <div style={{
+                              background: isDarkMode ? '#0a0a0a' : '#fff',
+                              border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                              borderRadius: 8,
+                              overflow: 'hidden'
+                            }}>
+                              {[
+                                { name: 'Session 1 Slides.pdf', size: '2.4 MB' },
+                                { name: 'Prompt Templates.docx', size: '156 KB' },
+                                { name: 'Reference Links.pdf', size: '89 KB' }
+                              ].map((doc, idx, arr) => (
+                                <div
+                                  key={idx}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    padding: '12px 16px',
+                                    borderBottom: idx < arr.length - 1
+                                      ? (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb')
+                                      : 'none'
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <FaFileAlt style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 14 }} />
+                                    <span style={{
+                                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                      fontSize: 14
+                                    }}>
+                                      {doc.name}
+                                    </span>
+                                    <span style={{
+                                      color: isDarkMode ? '#71767b' : '#536471',
+                                      fontSize: 12
+                                    }}>
+                                      {doc.size}
+                                    </span>
+                                  </div>
+                                  <button style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#1d9bf0',
+                                    cursor: 'pointer',
+                                    padding: 4
+                                  }}>
+                                    <FaDownload style={{ fontSize: 14 }} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* HOMEWORK Section */}
+                          <div>
+                            <div style={{
+                              fontSize: 12,
+                              fontWeight: 700,
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              textTransform: 'uppercase',
+                              letterSpacing: 0.5,
+                              marginBottom: 10
+                            }}>
+                              Homework
+                            </div>
+                            <div style={{
+                              background: isDarkMode ? '#0a0a0a' : '#fff',
+                              border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                              borderRadius: 8,
+                              padding: 16
+                            }}>
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                marginBottom: 12
+                              }}>
+                                <div>
+                                  <div style={{
+                                    fontWeight: 600,
+                                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                    fontSize: 14,
+                                    marginBottom: 2
+                                  }}>
+                                    Assignment: Build 3 Custom Prompts
+                                  </div>
+                                  <div style={{
+                                    fontSize: 13,
+                                    color: isDarkMode ? '#71767b' : '#536471'
+                                  }}>
+                                    Due: Jan 27, 2026
+                                  </div>
+                                </div>
+                                <button style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  background: 'transparent',
+                                  color: '#1d9bf0',
+                                  border: '1px solid #1d9bf0',
+                                  padding: '8px 16px',
+                                  borderRadius: 6,
+                                  fontSize: 13,
+                                  fontWeight: 600,
+                                  cursor: 'pointer'
+                                }}>
+                                  <FaDownload style={{ fontSize: 12 }} /> Download
+                                </button>
+                              </div>
+
+                              {/* Divider */}
+                              <div style={{
+                                borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                                margin: '12px 0'
+                              }} />
+
+                              {/* Submission */}
+                              <div>
+                                <div style={{
+                                  fontSize: 13,
+                                  color: isDarkMode ? '#71767b' : '#536471',
+                                  marginBottom: 8
+                                }}>
+                                  Your Submission:
+                                </div>
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  padding: '10px 12px',
+                                  background: isDarkMode ? '#16181c' : '#f7f9f9',
+                                  borderRadius: 6,
+                                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb'
+                                }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <FaFileAlt style={{ color: '#10b981', fontSize: 14 }} />
+                                    <span style={{
+                                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                      fontSize: 14
+                                    }}>
+                                      my-prompts.pdf
+                                    </span>
+                                    <span style={{
+                                      color: '#10b981',
+                                      fontSize: 12
+                                    }}>
+                                      Submitted Jan 25
+                                    </span>
+                                  </div>
+                                  <div style={{ display: 'flex', gap: 8 }}>
+                                    <button style={{
+                                      background: 'none',
+                                      border: 'none',
+                                      color: '#1d9bf0',
+                                      cursor: 'pointer',
+                                      fontSize: 13
+                                    }}>
+                                      View
+                                    </button>
+                                    <button style={{
+                                      background: 'none',
+                                      border: 'none',
+                                      color: '#1d9bf0',
+                                      cursor: 'pointer',
+                                      padding: 4
+                                    }}>
+                                      <FaDownload style={{ fontSize: 12 }} />
+                                    </button>
+                                  </div>
+                                </div>
+                                <button style={{
+                                  marginTop: 10,
+                                  background: 'transparent',
+                                  color: isDarkMode ? '#71767b' : '#536471',
+                                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                                  padding: '8px 16px',
+                                  borderRadius: 6,
+                                  fontSize: 13,
+                                  cursor: 'pointer'
+                                }}>
+                                  Upload New Version
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Session 2 - Locked or Ready based on Session 1 completion */}
+                {(() => {
+                  const sessionNum = 2;
+                  const prevSessionComplete = sessionCompletion[course?.id]?.[1]?.completed;
+                  const isLocked = !prevSessionComplete;
+                  const isExpanded = expandedFileSessions[sessionNum];
+                  const sessionData = course?.sessions?.list?.find(s => s.number === sessionNum);
+
+                  return (
+                    <div>
+                      {/* Session Header - Clickable only if not locked */}
+                      <div
+                        onClick={() => !isLocked && setExpandedFileSessions(prev => ({ ...prev, [sessionNum]: !prev[sessionNum] }))}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 16,
+                          padding: '16px 20px',
+                          cursor: isLocked ? 'not-allowed' : 'pointer',
+                          background: isLocked
+                            ? (isDarkMode ? 'rgba(113, 118, 123, 0.08)' : 'rgba(107, 114, 128, 0.05)')
+                            : 'transparent',
+                          opacity: isLocked ? 0.7 : 1
+                        }}
+                      >
+                        {/* Expand/Collapse Arrow or Lock */}
+                        <div style={{
+                          color: isDarkMode ? '#71767b' : '#536471',
+                          fontSize: 12,
+                          transition: 'transform 0.2s',
+                          transform: isExpanded && !isLocked ? 'rotate(90deg)' : 'rotate(0deg)'
+                        }}>
+                          {isLocked ? <span style={{ fontSize: 14 }}>🔒</span> : <FaChevronRight />}
+                        </div>
+
+                        {/* Session Title */}
+                        <div style={{ flex: 1 }}>
                           <span style={{
-                            fontSize: 12,
-                            padding: '6px 12px',
-                            borderRadius: 20,
-                            background: 'rgba(16, 185, 129, 0.15)',
-                            color: '#10b981',
-                            fontWeight: 600
+                            fontWeight: 600,
+                            fontSize: 15,
+                            color: isLocked
+                              ? (isDarkMode ? '#71767b' : '#9ca3af')
+                              : (isDarkMode ? '#e7e9ea' : '#0f1419')
                           }}>
-                            COMPLETED
+                            Session {sessionNum}: {sessionData?.title || 'Advanced Techniques'}
                           </span>
-                        )}
-                        {session.status === 'upcoming' && (
+                        </div>
+
+                        {/* Status */}
+                        {isLocked ? (
                           <span style={{
-                            fontSize: 12,
-                            padding: '6px 12px',
-                            borderRadius: 20,
-                            background: 'rgba(29, 155, 240, 0.15)',
-                            color: '#1d9bf0',
-                            fontWeight: 600
+                            fontSize: 13,
+                            color: isDarkMode ? '#71767b' : '#9ca3af'
                           }}>
-                            SCHEDULED
+                            Complete Session 1 first
                           </span>
-                        )}
-                        {session.status === 'locked' && (
+                        ) : (
                           <span style={{
                             fontSize: 12,
                             padding: '6px 12px',
                             borderRadius: 20,
                             background: isDarkMode ? '#2f3336' : '#e5e7eb',
-                            color: isDarkMode ? '#71767b' : '#9ca3af',
+                            color: isDarkMode ? '#71767b' : '#536471',
                             fontWeight: 600
                           }}>
-                            LOCKED
+                            Not Started
                           </span>
                         )}
-                        {!session.status && (
-                          <button style={{
-                            fontSize: 12,
-                            padding: '6px 16px',
-                            borderRadius: 20,
-                            background: '#1d9bf0',
-                            color: '#fff',
-                            border: 'none',
-                            fontWeight: 600,
-                            cursor: 'pointer'
-                          }}>
-                            Schedule
-                          </button>
-                        )}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
-              {/* Homework Section */}
-              <div style={{ marginBottom: 32 }}>
-                <h3 style={{
-                  fontSize: 20,
-                  fontWeight: 700,
-                  marginBottom: 20,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                }}>
-                  Homework
-                </h3>
-                <div style={{
-                  background: isDarkMode ? '#16181c' : '#f7f9f9',
-                  borderRadius: 12,
-                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                  overflow: 'hidden'
-                }}>
-                  {enrollmentData.homeworkDue && (
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 16,
-                      padding: '16px 20px',
-                      borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                      background: 'rgba(245, 158, 11, 0.05)'
-                    }}>
-                      <FaExclamationTriangle style={{ color: '#f59e0b', fontSize: 20 }} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
-                          {enrollmentData.homeworkDue.title}
-                        </div>
-                        <div style={{ fontSize: 13, color: '#f59e0b' }}>
-                          Due: {enrollmentData.homeworkDue.dueDate} ({enrollmentData.homeworkDue.daysLeft} days)
-                        </div>
-                      </div>
-                      <button style={{
-                        fontSize: 12,
-                        padding: '6px 16px',
-                        borderRadius: 20,
-                        background: '#f59e0b',
-                        color: '#fff',
-                        border: 'none',
-                        fontWeight: 600,
-                        cursor: 'pointer'
-                      }}>
-                        Submit
-                      </button>
-                    </div>
-                  )}
-                  {enrollmentData.sessions.filter(s => s.hwScore).map((session, idx) => (
-                    <div key={`hw-${session.id}`} style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 16,
-                      padding: '16px 20px',
-                      borderBottom: idx < enrollmentData.sessions.filter(s => s.hwScore).length - 1 ? (isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4') : 'none'
-                    }}>
-                      <FaCheck style={{ color: '#10b981', fontSize: 20 }} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
-                          {session.title} Assignment
-                        </div>
-                        <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
-                          Submitted
-                        </div>
-                      </div>
-                      <span style={{
-                        fontSize: 14,
-                        fontWeight: 600,
-                        color: '#10b981'
-                      }}>
-                        {session.hwScore}%
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                      {/* Expanded Content - Only if not locked */}
+                      {isExpanded && !isLocked && (
+                        <div style={{
+                          padding: '0 20px 20px 52px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 20
+                        }}>
+                          {/* RECORDING Section - Not available yet */}
+                          <div>
+                            <div style={{
+                              fontSize: 12,
+                              fontWeight: 700,
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              textTransform: 'uppercase',
+                              letterSpacing: 0.5,
+                              marginBottom: 10
+                            }}>
+                              Recording
+                            </div>
+                            <div style={{
+                              padding: '16px',
+                              background: isDarkMode ? '#0a0a0a' : '#fff',
+                              border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                              borderRadius: 8,
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              fontSize: 14,
+                              fontStyle: 'italic'
+                            }}>
+                              Recording will be available after the session is completed.
+                            </div>
+                          </div>
 
-              {/* Certificate Progress */}
-              <div style={{
-                background: isDarkMode ? '#16181c' : '#f7f9f9',
-                borderRadius: 12,
-                padding: 24,
-                border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>🎓</div>
-                <h3 style={{
-                  fontSize: 18,
-                  fontWeight: 700,
-                  marginBottom: 8,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                }}>
-                  Certificate Progress
-                </h3>
-                <p style={{
-                  fontSize: 14,
-                  color: isDarkMode ? '#71767b' : '#536471',
-                  marginBottom: 16
-                }}>
-                  Complete {enrollmentData.totalSessions - enrollmentData.sessionsCompleted} more sessions to earn your certificate
-                </p>
-                <div style={{
-                  height: 10,
-                  background: isDarkMode ? '#2f3336' : '#e5e7eb',
-                  borderRadius: 5,
-                  overflow: 'hidden',
-                  maxWidth: 300,
-                  margin: '0 auto'
-                }}>
-                  <div style={{
-                    height: '100%',
-                    background: 'linear-gradient(90deg, #1d9bf0, #10b981)',
-                    borderRadius: 5,
-                    width: `${enrollmentData.certificateProgress}%`
-                  }} />
-                </div>
+                          {/* DOCUMENTS Section */}
+                          <div>
+                            <div style={{
+                              fontSize: 12,
+                              fontWeight: 700,
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              textTransform: 'uppercase',
+                              letterSpacing: 0.5,
+                              marginBottom: 10
+                            }}>
+                              Documents
+                            </div>
+                            <div style={{
+                              background: isDarkMode ? '#0a0a0a' : '#fff',
+                              border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                              borderRadius: 8,
+                              overflow: 'hidden'
+                            }}>
+                              {[
+                                { name: 'Session 2 Slides.pdf', size: '3.1 MB' },
+                                { name: 'Advanced Examples.docx', size: '245 KB' }
+                              ].map((doc, idx, arr) => (
+                                <div
+                                  key={idx}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    padding: '12px 16px',
+                                    borderBottom: idx < arr.length - 1
+                                      ? (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb')
+                                      : 'none'
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <FaFileAlt style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 14 }} />
+                                    <span style={{
+                                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                      fontSize: 14
+                                    }}>
+                                      {doc.name}
+                                    </span>
+                                    <span style={{
+                                      color: isDarkMode ? '#71767b' : '#536471',
+                                      fontSize: 12
+                                    }}>
+                                      {doc.size}
+                                    </span>
+                                  </div>
+                                  <button style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#1d9bf0',
+                                    cursor: 'pointer',
+                                    padding: 4
+                                  }}>
+                                    <FaDownload style={{ fontSize: 14 }} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* HOMEWORK Section */}
+                          <div>
+                            <div style={{
+                              fontSize: 12,
+                              fontWeight: 700,
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              textTransform: 'uppercase',
+                              letterSpacing: 0.5,
+                              marginBottom: 10
+                            }}>
+                              Homework
+                            </div>
+                            <div style={{
+                              background: isDarkMode ? '#0a0a0a' : '#fff',
+                              border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                              borderRadius: 8,
+                              padding: 16
+                            }}>
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between'
+                              }}>
+                                <div>
+                                  <div style={{
+                                    fontWeight: 600,
+                                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                    fontSize: 14,
+                                    marginBottom: 2
+                                  }}>
+                                    Assignment: Build a Prompt Library
+                                  </div>
+                                  <div style={{
+                                    fontSize: 13,
+                                    color: isDarkMode ? '#71767b' : '#536471'
+                                  }}>
+                                    Due date will be set after session
+                                  </div>
+                                </div>
+                                <button style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  background: 'transparent',
+                                  color: '#1d9bf0',
+                                  border: '1px solid #1d9bf0',
+                                  padding: '8px 16px',
+                                  borderRadius: 6,
+                                  fontSize: 13,
+                                  fontWeight: 600,
+                                  cursor: 'pointer'
+                                }}>
+                                  <FaDownload style={{ fontSize: 12 }} /> Download
+                                </button>
+                              </div>
+
+                              {/* Divider */}
+                              <div style={{
+                                borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                                margin: '12px 0'
+                              }} />
+
+                              {/* No submission yet */}
+                              <div>
+                                <div style={{
+                                  fontSize: 13,
+                                  color: isDarkMode ? '#71767b' : '#536471',
+                                  marginBottom: 8
+                                }}>
+                                  Your Submission:
+                                </div>
+                                <button style={{
+                                  background: '#1d9bf0',
+                                  color: '#fff',
+                                  border: 'none',
+                                  padding: '10px 20px',
+                                  borderRadius: 6,
+                                  fontSize: 14,
+                                  fontWeight: 600,
+                                  cursor: 'pointer'
+                                }}>
+                                  Upload Submission
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           )}
@@ -1224,6 +1558,164 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
               <div style={{ fontSize: 48, marginBottom: 16 }}>⭐</div>
               <h3 style={{ color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 8 }}>No Reviews Yet</h3>
               <p style={{ color: isDarkMode ? '#71767b' : '#536471' }}>Be the first to review this course!</p>
+            </div>
+          )}
+
+          {/* About Course Tab - Video and What You'll Learn for enrolled users */}
+          {activeTab === 'about' && isCoursePurchased && (
+            <div style={{ padding: '24px 0' }}>
+              <div style={{
+                display: 'flex',
+                gap: 20,
+                marginBottom: 24
+              }}>
+                {/* Video Player */}
+                <div style={{
+                  flex: 2,
+                  minWidth: 300,
+                  background: isDarkMode ? '#16181c' : '#f7f9f9',
+                  borderRadius: 12,
+                  aspectRatio: '16/9',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  minHeight: 200
+                }}>
+                  <div style={{
+                    width: 70,
+                    height: 70,
+                    borderRadius: '50%',
+                    background: 'rgba(0,0,0,0.7)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                  }}>
+                    <FaPlay style={{ color: '#fff', fontSize: 24, marginLeft: 4 }} />
+                  </div>
+                  {/* Video controls bar */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    background: 'rgba(0,0,0,0.8)',
+                    padding: '8px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12
+                  }}>
+                    <FaPlay style={{ color: '#fff', fontSize: 14 }} />
+                    <div style={{ flex: 1, height: 4, background: '#333', borderRadius: 2 }}>
+                      <div style={{ width: '0%', height: '100%', background: '#fff', borderRadius: 2 }} />
+                    </div>
+                    <span style={{ color: '#fff', fontSize: 12 }}>0:00 / {course.duration || '4-6 weeks'}</span>
+                  </div>
+                </div>
+
+                {/* What You'll Learn */}
+                <div style={{
+                  flex: 1,
+                  minWidth: 240,
+                  maxWidth: 320,
+                  background: isDarkMode ? '#16181c' : '#f7f9f9',
+                  borderRadius: 12,
+                  padding: 20,
+                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                }}>
+                  <h3 style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    marginBottom: 16,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8
+                  }}>
+                    <span style={{ fontSize: 18 }}>🎯</span> What You'll Learn
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {[
+                      'Fundamentals of prompt engineering',
+                      'Advanced techniques for business apps',
+                      'Building your own prompt library',
+                      'Iteration and refinement',
+                      'Context and constraint design',
+                      'Real-world use cases'
+                    ].map((item, idx) => (
+                      <div key={idx} style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 10,
+                        fontSize: 14,
+                        color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                      }}>
+                        <FaCheck style={{ color: '#10b981', fontSize: 12, marginTop: 4, flexShrink: 0 }} />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* What's Included */}
+              <div style={{ marginTop: 24 }}>
+                <h4 style={{
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: isDarkMode ? '#71767b' : '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.5,
+                  marginBottom: 12
+                }}>
+                  What's Included
+                </h4>
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 16
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '12px 16px',
+                    background: isDarkMode ? '#16181c' : '#f7f9f9',
+                    borderRadius: 8,
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                  }}>
+                    <span style={{ fontSize: 18 }}>👥</span>
+                    <span style={{ fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>1-on-1 sessions with Student-Teacher</span>
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '12px 16px',
+                    background: isDarkMode ? '#16181c' : '#f7f9f9',
+                    borderRadius: 8,
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                  }}>
+                    <span style={{ fontSize: 18 }}>💬</span>
+                    <span style={{ fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Access to AI Prompters Community</span>
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '12px 16px',
+                    background: isDarkMode ? '#16181c' : '#f7f9f9',
+                    borderRadius: 8,
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                  }}>
+                    <span style={{ fontSize: 18 }}>🏆</span>
+                    <span style={{ fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Certificate</span>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -1576,58 +2068,10 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
           )}
         </div>
 
-        {/* Right Sidebar - Hidden on Course Feed tab and on small screens */}
-        {activeTab !== 'feed' && (
-        <div className="course-detail-sidebar" style={{ width: 320, flexShrink: 0 }}>
-
-          {/* What You'll Learn Box */}
-          <div style={{
-            background: isDarkMode ? '#16181c' : '#f7f9f9',
-            borderRadius: 12,
-            padding: 20,
-            marginBottom: 20,
-            border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-          }}>
-            <h3 style={{
-              fontSize: 16,
-              fontWeight: 700,
-              marginBottom: 16,
-              color: isDarkMode ? '#e7e9ea' : '#0f1419',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8
-            }}>
-              <span style={{ fontSize: 18 }}>🎯</span> What You'll Learn
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[
-                'Fundamentals of prompt engineering',
-                'Advanced techniques for business apps',
-                'Building your own prompt library',
-                'Iteration and refinement',
-                'Context and constraint design',
-                'Real-world use cases'
-              ].map((item, idx) => (
-                <div key={idx} style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  fontSize: 14,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                }}>
-                  <FaCheck style={{ color: '#10b981', fontSize: 12, marginTop: 4, flexShrink: 0 }} />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-        )}
       </div>
 
-      {/* Topics - Full Width Below Two-Column Layout */}
-      {activeTab === 'overview' && course.tags && course.tags.length > 0 && (
+      {/* Topics - In About Course tab for enrolled, Curriculum tab for non-enrolled */}
+      {((activeTab === 'about' && isCoursePurchased) || (activeTab === 'curriculum' && !isCoursePurchased)) && course.tags && course.tags.length > 0 && (
         <div style={{ padding: '0 24px 16px 24px', maxWidth: 1200, margin: '0 auto' }}>
           <h3 style={{
             fontSize: 18,
@@ -1654,7 +2098,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
       )}
 
       {/* Course Curriculum - Full Width Below Topics */}
-      {activeTab === 'overview' && (
+      {activeTab === 'curriculum' && (
         <div style={{ padding: '0 24px 24px 24px', maxWidth: 1200, margin: '0 auto' }}>
           <CourseCurriculumSection
             course={course}

@@ -909,6 +909,15 @@ export const coursesDatabase = [
       earnWhileTeaching: true,
       teacherCommission: "70%"
     },
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Foundations & Frameworks", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Advanced Techniques & Library Building", duration: "90 min", modules: [3, 4, 5] }
+      ]
+    },
     learningObjectives: [
       "Fundamentals of prompt engineering",
       "Advanced techniques for business applications",
@@ -918,40 +927,45 @@ export const coursesDatabase = [
       "Real-world AI use cases"
     ],
     curriculum: [
-      { 
-        title: "Module 1: Foundations", 
-        duration: "Week 1", 
+      {
+        title: "Module 1: Foundations",
+        duration: "Week 1",
         description: "What is AI prompting, your first prompts, and the prompt framework guide.",
         videos: 2,
-        readings: 1
+        readings: 1,
+        sessionNumber: 1
       },
-      { 
-        title: "Module 2: Intermediate Techniques", 
-        duration: "Week 2", 
+      {
+        title: "Module 2: Intermediate Techniques",
+        duration: "Week 2",
         description: "Context and constraints, iteration strategies, and 50 prompt templates.",
         videos: 2,
-        readings: 1
+        readings: 1,
+        sessionNumber: 1
       },
-      { 
-        title: "Module 3: Advanced Applications", 
-        duration: "Week 3", 
+      {
+        title: "Module 3: Advanced Applications",
+        duration: "Week 3",
         description: "Business use cases, building AI workflows, and automation patterns.",
         videos: 2,
-        readings: 1
+        readings: 1,
+        sessionNumber: 2
       },
-      { 
-        title: "Module 4: Specialization", 
-        duration: "Week 4", 
+      {
+        title: "Module 4: Specialization",
+        duration: "Week 4",
         description: "Industry-specific prompting, custom GPT creation, and prompt library design.",
         videos: 2,
-        readings: 1
+        readings: 1,
+        sessionNumber: 2
       },
-      { 
-        title: "Module 5: Certification Prep", 
-        duration: "Week 5-6", 
+      {
+        title: "Module 5: Certification Prep",
+        duration: "Week 5-6",
         description: "Final assessment, portfolio review, and becoming a certified Student-Teacher.",
         videos: 1,
-        assessment: true
+        assessment: true,
+        sessionNumber: 2
       }
     ],
     studentTeachers: [
@@ -1163,6 +1177,15 @@ export const coursesDatabase = [
       earnWhileTeaching: true,
       teacherCommission: "70%"
     },
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Text & Code AI", duration: "90 min", modules: [1, 2, 3, 4] },
+        { number: 2, title: "Visual AI & Your Personal Toolkit", duration: "90 min", modules: [5, 6, 7, 8] }
+      ]
+    },
     learningObjectives: [
       "Understand the major categories of AI tools available",
       "Navigate AI writing tools (ChatGPT, Claude, Gemini) confidently",
@@ -1174,14 +1197,14 @@ export const coursesDatabase = [
       "Stay current with AI developments strategically"
     ],
     curriculum: [
-      { title: "Understanding AI Categories", duration: "45 min", description: "Major types of AI tools, how they differ, reducing overwhelm with clear frameworks" },
-      { title: "AI Writing Tools", duration: "45 min", description: "ChatGPT, Claude, Gemini - what each does best, when to use which, hands-on practice" },
-      { title: "AI Coding Tools", duration: "45 min", description: "Claude Code, Cursor, GitHub Copilot - capabilities, differences, choosing for your skill level" },
-      { title: "Decision Framework", duration: "45 min", description: "How to evaluate and choose AI tools for specific tasks without getting overwhelmed" },
-      { title: "AI Image Generation", duration: "30 min", description: "Midjourney, DALL-E, Stable Diffusion - what's possible, use cases, hands-on creation" },
-      { title: "AI Video Generation", duration: "30 min", description: "Runway, Pika, Sora - current capabilities, when to use, limitations" },
-      { title: "Other AI Tools Landscape", duration: "30 min", description: "Productivity tools (Notion AI, Otter.ai), research tools (Perplexity), voice AI" },
-      { title: "Building Your AI Toolkit", duration: "30 min", description: "Match tools to your actual needs, avoid shiny object syndrome, staying current strategically" }
+      { session: 1, module: 1, title: "Understanding AI Categories & Reducing Overwhelm", duration: "20 min", description: "Major types of AI tools (Text, Code, Visual, Productivity, Voice), framework for thinking about tools, strategies to avoid overwhelm and analysis paralysis" },
+      { session: 1, module: 2, title: "AI Writing Tools", duration: "30 min", description: "ChatGPT, Claude, Gemini, Perplexity - key differences, context windows, pricing, when to use which. Hands-on: compare same prompt across tools" },
+      { session: 1, module: 3, title: "AI Coding Tools", duration: "25 min", description: "Claude Code, Cursor, GitHub Copilot, Windsurf, v0, Bolt.new - interface differences, autonomy levels, skill requirements. Demo: watch AI coding in action" },
+      { session: 1, module: 4, title: "Decision Framework - Choosing the Right Tool", duration: "15 min", description: "7-step tool selection framework, key decision criteria (cost, privacy, integration), common mistakes to avoid, building your toolkit strategy" },
+      { session: 2, module: 5, title: "AI Image & Video Generation", duration: "30 min", description: "Midjourney, DALL-E, Stable Diffusion, Runway, Pika, Sora - capabilities, limitations, use cases, when AI vs traditional tools" },
+      { session: 2, module: 6, title: "Other AI Tools Landscape", duration: "20 min", description: "Productivity (Notion AI, Otter.ai), Research (Perplexity, Elicit), Voice (ElevenLabs), Design (Canva AI, Framer) - quick overview of what exists" },
+      { session: 2, module: 7, title: "Building Your Personal AI Toolkit", duration: "20 min", description: "Tier 1/2/3 toolkit strategy, matching tools to workflow, learning strategy, budget planning, common toolkit examples by profession" },
+      { session: 2, module: 8, title: "Staying Current Without Overwhelm", duration: "20 min", description: "New tool evaluation framework, staying informed strategically, avoiding FOMO, quarterly review process, quality resources to follow" }
     ],
     includes: [
       "Full course access",
@@ -1214,6 +1237,15 @@ export const coursesDatabase = [
       earnWhileTeaching: true,
       teacherCommission: "70%"
     },
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Foundation & Core Concepts", duration: "90 min", modules: [1, 2, 3, 4] },
+        { number: 2, title: "Advanced Techniques & Workflows", duration: "90 min", modules: [5, 6, 7] }
+      ]
+    },
     learningObjectives: [
       "Install and configure Claude Code on any system",
       "Write effective prompts to generate clean code",
@@ -1223,14 +1255,13 @@ export const coursesDatabase = [
       "Build real projects with AI assistance"
     ],
     curriculum: [
-      { title: "Installation & Setup", duration: "30 min", description: "Get Claude Code running on Windows or Mac, authenticate your account, and configure your development environment" },
-      { title: "Project Context with CLAUDE.md", duration: "30 min", description: "Initialize intelligent project memory so Claude understands your codebase structure, conventions, and preferences" },
-      { title: "Context Management", duration: "30 min", description: "Add files, images, and references to give Claude the right information at the right time" },
-      { title: "Tools & Permissions", duration: "30 min", description: "Understand Claude's built-in capabilities (read, edit, bash) and control what it can access" },
-      { title: "Planning Mode", duration: "30 min", description: "Handle complex, multi-file tasks by letting Claude create structured plans before executing" },
-      { title: "Thinking Modes", duration: "30 min", description: "Activate different levels of reasoning (think, think hard, ultra think) for challenging logic problems" },
-      { title: "Built-in & Custom Commands", duration: "30 min", description: "Master essential slash commands for memory, context, session management, and create reusable templates" },
-      { title: "Real-World Project Workflow", duration: "30 min", description: "Put everything together to build a complete project from scratch with best practices" }
+      { session: 1, module: 1, title: "Introduction & Setup", duration: "20 min", description: "What is Claude Code, why vs Cursor/Copilot/Windsurf, pricing plans, installation via npm, authentication workflow, VS Code integration" },
+      { session: 1, module: 2, title: "CLAUDE.md Files & Project Memory", duration: "20 min", description: "The /init command, what goes into CLAUDE.md (architecture, structure, conventions), project vs local vs global memory, adding memories with # symbol" },
+      { session: 1, module: 3, title: "Understanding Context", duration: "25 min", description: "What context is and why it matters, adding files with @, adding images, context bloat problems, /clear, /compact, /exit, /resume, 200K token limits" },
+      { session: 1, module: 4, title: "Tools & Permissions", duration: "20 min", description: "Built-in tools (read, edit, bash, write), permission prompts, settings.local.json, adding allowed commands, Alt+M accept edits mode" },
+      { session: 2, module: 5, title: "Planning & Thinking Modes", duration: "30 min", description: "Plan Mode (Alt+M twice), wide vs narrow scope tasks, reviewing plans. Thinking modes: think, think hard, think harder, ultra think - when each helps" },
+      { session: 2, module: 6, title: "Slash Commands & Customization", duration: "25 min", description: "Built-in commands (/clear, /compact, /memory, /init, /model, /terminal setup, /add dir), creating custom commands in .claude/commands/, using $arguments" },
+      { session: 2, module: 7, title: "Real-World Project Workflow", duration: "30 min", description: "Capstone: Build complete project applying everything learned. Initialize, create CLAUDE.md, use Plan Mode, implement iteratively, manage context, debug" }
     ],
     includes: [
       "Full course access",
@@ -1262,6 +1293,15 @@ export const coursesDatabase = [
       earnWhileTeaching: true,
       teacherCommission: "70%"
     },
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Foundations & First Workflows", duration: "90 min", modules: [1, 2, 3, 4] },
+        { number: 2, title: "Advanced Workflows & Real Projects", duration: "90 min", modules: [5, 6, 7, 8] }
+      ]
+    },
     learningObjectives: [
       "Set up and navigate the n8n platform confidently",
       "Build automated workflows connecting multiple apps",
@@ -1273,14 +1313,14 @@ export const coursesDatabase = [
       "Build a complete form response handler with email notifications"
     ],
     curriculum: [
-      { title: "What is n8n?", duration: "20 min", description: "Understanding workflow automation, n8n vs competitors (Zapier, Make), when to use n8n" },
-      { title: "Platform Setup", duration: "20 min", description: "Cloud vs self-hosted options, creating your account, navigating the Editor UI" },
-      { title: "Core Concepts", duration: "30 min", description: "Nodes, workflows, triggers, actions, how data flows between nodes" },
-      { title: "Building Your First Workflow", duration: "30 min", description: "Create a simple 2-node automation from scratch, understanding data structures" },
-      { title: "App Integrations", duration: "30 min", description: "Connect Gmail, Google Sheets, Slack, Notion, and more" },
-      { title: "Credentials & Security", duration: "20 min", description: "Add OAuth connections, API keys, store credentials safely" },
-      { title: "Conditional Logic", duration: "30 min", description: "Use IF nodes and Switch nodes to make smart workflows" },
-      { title: "Final Project", duration: "30 min", description: "Build complete automated form response handler with notifications and emails" }
+      { session: 1, module: 1, title: "What is n8n & Platform Setup", duration: "20 min", description: "Workflow automation explained, n8n vs Zapier/Make, cloud vs self-hosted, Editor UI tour (canvas, node panel, workflow controls, executions)" },
+      { session: 1, module: 2, title: "Core Concepts & Understanding Data", duration: "25 min", description: "What nodes are, triggers vs actions, data structure in n8n (JSON), how data flows between nodes, workflow execution and history" },
+      { session: 1, module: 3, title: "Building Your First Workflows", duration: "25 min", description: "Simple 2-node workflow (Schedule Trigger + Action), configuring node settings, saving and activating workflows. Build: Daily Slack Reminder" },
+      { session: 1, module: 4, title: "Triggers & Data Flow", duration: "20 min", description: "Trigger types (Schedule, Webhook, App, Manual), working with app triggers (Gmail, Forms, Slack), using trigger data in subsequent nodes. Build: Email Notification workflow" },
+      { session: 2, module: 5, title: "App Integrations & Credentials", duration: "20 min", description: "OAuth vs API key authentication, storing credentials safely, Google Sheets integration (read, append, update). Build: Data Logger workflow" },
+      { session: 2, module: 6, title: "Conditional Logic & Multi-Step Workflows", duration: "25 min", description: "IF node (conditions, true/false branches), Switch node (multiple paths), data transformation (Set, Filter nodes). Build: Smart Email Router" },
+      { session: 2, module: 7, title: "Testing, Debugging & Templates", duration: "20 min", description: "Testing workflows effectively, common errors (credentials, missing data, rate limits), debugging strategies, n8n template library" },
+      { session: 2, module: 8, title: "Final Project - Automated Form Response Handler", duration: "25 min", description: "Capstone: Google Forms trigger → IF node (priority check) → Google Sheets → Slack notification → confirmation email. Complete production-ready automation" }
     ],
     includes: [
       "Full course access",
@@ -1313,6 +1353,15 @@ export const coursesDatabase = [
       earnWhileTeaching: true,
       teacherCommission: "70%"
     },
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Planning & Setup", duration: "90 min", modules: [1, 2, 3, 4] },
+        { number: 2, title: "Building & Deployment", duration: "90 min", modules: [5, 6, 7, 8] }
+      ]
+    },
     learningObjectives: [
       "Plan and architect web projects with AI guidance",
       "Build complete websites using the 6-phase vibe coding methodology",
@@ -1324,14 +1373,14 @@ export const coursesDatabase = [
       "Make strategic technical decisions (deployment, stack, architecture)"
     ],
     curriculum: [
-      { title: "Vibe Coding Mindset", duration: "20 min", description: "How to work with AI as a coding partner, the taste principle, and when to use AI vs manual coding" },
-      { title: "The 6-Phase Methodology", duration: "25 min", description: "Vision, Constraints, Architecture, Building, Testing, Deployment - the structured process for any project" },
-      { title: "Strategic Planning", duration: "25 min", description: "How to make upfront technical decisions (deployment, stack, architecture) that affect your entire build" },
-      { title: "GitHub Repository Setup", duration: "20 min", description: "Creating repos, managing code, understanding git workflows for AI-assisted development" },
-      { title: "Vercel Configuration", duration: "20 min", description: "Setting up deployment infrastructure before you build (architecture follows deployment)" },
-      { title: "Iterative Building", duration: "30 min", description: "Building component by component with Claude, using the q-vibe-coder methodology files" },
-      { title: "Troubleshooting & Debugging", duration: "30 min", description: "Common errors, how to fix them, debugging strategies, git recovery techniques" },
-      { title: "Production Deployment", duration: "30 min", description: "Deploying your website to Vercel, connecting domains, going live" }
+      { session: 1, module: 1, title: "Vibe Coding Mindset & Philosophy", duration: "20 min", description: "What vibe coding is (directing AI strategically), the taste principle, common mistakes, when AI excels vs manual coding, role of structure" },
+      { session: 1, module: 2, title: "Project Planning with Claude", duration: "25 min", description: "The 6-phase methodology (Vision→Constraints→Architecture→Building→Testing→Deployment), strategic upfront decisions, q-vibe-coder template setup" },
+      { session: 1, module: 3, title: "Tool Limitations & When to Use What", duration: "20 min", description: "AI limitations (what requires caution), tool integration (design tools, libraries, APIs), Q-System session management (/q-begin, /q-end, /q-checkpoint)" },
+      { session: 1, module: 4, title: "Setting Up Your First Project - GitHub & Vercel", duration: "25 min", description: "GitHub repo creation, git basics (commit, push, pull), Vercel connection, project initialization (Next.js + Tailwind), first deploy" },
+      { session: 2, module: 5, title: "Building with Claude - Component by Component", duration: "30 min", description: "Iterative development workflow, providing clear instructions, staying in scope, git workflow (commit after each feature), tracking in project.md" },
+      { session: 2, module: 6, title: "Troubleshooting & Problem-Solving", duration: "25 min", description: "Common errors (build failures, deployment issues, styling problems), debugging strategies, git recovery (reverting, undoing), when to simplify" },
+      { session: 2, module: 7, title: "Refining & Polishing Your Project", duration: "20 min", description: "Phase 5 Testing (functional, error handling, visual, UX), iterative refinement, visual polish (spacing, typography, responsiveness), edge cases" },
+      { session: 2, module: 8, title: "Deploy to Production & Final Review", duration: "15 min", description: "Phase 6 Deployment verification, Vercel dashboard, custom domains (optional), maintenance workflow, planning v2 features" }
     ],
     includes: [
       "Full course access",

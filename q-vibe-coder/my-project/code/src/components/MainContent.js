@@ -34,6 +34,7 @@ import Notifications from './Notifications';
 import AboutView from './AboutView';
 import DiscoverView from './DiscoverView';
 import { getAllInstructors, getInstructorWithCourses, getCourseById, getAllCourses, getInstructorById, getIndexedCourses, getIndexedInstructors } from '../data/database';
+import { communityUsers } from '../data/users';
 import { UserPropType } from './PropTypes';
 
 // Guy Rymberg's course IDs - default enrollment for all users
@@ -419,10 +420,13 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false); // Track course description expansion
   const [showEnrollmentFlow, setShowEnrollmentFlow] = useState(false); // Track enrollment modal visibility
   const [enrollingCourse, setEnrollingCourse] = useState(null); // Course being enrolled in
+  const [enrollingSessionNumber, setEnrollingSessionNumber] = useState(1); // Which session number we're scheduling (1 or 2)
   const [showEnrollOptions, setShowEnrollOptions] = useState(false); // Track enroll options modal (3-option menu)
   const [showFindTeacher, setShowFindTeacher] = useState(false); // Track find teacher full screen view
   const [showPurchaseModal, setShowPurchaseModal] = useState(false); // Track purchase modal visibility
   const [preSelectedTeacher, setPreSelectedTeacher] = useState(null); // Teacher selected from FindTeacherView
+  const [showSameTeacherModal, setShowSameTeacherModal] = useState(false); // Ask if user wants same teacher
+  const [previousSessionTeacher, setPreviousSessionTeacher] = useState(null); // Teacher from previous session
 
   // Signup completed state - shared between Community and DiscoverView
   // This ensures the welcome card disappears in both views after completing signup
@@ -650,6 +654,57 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       localStorage.setItem(`scheduledSessions_${currentUser.id}`, JSON.stringify(scheduledSessions));
     }
   }, [scheduledSessions, currentUser?.id]);
+
+  // Session completion tracking - which course sessions are completed
+  // Structure: { courseId: { sessionNumber: { completed: true, completedAt: ISO date } } }
+  const [sessionCompletion, setSessionCompletion] = useState(() => {
+    if (!currentUser?.id) return {};
+    try {
+      const storageKey = `sessionCompletion_${currentUser.id}`;
+      const stored = localStorage.getItem(storageKey);
+      return stored ? JSON.parse(stored) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+
+  // Reload sessionCompletion when user changes
+  React.useEffect(() => {
+    if (!currentUser?.id) return;
+    try {
+      const storageKey = `sessionCompletion_${currentUser.id}`;
+      const stored = localStorage.getItem(storageKey);
+      setSessionCompletion(stored ? JSON.parse(stored) : {});
+    } catch (e) {
+      setSessionCompletion({});
+    }
+  }, [currentUser?.id]);
+
+  // Save sessionCompletion to localStorage
+  React.useEffect(() => {
+    if (currentUser?.id && Object.keys(sessionCompletion).length > 0) {
+      localStorage.setItem(`sessionCompletion_${currentUser.id}`, JSON.stringify(sessionCompletion));
+    }
+  }, [sessionCompletion, currentUser?.id]);
+
+  // Helper to mark a session as complete
+  const markSessionComplete = (courseId, sessionNumber) => {
+    setSessionCompletion(prev => ({
+      ...prev,
+      [courseId]: {
+        ...(prev[courseId] || {}),
+        [sessionNumber]: {
+          completed: true,
+          completedAt: new Date().toISOString()
+        }
+      }
+    }));
+  };
+
+  // Helper to check if a session is complete
+  const isSessionComplete = (courseId, sessionNumber) => {
+    return sessionCompletion[courseId]?.[sessionNumber]?.completed || false;
+  };
 
   // Helper to add a new scheduled session
   const addScheduledSession = (session) => {
@@ -883,24 +938,86 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     }));
   };
 
-  // Helper: When student is certified (releases $315 payout)
-  const certifyStudent = (studentId, studentName, courseName) => {
-    // Update S-T stats
-    setStTeacherStats(prev => ({
-      ...prev,
-      activeStudents: prev.activeStudents.filter(s => s.id !== studentId),
-      completedStudents: [...prev.completedStudents, studentId],
-      pendingBalance: Math.max(0, prev.pendingBalance - 315),
-      totalEarned: prev.totalEarned + 315,
-      earningsHistory: [
-        { studentId, studentName, courseName, amount: 315, date: new Date().toISOString() },
-        ...(prev.earningsHistory || [])
-      ]
-    }));
+  // Helper: When student session is certified (releases partial payout per session)
+  // sessionNumber: which session (1, 2, etc.) is being certified
+  // totalSessions: total sessions in the course (default 2)
+  const certifyStudent = (studentId, studentName, courseName, courseId, sessionNumber = 1, totalSessions = 2) => {
+    // Calculate per-session payout (split $315 across sessions, but we'll pay full $315 per session for simplicity)
+    const perSessionPayout = 315;
 
-    // Move student's sessions from upcoming to completed, or create a completed session if none exists
-    // IMPORTANT: Read from localStorage first to get any sessions added while we were viewing
-    // This prevents losing new bookings that were made while teacher had dashboard open
+    // Parse enrollment ID to get actual student userId
+    const lastDashIndex = studentId.lastIndexOf('-');
+    const actualStudentId = lastDashIndex > 0 ? studentId.substring(0, lastDashIndex) : studentId;
+    const actualCourseId = courseId || (lastDashIndex > 0 ? studentId.substring(lastDashIndex + 1) : null);
+
+    // Update the STUDENT's sessionCompletion in their localStorage
+    // This is the key fix - we need to update Sarah's data when Alex certifies
+    if (actualStudentId && actualCourseId) {
+      const studentCompletionKey = `sessionCompletion_${actualStudentId}`;
+      try {
+        const stored = localStorage.getItem(studentCompletionKey);
+        const studentCompletion = stored ? JSON.parse(stored) : {};
+
+        // Mark this session as complete for this course
+        studentCompletion[actualCourseId] = {
+          ...(studentCompletion[actualCourseId] || {}),
+          [sessionNumber]: {
+            completed: true,
+            completedAt: new Date().toISOString(),
+            certifiedBy: currentUser?.id,
+            certifiedByName: currentUser?.name
+          }
+        };
+
+        localStorage.setItem(studentCompletionKey, JSON.stringify(studentCompletion));
+        console.log(`Certified session ${sessionNumber} for student ${actualStudentId}, course ${actualCourseId}`);
+      } catch (e) {
+        console.error('Error updating student sessionCompletion:', e);
+      }
+    }
+
+    // Check if ALL sessions for this course are now complete
+    let allSessionsComplete = false;
+    if (actualStudentId && actualCourseId) {
+      try {
+        const stored = localStorage.getItem(`sessionCompletion_${actualStudentId}`);
+        const studentCompletion = stored ? JSON.parse(stored) : {};
+        const courseCompletion = studentCompletion[actualCourseId] || {};
+
+        // Count completed sessions
+        const completedCount = Object.keys(courseCompletion).filter(
+          key => courseCompletion[key]?.completed
+        ).length;
+
+        allSessionsComplete = completedCount >= totalSessions;
+      } catch (e) {
+        console.error('Error checking session completion:', e);
+      }
+    }
+
+    // Update S-T stats - only move to completedStudents when ALL sessions done
+    setStTeacherStats(prev => {
+      const updates = {
+        ...prev,
+        pendingBalance: Math.max(0, prev.pendingBalance - perSessionPayout),
+        totalEarned: prev.totalEarned + perSessionPayout,
+        earningsHistory: [
+          { studentId, studentName, courseName, sessionNumber, amount: perSessionPayout, date: new Date().toISOString() },
+          ...(prev.earningsHistory || [])
+        ]
+      };
+
+      // Only move student to completed when all sessions are done
+      if (allSessionsComplete) {
+        updates.activeStudents = prev.activeStudents.filter(s => s.id !== studentId);
+        updates.completedStudents = [...prev.completedStudents, studentId];
+      }
+
+      return updates;
+    });
+
+    // Move the specific session from upcoming to completed in teacher's sessions
+    // Only mark the specific sessionNumber as completed, not all sessions for the course
     setTeacherSessions(prev => {
       // Read latest from localStorage in case new sessions were added
       let currentSessions = prev;
@@ -914,33 +1031,34 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         console.error('Error reading teacherSessions from localStorage:', e);
       }
 
-      // Parse enrollment ID to get actual studentId and courseId
-      // Format: ${userId}-${courseId}
-      const lastDash = studentId.lastIndexOf('-');
-      const actualStudentId = lastDash > 0 ? studentId.substring(0, lastDash) : studentId;
-      const courseId = lastDash > 0 ? studentId.substring(lastDash + 1) : null;
-
-      // Check if there are any sessions for this student (match by actual user ID and course)
-      const hasSessionsForStudent = currentSessions.some(s =>
-        s.studentId === actualStudentId && (!courseId || String(s.courseId) === courseId)
+      // Find and mark the specific session as completed
+      const hasMatchingSession = currentSessions.some(s =>
+        s.studentId === actualStudentId &&
+        String(s.courseId) === String(actualCourseId) &&
+        (s.sessionNumber === sessionNumber || !s.sessionNumber)
       );
 
       let updated;
-      if (hasSessionsForStudent) {
-        // Mark matching sessions as completed
-        updated = currentSessions.map(session =>
-          session.studentId === actualStudentId && (!courseId || String(session.courseId) === courseId)
-            ? { ...session, status: 'completed' }
-            : session
-        );
+      if (hasMatchingSession) {
+        // Mark only the specific session as completed
+        updated = currentSessions.map(session => {
+          if (session.studentId === actualStudentId &&
+              String(session.courseId) === String(actualCourseId) &&
+              (session.sessionNumber === sessionNumber || !session.sessionNumber)) {
+            return { ...session, status: 'completed', sessionNumber, certifiedAt: new Date().toISOString() };
+          }
+          return session;
+        });
       } else {
         // No sessions exist - create a completed session record for certification
         const completedSession = {
-          id: `cert-${studentId}-${Date.now()}`,
-          studentId,
+          id: `cert-${studentId}-session${sessionNumber}-${Date.now()}`,
+          studentId: actualStudentId,
           studentName,
           teacherId: currentUser?.id,
           courseName,
+          courseId: actualCourseId,
+          sessionNumber,
           date: new Date().toISOString().split('T')[0],
           time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
           status: 'completed',
@@ -956,25 +1074,21 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       return updated;
     });
 
-    // Also update the student's scheduledSessions so their My Courses shows it as completed
-    // Parse enrollmentId to get actual userId and courseId
-    // Format: ${userId}-${courseId}
-    const lastDashIndex = studentId.lastIndexOf('-');
-    if (lastDashIndex > 0) {
-      const actualStudentId = studentId.substring(0, lastDashIndex);
-      const courseId = studentId.substring(lastDashIndex + 1);
-
-      // Update student's scheduled sessions
+    // Also update the student's scheduledSessions - mark only the specific session as completed
+    if (actualStudentId && actualCourseId) {
       const studentSessionsKey = `scheduledSessions_${actualStudentId}`;
       try {
         const stored = localStorage.getItem(studentSessionsKey);
         if (stored) {
           const studentSessions = JSON.parse(stored);
-          const updatedStudentSessions = studentSessions.map(session =>
-            String(session.courseId) === String(courseId)
-              ? { ...session, status: 'completed', certifiedAt: new Date().toISOString() }
-              : session
-          );
+          const updatedStudentSessions = studentSessions.map(session => {
+            // Only mark sessions matching this course AND session number
+            if (String(session.courseId) === String(actualCourseId) &&
+                (session.sessionNumber === sessionNumber || !session.sessionNumber)) {
+              return { ...session, status: 'completed', sessionNumber, certifiedAt: new Date().toISOString() };
+            }
+            return session;
+          });
           localStorage.setItem(studentSessionsKey, JSON.stringify(updatedStudentSessions));
         }
       } catch (e) {
@@ -1540,7 +1654,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Show Browse when Browse is active - now using BrowseView component
   if (activeMenu === 'Browse' || activeMenu === 'Browse_Reset' || activeMenu === 'Browse_Courses' || activeMenu === 'Browse_Communities') {
-    return (
+    return (<>
       <BrowseView
         isDarkMode={isDarkMode}
         currentUser={currentUser}
@@ -1598,7 +1712,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               time: booking.time,
               status: 'scheduled',
               studentId: currentUser?.id,
-              studentName: currentUser?.name
+              studentName: currentUser?.name,
+              sessionNumber: enrollingSessionNumber || 1
             });
             console.log('BrowseView session scheduled:', newSession);
 
@@ -1701,7 +1816,90 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           onMenuChange('My Courses');
         }}
       />
-    );
+      {/* EnrollOptionsModal for Browse flow */}
+      {showEnrollOptions && enrollingCourse && (
+        <EnrollOptionsModal
+          course={enrollingCourse}
+          instructor={getInstructorById(enrollingCourse.instructorId)}
+          isDarkMode={isDarkMode}
+          onClose={() => {
+            setShowEnrollOptions(false);
+            setEnrollingCourse(null);
+          }}
+          onSelectPurchase={() => {
+            setShowEnrollOptions(false);
+            setShowPurchaseModal(true);
+          }}
+          onSelectFindTeacher={() => {
+            setShowEnrollOptions(false);
+            setShowFindTeacher(true);
+          }}
+          onSelectPickDate={() => {
+            setShowEnrollOptions(false);
+            setShowEnrollmentFlow(true);
+          }}
+        />
+      )}
+      {/* PurchaseModal for Browse flow */}
+      {showPurchaseModal && enrollingCourse && (
+        <PurchaseModal
+          course={enrollingCourse}
+          instructor={getInstructorById(enrollingCourse.instructorId)}
+          isDarkMode={isDarkMode}
+          onClose={() => {
+            setShowPurchaseModal(false);
+            setEnrollingCourse(null);
+          }}
+          onPurchaseComplete={(destination) => {
+            // Complete the purchase
+            handleCoursePurchase(enrollingCourse.id);
+
+            // Auto-join the course's community
+            if (enrollingCourse.instructorId) {
+              const creatorId = `creator-${enrollingCourse.instructorId}`;
+              const instructor = getInstructorById(enrollingCourse.instructorId);
+
+              setFollowedCommunities(prev => {
+                const alreadyFollowing = prev.some(c => c.id === creatorId);
+                if (!alreadyFollowing && instructor) {
+                  return [...prev, {
+                    id: creatorId,
+                    type: 'creator',
+                    name: instructor.name,
+                    instructorId: instructor.id,
+                    instructorName: instructor.name,
+                    courseIds: instructor.courses || [],
+                    followedCourseIds: [enrollingCourse.id],
+                    description: instructor.bio,
+                    avatar: instructor.avatar
+                  }];
+                } else if (alreadyFollowing) {
+                  return prev.map(c => {
+                    if (c.id === creatorId && !(c.followedCourseIds || []).includes(enrollingCourse.id)) {
+                      return { ...c, followedCourseIds: [...(c.followedCourseIds || []), enrollingCourse.id] };
+                    }
+                    return c;
+                  });
+                }
+                return prev;
+              });
+            }
+
+            // Close modal and navigate based on destination
+            setShowPurchaseModal(false);
+            if (destination === 'schedule') {
+              setShowEnrollmentFlow(true);
+            } else {
+              // Navigate to My Courses
+              setViewingCourseFromCommunity(enrollingCourse);
+              setNavigationHistory(prev => [...prev, 'My Courses']);
+              onMenuChange('My Courses');
+              setEnrollingCourse(null);
+            }
+          }}
+        />
+      )}
+    </>);
   }
 
   // Show Course when viewing a course (from community, dashboard, or My Courses)
@@ -1793,6 +1991,102 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     }
 
     if (isPurchased) {
+      // Show EnrollmentFlow when "Yes, Schedule with Same Teacher" is clicked
+      if (showEnrollmentFlow && enrollingCourse) {
+        return (
+          <CourseDetailWrapper>
+            <EnrollmentFlow
+              course={enrollingCourse}
+              instructor={getInstructorById(enrollingCourse.instructorId)}
+              isDarkMode={isDarkMode}
+              isAlreadyPurchased={true}
+              preSelectedTeacher={preSelectedTeacher}
+              onClose={() => {
+                setShowEnrollmentFlow(false);
+                setEnrollingCourse(null);
+                setPreSelectedTeacher(null);
+              }}
+              onComplete={(booking) => {
+                console.log('Booking complete (same teacher):', booking);
+                setPreSelectedTeacher(null);
+
+                // Save the scheduled session
+                const newSession = addScheduledSession({
+                  courseId: enrollingCourse.id,
+                  courseName: enrollingCourse.title,
+                  teacherId: booking.teacher?.id,
+                  teacherName: booking.teacher?.name,
+                  date: booking.date,
+                  time: booking.time,
+                  status: 'scheduled',
+                  studentId: currentUser?.id,
+                  studentName: currentUser?.name,
+                  sessionNumber: enrollingSessionNumber || 1
+                });
+                console.log('Session scheduled:', newSession);
+
+                // Update the teacher's S-T stats (cross-user update)
+                if (booking.teacher?.id) {
+                  const teacherStatsKey = `stTeacherStats_${booking.teacher.id}`;
+                  try {
+                    const existingStats = localStorage.getItem(teacherStatsKey);
+                    const stats = existingStats ? JSON.parse(existingStats) : {
+                      activeStudents: [],
+                      completedStudents: [],
+                      totalEarned: 0,
+                      pendingBalance: 0,
+                      sessionsCompleted: 0,
+                      rating: 0,
+                      ratingCount: 0,
+                      earningsHistory: []
+                    };
+
+                    // Add this student to activeStudents if not already there
+                    const studentEntry = {
+                      id: `${currentUser?.id}-${enrollingCourse.id}`,
+                      name: currentUser?.name,
+                      courseName: enrollingCourse.title,
+                      courseId: enrollingCourse.id,
+                      enrolledAt: new Date().toISOString(),
+                      sessionNumber: enrollingSessionNumber || 1
+                    };
+
+                    const alreadyActive = stats.activeStudents?.some(s =>
+                      s.id === studentEntry.id && s.sessionNumber === studentEntry.sessionNumber
+                    );
+                    if (!alreadyActive) {
+                      stats.activeStudents = [...(stats.activeStudents || []), studentEntry];
+                    }
+
+                    localStorage.setItem(teacherStatsKey, JSON.stringify(stats));
+                    console.log('Updated teacher stats for:', booking.teacher.name);
+                  } catch (e) {
+                    console.error('Error updating teacher stats:', e);
+                  }
+                }
+
+                setShowEnrollmentFlow(false);
+                setEnrollingCourse(null);
+              }}
+              onViewTeacherProfile={(user) => {
+                setNavigationHistory(prev => [...prev, {
+                  menu: activeMenu,
+                  feed: 'main',
+                  showEnrollmentFlow: true,
+                  enrollingCourse: enrollingCourse,
+                  preSelectedTeacher: preSelectedTeacher,
+                  viewingCourseFromCommunity: viewingCourseFromCommunity
+                }]);
+                setShowEnrollmentFlow(false);
+                setEnrollingCourse(null);
+                setPreSelectedTeacher(null);
+                setViewingMemberProfile(user);
+              }}
+            />
+          </CourseDetailWrapper>
+        );
+      }
+
       return (<>
         <CourseDetailWrapper>
           <CourseDetailView
@@ -1814,9 +2108,29 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             currentUser={currentUser}
             onMenuChange={onMenuChange}
             scheduledSessions={scheduledSessions}
+            sessionCompletion={sessionCompletion}
             onRescheduleSession={(session) => setRescheduleModalSession(session)}
-            onBrowseStudentTeachers={() => {
-              setEnrollingCourse(viewingCourseFromCommunity);
+            onBrowseStudentTeachers={(course, sessionNumber) => {
+              const targetCourse = course || viewingCourseFromCommunity;
+              setEnrollingCourse(targetCourse);
+              // Store the sessionNumber for when scheduling completes
+              setEnrollingSessionNumber(sessionNumber || 1);
+
+              // For Session 2+, check if there was a previous teacher
+              if (sessionNumber > 1 && targetCourse) {
+                const prevSession = sessionCompletion[targetCourse.id]?.[sessionNumber - 1];
+                if (prevSession?.completed && prevSession?.certifiedBy) {
+                  // Try to find the teacher in communityUsers
+                  const teacherObj = communityUsers[prevSession.certifiedBy];
+                  if (teacherObj) {
+                    setPreviousSessionTeacher(teacherObj);
+                    setShowSameTeacherModal(true);
+                    return; // Don't show FindTeacherView yet
+                  }
+                }
+              }
+
+              // No previous teacher found, show FindTeacherView directly
               setShowFindTeacher(true);
             }}
           />
@@ -1828,6 +2142,94 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             onClose={() => setRescheduleModalSession(null)}
             onConfirm={rescheduleSession}
           />
+        )}
+        {/* Same Teacher Modal - asks if user wants to schedule with previous session's teacher */}
+        {showSameTeacherModal && previousSessionTeacher && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 10000
+          }}>
+            <div style={{
+              background: isDarkMode ? '#16181c' : '#fff',
+              borderRadius: 16,
+              padding: 24,
+              maxWidth: 400,
+              width: '90%',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+            }}>
+              <h3 style={{
+                margin: '0 0 16px 0',
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                fontSize: 18,
+                fontWeight: 700
+              }}>
+                Schedule with Same Teacher?
+              </h3>
+              <p style={{
+                color: isDarkMode ? '#71767b' : '#536471',
+                fontSize: 14,
+                lineHeight: 1.5,
+                margin: '0 0 20px 0'
+              }}>
+                Your previous session was with <strong style={{ color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                  {previousSessionTeacher.name}
+                </strong>. Would you like to schedule Session {enrollingSessionNumber} with them again?
+              </p>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button
+                  onClick={() => {
+                    // User wants same teacher - go directly to EnrollmentFlow
+                    setShowSameTeacherModal(false);
+                    setPreSelectedTeacher(previousSessionTeacher);
+                    setShowEnrollmentFlow(true);
+                    setPreviousSessionTeacher(null);
+                  }}
+                  style={{
+                    flex: 1,
+                    background: '#1d9bf0',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '12px 20px',
+                    borderRadius: 20,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Yes, Schedule with {previousSessionTeacher.name?.split(' ')[0]}
+                </button>
+                <button
+                  onClick={() => {
+                    // User wants different teacher - show FindTeacherView
+                    setShowSameTeacherModal(false);
+                    setPreviousSessionTeacher(null);
+                    setShowFindTeacher(true);
+                  }}
+                  style={{
+                    flex: 1,
+                    background: 'transparent',
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                    padding: '12px 20px',
+                    borderRadius: 20,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Choose Different Teacher
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </>);
     }
@@ -2024,7 +2426,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                 time: booking.time,
                 status: 'scheduled',
                 studentId: currentUser?.id,
-                studentName: currentUser?.name
+                studentName: currentUser?.name,
+                sessionNumber: enrollingSessionNumber || 1
               });
               console.log('Session scheduled:', newSession);
 
@@ -2216,7 +2619,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                 time: booking.time,
                 status: 'scheduled',
                 studentId: currentUser?.id,
-                studentName: currentUser?.name
+                studentName: currentUser?.name,
+                sessionNumber: enrollingSessionNumber || 1
               });
               console.log('Session scheduled:', newSession);
 

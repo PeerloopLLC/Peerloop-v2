@@ -34,6 +34,7 @@ const StudentTeacherDashboard = ({
   const [showCertifyModal, setShowCertifyModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [certifyNotes, setCertifyNotes] = useState('');
+  const [selectedSessionNumber, setSelectedSessionNumber] = useState(1);
   const [moduleChecks, setModuleChecks] = useState({
     module1: false,
     module2: false,
@@ -80,28 +81,33 @@ const StudentTeacherDashboard = ({
   // Open certify modal for a student
   const handleOpenCertify = (student) => {
     setSelectedStudent(student);
+    setSelectedSessionNumber(1); // Default to session 1
     setModuleChecks({ module1: false, module2: false, module3: false, module4: false });
     setCertifyNotes('');
     setShowCertifyModal(true);
   };
 
-  // Handle certify submission
+  // Handle certify submission - now passes sessionNumber
   const handleCertifySubmit = () => {
     if (selectedStudent && onCertifyStudent) {
       onCertifyStudent(
-        selectedStudent.id,
-        selectedStudent.name,
-        selectedStudent.courseName
+        selectedStudent.id,           // enrollmentId (userId-courseId)
+        selectedStudent.name,         // studentName
+        selectedStudent.courseName,   // courseName
+        selectedStudent.courseId,     // courseId
+        selectedSessionNumber,        // sessionNumber (1 or 2)
+        2                             // totalSessions (default 2)
       );
     }
     setShowCertifyModal(false);
     setSelectedStudent(null);
     setCertifyNotes('');
+    setSelectedSessionNumber(1);
     setModuleChecks({ module1: false, module2: false, module3: false, module4: false });
   };
 
-  // Check if all modules are checked
-  const allModulesChecked = Object.values(moduleChecks).every(v => v);
+  // Check if all modules are checked (or session selected for new flow)
+  const allModulesChecked = selectedSessionNumber > 0;
 
   // Availability state - each day has an array of time slots
   const [availability, setAvailability] = useState({
@@ -1169,7 +1175,7 @@ const StudentTeacherDashboard = ({
                 Course: <span style={{ color: textPrimary, fontWeight: 500 }}>{selectedStudent.courseName || 'Course'}</span>
               </div>
 
-              {/* Module Checklist */}
+              {/* Session Selection */}
               <div style={{ marginBottom: 20 }}>
                 <div style={{
                   fontSize: 14,
@@ -1177,48 +1183,58 @@ const StudentTeacherDashboard = ({
                   color: textPrimary,
                   marginBottom: 12
                 }}>
-                  Module Completion:
+                  Which session are you certifying?
                 </div>
                 {[
-                  { key: 'module1', label: 'Module 1: Introduction' },
-                  { key: 'module2', label: 'Module 2: Core Concepts' },
-                  { key: 'module3', label: 'Module 3: Advanced Topics' },
-                  { key: 'module4', label: 'Module 4: Final Project' }
-                ].map(module => (
+                  { number: 1, label: 'Session 1: Foundations & Frameworks', duration: '90 min' },
+                  { number: 2, label: 'Session 2: Advanced Techniques', duration: '90 min' }
+                ].map(session => (
                   <label
-                    key={module.key}
+                    key={session.number}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 10,
-                      padding: '10px 12px',
-                      background: bgSecondary,
-                      borderRadius: 8,
-                      marginBottom: 8,
+                      gap: 12,
+                      padding: '14px 16px',
+                      background: selectedSessionNumber === session.number ? (isDarkMode ? 'rgba(0, 186, 124, 0.15)' : 'rgba(0, 186, 124, 0.1)') : bgSecondary,
+                      borderRadius: 10,
+                      marginBottom: 10,
                       cursor: 'pointer',
-                      border: `1px solid ${moduleChecks[module.key] ? accentGreen : borderColor}`
+                      border: `2px solid ${selectedSessionNumber === session.number ? accentGreen : borderColor}`,
+                      transition: 'all 0.2s'
                     }}
                   >
                     <input
-                      type="checkbox"
-                      checked={moduleChecks[module.key]}
-                      onChange={(e) => setModuleChecks(prev => ({
-                        ...prev,
-                        [module.key]: e.target.checked
-                      }))}
+                      type="radio"
+                      name="sessionNumber"
+                      checked={selectedSessionNumber === session.number}
+                      onChange={() => setSelectedSessionNumber(session.number)}
                       style={{
-                        width: 18,
-                        height: 18,
+                        width: 20,
+                        height: 20,
                         accentColor: accentGreen,
                         cursor: 'pointer'
                       }}
                     />
-                    <span style={{
-                      fontSize: 14,
-                      color: textPrimary
-                    }}>
-                      {module.label}
-                    </span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: textPrimary
+                      }}>
+                        {session.label}
+                      </div>
+                      <div style={{
+                        fontSize: 13,
+                        color: textSecondary,
+                        marginTop: 2
+                      }}>
+                        {session.duration}
+                      </div>
+                    </div>
+                    {selectedSessionNumber === session.number && (
+                      <span style={{ color: accentGreen, fontSize: 18 }}>✓</span>
+                    )}
                   </label>
                 ))}
               </div>
