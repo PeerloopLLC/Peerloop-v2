@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Course Detail - Layout Options</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px; }
+h1 { text-align: center; margin-bottom: 30px; color: #333; }
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1400px; margin: 0 auto; }
+.option { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.option-label { font-size: 14px; font-weight: 700; color: #1d9bf0; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.option-desc { font-size: 12px; color: #666; margin-bottom: 16px; line-height: 1.4; }
+
+/* Wireframe styles */
+.wf { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fafafa; }
+.wf-header { padding: 8px 12px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
+.wf-back { font-size: 11px; color: #64748b; cursor: pointer; }
+.wf-body { padding: 16px; }
+.wf-title { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
+.wf-instructor { font-size: 11px; color: #1d9bf0; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.wf-instructor .avatar { width: 18px; height: 18px; border-radius: 50%; background: #ddd; }
+.wf-desc { font-size: 11px; color: #64748b; margin-bottom: 8px; line-height: 1.4; }
+.wf-badge { display: inline-block; font-size: 9px; background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 12px; margin-bottom: 10px; }
+.wf-stats { font-size: 10px; color: #94a3b8; margin-bottom: 12px; }
+
+/* Buttons */
+.btn-primary { background: #1d9bf0; color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 11px; font-weight: 600; cursor: pointer; }
+.btn-outline { background: #fff; color: #333; border: 1px solid #ddd; border-radius: 6px; padding: 6px 14px; font-size: 11px; font-weight: 500; cursor: pointer; }
+.btn-text { background: none; border: none; color: #1d9bf0; font-size: 11px; cursor: pointer; padding: 4px 0; }
+.btn-sm { padding: 4px 10px; font-size: 10px; }
+
+/* Tabs */
+.wf-tabs { display: flex; gap: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px; }
+.wf-tab { font-size: 11px; color: #64748b; cursor: pointer; padding-bottom: 6px; }
+.wf-tab.active { color: #1e293b; font-weight: 600; border-bottom: 2px solid #1d9bf0; }
+
+/* Content blocks */
+.wf-placeholder { background: #f1f5f9; border-radius: 6px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #94a3b8; margin-bottom: 10px; }
+.wf-placeholder.tall { height: 100px; }
+.wf-placeholder.short { height: 40px; }
+
+/* Session strip styles */
+.session-strip { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.session-strip .info { font-size: 11px; color: #475569; }
+.session-strip .actions { display: flex; gap: 8px; align-items: center; }
+
+/* Yellow box */
+.yellow-box { background: #fef9e7; border: 1px solid #f5e6a3; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
+.yellow-box .title { font-size: 11px; font-weight: 600; color: #92400e; margin-bottom: 4px; }
+.yellow-box .subtitle { font-size: 10px; color: #a16207; margin-bottom: 8px; }
+
+/* Top right group */
+.top-right { position: absolute; top: 16px; right: 16px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+
+/* Two column content */
+.two-col { display: grid; grid-template-columns: 1fr 140px; gap: 12px; }
+.right-cards .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+.right-cards .card-title { font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.right-cards .card-content { font-size: 10px; color: #475569; line-height: 1.6; }
+
+.highlight-box { border: 2px dashed #1d9bf0; background: #f0f9ff; border-radius: 8px; padding: 10px; }
+.highlight-label { font-size: 9px; color: #1d9bf0; font-weight: 700; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<h1>Course Detail - Layout Options</h1>
+
+<div class="options-grid">
+
+<!-- OPTION A -->
+<div class="option">
+  <div class="option-label">Option A: Session Status Strip</div>
+  <div class="option-desc">One clean strip below the title handles all session actions. No yellow box, no floating buttons.</div>
+
+  <div class="wf">
+    <div class="wf-header">
+      <span class="wf-back">← Back to My Courses</span>
+    </div>
+    <div class="wf-body" style="position: relative;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="wf-title">Node.js Backend Development</div>
+          <div class="wf-instructor"><div class="avatar"></div> Albert Einstein</div>
+          <div class="wf-desc">Learn to build robust backend services with Node.js, Express, and MongoDB.</div>
+          <div class="wf-badge">✓ ENROLLED · Started Dec 10, 2024</div>
+        </div>
+        <button class="btn-text" style="white-space: nowrap;">Go to Community →</button>
+      </div>
+
+      <div class="highlight-box">
+        <div class="highlight-label">↓ SESSION STATUS STRIP (replaces yellow box + join button)</div>
+        <div class="session-strip">
+          <div class="info">📅 No upcoming session scheduled</div>
+          <div class="actions">
+            <button class="btn-primary btn-sm">Schedule</button>
+            <button class="btn-text" style="font-size: 10px;">Reschedule</button>
+          </div>
+        </div>
+        <div class="session-strip" style="margin-bottom: 0; border: 1px dashed #94a3b8;">
+          <div class="info">📅 Next: Jan 28, 2:00 PM with Marcus Chen</div>
+          <div class="actions">
+            <button class="btn-primary btn-sm">Join</button>
+            <button class="btn-text" style="font-size: 10px;">Reschedule</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-stats">★ 4.8 (234) · 1,250 students · 3 Modules · 12 hours</div>
+
+      <div class="wf-tabs">
+        <span class="wf-tab active">Overview</span>
+        <span class="wf-tab">Sessions</span>
+        <span class="wf-tab">Resources</span>
+        <span class="wf-tab">Feed</span>
+        <span class="wf-tab">Reviews</span>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="wf-placeholder">Video Player</div>
+          <div class="wf-placeholder short">Progress: 3/8 sessions · 90% score</div>
+          <div class="wf-placeholder short">What you'll learn</div>
+        </div>
+        <div class="right-cards">
+          <div class="card">
+            <div class="card-title">Instructor</div>
+            <div class="card-content">Albert Einstein<br>4.9 rating</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Course Details</div>
+            <div class="card-content">3 Modules<br>12 Lessons<br>Certificate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION B -->
+<div class="option">
+  <div class="option-label">Option B: Top Right Action Card</div>
+  <div class="option-desc">All actions grouped in one corner card. Clean hierarchy: primary action + secondary links.</div>
+
+  <div class="wf">
+    <div class="wf-header">
+      <span class="wf-back">← Back to My Courses</span>
+    </div>
+    <div class="wf-body" style="position: relative;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+        <div style="flex: 1;">
+          <div class="wf-title">Node.js Backend Development</div>
+          <div class="wf-instructor"><div class="avatar"></div> Albert Einstein</div>
+          <div class="wf-desc">Learn to build robust backend services with Node.js, Express, and MongoDB.</div>
+          <div class="wf-badge">✓ ENROLLED · Started Dec 10, 2024</div>
+          <div class="wf-stats">★ 4.8 (234) · 1,250 students · 3 Modules · 12 hours</div>
+        </div>
+
+        <div class="highlight-box" style="min-width: 130px; text-align: center;">
+          <div class="highlight-label">ACTION CARD</div>
+          <div style="background: #fff; border-radius: 8px; padding: 12px; border: 1px solid #e2e8f0;">
+            <button class="btn-primary" style="width: 100%; margin-bottom: 8px;">Schedule Session</button>
+            <button class="btn-text" style="display: block; width: 100%; text-align: center; font-size: 10px;">Reschedule</button>
+            <div style="border-top: 1px solid #e2e8f0; margin: 8px 0;"></div>
+            <button class="btn-text" style="display: block; width: 100%; text-align: center; font-size: 10px;">Go to Community →</button>
+          </div>
+          <div style="background: #fff; border-radius: 8px; padding: 12px; border: 1px dashed #94a3b8; margin-top: 8px;">
+            <div style="font-size: 9px; color: #475569; margin-bottom: 6px;">Jan 28, 2:00 PM</div>
+            <button class="btn-primary" style="width: 100%; margin-bottom: 8px;">▶ Join Session</button>
+            <button class="btn-text" style="display: block; width: 100%; text-align: center; font-size: 10px;">Reschedule</button>
+            <div style="border-top: 1px solid #e2e8f0; margin: 8px 0;"></div>
+            <button class="btn-text" style="display: block; width: 100%; text-align: center; font-size: 10px;">Go to Community →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-tabs">
+        <span class="wf-tab active">Overview</span>
+        <span class="wf-tab">Sessions</span>
+        <span class="wf-tab">Resources</span>
+        <span class="wf-tab">Feed</span>
+        <span class="wf-tab">Reviews</span>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="wf-placeholder">Video Player</div>
+          <div class="wf-placeholder short">Progress: 3/8 sessions · 90% score</div>
+          <div class="wf-placeholder short">What you'll learn</div>
+        </div>
+        <div class="right-cards">
+          <div class="card">
+            <div class="card-title">Instructor</div>
+            <div class="card-content">Albert Einstein<br>4.9 rating</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Course Details</div>
+            <div class="card-content">3 Modules<br>Certificate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION C -->
+<div class="option">
+  <div class="option-label">Option C: Bar Between Stats & Tabs</div>
+  <div class="option-desc">Session actions live in a strip between the info area and the content tabs. Clean separation.</div>
+
+  <div class="wf">
+    <div class="wf-header">
+      <span class="wf-back">← Back to My Courses</span>
+    </div>
+    <div class="wf-body">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="wf-title">Node.js Backend Development</div>
+          <div class="wf-instructor"><div class="avatar"></div> Albert Einstein</div>
+          <div class="wf-desc">Learn to build robust backend services with Node.js, Express, and MongoDB.</div>
+          <div class="wf-badge">✓ ENROLLED · Started Dec 10, 2024</div>
+        </div>
+        <button class="btn-text" style="white-space: nowrap;">Go to Community →</button>
+      </div>
+
+      <div class="wf-stats">★ 4.8 (234) · 1,250 students · 3 Modules · 12 hours</div>
+      <div style="font-size: 10px; color: #64748b; margin-bottom: 8px;">• 1-on-1 sessions · • Community Access · • Certificate</div>
+
+      <div class="highlight-box" style="margin-bottom: 12px;">
+        <div class="highlight-label">↓ SESSION BAR (between info & tabs)</div>
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 16px;">📅</span>
+            <div>
+              <div style="font-size: 11px; font-weight: 600; color: #1e293b;">No upcoming session</div>
+              <div style="font-size: 10px; color: #64748b;">Schedule your next 1-on-1 with a Student-Teacher</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-primary btn-sm">Schedule</button>
+            <button class="btn-outline btn-sm">Reschedule</button>
+          </div>
+        </div>
+        <div style="background: #fff; border: 1px dashed #94a3b8; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-top: 8px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 16px;">🟢</span>
+            <div>
+              <div style="font-size: 11px; font-weight: 600; color: #1e293b;">Next: Jan 28, 2:00 PM</div>
+              <div style="font-size: 10px; color: #64748b;">with Marcus Chen · Session 4 of 8</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-primary btn-sm">▶ Join</button>
+            <button class="btn-outline btn-sm">Reschedule</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-tabs">
+        <span class="wf-tab active">Overview</span>
+        <span class="wf-tab">Sessions</span>
+        <span class="wf-tab">Resources</span>
+        <span class="wf-tab">Feed</span>
+        <span class="wf-tab">Reviews</span>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="wf-placeholder">Video Player</div>
+          <div class="wf-placeholder short">Progress: 3/8 sessions · 90% score</div>
+        </div>
+        <div class="right-cards">
+          <div class="card">
+            <div class="card-title">Instructor</div>
+            <div class="card-content">Albert Einstein</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Course Details</div>
+            <div class="card-content">3 Modules<br>Certificate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION D -->
+<div class="option">
+  <div class="option-label">Option D: Minimal Header + Sessions Tab</div>
+  <div class="option-desc">Header is just identity. All session actions move into the Sessions tab. Cleanest header possible.</div>
+
+  <div class="wf">
+    <div class="wf-header">
+      <span class="wf-back">← Back to My Courses</span>
+    </div>
+    <div class="wf-body">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="wf-title">Node.js Backend Development</div>
+          <div class="wf-instructor"><div class="avatar"></div> Albert Einstein</div>
+          <div class="wf-desc">Learn to build robust backend services with Node.js, Express, and MongoDB.</div>
+          <div class="wf-badge">✓ ENROLLED · Started Dec 10, 2024</div>
+          <div class="wf-stats">★ 4.8 (234) · 1,250 students · 3 Modules · 12 hours</div>
+        </div>
+        <button class="btn-text" style="white-space: nowrap;">Go to Community →</button>
+      </div>
+
+      <div style="font-size: 10px; color: #64748b; margin-bottom: 12px;">• 1-on-1 sessions · • Community Access · • Certificate</div>
+
+      <div class="wf-tabs">
+        <span class="wf-tab">Overview</span>
+        <span class="wf-tab active" style="position: relative;">Sessions & Schedule <span style="background: #ef4444; color: #fff; font-size: 8px; padding: 1px 4px; border-radius: 8px; position: absolute; top: -4px; right: -12px;">!</span></span>
+        <span class="wf-tab">Resources</span>
+        <span class="wf-tab">Feed</span>
+        <span class="wf-tab">Reviews</span>
+      </div>
+
+      <div class="highlight-box">
+        <div class="highlight-label">↓ INSIDE "Sessions & Schedule" TAB</div>
+
+        <div style="background: #fff; border-radius: 8px; padding: 12px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="font-size: 12px; font-weight: 600; color: #1e293b;">Upcoming Session</div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-primary btn-sm">▶ Join</button>
+              <button class="btn-outline btn-sm">Reschedule</button>
+            </div>
+          </div>
+          <div style="font-size: 10px; color: #475569;">Jan 28, 2:00 PM · with Marcus Chen · Session 4 of 8</div>
+        </div>
+
+        <div style="background: #fff; border-radius: 8px; padding: 12px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
+          <div style="font-size: 11px; font-weight: 600; color: #1e293b; margin-bottom: 8px;">Session History</div>
+          <div style="font-size: 10px; color: #475569; line-height: 2;">
+            ✓ Session 1 · Jan 7 · Intro to Node.js<br>
+            ✓ Session 2 · Jan 14 · Express Basics<br>
+            ✓ Session 3 · Jan 21 · REST APIs<br>
+            ○ Session 4 · Jan 28 · MongoDB (upcoming)
+          </div>
+        </div>
+
+        <div style="text-align: center;">
+          <button class="btn-outline">+ Schedule Next Session</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <div class="wf-placeholder short">Progress: 3/8 sessions · 37.5% complete</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div style="text-align: center; margin-top: 30px; color: #94a3b8; font-size: 13px;">
+  Each option shows two states: "no session scheduled" and "session upcoming" where applicable
+</div>
+
+</body>
+</html>

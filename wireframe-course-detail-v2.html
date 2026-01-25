@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Detail - AI Tools Overview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #e7e9ea;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .back-arrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #1d9bf0;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            text-decoration: none;
+        }
+
+        .back-arrow:hover {
+            text-decoration: underline;
+        }
+
+        .course-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .creator-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .creator-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .creator-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e7e9ea;
+        }
+
+        .creator-badge {
+            background: #1d9bf0;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            color: #71767b;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        .stats-row .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stats-row .star {
+            color: #f5a623;
+        }
+
+        .includes-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .include-pill {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            color: #e7e9ea;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            display: flex;
+            border-bottom: 1px solid #2f3336;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #71767b;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .tab:hover {
+            color: #e7e9ea;
+        }
+
+        .tab.active {
+            color: #e7e9ea;
+            border-bottom-color: #1d9bf0;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Course Description */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .course-description {
+            color: #e7e9ea;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* What You'll Learn */
+        .learn-section {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+        }
+
+        .learn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .learn-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 14px;
+            color: #e7e9ea;
+        }
+
+        .learn-check {
+            color: #10b981;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Sessions */
+        .session-card {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .session-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .session-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .session-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .duration-badge {
+            background: #2f3336;
+            color: #e7e9ea;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .status-scheduled {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .schedule-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .schedule-date {
+            font-size: 14px;
+            color: #e7e9ea;
+        }
+
+        .schedule-date .icon {
+            margin-right: 6px;
+        }
+
+        .reschedule-link {
+            color: #1d9bf0;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .reschedule-link:hover {
+            text-decoration: underline;
+        }
+
+        .teacher-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .teacher-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .teacher-name {
+            font-size: 13px;
+            color: #71767b;
+        }
+
+        .teacher-label {
+            font-size: 11px;
+            color: #71767b;
+            background: #2f3336;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .schedule-btn {
+            background: #1d9bf0;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: background 0.2s;
+        }
+
+        .schedule-btn:hover {
+            background: #1a8cd8;
+        }
+
+        /* Modules Accordion */
+        .modules-list {
+            border-top: 1px solid #2f3336;
+            padding-top: 12px;
+        }
+
+        .module-item {
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .module-item:last-child {
+            border-bottom: none;
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .module-header:hover {
+            color: #1d9bf0;
+        }
+
+        .module-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .module-chevron {
+            font-size: 12px;
+            color: #71767b;
+            transition: transform 0.2s;
+            width: 16px;
+        }
+
+        .module-chevron.expanded {
+            transform: rotate(90deg);
+        }
+
+        .module-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .module-duration {
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        .module-content {
+            display: none;
+            padding: 0 0 16px 26px;
+        }
+
+        .module-content.expanded {
+            display: block;
+        }
+
+        .module-detail {
+            margin-bottom: 12px;
+        }
+
+        .module-detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1d9bf0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .module-detail-text {
+            font-size: 13px;
+            color: #71767b;
+            line-height: 1.5;
+        }
+
+        .module-topics {
+            list-style: none;
+            padding: 0;
+        }
+
+        .module-topics li {
+            font-size: 13px;
+            color: #71767b;
+            padding: 2px 0;
+            padding-left: 12px;
+            position: relative;
+        }
+
+        .module-topics li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #2f3336;
+        }
+
+        /* Resources Tab */
+        .resource-section {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .resource-section-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .resource-item:last-child {
+            border-bottom: none;
+        }
+
+        .resource-icon {
+            width: 32px;
+            height: 32px;
+            background: #2f3336;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .resource-info {
+            flex: 1;
+        }
+
+        .resource-name {
+            font-size: 14px;
+            color: #e7e9ea;
+        }
+
+        .resource-meta {
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        .resource-locked {
+            color: #71767b;
+            font-size: 14px;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .lock-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        /* Feed & Reviews placeholders */
+        .placeholder-section {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #71767b;
+        }
+
+        .placeholder-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .placeholder-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e7e9ea;
+            margin-bottom: 8px;
+        }
+
+        /* Reviews */
+        .review-card {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .review-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #2f3336;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .review-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .review-stars {
+            color: #f5a623;
+            font-size: 12px;
+            margin-left: auto;
+        }
+
+        .review-text {
+            font-size: 14px;
+            color: #71767b;
+            font-style: italic;
+        }
+
+        /* Feed */
+        .feed-post {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .feed-post-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .feed-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .feed-author {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .feed-time {
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        .feed-text {
+            font-size: 14px;
+            color: #e7e9ea;
+            margin-bottom: 10px;
+        }
+
+        .feed-actions {
+            display: flex;
+            gap: 20px;
+            color: #71767b;
+            font-size: 13px;
+        }
+
+        .feed-action {
+            cursor: pointer;
+        }
+
+        .feed-action:hover {
+            color: #1d9bf0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .learn-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .course-title {
+                font-size: 22px;
+            }
+
+            .stats-row {
+                gap: 10px;
+            }
+
+            .schedule-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <a class="back-arrow">← Back to Courses</a>
+            <h1 class="course-title">AI Tools Overview</h1>
+            <div class="creator-row">
+                <img class="creator-avatar" src="https://i.pravatar.cc/150?img=13" alt="Guy Rymberg">
+                <span class="creator-name">Guy Rymberg</span>
+                <span class="creator-badge">Creator</span>
+            </div>
+            <div class="stats-row">
+                <span class="stat"><span class="star">★</span> 4.8</span>
+                <span class="stat">342 students</span>
+                <span class="stat">3 hrs</span>
+                <span class="stat">Beginner</span>
+            </div>
+            <div class="includes-row">
+                <span class="include-pill">2 live sessions</span>
+                <span class="include-pill">Hands-on demos</span>
+                <span class="include-pill">Certificate</span>
+                <span class="include-pill">Lifetime access</span>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <div class="tab active" data-tab="overview">Overview + Curriculum</div>
+            <div class="tab" data-tab="resources">Resources</div>
+            <div class="tab" data-tab="feed">Feed</div>
+            <div class="tab" data-tab="reviews">Reviews</div>
+        </div>
+
+        <!-- Tab 1: Overview + Curriculum -->
+        <div class="tab-content active" id="tab-overview">
+            <div class="course-description">
+                Navigate the overwhelming world of AI tools with confidence. This practical course cuts through the noise and helps you understand what AI tools exist, what they're actually good for, and how to choose the right ones for your specific needs - without getting lost in the hype.
+            </div>
+            <div class="course-description">
+                The AI landscape is exploding with new tools every week. Instead of drowning you in more information, this course gives you a framework for understanding and evaluating AI tools.
+            </div>
+
+            <!-- What You'll Learn -->
+            <div class="learn-section">
+                <div class="section-title">What You'll Learn</div>
+                <div class="learn-grid">
+                    <div class="learn-item"><span class="learn-check">✓</span> Understand the major categories of AI tools available</div>
+                    <div class="learn-item"><span class="learn-check">✓</span> Navigate AI writing tools (ChatGPT, Claude, Gemini) confidently</div>
+                    <div class="learn-item"><span class="learn-check">✓</span> Know when to use different AI coding tools</div>
+                    <div class="learn-item"><span class="learn-check">✓</span> Understand AI image and video generation capabilities</div>
+                    <div class="learn-item"><span class="learn-check">✓</span> Use a decision framework to choose the right tool for any task</div>
+                    <div class="learn-item"><span class="learn-check">✓</span> Build a personal AI toolkit matched to your needs</div>
+                    <div class="learn-item"><span class="learn-check">✓</span> Evaluate new AI tools without getting overwhelmed</div>
+                    <div class="learn-item"><span class="learn-check">✓</span> Stay current with AI developments strategically</div>
+                </div>
+            </div>
+
+            <!-- Session 1: Scheduled -->
+            <div class="session-card">
+                <div class="session-header">
+                    <span class="session-title">Session 1: Text & Code AI</span>
+                    <div class="session-status">
+                        <span class="duration-badge">90 min</span>
+                        <span class="status-scheduled">Scheduled</span>
+                    </div>
+                </div>
+                <div class="schedule-info">
+                    <span class="schedule-date"><span class="icon">📅</span>Jan 28, 2026 - 2:00 PM EST</span>
+                    <a class="reschedule-link">Reschedule</a>
+                </div>
+                <div class="teacher-row">
+                    <img class="teacher-avatar" src="https://i.pravatar.cc/150?img=3" alt="Alex Sanders">
+                    <span class="teacher-name">Alex Sanders</span>
+                    <span class="teacher-label">Student-Teacher</span>
+                </div>
+                <div class="modules-list">
+                    <div class="module-item">
+                        <div class="module-header" onclick="toggleModule(this)">
+                            <div class="module-left">
+                                <span class="module-chevron">▶</span>
+                                <span class="module-name">Module 1: Understanding AI Categories</span>
+                            </div>
+                            <span class="module-duration">20 min</span>
+                        </div>
+                        <div class="module-content">
+                            <div class="module-detail">
+                                <div class="module-detail-label">Learning Objectives</div>
+                                <div class="module-detail-text">Identify the major types of AI tools and understand how they differ from each other.</div>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Topics</div>
+                                <ul class="module-topics">
+                                    <li>Major types of AI tools</li>
+                                    <li>How different AI categories compare</li>
+                                    <li>Reducing overwhelm with clear frameworks</li>
+                                </ul>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Hands-On Exercise</div>
+                                <div class="module-detail-text">Categorize 10 popular AI tools into the framework introduced in this module.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-header" onclick="toggleModule(this)">
+                            <div class="module-left">
+                                <span class="module-chevron">▶</span>
+                                <span class="module-name">Module 2: AI Writing Tools</span>
+                            </div>
+                            <span class="module-duration">30 min</span>
+                        </div>
+                        <div class="module-content">
+                            <div class="module-detail">
+                                <div class="module-detail-label">Learning Objectives</div>
+                                <div class="module-detail-text">Understand the strengths of ChatGPT, Claude, and Gemini and know when to use each one.</div>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Topics</div>
+                                <ul class="module-topics">
+                                    <li>ChatGPT - strengths and use cases</li>
+                                    <li>Claude - strengths and use cases</li>
+                                    <li>Gemini - strengths and use cases</li>
+                                    <li>Comparing outputs side-by-side</li>
+                                </ul>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Hands-On Exercise</div>
+                                <div class="module-detail-text">Write the same prompt in all three tools and compare the outputs to understand their differences.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-header" onclick="toggleModule(this)">
+                            <div class="module-left">
+                                <span class="module-chevron">▶</span>
+                                <span class="module-name">Module 3: AI Coding Tools</span>
+                            </div>
+                            <span class="module-duration">25 min</span>
+                        </div>
+                        <div class="module-content">
+                            <div class="module-detail">
+                                <div class="module-detail-label">Learning Objectives</div>
+                                <div class="module-detail-text">Understand the capabilities of Claude Code, Cursor, and GitHub Copilot.</div>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Topics</div>
+                                <ul class="module-topics">
+                                    <li>Claude Code - terminal-based AI coding</li>
+                                    <li>Cursor - AI-powered IDE</li>
+                                    <li>GitHub Copilot - code completion</li>
+                                    <li>Choosing based on your skill level</li>
+                                </ul>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Hands-On Exercise</div>
+                                <div class="module-detail-text">Try building a simple function with one AI coding tool and evaluate the experience.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-header" onclick="toggleModule(this)">
+                            <div class="module-left">
+                                <span class="module-chevron">▶</span>
+                                <span class="module-name">Module 4: Decision Framework</span>
+                            </div>
+                            <span class="module-duration">15 min</span>
+                        </div>
+                        <div class="module-content">
+                            <div class="module-detail">
+                                <div class="module-detail-label">Learning Objectives</div>
+                                <div class="module-detail-text">Apply a repeatable framework to evaluate and choose AI tools for any task.</div>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Topics</div>
+                                <ul class="module-topics">
+                                    <li>The tool evaluation checklist</li>
+                                    <li>Matching tools to task types</li>
+                                    <li>Avoiding overwhelm and shiny object syndrome</li>
+                                    <li>When NOT to use AI</li>
+                                </ul>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Hands-On Exercise</div>
+                                <div class="module-detail-text">Use the decision framework on 3 real tasks from your own work to pick the best tool.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session 2: Not Scheduled -->
+            <div class="session-card">
+                <div class="session-header">
+                    <span class="session-title">Session 2: Visual AI & Your Personal Toolkit</span>
+                    <div class="session-status">
+                        <span class="duration-badge">90 min</span>
+                    </div>
+                </div>
+                <button class="schedule-btn">Schedule Session</button>
+                <div class="modules-list">
+                    <div class="module-item">
+                        <div class="module-header" onclick="toggleModule(this)">
+                            <div class="module-left">
+                                <span class="module-chevron">▶</span>
+                                <span class="module-name">Module 5: AI Image & Video Generation</span>
+                            </div>
+                            <span class="module-duration">30 min</span>
+                        </div>
+                        <div class="module-content">
+                            <div class="module-detail">
+                                <div class="module-detail-label">Learning Objectives</div>
+                                <div class="module-detail-text">Understand what's possible with AI image and video generation tools today.</div>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Topics</div>
+                                <ul class="module-topics">
+                                    <li>Midjourney, DALL-E, Stable Diffusion - capabilities</li>
+                                    <li>Runway, Pika, Sora - video generation</li>
+                                    <li>Practical use cases for visual AI</li>
+                                    <li>Current limitations to be aware of</li>
+                                </ul>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Hands-On Exercise</div>
+                                <div class="module-detail-text">Generate images with different tools using the same prompt and compare quality and style.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-header" onclick="toggleModule(this)">
+                            <div class="module-left">
+                                <span class="module-chevron">▶</span>
+                                <span class="module-name">Module 6: Other AI Tools Landscape</span>
+                            </div>
+                            <span class="module-duration">20 min</span>
+                        </div>
+                        <div class="module-content">
+                            <div class="module-detail">
+                                <div class="module-detail-label">Learning Objectives</div>
+                                <div class="module-detail-text">Discover AI tools for productivity, research, and voice beyond the major categories.</div>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Topics</div>
+                                <ul class="module-topics">
+                                    <li>Notion AI - AI-powered workspace</li>
+                                    <li>Otter.ai - meeting transcription</li>
+                                    <li>Perplexity - AI research assistant</li>
+                                    <li>Voice AI tools and assistants</li>
+                                </ul>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Hands-On Exercise</div>
+                                <div class="module-detail-text">Try Perplexity for a research task and compare results to a traditional search engine.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-header" onclick="toggleModule(this)">
+                            <div class="module-left">
+                                <span class="module-chevron">▶</span>
+                                <span class="module-name">Module 7: Building Your Personal AI Toolkit</span>
+                            </div>
+                            <span class="module-duration">20 min</span>
+                        </div>
+                        <div class="module-content">
+                            <div class="module-detail">
+                                <div class="module-detail-label">Learning Objectives</div>
+                                <div class="module-detail-text">Create a personalized set of AI tools matched to your specific needs and workflow.</div>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Topics</div>
+                                <ul class="module-topics">
+                                    <li>Auditing your current workflow for AI opportunities</li>
+                                    <li>Matching tools to your actual needs</li>
+                                    <li>Avoiding shiny object syndrome</li>
+                                    <li>Building habits with your chosen tools</li>
+                                </ul>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Hands-On Exercise</div>
+                                <div class="module-detail-text">Complete a personal AI toolkit worksheet identifying 3-5 tools for your specific workflow.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-header" onclick="toggleModule(this)">
+                            <div class="module-left">
+                                <span class="module-chevron">▶</span>
+                                <span class="module-name">Module 8: Staying Current Without Overwhelm</span>
+                            </div>
+                            <span class="module-duration">20 min</span>
+                        </div>
+                        <div class="module-content">
+                            <div class="module-detail">
+                                <div class="module-detail-label">Learning Objectives</div>
+                                <div class="module-detail-text">Develop a sustainable strategy for keeping up with AI developments.</div>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Topics</div>
+                                <ul class="module-topics">
+                                    <li>Curating your AI news sources</li>
+                                    <li>The "wait and evaluate" approach</li>
+                                    <li>Monthly review rituals</li>
+                                    <li>Community resources for staying informed</li>
+                                </ul>
+                            </div>
+                            <div class="module-detail">
+                                <div class="module-detail-label">Hands-On Exercise</div>
+                                <div class="module-detail-text">Set up a personal AI news dashboard with 3 curated sources and a monthly review reminder.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Resources -->
+        <div class="tab-content" id="tab-resources">
+            <div class="resource-section">
+                <div class="resource-section-title">
+                    <span style="color: #10b981;">●</span> Session 1: Text & Code AI
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon">🎥</div>
+                    <div class="resource-info">
+                        <div class="resource-name">Session Recording</div>
+                        <div class="resource-meta">90 min • Available after session</div>
+                    </div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon">📊</div>
+                    <div class="resource-info">
+                        <div class="resource-name">Session Slides</div>
+                        <div class="resource-meta">PDF • 24 pages</div>
+                    </div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon">📋</div>
+                    <div class="resource-info">
+                        <div class="resource-name">AI Toolkit Template</div>
+                        <div class="resource-meta">Spreadsheet • Decision framework included</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="resource-section">
+                <div class="resource-section-title">
+                    <span style="color: #71767b;">○</span> Session 2: Visual AI & Your Personal Toolkit
+                </div>
+                <div class="resource-locked">
+                    <div class="lock-icon">🔒</div>
+                    <div>Complete session to unlock resources</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Feed -->
+        <div class="tab-content" id="tab-feed">
+            <div class="feed-post">
+                <div class="feed-post-header">
+                    <img class="feed-avatar" src="https://i.pravatar.cc/150?img=3" alt="Alex">
+                    <div>
+                        <div class="feed-author">Alex Sanders</div>
+                        <div class="feed-time">2 days ago</div>
+                    </div>
+                </div>
+                <div class="feed-text">Just finished prepping for our Session 1 on Tuesday! I've got some great side-by-side comparisons of ChatGPT vs Claude vs Gemini to show you. Can't wait!</div>
+                <div class="feed-actions">
+                    <span class="feed-action">💬 2 replies</span>
+                    <span class="feed-action">👍 5</span>
+                </div>
+            </div>
+            <div class="feed-post">
+                <div class="feed-post-header">
+                    <img class="feed-avatar" src="https://i.pravatar.cc/150?img=13" alt="Guy">
+                    <div>
+                        <div class="feed-author">Guy Rymberg</div>
+                        <div class="feed-time">5 days ago</div>
+                    </div>
+                </div>
+                <div class="feed-text">Welcome to AI Tools Overview! This course is designed to cut through the noise. Pro tip: come to Session 1 with a list of tasks you do regularly - we'll find the right AI tool for each one.</div>
+                <div class="feed-actions">
+                    <span class="feed-action">💬 4 replies</span>
+                    <span class="feed-action">👍 12</span>
+                </div>
+            </div>
+            <div class="placeholder-section" style="margin-top: 16px;">
+                <div class="placeholder-icon">💬</div>
+                <div class="placeholder-title">Join the Discussion</div>
+                <div>Share your questions, discoveries, and AI tool recommendations with the class.</div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Reviews -->
+        <div class="tab-content" id="tab-reviews">
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">MC</div>
+                    <span class="review-name">Marcus Chen</span>
+                    <span class="review-stars">★★★★★</span>
+                </div>
+                <div class="review-text">"Finally understand the difference between all these AI tools! The decision framework alone was worth the price. I stopped hopping between tools randomly."</div>
+            </div>
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">JT</div>
+                    <span class="review-name">Jessica Torres</span>
+                    <span class="review-stars">★★★★★</span>
+                </div>
+                <div class="review-text">"As a PM, I needed to understand AI tools without getting too technical. This course hit the perfect balance. Now I can actually recommend the right tool for each use case."</div>
+            </div>
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">RK</div>
+                    <span class="review-name">Rachel Kim</span>
+                    <span class="review-stars">★★★★☆</span>
+                </div>
+                <div class="review-text">"Great overview for beginners. I wish Session 2 went a bit deeper on video generation, but the toolkit template I built in class has been incredibly useful."</div>
+            </div>
+            <div class="placeholder-section" style="margin-top: 16px;">
+                <div class="placeholder-icon">⭐</div>
+                <div class="placeholder-title">4.8 average from 342 students</div>
+                <div>Complete the course to leave your review.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                // Activate clicked tab
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Module accordion
+        function toggleModule(header) {
+            const chevron = header.querySelector('.module-chevron');
+            const content = header.nextElementSibling;
+
+            chevron.classList.toggle('expanded');
+            content.classList.toggle('expanded');
+        }
+    </script>
+</body>
+</html>
