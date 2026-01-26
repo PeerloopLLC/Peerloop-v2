@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session Scheduling Wireframes</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+      color: #333;
+    }
+    h1 { text-align: center; margin-bottom: 40px; color: #1d9bf0; }
+    h2 { margin-bottom: 20px; color: #536471; font-size: 18px; }
+    h3 { margin: 30px 0 15px; color: #0f1419; font-size: 16px; }
+
+    .wireframe-section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .option-label {
+      background: #1d9bf0;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    .description {
+      color: #536471;
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* ========== OPTION A: Timeline Cards ========== */
+    .timeline-container {
+      display: flex;
+      gap: 20px;
+      position: relative;
+    }
+    .timeline-container::before {
+      content: '';
+      position: absolute;
+      top: 40px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #e1e8ed;
+      z-index: 0;
+    }
+    .session-card {
+      flex: 1;
+      background: #f7f9f9;
+      border: 2px solid #e1e8ed;
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .session-card.completed {
+      border-color: #00ba7c;
+      background: #f0fdf4;
+    }
+    .session-card.current {
+      border-color: #1d9bf0;
+      background: #f0f9ff;
+    }
+    .session-card.locked {
+      opacity: 0.6;
+    }
+    .session-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #e1e8ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    .session-card.completed .session-number {
+      background: #00ba7c;
+      color: white;
+    }
+    .session-card.current .session-number {
+      background: #1d9bf0;
+      color: white;
+    }
+    .session-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .session-duration {
+      color: #536471;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .session-modules {
+      font-size: 13px;
+      color: #536471;
+      margin-bottom: 15px;
+    }
+    .schedule-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+    }
+    .schedule-btn.primary {
+      background: #1d9bf0;
+      color: white;
+    }
+    .schedule-btn.completed {
+      background: #00ba7c;
+      color: white;
+    }
+    .schedule-btn.disabled {
+      background: #e1e8ed;
+      color: #536471;
+      cursor: not-allowed;
+    }
+    .scheduled-info {
+      background: #e8f5fd;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 13px;
+      text-align: center;
+    }
+    .scheduled-info .date {
+      font-weight: 600;
+      color: #1d9bf0;
+    }
+
+    /* ========== OPTION B: Compact List ========== */
+    .compact-list {
+      border: 1px solid #e1e8ed;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .compact-session {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e1e8ed;
+      gap: 15px;
+    }
+    .compact-session:last-child {
+      border-bottom: none;
+    }
+    .compact-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #e1e8ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .compact-session.completed .compact-number {
+      background: #00ba7c;
+      color: white;
+    }
+    .compact-session.scheduled .compact-number {
+      background: #1d9bf0;
+      color: white;
+    }
+    .compact-info {
+      flex: 1;
+    }
+    .compact-title {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    .compact-meta {
+      font-size: 13px;
+      color: #536471;
+    }
+    .compact-status {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .status-badge.completed {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .status-badge.scheduled {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    .compact-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      background: #1d9bf0;
+      color: white;
+    }
+    .compact-btn.outline {
+      background: white;
+      border: 1px solid #cfd9de;
+      color: #0f1419;
+    }
+
+    /* ========== OPTION C: Progress Bar Style ========== */
+    .progress-container {
+      background: #f7f9f9;
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .progress-title {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .progress-count {
+      color: #536471;
+      font-size: 14px;
+    }
+    .progress-bar-track {
+      height: 8px;
+      background: #e1e8ed;
+      border-radius: 4px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ba7c, #1d9bf0);
+      border-radius: 4px;
+      width: 50%;
+    }
+    .progress-sessions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .progress-session {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 16px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e1e8ed;
+    }
+    .progress-session.completed {
+      border-color: #00ba7c;
+    }
+    .progress-session.active {
+      border-color: #1d9bf0;
+      box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.1);
+    }
+    .progress-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .progress-session.completed .progress-icon {
+      background: #dcfce7;
+    }
+    .progress-session.active .progress-icon {
+      background: #dbeafe;
+    }
+    .progress-session.pending .progress-icon {
+      background: #f3f4f6;
+    }
+    .progress-details {
+      flex: 1;
+    }
+    .progress-session-title {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    .progress-session-meta {
+      font-size: 13px;
+      color: #536471;
+    }
+    .progress-action {
+      flex-shrink: 0;
+    }
+
+    /* ========== OPTION D: Calendar Integration Style ========== */
+    .calendar-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 24px;
+    }
+    .sessions-list-panel {
+      background: #f7f9f9;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .sessions-list-panel h4 {
+      font-size: 14px;
+      color: #536471;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .session-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #e1e8ed;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .session-row:hover {
+      border-color: #1d9bf0;
+    }
+    .session-row.selected {
+      border-color: #1d9bf0;
+      background: #f0f9ff;
+    }
+    .session-row-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e1e8ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .session-row.completed .session-row-number {
+      background: #00ba7c;
+      color: white;
+    }
+    .session-row-info {
+      flex: 1;
+    }
+    .session-row-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .session-row-duration {
+      font-size: 12px;
+      color: #536471;
+    }
+    .session-row-status {
+      font-size: 12px;
+      color: #536471;
+    }
+
+    .calendar-panel {
+      background: white;
+      border: 1px solid #e1e8ed;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .calendar-month {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .calendar-nav {
+      display: flex;
+      gap: 8px;
+    }
+    .calendar-nav button {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #e1e8ed;
+      background: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+    .calendar-day-header {
+      font-size: 12px;
+      color: #536471;
+      padding: 8px;
+    }
+    .calendar-day {
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .calendar-day:hover {
+      background: #f7f9f9;
+    }
+    .calendar-day.selected {
+      background: #1d9bf0;
+      color: white;
+    }
+    .calendar-day.disabled {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+    .time-slots {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e1e8ed;
+    }
+    .time-slots h4 {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .time-slot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .time-slot {
+      padding: 10px;
+      border: 1px solid #e1e8ed;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .time-slot:hover {
+      border-color: #1d9bf0;
+    }
+    .time-slot.selected {
+      background: #1d9bf0;
+      color: white;
+      border-color: #1d9bf0;
+    }
+    .confirm-booking {
+      margin-top: 20px;
+    }
+    .confirm-booking button {
+      width: 100%;
+      padding: 14px;
+      background: #1d9bf0;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    /* ========== OPTION E: Stepper Style ========== */
+    .stepper-container {
+      padding: 20px 0;
+    }
+    .stepper-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    .stepper-step {
+      display: flex;
+      align-items: center;
+    }
+    .stepper-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #e1e8ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .stepper-step.completed .stepper-circle {
+      background: #00ba7c;
+      color: white;
+    }
+    .stepper-step.active .stepper-circle {
+      background: #1d9bf0;
+      color: white;
+    }
+    .stepper-line {
+      width: 100px;
+      height: 4px;
+      background: #e1e8ed;
+      margin: 0 10px;
+    }
+    .stepper-line.completed {
+      background: #00ba7c;
+    }
+    .stepper-content {
+      background: #f7f9f9;
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+    }
+    .stepper-session-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .stepper-session-subtitle {
+      color: #536471;
+      margin-bottom: 20px;
+    }
+    .stepper-modules {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .stepper-module {
+      background: white;
+      border: 1px solid #e1e8ed;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .stepper-action {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .stepper-action button {
+      padding: 14px 32px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      border: none;
+    }
+    .stepper-action .primary {
+      background: #1d9bf0;
+      color: white;
+    }
+    .stepper-action .secondary {
+      background: white;
+      border: 1px solid #cfd9de;
+      color: #0f1419;
+    }
+
+    /* Notes section */
+    .notes {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .notes h4 {
+      color: #92400e;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .notes ul {
+      margin-left: 20px;
+      color: #78350f;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <h1>Session Scheduling Interface - Wireframe Options</h1>
+
+  <!-- OPTION A: Timeline Cards -->
+  <div class="wireframe-section">
+    <span class="option-label">Option A</span>
+    <h2>Timeline Cards - Horizontal Progress</h2>
+    <p class="description">Shows sessions as cards in a horizontal timeline. Clear visual progression from left to right. Good for 2-4 sessions.</p>
+
+    <h3>State: One session completed, one ready to schedule</h3>
+    <div class="timeline-container">
+      <div class="session-card completed">
+        <div class="session-number">✓</div>
+        <div class="session-title">Session 1: Foundation & Core Concepts</div>
+        <div class="session-duration">90 min • 4 modules</div>
+        <div class="session-modules">Modules: Setup, CLAUDE.md, Context, Tools</div>
+        <button class="schedule-btn completed">✓ Completed Jan 20</button>
+      </div>
+      <div class="session-card current">
+        <div class="session-number">2</div>
+        <div class="session-title">Session 2: Advanced Techniques</div>
+        <div class="session-duration">90 min • 3 modules</div>
+        <div class="session-modules">Modules: Planning, Commands, Project</div>
+        <button class="schedule-btn primary">Schedule Session 2</button>
+      </div>
+    </div>
+
+    <h3>State: Session scheduled but not completed</h3>
+    <div class="timeline-container" style="margin-top: 20px;">
+      <div class="session-card completed">
+        <div class="session-number">✓</div>
+        <div class="session-title">Session 1: Foundation & Core Concepts</div>
+        <div class="session-duration">90 min • 4 modules</div>
+        <div class="session-modules">Modules: Setup, CLAUDE.md, Context, Tools</div>
+        <button class="schedule-btn completed">✓ Completed Jan 20</button>
+      </div>
+      <div class="session-card current">
+        <div class="session-number">2</div>
+        <div class="session-title">Session 2: Advanced Techniques</div>
+        <div class="session-duration">90 min • 3 modules</div>
+        <div class="session-modules">Modules: Planning, Commands, Project</div>
+        <div class="scheduled-info">
+          <div class="date">📅 Fri, Jan 31 at 10:00 AM</div>
+          <div style="margin-top: 6px;">with Patricia Parker</div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <button class="schedule-btn primary" style="flex: 1;">Join</button>
+          <button class="schedule-btn disabled" style="flex: 1; background: white; border: 1px solid #cfd9de; color: #536471;">Reschedule</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>Design Notes:</h4>
+      <ul>
+        <li>Clear left-to-right progression</li>
+        <li>Session 2 is locked/greyed out until Session 1 is completed (optional)</li>
+        <li>Shows what modules are covered in each session</li>
+        <li>Can expand to show more session details on click</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- OPTION B: Compact List -->
+  <div class="wireframe-section">
+    <span class="option-label">Option B</span>
+    <h2>Compact List - Minimal Space</h2>
+    <p class="description">Takes less vertical space. Good for embedding in course detail page without overwhelming. Clean and scannable.</p>
+
+    <h3>State: Both sessions need scheduling</h3>
+    <div class="compact-list">
+      <div class="compact-session">
+        <div class="compact-number">1</div>
+        <div class="compact-info">
+          <div class="compact-title">Session 1: Foundation & Core Concepts</div>
+          <div class="compact-meta">90 min • Modules 1-4</div>
+        </div>
+        <div class="compact-status">
+          <button class="compact-btn">Schedule</button>
+        </div>
+      </div>
+      <div class="compact-session">
+        <div class="compact-number">2</div>
+        <div class="compact-info">
+          <div class="compact-title">Session 2: Advanced Techniques</div>
+          <div class="compact-meta">90 min • Modules 5-7</div>
+        </div>
+        <div class="compact-status">
+          <button class="compact-btn" disabled style="opacity: 0.5;">Complete Session 1 first</button>
+        </div>
+      </div>
+    </div>
+
+    <h3>State: One completed, one scheduled</h3>
+    <div class="compact-list" style="margin-top: 20px;">
+      <div class="compact-session completed">
+        <div class="compact-number">✓</div>
+        <div class="compact-info">
+          <div class="compact-title">Session 1: Foundation & Core Concepts</div>
+          <div class="compact-meta">Completed Jan 20, 2025 • 90 min</div>
+        </div>
+        <div class="compact-status">
+          <span class="status-badge completed">✓ Completed</span>
+        </div>
+      </div>
+      <div class="compact-session scheduled">
+        <div class="compact-number">2</div>
+        <div class="compact-info">
+          <div class="compact-title">Session 2: Advanced Techniques</div>
+          <div class="compact-meta">📅 Fri, Jan 31 at 10:00 AM • Patricia Parker</div>
+        </div>
+        <div class="compact-status">
+          <button class="compact-btn outline">Reschedule</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>Design Notes:</h4>
+      <ul>
+        <li>Very space-efficient - good for mobile</li>
+        <li>Works well as a section within Course Detail page</li>
+        <li>Session 2 can be locked until Session 1 is done</li>
+        <li>Click row to expand and see module details</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- OPTION C: Progress Bar Style -->
+  <div class="wireframe-section">
+    <span class="option-label">Option C</span>
+    <h2>Progress Bar - Gamified Feel</h2>
+    <p class="description">Emphasizes progress with a visual bar. Motivating for users to see completion. Good for courses with more sessions.</p>
+
+    <div class="progress-container">
+      <div class="progress-header">
+        <div class="progress-title">📚 Your Sessions</div>
+        <div class="progress-count">1 of 2 completed</div>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill"></div>
+      </div>
+      <div class="progress-sessions">
+        <div class="progress-session completed">
+          <div class="progress-icon">✅</div>
+          <div class="progress-details">
+            <div class="progress-session-title">Session 1: Foundation & Core Concepts</div>
+            <div class="progress-session-meta">Completed Jan 20 • 90 min • 4 modules</div>
+          </div>
+          <div class="progress-action">
+            <button class="compact-btn outline">View Notes</button>
+          </div>
+        </div>
+        <div class="progress-session active">
+          <div class="progress-icon">📅</div>
+          <div class="progress-details">
+            <div class="progress-session-title">Session 2: Advanced Techniques</div>
+            <div class="progress-session-meta">Ready to schedule • 90 min • 3 modules</div>
+          </div>
+          <div class="progress-action">
+            <button class="compact-btn">Schedule Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>Design Notes:</h4>
+      <ul>
+        <li>Progress bar provides visual motivation</li>
+        <li>Works well for courses with 3+ sessions</li>
+        <li>Can show different states: completed, scheduled, ready, locked</li>
+        <li>"View Notes" links to session recap or recording</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- OPTION D: Calendar Integration -->
+  <div class="wireframe-section">
+    <span class="option-label">Option D</span>
+    <h2>Calendar Integration - Full Scheduling</h2>
+    <p class="description">Shows calendar and time slots inline. User can pick date and time without leaving the page. More complex but complete.</p>
+
+    <div class="calendar-container">
+      <div class="sessions-list-panel">
+        <h4>Course Sessions</h4>
+        <div class="session-row completed">
+          <div class="session-row-number">✓</div>
+          <div class="session-row-info">
+            <div class="session-row-title">Session 1: Foundation</div>
+            <div class="session-row-duration">90 min • Completed</div>
+          </div>
+          <div class="session-row-status">Jan 20</div>
+        </div>
+        <div class="session-row selected">
+          <div class="session-row-number">2</div>
+          <div class="session-row-info">
+            <div class="session-row-title">Session 2: Advanced</div>
+            <div class="session-row-duration">90 min • Ready</div>
+          </div>
+          <div class="session-row-status">→</div>
+        </div>
+      </div>
+
+      <div class="calendar-panel">
+        <div class="calendar-header">
+          <div class="calendar-month">January 2025</div>
+          <div class="calendar-nav">
+            <button>←</button>
+            <button>→</button>
+          </div>
+        </div>
+        <div class="calendar-grid">
+          <div class="calendar-day-header">Su</div>
+          <div class="calendar-day-header">Mo</div>
+          <div class="calendar-day-header">Tu</div>
+          <div class="calendar-day-header">We</div>
+          <div class="calendar-day-header">Th</div>
+          <div class="calendar-day-header">Fr</div>
+          <div class="calendar-day-header">Sa</div>
+          <div class="calendar-day disabled">26</div>
+          <div class="calendar-day disabled">27</div>
+          <div class="calendar-day disabled">28</div>
+          <div class="calendar-day disabled">29</div>
+          <div class="calendar-day disabled">30</div>
+          <div class="calendar-day selected">31</div>
+          <div class="calendar-day">1</div>
+          <div class="calendar-day">2</div>
+          <div class="calendar-day">3</div>
+          <div class="calendar-day">4</div>
+          <div class="calendar-day">5</div>
+          <div class="calendar-day">6</div>
+          <div class="calendar-day">7</div>
+          <div class="calendar-day">8</div>
+        </div>
+        <div class="time-slots">
+          <h4>Available Times</h4>
+          <div class="time-slot-grid">
+            <div class="time-slot">9:00 AM</div>
+            <div class="time-slot selected">10:00 AM</div>
+            <div class="time-slot">11:00 AM</div>
+            <div class="time-slot">1:00 PM</div>
+            <div class="time-slot">2:00 PM</div>
+            <div class="time-slot">3:00 PM</div>
+          </div>
+        </div>
+        <div class="confirm-booking">
+          <button>Confirm: Fri Jan 31 at 10:00 AM</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>Design Notes:</h4>
+      <ul>
+        <li>Full scheduling experience without modal or redirect</li>
+        <li>Could open in a modal instead if preferred</li>
+        <li>Shows instructor availability</li>
+        <li>Past dates are disabled</li>
+        <li>More complex to build but very powerful</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- OPTION E: Stepper Style -->
+  <div class="wireframe-section">
+    <span class="option-label">Option E</span>
+    <h2>Stepper - Focused Flow</h2>
+    <p class="description">Shows one session at a time with step indicators at top. Focuses attention on current task. Clean and uncluttered.</p>
+
+    <div class="stepper-container">
+      <div class="stepper-header">
+        <div class="stepper-step completed">
+          <div class="stepper-circle">✓</div>
+        </div>
+        <div class="stepper-line completed"></div>
+        <div class="stepper-step active">
+          <div class="stepper-circle">2</div>
+        </div>
+      </div>
+
+      <div class="stepper-content">
+        <div class="stepper-session-title">Session 2: Advanced Techniques & Workflows</div>
+        <div class="stepper-session-subtitle">90 minutes • 3 modules • Live 1-on-1</div>
+
+        <div class="stepper-modules">
+          <span class="stepper-module">Planning & Thinking Modes</span>
+          <span class="stepper-module">Slash Commands</span>
+          <span class="stepper-module">Real-World Project</span>
+        </div>
+
+        <div class="stepper-action">
+          <button class="primary">Schedule Session 2</button>
+          <button class="secondary">View Session 1 Notes</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>Design Notes:</h4>
+      <ul>
+        <li>Minimalist - focuses on the current action</li>
+        <li>Works well as dedicated scheduling page</li>
+        <li>Step dots at top show overall progress</li>
+        <li>Good for courses with 2-5 sessions</li>
+        <li>Could expand to show calendar on click</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- RECOMMENDATION -->
+  <div class="wireframe-section" style="background: linear-gradient(135deg, #1d9bf0 0%, #0066cc 100%); color: white;">
+    <h2 style="color: white;">Recommendation</h2>
+    <p style="color: rgba(255,255,255,0.9); font-size: 15px; line-height: 1.6; margin-top: 15px;">
+      <strong>For PeerLoop:</strong> I recommend <strong>Option B (Compact List)</strong> or <strong>Option C (Progress Bar)</strong> for the Course Detail page.
+    </p>
+    <ul style="margin: 20px 0 0 20px; line-height: 2;">
+      <li><strong>Option B</strong> - Best if you want to keep it simple and space-efficient</li>
+      <li><strong>Option C</strong> - Best if you want to motivate users with visible progress</li>
+      <li><strong>Option D</strong> - Use for the actual scheduling modal/flow (calendar + time picker)</li>
+    </ul>
+    <p style="color: rgba(255,255,255,0.9); margin-top: 20px; font-size: 14px;">
+      The "Schedule" button from Options B or C would open a modal with Option D's calendar interface.
+    </p>
+  </div>
+
+</body>
+</html>
