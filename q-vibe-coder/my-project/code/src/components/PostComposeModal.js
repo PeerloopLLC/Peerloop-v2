@@ -188,8 +188,11 @@ const PostComposeModal = ({ isOpen, onClose, currentUser, communities }) => {
                         <div key={community.id} className="audience-community-group">
                           {/* Community row */}
                           <div
-                            className={`audience-dropdown-item ${selectedAudience.id === community.id && selectedAudience.type === 'community' ? 'selected' : ''}`}
-                            onClick={() => handleAudienceSelect({ id: community.id, name: displayName, type: 'community' })}
+                            className={`audience-dropdown-item ${community.id === 'town-hall' && selectedAudience.id === community.id ? 'selected' : ''}`}
+                            onClick={() => community.id === 'town-hall'
+                              ? handleAudienceSelect({ id: community.id, name: displayName, type: 'community' })
+                              : handleAudienceSelect({ id: `main-hall-${community.id}`, name: `${displayName} - Main Hall`, type: 'main-hall', communityId: community.id })
+                            }
                           >
                             {community.id === 'town-hall' ? (
                               <div className="audience-item-avatar commons">&#127963;</div>
@@ -206,7 +209,7 @@ const PostComposeModal = ({ isOpen, onClose, currentUser, communities }) => {
                                 {community.id === 'town-hall' ? 'All members' : `${community.members || ''} members`}
                               </span>
                             </div>
-                            {selectedAudience.id === community.id && selectedAudience.type === 'community' && (
+                            {community.id === 'town-hall' && selectedAudience.id === community.id && (
                               <FaCheck className="audience-item-check" />
                             )}
                           </div>

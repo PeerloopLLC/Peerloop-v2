@@ -147,7 +147,7 @@ const UserProfile = ({ username, onBack, isDarkMode }) => {
             width: 120,
             height: 120,
             borderRadius: '50%',
-            background: user.avatarColor || '#1d9bf0',
+            background: user.avatar ? 'transparent' : (user.avatarColor || '#1d9bf0'),
             border: '4px solid var(--bg-primary, #000)',
             display: 'flex',
             alignItems: 'center',
@@ -156,9 +156,12 @@ const UserProfile = ({ username, onBack, isDarkMode }) => {
             fontSize: 40,
             fontWeight: 700,
             flexShrink: 0,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            overflow: 'hidden'
           }}>
-            {initials}
+            {user.avatar ? (
+              <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : initials}
           </div>
           
           {/* Name and Handle */}

@@ -192,24 +192,25 @@
   text-overflow: ellipsis;
 }
 
-/* Post button - prominent like X.com */
+/* Post button - pill style matching Discover filters (unselected) */
 .nav-post-button {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 14px 12px;
   margin: 12px 0 8px 0;
-  border-radius: 9999px;
-  background-color: #1d9bf0;
-  color: #ffffff;
-  font-size: 17px;
-  font-weight: 700;
+  border-radius: 20px;
+  background: #f7f9f9;
+  color: #0f1419;
+  font-size: 21px;
+  font-weight: 400;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  border: 2px solid #cfd9de;
 }
 
 .nav-post-button:hover {
-  background-color: #1a8cd8;
+  background: #eef1f2;
 }
 
 .nav-post-label {

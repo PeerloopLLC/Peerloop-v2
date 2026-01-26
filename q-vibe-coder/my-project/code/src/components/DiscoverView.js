@@ -1233,16 +1233,16 @@ const DiscoverView = ({
                         )}
                       </div>
 
-                      {/* Join Community Button - Green */}
+                      {/* Follow Community Button */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleFollowInstructor(instructor.id);
                         }}
                         style={{
-                          background: isFollowing ? (isDarkMode ? '#2f3336' : '#eff3f4') : '#c6f432',
-                          border: 'none',
-                          color: isFollowing ? (isDarkMode ? '#71767b' : '#536471') : '#0f1419',
+                          background: '#f7f9f9',
+                          border: '1px solid #cfd9de',
+                          color: '#0f1419',
                           padding: '8px 16px',
                           borderRadius: 20,
                           fontSize: 14,
@@ -1253,17 +1253,21 @@ const DiscoverView = ({
                           transition: 'all 0.2s'
                         }}
                         onMouseEnter={(e) => {
-                          if (!isFollowing) {
-                            e.currentTarget.style.background = '#b8e62e';
+                          if (isFollowing) {
+                            e.currentTarget.style.borderColor = '#f4212e';
+                            e.currentTarget.style.color = '#f4212e';
+                            e.currentTarget.textContent = 'Unfollow Community';
                           }
                         }}
                         onMouseLeave={(e) => {
-                          if (!isFollowing) {
-                            e.currentTarget.style.background = '#c6f432';
+                          if (isFollowing) {
+                            e.currentTarget.style.borderColor = '#cfd9de';
+                            e.currentTarget.style.color = '#0f1419';
+                            e.currentTarget.textContent = 'Following Community';
                           }
                         }}
                       >
-                        {isFollowing ? 'Joined' : 'Join Community'}
+                        {isFollowing ? 'Following Community' : 'Follow Community'}
                       </button>
                     </div>
 
@@ -1365,9 +1369,9 @@ const DiscoverView = ({
                                         }
                                       }}
                                       style={{
-                                        background: isDarkMode ? '#2f3336' : '#eff3f4',
-                                        border: 'none',
-                                        color: isDarkMode ? '#71767b' : '#536471',
+                                        background: '#f7f9f9',
+                                        border: '1px solid #cfd9de',
+                                        color: '#0f1419',
                                         padding: '6px 16px',
                                         borderRadius: 20,
                                         fontSize: 14,
@@ -1377,8 +1381,22 @@ const DiscoverView = ({
                                         flexShrink: 0,
                                         transition: 'all 0.2s'
                                       }}
+                                      onMouseEnter={(e) => {
+                                        if (isFollowed) {
+                                          e.currentTarget.style.borderColor = '#f4212e';
+                                          e.currentTarget.style.color = '#f4212e';
+                                          e.currentTarget.textContent = 'Unfollow Course';
+                                        }
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        if (isFollowed) {
+                                          e.currentTarget.style.borderColor = '#cfd9de';
+                                          e.currentTarget.style.color = '#0f1419';
+                                          e.currentTarget.textContent = 'Following Course';
+                                        }
+                                      }}
                                     >
-                                      {isFollowed ? 'Following' : 'Follow'}
+                                      {isFollowed ? 'Following Course' : 'Follow Course'}
                                     </button>
                                   );
                                 } else {

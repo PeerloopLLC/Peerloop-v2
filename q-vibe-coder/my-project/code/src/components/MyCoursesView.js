@@ -636,9 +636,9 @@ const MyCoursesView = ({
                 handleFollowInstructor && handleFollowInstructor(instructor?.id);
               }}
               style={{
-                background: isFollowing ? (isDarkMode ? '#2f3336' : '#eff3f4') : '#c6f432',
-                border: 'none',
-                color: isFollowing ? (isDarkMode ? '#71767b' : '#536471') : '#0f1419',
+                background: '#f7f9f9',
+                border: '1px solid #cfd9de',
+                color: '#0f1419',
                 padding: '8px 16px',
                 borderRadius: 20,
                 fontSize: 14,
@@ -648,8 +648,22 @@ const MyCoursesView = ({
                 flexShrink: 0,
                 transition: 'all 0.2s'
               }}
+              onMouseEnter={(e) => {
+                if (isFollowing) {
+                  e.currentTarget.style.borderColor = '#f4212e';
+                  e.currentTarget.style.color = '#f4212e';
+                  e.currentTarget.textContent = 'Unfollow Community';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (isFollowing) {
+                  e.currentTarget.style.borderColor = '#cfd9de';
+                  e.currentTarget.style.color = '#0f1419';
+                  e.currentTarget.textContent = 'Following Community';
+                }
+              }}
             >
-              {isFollowing ? 'Joined' : 'Join Community'}
+              {isFollowing ? 'Following Community' : 'Follow Community'}
             </button>
           </div>
 
@@ -936,9 +950,9 @@ const MyCoursesView = ({
                         }
                       }}
                       style={{
-                        background: isCompletedSection ? '#10b981' : (isDarkMode ? '#2f3336' : '#eff3f4'),
-                        border: 'none',
-                        color: isCompletedSection ? '#fff' : (isDarkMode ? '#71767b' : '#536471'),
+                        background: isCompletedSection ? '#10b981' : 'white',
+                        border: isCompletedSection ? 'none' : '1px solid #cfd9de',
+                        color: isCompletedSection ? '#fff' : '#0f1419',
                         padding: '6px 16px',
                         borderRadius: 20,
                         fontSize: 14,
@@ -947,8 +961,22 @@ const MyCoursesView = ({
                         whiteSpace: 'nowrap',
                         transition: 'all 0.2s'
                       }}
+                      onMouseEnter={(e) => {
+                        if (!isCompletedSection && isFollowed) {
+                          e.currentTarget.style.borderColor = '#f4212e';
+                          e.currentTarget.style.color = '#f4212e';
+                          e.currentTarget.textContent = 'Unfollow Course';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isCompletedSection && isFollowed) {
+                          e.currentTarget.style.borderColor = '#cfd9de';
+                          e.currentTarget.style.color = '#0f1419';
+                          e.currentTarget.textContent = 'Following Course';
+                        }
+                      }}
                     >
-                      {isCompletedSection ? 'View Certificate' : (isFollowed ? 'Unfollow' : 'Follow')}
+                      {isCompletedSection ? 'View Certificate' : (isFollowed ? 'Following Course' : 'Follow Course')}
                     </button>
                   </div>
                 </div>
@@ -1299,9 +1327,9 @@ const MyCoursesView = ({
                             handleFollowInstructor && handleFollowInstructor(instructor?.id);
                           }}
                           style={{
-                            background: isFollowing ? (isDarkMode ? '#2f3336' : '#eff3f4') : '#c6f432',
-                            border: 'none',
-                            color: isFollowing ? (isDarkMode ? '#71767b' : '#536471') : '#0f1419',
+                            background: '#f7f9f9',
+                            border: '1px solid #cfd9de',
+                            color: '#0f1419',
                             padding: '8px 16px',
                             borderRadius: 20,
                             fontSize: 14,
@@ -1311,8 +1339,22 @@ const MyCoursesView = ({
                             flexShrink: 0,
                             transition: 'all 0.2s'
                           }}
+                          onMouseEnter={(e) => {
+                            if (isFollowing) {
+                              e.currentTarget.style.borderColor = '#f4212e';
+                              e.currentTarget.style.color = '#f4212e';
+                              e.currentTarget.textContent = 'Unfollow Community';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (isFollowing) {
+                              e.currentTarget.style.borderColor = '#cfd9de';
+                              e.currentTarget.style.color = '#0f1419';
+                              e.currentTarget.textContent = 'Following Community';
+                            }
+                          }}
                         >
-                          {isFollowing ? 'Joined' : 'Join Community'}
+                          {isFollowing ? 'Following Community' : 'Follow Community'}
                         </button>
                       </div>
 
@@ -1495,9 +1537,9 @@ const MyCoursesView = ({
                                   handleFollowCourse && handleFollowCourse(course.id);
                                 }}
                                 style={{
-                                  background: isDarkMode ? '#2f3336' : '#eff3f4',
-                                  border: 'none',
-                                  color: isDarkMode ? '#71767b' : '#536471',
+                                  background: '#f7f9f9',
+                                  border: '1px solid #cfd9de',
+                                  color: '#0f1419',
                                   padding: '6px 16px',
                                   borderRadius: 20,
                                   fontSize: 14,
@@ -1507,8 +1549,22 @@ const MyCoursesView = ({
                                   flexShrink: 0,
                                   transition: 'all 0.2s'
                                 }}
+                                onMouseEnter={(e) => {
+                                  if (isFollowed) {
+                                    e.currentTarget.style.borderColor = '#f4212e';
+                                    e.currentTarget.style.color = '#f4212e';
+                                    e.currentTarget.textContent = 'Unfollow Course';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (isFollowed) {
+                                    e.currentTarget.style.borderColor = '#cfd9de';
+                                    e.currentTarget.style.color = '#0f1419';
+                                    e.currentTarget.textContent = 'Following Course';
+                                  }
+                                }}
                               >
-                                {isFollowed ? 'Unfollow Course' : 'Follow Course'}
+                                {isFollowed ? 'Following Course' : 'Follow Course'}
                               </button>
                             </div>
                           </div>

@@ -280,8 +280,12 @@ const Login = ({ onLoginSuccess, onDemoLogin }) => {
                 className="demo-user-card"
                 onClick={() => handleDemoLogin(user)}
               >
-                <div className="demo-user-avatar">
-                  {user.name.split(' ').map(n => n[0]).join('')}
+                <div className="demo-user-avatar" style={{ background: user.avatar ? 'transparent' : (user.avatarColor || '#1d9bf0') }}>
+                  {user.avatar ? (
+                    <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  ) : (
+                    user.name.split(' ').map(n => n[0]).join('')
+                  )}
                 </div>
                 <div className="demo-user-info">
                   <div className="demo-user-name">{user.name}</div>
