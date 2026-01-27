@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Badge Color Options</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #1a1a2e;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .option-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .option-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+    .option-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    .option-vibe {
+      font-size: 13px;
+      color: #71767b;
+      background: #f0f0f0;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    .badges-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .badge-group {
+      flex: 1;
+    }
+    .badge-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .badge-samples {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+    .badge.community {
+      font-size: 24px;
+    }
+    .preview-section {
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .preview-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #71767b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .preview-card {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #e5e5e5;
+    }
+    .preview-card:last-child {
+      margin-bottom: 0;
+    }
+    .preview-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+    }
+    .preview-badge.community {
+      font-size: 20px;
+    }
+    .preview-info {
+      flex: 1;
+    }
+    .preview-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1a1a2e;
+    }
+    .preview-meta {
+      font-size: 12px;
+      color: #71767b;
+    }
+
+    /* Option 1: Blue + Orange */
+    .opt1-community { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .opt1-course { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+
+    /* Option 2: Blue + Purple */
+    .opt2-community { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .opt2-course { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+
+    /* Option 3: Teal + Coral */
+    .opt3-community { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+    .opt3-course { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+
+    /* Option 4: Indigo + Amber */
+    .opt4-community { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+    .opt4-course { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+
+    /* Option 5: Blue + Green */
+    .opt5-community { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .opt5-course { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+
+    /* Option 6: Purple + Teal */
+    .opt6-community { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+    .opt6-course { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+
+    /* Option 7: Navy + Gold */
+    .opt7-community { background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%); }
+    .opt7-course { background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); }
+
+    /* Option 8: Rose + Slate */
+    .opt8-community { background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); }
+    .opt8-course { background: linear-gradient(135deg, #475569 0%, #334155 100%); }
+  </style>
+</head>
+<body>
+  <h1>Badge Color Pairing Options</h1>
+
+  <div class="options-grid">
+
+    <!-- Option 1: Blue + Orange -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-title">Option 1: Blue + Orange</span>
+        <span class="option-vibe">Classic complementary</span>
+      </div>
+      <div class="badges-row">
+        <div class="badge-group">
+          <div class="badge-label">Community</div>
+          <div class="badge-samples">
+            <div class="badge community opt1-community">👥</div>
+          </div>
+        </div>
+        <div class="badge-group">
+          <div class="badge-label">Courses</div>
+          <div class="badge-samples">
+            <div class="badge opt1-course">AI</div>
+            <div class="badge opt1-course">DS</div>
+            <div class="badge opt1-course">FS</div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-section">
+        <div class="preview-label">In Context</div>
+        <div class="preview-card">
+          <div class="preview-badge community opt1-community">👥</div>
+          <div class="preview-info">
+            <div class="preview-name">The Physics Lab</div>
+            <div class="preview-meta">1,730 followers</div>
+          </div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-badge opt1-course">AI</div>
+          <div class="preview-info">
+            <div class="preview-name">AI Prompting Mastery</div>
+            <div class="preview-meta">1,250 students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 2: Blue + Purple -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-title">Option 2: Blue + Purple</span>
+        <span class="option-vibe">Modern tech feel</span>
+      </div>
+      <div class="badges-row">
+        <div class="badge-group">
+          <div class="badge-label">Community</div>
+          <div class="badge-samples">
+            <div class="badge community opt2-community">👥</div>
+          </div>
+        </div>
+        <div class="badge-group">
+          <div class="badge-label">Courses</div>
+          <div class="badge-samples">
+            <div class="badge opt2-course">AI</div>
+            <div class="badge opt2-course">DS</div>
+            <div class="badge opt2-course">FS</div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-section">
+        <div class="preview-label">In Context</div>
+        <div class="preview-card">
+          <div class="preview-badge community opt2-community">👥</div>
+          <div class="preview-info">
+            <div class="preview-name">The Physics Lab</div>
+            <div class="preview-meta">1,730 followers</div>
+          </div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-badge opt2-course">AI</div>
+          <div class="preview-info">
+            <div class="preview-name">AI Prompting Mastery</div>
+            <div class="preview-meta">1,250 students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 3: Teal + Coral -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-title">Option 3: Teal + Coral</span>
+        <span class="option-vibe">Warm/cool balance</span>
+      </div>
+      <div class="badges-row">
+        <div class="badge-group">
+          <div class="badge-label">Community</div>
+          <div class="badge-samples">
+            <div class="badge community opt3-community">👥</div>
+          </div>
+        </div>
+        <div class="badge-group">
+          <div class="badge-label">Courses</div>
+          <div class="badge-samples">
+            <div class="badge opt3-course">AI</div>
+            <div class="badge opt3-course">DS</div>
+            <div class="badge opt3-course">FS</div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-section">
+        <div class="preview-label">In Context</div>
+        <div class="preview-card">
+          <div class="preview-badge community opt3-community">👥</div>
+          <div class="preview-info">
+            <div class="preview-name">The Physics Lab</div>
+            <div class="preview-meta">1,730 followers</div>
+          </div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-badge opt3-course">AI</div>
+          <div class="preview-info">
+            <div class="preview-name">AI Prompting Mastery</div>
+            <div class="preview-meta">1,250 students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 4: Indigo + Amber -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-title">Option 4: Indigo + Amber</span>
+        <span class="option-vibe">Professional, distinct</span>
+      </div>
+      <div class="badges-row">
+        <div class="badge-group">
+          <div class="badge-label">Community</div>
+          <div class="badge-samples">
+            <div class="badge community opt4-community">👥</div>
+          </div>
+        </div>
+        <div class="badge-group">
+          <div class="badge-label">Courses</div>
+          <div class="badge-samples">
+            <div class="badge opt4-course">AI</div>
+            <div class="badge opt4-course">DS</div>
+            <div class="badge opt4-course">FS</div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-section">
+        <div class="preview-label">In Context</div>
+        <div class="preview-card">
+          <div class="preview-badge community opt4-community">👥</div>
+          <div class="preview-info">
+            <div class="preview-name">The Physics Lab</div>
+            <div class="preview-meta">1,730 followers</div>
+          </div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-badge opt4-course">AI</div>
+          <div class="preview-info">
+            <div class="preview-name">AI Prompting Mastery</div>
+            <div class="preview-meta">1,250 students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 5: Blue + Green -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-title">Option 5: Blue + Green</span>
+        <span class="option-vibe">Calm, nature-inspired</span>
+      </div>
+      <div class="badges-row">
+        <div class="badge-group">
+          <div class="badge-label">Community</div>
+          <div class="badge-samples">
+            <div class="badge community opt5-community">👥</div>
+          </div>
+        </div>
+        <div class="badge-group">
+          <div class="badge-label">Courses</div>
+          <div class="badge-samples">
+            <div class="badge opt5-course">AI</div>
+            <div class="badge opt5-course">DS</div>
+            <div class="badge opt5-course">FS</div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-section">
+        <div class="preview-label">In Context</div>
+        <div class="preview-card">
+          <div class="preview-badge community opt5-community">👥</div>
+          <div class="preview-info">
+            <div class="preview-name">The Physics Lab</div>
+            <div class="preview-meta">1,730 followers</div>
+          </div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-badge opt5-course">AI</div>
+          <div class="preview-info">
+            <div class="preview-name">AI Prompting Mastery</div>
+            <div class="preview-meta">1,250 students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 6: Purple + Teal -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-title">Option 6: Purple + Teal</span>
+        <span class="option-vibe">Creative, vibrant</span>
+      </div>
+      <div class="badges-row">
+        <div class="badge-group">
+          <div class="badge-label">Community</div>
+          <div class="badge-samples">
+            <div class="badge community opt6-community">👥</div>
+          </div>
+        </div>
+        <div class="badge-group">
+          <div class="badge-label">Courses</div>
+          <div class="badge-samples">
+            <div class="badge opt6-course">AI</div>
+            <div class="badge opt6-course">DS</div>
+            <div class="badge opt6-course">FS</div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-section">
+        <div class="preview-label">In Context</div>
+        <div class="preview-card">
+          <div class="preview-badge community opt6-community">👥</div>
+          <div class="preview-info">
+            <div class="preview-name">The Physics Lab</div>
+            <div class="preview-meta">1,730 followers</div>
+          </div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-badge opt6-course">AI</div>
+          <div class="preview-info">
+            <div class="preview-name">AI Prompting Mastery</div>
+            <div class="preview-meta">1,250 students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 7: Navy + Gold -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-title">Option 7: Navy + Gold</span>
+        <span class="option-vibe">Premium, educational</span>
+      </div>
+      <div class="badges-row">
+        <div class="badge-group">
+          <div class="badge-label">Community</div>
+          <div class="badge-samples">
+            <div class="badge community opt7-community">👥</div>
+          </div>
+        </div>
+        <div class="badge-group">
+          <div class="badge-label">Courses</div>
+          <div class="badge-samples">
+            <div class="badge opt7-course">AI</div>
+            <div class="badge opt7-course">DS</div>
+            <div class="badge opt7-course">FS</div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-section">
+        <div class="preview-label">In Context</div>
+        <div class="preview-card">
+          <div class="preview-badge community opt7-community">👥</div>
+          <div class="preview-info">
+            <div class="preview-name">The Physics Lab</div>
+            <div class="preview-meta">1,730 followers</div>
+          </div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-badge opt7-course">AI</div>
+          <div class="preview-info">
+            <div class="preview-name">AI Prompting Mastery</div>
+            <div class="preview-meta">1,250 students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 8: Rose + Slate -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-title">Option 8: Rose + Slate</span>
+        <span class="option-vibe">Bold, contemporary</span>
+      </div>
+      <div class="badges-row">
+        <div class="badge-group">
+          <div class="badge-label">Community</div>
+          <div class="badge-samples">
+            <div class="badge community opt8-community">👥</div>
+          </div>
+        </div>
+        <div class="badge-group">
+          <div class="badge-label">Courses</div>
+          <div class="badge-samples">
+            <div class="badge opt8-course">AI</div>
+            <div class="badge opt8-course">DS</div>
+            <div class="badge opt8-course">FS</div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-section">
+        <div class="preview-label">In Context</div>
+        <div class="preview-card">
+          <div class="preview-badge community opt8-community">👥</div>
+          <div class="preview-info">
+            <div class="preview-name">The Physics Lab</div>
+            <div class="preview-meta">1,730 followers</div>
+          </div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-badge opt8-course">AI</div>
+          <div class="preview-info">
+            <div class="preview-name">AI Prompting Mastery</div>
+            <div class="preview-meta">1,250 students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

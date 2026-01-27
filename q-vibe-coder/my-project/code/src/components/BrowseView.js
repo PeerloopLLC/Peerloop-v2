@@ -79,8 +79,371 @@ const BrowseView = ({
     return `linear-gradient(135deg, ${colors.start} 0%, ${colors.end} 100%)`;
   };
 
+  // State for creator profile tabs
+  const [creatorProfileSubTab, setCreatorProfileSubTab] = useState('posts');
+
+  // Render creator profile view (like user profile format)
+  const renderCreatorProfileView = () => {
+    const creator = selectedInstructor;
+    const creatorCourses = creator.courses
+      ? creator.courses.map(c => typeof c === 'object' ? c : indexedCourses.find(course => course.id === c)).filter(Boolean)
+      : [];
+
+    // Sample posts for creators (would come from database)
+    const creatorPosts = [
+      {
+        time: '2h ago',
+        type: 'announcement',
+        context: `${creator.communityName || `${creator.name} Community`} > Town Hall`,
+        content: `Welcome to ${creator.communityName || 'my community'}! Ask questions, share insights, and connect with fellow learners.`,
+        stats: { likes: 156, replies: 45 }
+      },
+      {
+        time: '1d ago',
+        type: 'tip',
+        context: `${creator.communityName || `${creator.name} Community`} > Tips`,
+        content: `Pro tip: The key to mastering any subject is consistent practice combined with peer learning. That's why I built this community!`,
+        stats: { likes: 234, replies: 67 }
+      },
+      {
+        time: '3d ago',
+        type: 'update',
+        context: `${creator.communityName || `${creator.name} Community`} > Updates`,
+        content: `New content dropping next week! Stay tuned for advanced techniques and real-world applications.`,
+        stats: { likes: 189, replies: 52 }
+      }
+    ];
+
+    return (
+      <div style={{ background: isDarkMode ? '#000' : '#fff', minHeight: '100vh' }}>
+        {/* Back Button */}
+        <div style={{
+          padding: '16px',
+          borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb',
+          background: isDarkMode ? '#0a0a0a' : '#fff'
+        }}>
+          <button
+            onClick={() => {
+              localStorage.removeItem('viewingCreatorProfile');
+              setSelectedInstructor(null);
+              setPreviousBrowseContext(null);
+              if (onMenuChange) onMenuChange('Discover');
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              background: isDarkMode ? '#1a1a24' : '#f3f4f6',
+              border: isDarkMode ? '1px solid #3f3f46' : '1px solid #d1d5db',
+              borderRadius: 8,
+              padding: '10px 16px',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: 15,
+              color: isDarkMode ? '#f5f5f7' : '#374151'
+            }}
+          >
+            <span>←</span> Back to Discover
+          </button>
+        </div>
+
+        {/* Profile Card - Twitter/X style */}
+        <div style={{ maxWidth: 600, margin: '0 auto' }}>
+          {/* Banner */}
+          <div style={{
+            height: 150,
+            background: getUserBannerGradient(),
+            position: 'relative'
+          }} />
+
+          {/* Profile Info */}
+          <div style={{ padding: '0 16px', position: 'relative' }}>
+            {/* Avatar */}
+            <div style={{
+              position: 'absolute',
+              top: -60,
+              left: 16,
+              width: 120,
+              height: 120,
+              borderRadius: '50%',
+              border: `4px solid ${isDarkMode ? '#000' : '#fff'}`,
+              overflow: 'hidden',
+              background: isDarkMode ? '#1a1a24' : '#f3f4f6'
+            }}>
+              <img
+                src={creator.avatar}
+                alt={creator.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+
+            {/* Follow Button */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 12 }}>
+              <button
+                onClick={() => handleFollowInstructor(creator.id)}
+                style={{
+                  background: isCreatorFollowed(creator.id) ? 'transparent' : '#0f1419',
+                  color: isCreatorFollowed(creator.id) ? '#0f1419' : '#fff',
+                  border: isCreatorFollowed(creator.id) ? '1px solid #cfd9de' : 'none',
+                  padding: '8px 16px',
+                  borderRadius: 9999,
+                  fontWeight: 700,
+                  fontSize: 14,
+                  cursor: 'pointer'
+                }}
+              >
+                {isCreatorFollowed(creator.id) ? 'Following' : 'Follow'}
+              </button>
+            </div>
+
+            {/* Name, Handle, Role */}
+            <div style={{ marginTop: 48 }}>
+              <h1 style={{
+                margin: 0,
+                fontSize: 20,
+                fontWeight: 800,
+                color: isDarkMode ? '#e7e9ea' : '#0f1419'
+              }}>
+                {creator.name}
+              </h1>
+              <p style={{
+                margin: '2px 0 0 0',
+                color: isDarkMode ? '#71767b' : '#536471',
+                fontSize: 15
+              }}>
+                @{creator.name?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '')}
+              </p>
+              <span style={{
+                display: 'inline-block',
+                marginTop: 8,
+                background: '#a855f715',
+                color: '#a855f7',
+                padding: '4px 12px',
+                borderRadius: 9999,
+                fontSize: 13,
+                fontWeight: 600
+              }}>
+                Creator
+              </span>
+            </div>
+
+            {/* Bio */}
+            <p style={{
+              margin: '12px 0',
+              fontSize: 15,
+              lineHeight: 1.5,
+              color: isDarkMode ? '#e7e9ea' : '#0f1419'
+            }}>
+              {creator.bio}
+            </p>
+
+            {/* Meta Info */}
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 16,
+              color: isDarkMode ? '#71767b' : '#536471',
+              fontSize: 15,
+              marginBottom: 12
+            }}>
+              {creator.title && <span>💼 {creator.title}</span>}
+              <span>📅 Creator since 2024</span>
+            </div>
+
+            {/* Credentials */}
+            {creator.credentials && creator.credentials.length > 0 && (
+              <div style={{ marginBottom: 12 }}>
+                {creator.credentials.map((cred, idx) => (
+                  <div key={idx} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    color: isDarkMode ? '#71767b' : '#536471',
+                    fontSize: 14,
+                    marginBottom: 4
+                  }}>
+                    <span style={{ color: '#22c55e' }}>✓</span>
+                    <span>{cred}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Following/Followers */}
+            <div style={{ display: 'flex', gap: 20, marginBottom: 16 }}>
+              <span style={{ cursor: 'pointer' }}>
+                <span style={{ fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                  {creator.stats?.coursesCreated || creatorCourses.length}
+                </span>
+                <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}> Courses</span>
+              </span>
+              <span style={{ cursor: 'pointer' }}>
+                <span style={{ fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                  {(creator.stats?.studentsTaught || 0).toLocaleString()}
+                </span>
+                <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}> Students</span>
+              </span>
+            </div>
+
+            {/* Stats Row */}
+            <div style={{
+              display: 'flex',
+              gap: 24,
+              padding: '16px 0',
+              borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+              borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                  {creatorCourses.length}
+                </div>
+                <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                  Courses Created
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                  {(creator.stats?.studentsTaught || 0).toLocaleString()}
+                </div>
+                <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                  Students Taught
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                  {creator.stats?.averageRating || '4.8'}
+                </div>
+                <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                  Rating
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div style={{
+            display: 'flex',
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+          }}>
+            <div
+              onClick={() => setCreatorProfileSubTab('posts')}
+              style={{
+                flex: 1,
+                textAlign: 'center',
+                padding: '16px 0',
+                cursor: 'pointer',
+                fontWeight: creatorProfileSubTab === 'posts' ? 700 : 500,
+                color: creatorProfileSubTab === 'posts' ? (isDarkMode ? '#e7e9ea' : '#0f1419') : (isDarkMode ? '#71767b' : '#536471'),
+                borderBottom: creatorProfileSubTab === 'posts' ? '2px solid #1d9bf0' : 'none'
+              }}
+            >
+              Posts
+            </div>
+            <div
+              onClick={() => setCreatorProfileSubTab('courses')}
+              style={{
+                flex: 1,
+                textAlign: 'center',
+                padding: '16px 0',
+                cursor: 'pointer',
+                fontWeight: creatorProfileSubTab === 'courses' ? 700 : 500,
+                color: creatorProfileSubTab === 'courses' ? (isDarkMode ? '#e7e9ea' : '#0f1419') : (isDarkMode ? '#71767b' : '#536471'),
+                borderBottom: creatorProfileSubTab === 'courses' ? '2px solid #1d9bf0' : 'none'
+              }}
+            >
+              Courses Created
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          <div style={{ padding: 16 }}>
+            {creatorProfileSubTab === 'posts' && (
+              <div>
+                {creatorPosts.map((post, index) => (
+                  <div key={index} style={{
+                    padding: '16px 0',
+                    borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                  }}>
+                    <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', marginBottom: 4 }}>
+                      {post.time}
+                    </div>
+                    <div style={{
+                      display: 'inline-block',
+                      background: post.type === 'announcement' ? '#1d9bf015' : post.type === 'tip' ? '#22c55e15' : '#f59e0b15',
+                      color: post.type === 'announcement' ? '#1d9bf0' : post.type === 'tip' ? '#22c55e' : '#f59e0b',
+                      padding: '2px 8px',
+                      borderRadius: 4,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      marginBottom: 8
+                    }}>
+                      {post.type === 'announcement' && '📢 ANNOUNCEMENT'}
+                      {post.type === 'tip' && '💡 TIP'}
+                      {post.type === 'update' && '🔔 UPDATE'}
+                    </div>
+                    <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', marginBottom: 4 }}>
+                      {post.context}
+                    </div>
+                    <div style={{ fontSize: 15, color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 8 }}>
+                      "{post.content}"
+                    </div>
+                    <div style={{ display: 'flex', gap: 16, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                      <span>👍 {post.stats.likes}</span>
+                      <span>💬 {post.stats.replies}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {creatorProfileSubTab === 'courses' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {creatorCourses.map((course) => (
+                  <div
+                    key={course.id}
+                    onClick={() => {
+                      localStorage.removeItem('viewingCreatorProfile');
+                      setSelectedCourse(course);
+                      setCurrentInstructorForCourse(creator);
+                    }}
+                    style={{
+                      padding: 16,
+                      background: isDarkMode ? '#16181c' : '#f7f9f9',
+                      borderRadius: 12,
+                      cursor: 'pointer',
+                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, fontSize: 16, color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 4 }}>
+                      {course.title}
+                    </div>
+                    <div style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#536471', marginBottom: 8 }}>
+                      {course.description?.slice(0, 100)}...
+                    </div>
+                    <div style={{ display: 'flex', gap: 12, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                      <span>★ {course.stats?.rating || '4.8'}</span>
+                      <span>•</span>
+                      <span>{(course.stats?.students || 1250).toLocaleString()} students</span>
+                      <span>•</span>
+                      <span>{course.modules?.length || 4} Modules</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Render instructor profile detail view
   const renderInstructorProfile = () => {
+    // Check if we're viewing a creator profile (from "Created by" click)
+    const isViewingCreatorProfile = localStorage.getItem('viewingCreatorProfile') === 'true';
+    if (isViewingCreatorProfile) {
+      return renderCreatorProfileView();
+    }
     const creator = selectedInstructor;
     const creatorCourses = creator.courses
       ? creator.courses.map(c => typeof c === 'object' ? c : indexedCourses.find(course => course.id === c)).filter(Boolean)
@@ -211,20 +574,25 @@ const BrowseView = ({
         }}>
           {/* Top Row: Avatar + Name + Buttons */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
-            <img
-              src={creator.avatar}
-              alt={creator.name}
+            {/* Community Badge Icon */}
+            <div
               style={{
                 width: 64,
                 height: 64,
-                borderRadius: '50%',
-                objectFit: 'cover',
+                borderRadius: 12,
+                background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 28,
                 flexShrink: 0
               }}
-            />
+            >
+              👥
+            </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.name} Community</h1>
+                <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.communityName || `${creator.name} Community`}</h1>
                 <span style={{ background: isDarkMode ? 'rgba(29, 155, 240, 0.2)' : '#e0f2fe', color: '#1d9bf0', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 12 }}>COMMUNITY</span>
               </div>
               <p style={{ margin: '2px 0 0 0', color: isDarkMode ? '#71767b' : '#536471', fontSize: 17 }}>{creator.title}</p>

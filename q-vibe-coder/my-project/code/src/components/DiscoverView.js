@@ -23,6 +23,7 @@ const DiscoverView = ({
   handleFollowInstructor,
   onViewCourse,
   onViewCommunity,
+  onViewCreatorProfile,
   signupCompleted = false,
   setSignupCompleted = null
 }) => {
@@ -290,6 +291,64 @@ const DiscoverView = ({
   const getUserBannerGradient = () => {
     const colors = bannerColorOptions[userBannerColor] || bannerColorOptions.default;
     return `linear-gradient(135deg, ${colors.start} 0%, ${colors.end} 100%)`;
+  };
+
+  // Generate course abbreviation from title
+  const getCourseAbbreviation = (title) => {
+    if (!title) return '??';
+
+    // Common abbreviation mappings
+    const mappings = {
+      'ai': 'AI',
+      'machine learning': 'ML',
+      'deep learning': 'DL',
+      'data science': 'DS',
+      'full-stack': 'FS',
+      'full stack': 'FS',
+      'devops': 'DO',
+      'ci/cd': 'CI',
+      'github': 'GH',
+      'node.js': 'NJ',
+      'nodejs': 'NJ',
+      'python': 'PY',
+      'robotics': 'RB',
+      'medical': 'MD',
+      'healthcare': 'HC',
+      'automation': 'AU',
+      'n8n': 'N8',
+      'prompt': 'PM',
+      'claude': 'CC',
+      'computer vision': 'CV',
+      'business intelligence': 'BI',
+      'microservices': 'MS',
+      'cloud': 'CL',
+      'aws': 'AWS'
+    };
+
+    const lowerTitle = title.toLowerCase();
+
+    // Check for known mappings first
+    for (const [key, abbr] of Object.entries(mappings)) {
+      if (lowerTitle.includes(key)) return abbr;
+    }
+
+    // Fallback: Take first letters of significant words
+    const words = title.split(/[\s\-:]+/).filter(w =>
+      w.length > 2 && !['the', 'and', 'for', 'with', 'to', 'of', 'in', 'a', 'an'].includes(w.toLowerCase())
+    );
+
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    } else if (words.length === 1) {
+      return words[0].substring(0, 2).toUpperCase();
+    }
+
+    return title.substring(0, 2).toUpperCase();
+  };
+
+  // Single green gradient for all course badges (Option 5: Blue communities + Green courses)
+  const getCourseGradient = () => {
+    return 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
   };
 
   // Filter pill options - AI Subject categories
@@ -1159,31 +1218,24 @@ const DiscoverView = ({
                       onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
                       onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                     >
-                      {/* Avatar */}
+                      {/* Community Badge Icon - 👥 group icon */}
                       <div style={{
                         width: 48,
                         height: 48,
-                        borderRadius: '50%',
-                        background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
+                        borderRadius: 10,
+                        background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: 18,
-                        fontWeight: 700,
-                        color: '#fff',
-                        flexShrink: 0,
-                        overflow: 'hidden'
+                        fontSize: 24,
+                        flexShrink: 0
                       }}>
-                        {instructor.avatar ? (
-                          <img src={instructor.avatar} alt={instructor.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : (
-                          instructor.name?.charAt(0) || '?'
-                        )}
+                        👥
                       </div>
 
                       {/* Creator Info */}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        {/* Name and Handle Row */}
+                        {/* Community Name and Creator Row */}
                         <div style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -1195,13 +1247,74 @@ const DiscoverView = ({
                             fontWeight: 700,
                             color: isDarkMode ? '#e7e9ea' : '#0f1419'
                           }}>
-                            {highlightMatch(instructor.name, searchQuery)}
+                            {highlightMatch(instructor.communityName || `${instructor.name} Community`, searchQuery)}
                           </span>
                           <span style={{
                             color: isDarkMode ? '#71767b' : '#536471',
                             fontSize: 15
                           }}>
-                            @{instructor.name?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '')}
+                            @{(instructor.communityName || instructor.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '')}
+                          </span>
+                        </div>
+                        {/* Created by link */}
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          marginTop: 2
+                        }}>
+                          <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 14 }}>Created by</span>
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Navigate to creator profile - will be wired up
+                              if (onViewCreatorProfile) {
+                                onViewCreatorProfile(instructor);
+                              }
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              color: '#1d9bf0',
+                              fontSize: 14,
+                              fontWeight: 500,
+                              cursor: 'pointer'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                            onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                          >
+                            {/* Small creator avatar */}
+                            {instructor.avatar ? (
+                              <img
+                                src={instructor.avatar}
+                                alt={instructor.name}
+                                style={{
+                                  width: 20,
+                                  height: 20,
+                                  borderRadius: '50%',
+                                  objectFit: 'cover',
+                                  flexShrink: 0
+                                }}
+                              />
+                            ) : (
+                              <div style={{
+                                width: 20,
+                                height: 20,
+                                borderRadius: '50%',
+                                background: '#1d9bf0',
+                                color: '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 10,
+                                fontWeight: 700,
+                                flexShrink: 0
+                              }}>
+                                {instructor.name?.charAt(0)}
+                              </div>
+                            )}
+                            {instructor.name}
                           </span>
                         </div>
 
@@ -1282,13 +1395,6 @@ const DiscoverView = ({
                       }}>
                         {matchingCourses.map((course, index) => {
                           // Thumbnail gradient colors based on course index
-                          const thumbGradients = [
-                            'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)',
-                            'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
-                            'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
-                            'linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)'
-                          ];
-
                           return (
                             <div
                               key={course.id}
@@ -1315,20 +1421,24 @@ const DiscoverView = ({
                                 e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
                               }}
                             >
-                              {/* Top Row: Thumbnail + Title/Desc + Button */}
+                              {/* Top Row: Abbreviation Badge + Title/Desc + Button */}
                               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                                {/* Course Thumbnail */}
+                                {/* Course Abbreviation Badge */}
                                 <div style={{
-                                  width: 100,
-                                  height: 70,
-                                  borderRadius: 8,
+                                  width: 56,
+                                  height: 56,
+                                  borderRadius: 12,
                                   flexShrink: 0,
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'center',
-                                  overflow: 'hidden',
-                                  background: thumbGradients[index % 4]
+                                  background: getCourseGradient(course.title),
+                                  color: 'white',
+                                  fontSize: 18,
+                                  fontWeight: 800,
+                                  letterSpacing: '-0.5px'
                                 }}>
+                                  {getCourseAbbreviation(course.title)}
                                 </div>
 
                                 {/* Course Info */}

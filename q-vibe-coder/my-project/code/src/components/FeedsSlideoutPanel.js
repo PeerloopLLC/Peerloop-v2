@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FaTimes, FaSearch } from 'react-icons/fa';
+import { getInstructorById } from '../data/database';
 import './FeedsSlideoutPanel.css';
 
 /**
@@ -185,8 +186,13 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
   // Filter communities based on search query
   const filteredCommunities = communities.filter(community => {
     if (!searchQuery.trim()) return true;
-    const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
-    return displayName.toLowerCase().includes(searchQuery.toLowerCase());
+    const instructorName = community.name || community.id?.replace('creator-', '') || 'Community';
+    // Look up instructor to get communityName for search
+    const instructorId = community.instructorId || (community.id?.startsWith('creator-') ? parseInt(community.id.replace('creator-', '')) : null);
+    const instructor = instructorId ? getInstructorById(instructorId) : null;
+    const displayName = instructor?.communityName || `${instructorName} Community`;
+    return displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           instructorName.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
   // Check if The Commons matches the search
@@ -259,11 +265,23 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
                 className="slideout-community-item"
                 onClick={(e) => handleCommunityClick(townHall, e)}
               >
-                <img
-                  src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=80&h=80&fit=crop"
-                  alt="The Commons"
-                  className="slideout-community-avatar-img"
-                />
+                {/* Community Badge Icon */}
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 14,
+                    flexShrink: 0,
+                    marginRight: 12
+                  }}
+                >
+                  👥
+                </div>
                 <div className="slideout-community-info">
                   <div className="slideout-community-name">The Commons</div>
                   <div className="slideout-community-meta">Public community feed</div>
@@ -277,7 +295,11 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
             <>
               <div className="slideout-section-header">My Communities</div>
               {filteredCommunities.map((community, index) => {
-                const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
+                const instructorName = community.name || community.id?.replace('creator-', '') || 'Community';
+                // Look up instructor to get communityName
+                const instructorId = community.instructorId || (community.id?.startsWith('creator-') ? parseInt(community.id.replace('creator-', '')) : null);
+                const instructor = instructorId ? getInstructorById(instructorId) : null;
+                const displayName = instructor?.communityName || `${instructorName} Community`;
                 const initial = displayName.charAt(0).toUpperCase();
 
                 return (
@@ -286,22 +308,25 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
                     className="slideout-community-item"
                     onClick={(e) => handleCommunityClick(community, e)}
                   >
-                    {community.avatar ? (
-                      <img
-                        src={community.avatar}
-                        alt={displayName}
-                        className="slideout-community-avatar-img"
-                      />
-                    ) : (
-                      <div
-                        className="slideout-community-avatar"
-                        style={{ background: getAvatarColor(index) }}
-                      >
-                        {initial}
-                      </div>
-                    )}
+                    {/* Community Badge Icon */}
+                    <div
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 8,
+                        background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 14,
+                        flexShrink: 0,
+                        marginRight: 12
+                      }}
+                    >
+                      👥
+                    </div>
                     <div className="slideout-community-info">
-                      <div className="slideout-community-name">{displayName} Community</div>
+                      <div className="slideout-community-name">{displayName}</div>
                       <div className="slideout-community-meta">
                         {community.memberCount || Math.floor(Math.random() * 300) + 50} members
                       </div>

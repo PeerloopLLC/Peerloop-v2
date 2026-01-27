@@ -1930,11 +1930,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                 {/* Creator Pills */}
                 {groupedByCreator.map(creator => {
                   const isSelected = communityMode === 'creators' && selectedCreatorId === creator.id;
+                  const creatorInstructor = getInstructorById(creator.instructorId);
+                  const displayName = creatorInstructor?.communityName || `${creator.name} Community`;
                   return (
                     <button
                       key={creator.id}
                       onClick={() => handleTabClick(creator.id)}
-                      title={`${creator.name} Community - ${creator.followedCourseIds.length} course(s) joined`}
+                      title={`${displayName} by ${creator.name} - ${creator.followedCourseIds.length} course(s) joined`}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -1958,7 +1960,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         transition: 'all 0.2s ease'
                       }}
                     >
-                      <span>{creator.name}</span>
+                      <span>{displayName}</span>
                     </button>
                   );
                 })}
@@ -2065,7 +2067,14 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
 
                 {/* Name only */}
                 <div style={{ fontSize: 14, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
-                  {communityMode === 'hub' ? 'The Commons' : (groupedByCreator.find(c => c.id === selectedCreatorId)?.name || 'Select Community')}
+                  {communityMode === 'hub' ? 'The Commons' : (() => {
+                    const selectedCreator = groupedByCreator.find(c => c.id === selectedCreatorId);
+                    if (selectedCreator) {
+                      const creatorInstructor = getInstructorById(selectedCreator.instructorId);
+                      return creatorInstructor?.communityName || `${selectedCreator.name} Community`;
+                    }
+                    return 'Select Community';
+                  })()}
                 </div>
 
                 {/* Dropdown Arrow (next to name) */}
@@ -2186,7 +2195,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                             </div>
                           )}
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontWeight: 600, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.name} Community</div>
+                            <div style={{ fontWeight: 600, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{instructor?.communityName || `${creator.name} Community`}</div>
                             {instructor?.title && <div style={{ fontSize: 12, color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{instructor.title}</div>}
                           </div>
                         </div>
@@ -2326,42 +2335,74 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   }}>
                     {/* First Row: Name, Go to Profile, View All Courses */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (onViewCreatorProfile) {
-                            onViewCreatorProfile(effectiveCreator);
-                          }
-                        }}
-                        style={{
+                      <div style={{
                           fontSize: 18,
                           fontWeight: 700,
-                          color: '#1d9bf0',
-                          cursor: 'pointer',
+                          color: isDarkMode ? '#e7e9ea' : '#0f1419',
                           display: 'inline-block',
                           lineHeight: 1.2
                         }}
-                        onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                        onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                       >
-                        {instructor.name} Community
+                        {instructor.communityName || `${instructor.name} Community`}
                       </div>
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (onViewCreatorProfile) {
-                            onViewCreatorProfile(effectiveCreator);
-                          }
-                        }}
-                        style={{
-                          fontSize: 12,
-                          color: '#1d9bf0',
-                          cursor: 'pointer'
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                        onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                      >
-                        Go to Profile
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{
+                          fontSize: 13,
+                          color: isDarkMode ? '#9ca3af' : '#536471'
+                        }}>
+                          Created by
+                        </span>
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onViewCreatorProfile) {
+                              onViewCreatorProfile(effectiveCreator);
+                            }
+                          }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            fontSize: 13,
+                            fontWeight: 600,
+                            color: '#1d9bf0',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                          onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                        >
+                          {/* Small creator avatar */}
+                          {instructor.avatar ? (
+                            <img
+                              src={instructor.avatar}
+                              alt={instructor.name}
+                              style={{
+                                width: 20,
+                                height: 20,
+                                borderRadius: '50%',
+                                objectFit: 'cover',
+                                flexShrink: 0
+                              }}
+                            />
+                          ) : (
+                            <div style={{
+                              width: 20,
+                              height: 20,
+                              borderRadius: '50%',
+                              background: '#1d9bf0',
+                              color: '#fff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: 10,
+                              fontWeight: 700,
+                              flexShrink: 0
+                            }}>
+                              {instructor.name.charAt(0)}
+                            </div>
+                          )}
+                          {instructor.name}
+                        </span>
                       </div>
                       {/* Spacer */}
                       <div style={{ flex: 1 }} />
@@ -2799,81 +2840,102 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   alignItems: 'center',
                   gap: 10
                 }}>
-                  {/* Avatar - shrinks when collapsed */}
-                  {instructor.avatar ? (
-                    <img
-                      src={instructor.avatar}
-                      alt={instructor.name}
-                      style={{
-                        width: isProfileCollapsed ? 32 : 44,
-                        height: isProfileCollapsed ? 32 : 44,
-                        borderRadius: '50%',
-                        objectFit: 'cover',
-                        flexShrink: 0,
-                        transition: 'width 0.3s ease-out, height 0.3s ease-out'
-                      }}
-                    />
-                  ) : (
-                    <div style={{
-                      width: isProfileCollapsed ? 32 : 44,
-                      height: isProfileCollapsed ? 32 : 44,
-                      borderRadius: '50%',
-                      background: '#1d9bf0',
-                      color: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: isProfileCollapsed ? 12 : 16,
-                      fontWeight: 700,
-                      flexShrink: 0,
-                      transition: 'width 0.3s ease-out, height 0.3s ease-out, font-size 0.3s ease-out'
-                    }}>
-                      {instructor.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                    </div>
-                  )}
+                  {/* Community Badge Icon - 👥 group icon */}
+                  <div style={{
+                    width: isProfileCollapsed ? 32 : 44,
+                    height: isProfileCollapsed ? 32 : 44,
+                    borderRadius: 10,
+                    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: isProfileCollapsed ? 16 : 22,
+                    flexShrink: 0,
+                    transition: 'width 0.3s ease-out, height 0.3s ease-out, font-size 0.3s ease-out'
+                  }}>
+                    👥
+                  </div>
 
-                  {/* Name - always visible */}
-                  <div
-                    onClick={() => {
-                      if (onViewCreatorProfile) {
-                        onViewCreatorProfile(effectiveCreator);
-                      }
-                    }}
-                    style={{
+                  {/* Community Name - always visible */}
+                  <div style={{
                       fontSize: isProfileCollapsed ? 16 : 18,
                       fontWeight: 700,
-                      color: '#1d9bf0',
-                      cursor: 'pointer',
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
                       display: 'inline-block',
                       lineHeight: 1.2,
                       transition: 'font-size 0.3s ease-out'
                     }}
-                    onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                    onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                   >
-                    {instructor.name} Community
+                    {instructor.communityName || `${instructor.name} Community`}
                   </div>
 
-                  {/* Go to Profile - hidden when collapsed */}
-                  <div
-                    onClick={() => {
-                      if (onViewCreatorProfile) {
-                        onViewCreatorProfile(effectiveCreator);
-                      }
-                    }}
-                    style={{
-                      fontSize: 12,
-                      color: '#1d9bf0',
-                      cursor: 'pointer',
+                  {/* Created by Creator - hidden when collapsed */}
+                  <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
                       opacity: isProfileCollapsed ? 0 : 1,
-                      maxWidth: isProfileCollapsed ? 0 : 100,
+                      maxWidth: isProfileCollapsed ? 0 : 300,
                       overflow: 'hidden',
                       transition: 'opacity 0.3s ease-out, max-width 0.3s ease-out'
                     }}
-                    onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                    onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                   >
-                    Go to Profile
+                    <span style={{
+                      fontSize: 13,
+                      color: isDarkMode ? '#9ca3af' : '#536471'
+                    }}>
+                      Created by
+                    </span>
+                    <span
+                      onClick={() => {
+                        if (onViewCreatorProfile) {
+                          onViewCreatorProfile(effectiveCreator);
+                        }
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: '#1d9bf0',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                      onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                    >
+                      {/* Small creator avatar */}
+                      {instructor.avatar ? (
+                        <img
+                          src={instructor.avatar}
+                          alt={instructor.name}
+                          style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            flexShrink: 0
+                          }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: '50%',
+                          background: '#1d9bf0',
+                          color: '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 10,
+                          fontWeight: 700,
+                          flexShrink: 0
+                        }}>
+                          {instructor.name.charAt(0)}
+                        </div>
+                      )}
+                      {instructor.name}
+                    </span>
                   </div>
 
                   {/* Spacer */}

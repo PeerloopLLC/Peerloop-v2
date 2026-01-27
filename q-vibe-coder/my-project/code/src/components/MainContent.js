@@ -1641,6 +1641,27 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           setViewingCourseFromCommunity(null);
           onMenuChange('Browse_Communities');
         }}
+        onViewCreatorProfile={(instructor) => {
+          // Navigate to creator profile view
+          window.history.pushState({
+            activeMenu: 'Discover',
+            viewingCourse: null,
+            selectedInstructor: null,
+            activeTopMenu
+          }, '', '');
+
+          const fullData = getInstructorWithCourses(instructor.id);
+          setSelectedInstructor(fullData || instructor);
+          setSelectedCourse(null);
+          setActiveTopMenu('creators');
+          setPreviousBrowseContext({ type: 'discover', viewingCreatorProfile: true });
+          setShowEnrollmentFlow(false);
+          setEnrollingCourse(null);
+          setViewingCourseFromCommunity(null);
+          // Set flag to indicate we want creator profile, not community view
+          localStorage.setItem('viewingCreatorProfile', 'true');
+          onMenuChange('Browse_Communities');
+        }}
       />
     );
   }
@@ -3031,8 +3052,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               name: creator.name,
               instructorId: instructorId
             };
-            setPreviousBrowseContext({ type: 'feeds', community: communityForBack });
+            setPreviousBrowseContext({ type: 'feeds', community: communityForBack, viewingCreatorProfile: true });
             setNavigationHistory(prev => [...prev, 'My Community']);
+            // Set flag to indicate we want creator profile, not community view
+            localStorage.setItem('viewingCreatorProfile', 'true');
             onMenuChange('Browse_Communities');
           }}
         />

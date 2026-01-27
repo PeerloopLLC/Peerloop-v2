@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Badge Options - Mockup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f8fa;
+      padding: 40px;
+      color: #0f1419;
+    }
+    h1 { margin-bottom: 30px; font-size: 28px; }
+    h2 { margin: 40px 0 20px; font-size: 20px; color: #536471; }
+    h3 { margin: 30px 0 15px; font-size: 16px; color: #1d9bf0; }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid #eff3f4;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .course-card {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      background: #f7f9f9;
+      border-radius: 12px;
+      border: 1px solid #eff3f4;
+    }
+
+    .course-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .course-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1d9bf0;
+      margin-bottom: 4px;
+    }
+
+    .course-desc {
+      font-size: 13px;
+      color: #536471;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .course-meta {
+      font-size: 12px;
+      color: #71767b;
+      margin-top: 8px;
+    }
+
+    /* Badge Base Styles */
+    .badge {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .badge-sm {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+    }
+
+    /* Option 1: Category Emoji Icons */
+    .badge-emoji {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-size: 28px;
+    }
+
+    .badge-emoji.ai { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .badge-emoji.data { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .badge-emoji.web { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .badge-emoji.devops { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .badge-emoji.automation { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+    .badge-emoji.medical { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+    .badge-emoji.robotics { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+
+    /* Option 2: Book/Graduation Cap Universal */
+    .badge-book {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-size: 26px;
+    }
+
+    /* Option 3: Code/Terminal Icon */
+    .badge-code {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #00ff88;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    /* Option 4: Letter/Abbreviation Badge */
+    .badge-letter {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    /* Option 5: Minimal Line Icon */
+    .badge-minimal {
+      background: white;
+      border: 2px solid #1d9bf0;
+      color: #1d9bf0;
+      font-size: 24px;
+    }
+
+    /* Option 6: Solid Color with Symbol */
+    .badge-solid {
+      font-size: 24px;
+    }
+    .badge-solid.blue { background: #1d9bf0; }
+    .badge-solid.purple { background: #7c3aed; }
+    .badge-solid.green { background: #10b981; }
+    .badge-solid.orange { background: #f59e0b; }
+    .badge-solid.pink { background: #ec4899; }
+    .badge-solid.cyan { background: #06b6d4; }
+
+    /* Option 7: Numbered/Module Badge */
+    .badge-numbered {
+      background: linear-gradient(135deg, #1d9bf0 0%, #0066cc 100%);
+      color: white;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .badge-numbered .num {
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .badge-numbered .label {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.8;
+    }
+
+    /* Option 8: Icon with Category Color Bar */
+    .badge-bar {
+      background: white;
+      border: 1px solid #eff3f4;
+      position: relative;
+      overflow: hidden;
+      font-size: 24px;
+    }
+    .badge-bar::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+    }
+    .badge-bar.ai::before { background: #4facfe; }
+    .badge-bar.data::before { background: #f5576c; }
+    .badge-bar.web::before { background: #10b981; }
+    .badge-bar.devops::before { background: #f59e0b; }
+
+    /* Option 9: Circular Badge (like community but different) */
+    .badge-circle {
+      border-radius: 50%;
+      font-size: 24px;
+    }
+
+    /* Option 10: Hexagon-ish Badge */
+    .badge-hex {
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      width: 70px;
+      height: 64px;
+      font-size: 24px;
+    }
+
+    .label {
+      display: inline-block;
+      background: #e8f5fe;
+      color: #1d9bf0;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .comparison {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .comparison-item {
+      text-align: center;
+    }
+
+    .comparison-label {
+      font-size: 12px;
+      color: #71767b;
+      margin-top: 8px;
+    }
+
+    .note {
+      background: #fff8e6;
+      border-left: 4px solid #f59e0b;
+      padding: 12px 16px;
+      margin: 20px 0;
+      font-size: 14px;
+      color: #92400e;
+    }
+
+    .winner {
+      border: 2px solid #10b981;
+      position: relative;
+    }
+    .winner::after {
+      content: '✓ Recommended';
+      position: absolute;
+      top: -10px;
+      right: 10px;
+      background: #10b981;
+      color: white;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>Course Badge Options</h1>
+
+  <div class="note">
+    <strong>Goal:</strong> Distinguish courses from communities (👥) while maintaining visual consistency.
+    Courses should look "learnable" - like content you can take.
+  </div>
+
+  <!-- Option 1: Category-Specific Emoji -->
+  <div class="section">
+    <span class="label">Option 1</span>
+    <h2>Category-Specific Emoji Icons</h2>
+    <p style="color: #536471; margin-bottom: 20px;">Each course category gets a relevant emoji icon</p>
+
+    <div class="options-grid">
+      <div class="course-card">
+        <div class="badge badge-emoji ai">🤖</div>
+        <div class="course-info">
+          <div class="course-title">AI for Product Managers</div>
+          <div class="course-desc">Master the skills to lead AI-driven products.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 6 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-emoji data">📊</div>
+        <div class="course-info">
+          <div class="course-title">Data Science Fundamentals</div>
+          <div class="course-desc">Learn core concepts of data science and visualization.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-emoji web">💻</div>
+        <div class="course-info">
+          <div class="course-title">Full-Stack Web Development</div>
+          <div class="course-desc">Build complete web applications from frontend to backend.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-emoji devops">⚙️</div>
+        <div class="course-info">
+          <div class="course-title">DevOps & CI/CD Mastery</div>
+          <div class="course-desc">Master DevOps practices and containerization.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-emoji automation">🔄</div>
+        <div class="course-info">
+          <div class="course-title">N8N Workflow Automation</div>
+          <div class="course-desc">Build powerful automations without code.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 4 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-emoji medical">🏥</div>
+        <div class="course-info">
+          <div class="course-title">AI for Medical Diagnostics</div>
+          <div class="course-desc">Develop AI models for medical image analysis.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option 2: Universal Book/Graduation Icon -->
+  <div class="section">
+    <span class="label">Option 2</span>
+    <h2>Universal Course Icons</h2>
+    <p style="color: #536471; margin-bottom: 20px;">Same icon for all courses - emphasizes "this is a course"</p>
+
+    <div class="options-grid">
+      <div class="course-card">
+        <div class="badge badge-book" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">📚</div>
+        <div class="course-info">
+          <div class="course-title">AI for Product Managers</div>
+          <div class="course-desc">Master the skills to lead AI-driven products.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 6 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-book" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">📚</div>
+        <div class="course-info">
+          <div class="course-title">Data Science Fundamentals</div>
+          <div class="course-desc">Learn core concepts of data science.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-book" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🎓</div>
+        <div class="course-info">
+          <div class="course-title">Full-Stack Web Development</div>
+          <div class="course-desc">Build complete web applications.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-book" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">🎓</div>
+        <div class="course-info">
+          <div class="course-title">DevOps & CI/CD Mastery</div>
+          <div class="course-desc">Master DevOps practices.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option 3: Code/Terminal Style -->
+  <div class="section">
+    <span class="label">Option 3</span>
+    <h2>Code/Terminal Style</h2>
+    <p style="color: #536471; margin-bottom: 20px;">Technical, developer-focused look</p>
+
+    <div class="options-grid">
+      <div class="course-card">
+        <div class="badge badge-code">&gt;_</div>
+        <div class="course-info">
+          <div class="course-title">AI for Product Managers</div>
+          <div class="course-desc">Master the skills to lead AI-driven products.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 6 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-code">{ }</div>
+        <div class="course-info">
+          <div class="course-title">Full-Stack Web Development</div>
+          <div class="course-desc">Build complete web applications.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-code">~/</div>
+        <div class="course-info">
+          <div class="course-title">DevOps & CI/CD Mastery</div>
+          <div class="course-desc">Master DevOps practices.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option 4: Letter/Abbreviation Badges -->
+  <div class="section">
+    <span class="label">Option 4</span>
+    <h2>Letter/Abbreviation Badges</h2>
+    <p style="color: #536471; margin-bottom: 20px;">Course initials or category abbreviations</p>
+
+    <div class="options-grid">
+      <div class="course-card">
+        <div class="badge badge-letter" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">AI</div>
+        <div class="course-info">
+          <div class="course-title">AI for Product Managers</div>
+          <div class="course-desc">Master the skills to lead AI-driven products.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 6 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-letter" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">DS</div>
+        <div class="course-info">
+          <div class="course-title">Data Science Fundamentals</div>
+          <div class="course-desc">Learn core concepts of data science.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-letter" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">FS</div>
+        <div class="course-info">
+          <div class="course-title">Full-Stack Web Development</div>
+          <div class="course-desc">Build complete web applications.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-letter" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">DO</div>
+        <div class="course-info">
+          <div class="course-title">DevOps & CI/CD Mastery</div>
+          <div class="course-desc">Master DevOps practices.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option 5: Solid Color + Play/Learn Symbol -->
+  <div class="section">
+    <span class="label">Option 5</span>
+    <h2>Solid Color + Play Symbol</h2>
+    <p style="color: #536471; margin-bottom: 20px;">Clean look with "play to learn" metaphor</p>
+
+    <div class="options-grid">
+      <div class="course-card">
+        <div class="badge badge-solid blue">▶</div>
+        <div class="course-info">
+          <div class="course-title">AI for Product Managers</div>
+          <div class="course-desc">Master the skills to lead AI-driven products.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 6 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-solid purple">▶</div>
+        <div class="course-info">
+          <div class="course-title">Data Science Fundamentals</div>
+          <div class="course-desc">Learn core concepts of data science.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-solid green">▶</div>
+        <div class="course-info">
+          <div class="course-title">Full-Stack Web Development</div>
+          <div class="course-desc">Build complete web applications.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-solid orange">▶</div>
+        <div class="course-info">
+          <div class="course-title">DevOps & CI/CD Mastery</div>
+          <div class="course-desc">Master DevOps practices.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option 6: Minimal Outline Style -->
+  <div class="section">
+    <span class="label">Option 6</span>
+    <h2>Minimal Outline Style</h2>
+    <p style="color: #536471; margin-bottom: 20px;">Clean, minimalist approach</p>
+
+    <div class="options-grid">
+      <div class="course-card">
+        <div class="badge badge-minimal">📖</div>
+        <div class="course-info">
+          <div class="course-title">AI for Product Managers</div>
+          <div class="course-desc">Master the skills to lead AI-driven products.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 6 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-minimal" style="border-color: #7c3aed; color: #7c3aed;">📖</div>
+        <div class="course-info">
+          <div class="course-title">Data Science Fundamentals</div>
+          <div class="course-desc">Learn core concepts of data science.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-minimal" style="border-color: #10b981; color: #10b981;">📖</div>
+        <div class="course-info">
+          <div class="course-title">Full-Stack Web Development</div>
+          <div class="course-desc">Build complete web applications.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option 7: Module Count Badge -->
+  <div class="section">
+    <span class="label">Option 7</span>
+    <h2>Module Count Badge</h2>
+    <p style="color: #536471; margin-bottom: 20px;">Shows course size at a glance</p>
+
+    <div class="options-grid">
+      <div class="course-card">
+        <div class="badge badge-numbered">
+          <span class="num">6</span>
+          <span class="label">modules</span>
+        </div>
+        <div class="course-info">
+          <div class="course-title">AI for Product Managers</div>
+          <div class="course-desc">Master the skills to lead AI-driven products.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 12 hours</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-numbered" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <span class="num">3</span>
+          <span class="label">modules</span>
+        </div>
+        <div class="course-info">
+          <div class="course-title">Data Science Fundamentals</div>
+          <div class="course-desc">Learn core concepts of data science.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 8 hours</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-numbered" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+          <span class="num">5</span>
+          <span class="label">modules</span>
+        </div>
+        <div class="course-info">
+          <div class="course-title">Full-Stack Web Development</div>
+          <div class="course-desc">Build complete web applications.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 15 hours</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option 8: Color Bar Indicator -->
+  <div class="section">
+    <span class="label">Option 8</span>
+    <h2>Category Color Bar</h2>
+    <p style="color: #536471; margin-bottom: 20px;">White badge with colored category indicator</p>
+
+    <div class="options-grid">
+      <div class="course-card">
+        <div class="badge badge-bar ai">🤖</div>
+        <div class="course-info">
+          <div class="course-title">AI for Product Managers</div>
+          <div class="course-desc">Master the skills to lead AI-driven products.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 6 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-bar data">📊</div>
+        <div class="course-info">
+          <div class="course-title">Data Science Fundamentals</div>
+          <div class="course-desc">Learn core concepts of data science.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-bar web">💻</div>
+        <div class="course-info">
+          <div class="course-title">Full-Stack Web Development</div>
+          <div class="course-desc">Build complete web applications.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="badge badge-bar devops">⚙️</div>
+        <div class="course-info">
+          <div class="course-title">DevOps & CI/CD Mastery</div>
+          <div class="course-desc">Master DevOps practices.</div>
+          <div class="course-meta">★ 4.8 • 1,250 students • 3 Modules</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side-by-side comparison -->
+  <div class="section">
+    <h2>Quick Comparison: Community vs Course</h2>
+    <p style="color: #536471; margin-bottom: 20px;">How courses should look different from communities</p>
+
+    <div class="comparison">
+      <div class="comparison-item">
+        <div class="badge" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); font-size: 28px; width: 64px; height: 64px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">👥</div>
+        <div class="comparison-label">Community<br>(current)</div>
+      </div>
+
+      <div class="comparison-item">
+        <div class="badge badge-emoji ai" style="width: 64px; height: 64px;">🤖</div>
+        <div class="comparison-label">Course<br>Category Emoji</div>
+      </div>
+
+      <div class="comparison-item">
+        <div class="badge badge-book" style="width: 64px; height: 64px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">📚</div>
+        <div class="comparison-label">Course<br>Universal Book</div>
+      </div>
+
+      <div class="comparison-item">
+        <div class="badge badge-letter" style="width: 64px; height: 64px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">AI</div>
+        <div class="comparison-label">Course<br>Abbreviation</div>
+      </div>
+
+      <div class="comparison-item">
+        <div class="badge badge-solid blue" style="width: 64px; height: 64px;">▶</div>
+        <div class="comparison-label">Course<br>Play Symbol</div>
+      </div>
+
+      <div class="comparison-item">
+        <div class="badge badge-numbered" style="width: 64px; height: 64px;">
+          <span class="num">6</span>
+          <span class="label">modules</span>
+        </div>
+        <div class="comparison-label">Course<br>Module Count</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recommended -->
+  <div class="section winner">
+    <span class="label" style="background: #d1fae5; color: #059669;">Recommended</span>
+    <h2>Category Emoji with Gradient (Option 1)</h2>
+    <p style="color: #536471; margin-bottom: 20px;">
+      <strong>Why:</strong> Instantly communicates course topic. Different gradients + emojis create clear visual distinction from the 👥 community badge.
+    </p>
+
+    <h3>Suggested Category Mappings</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+      <thead>
+        <tr style="background: #f7f9f9;">
+          <th style="padding: 10px; text-align: left; border-bottom: 1px solid #eff3f4;">Category</th>
+          <th style="padding: 10px; text-align: left; border-bottom: 1px solid #eff3f4;">Emoji</th>
+          <th style="padding: 10px; text-align: left; border-bottom: 1px solid #eff3f4;">Gradient</th>
+          <th style="padding: 10px; text-align: left; border-bottom: 1px solid #eff3f4;">Preview</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">AI / Machine Learning</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">🤖</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Cyan → Teal</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;"><div class="badge badge-sm badge-emoji ai">🤖</div></td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Data Science</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">📊</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Pink → Coral</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;"><div class="badge badge-sm badge-emoji data">📊</div></td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Web Development</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">💻</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Green → Emerald</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;"><div class="badge badge-sm badge-emoji" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">💻</div></td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">DevOps / Cloud</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">⚙️</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Orange → Yellow</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;"><div class="badge badge-sm badge-emoji devops">⚙️</div></td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Automation / No-Code</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">🔄</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Mint → Pink</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;"><div class="badge badge-sm badge-emoji automation">🔄</div></td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Medical / Healthcare</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">🏥</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Rose → Pink</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;"><div class="badge badge-sm badge-emoji medical">🏥</div></td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Robotics</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">🦾</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Purple → Pink</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;"><div class="badge badge-sm badge-emoji robotics">🦾</div></td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Prompting / Writing</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">✍️</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;">Indigo → Purple</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eff3f4;"><div class="badge badge-sm badge-emoji" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">✍️</div></td>
+        </tr>
+        <tr>
+          <td style="padding: 10px;">General / Beginner</td>
+          <td style="padding: 10px;">📚</td>
+          <td style="padding: 10px;">Blue → Indigo</td>
+          <td style="padding: 10px;"><div class="badge badge-sm badge-emoji" style="background: linear-gradient(135deg, #1d9bf0 0%, #667eea 100%);">📚</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>

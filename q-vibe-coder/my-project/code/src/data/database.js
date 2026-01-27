@@ -15,6 +15,7 @@ export const instructorsDatabase = [
   {
     id: 1,
     name: "Albert Einstein",
+    communityName: "The Physics Lab",
     title: "Theoretical Physicist & Nobel Laureate",
     avatar: "https://i.pravatar.cc/120?img=68",
     bio: "Revolutionary physicist who developed the theory of relativity, one of the two pillars of modern physics. Nobel Prize winner and one of the most influential scientists of all time.",
@@ -52,6 +53,7 @@ export const instructorsDatabase = [
   {
     id: 2,
     name: "Jane Doe",
+    communityName: "AI Pioneers Hub",
     title: "Leading AI Strategist at TechCorp",
     avatar: "https://i.pravatar.cc/120?img=32",
     bio: "Leading AI strategist with 10+ years experience in product management and AI implementation. Expert in helping companies leverage AI for competitive advantage.",
@@ -89,6 +91,7 @@ export const instructorsDatabase = [
   {
     id: 3,
     name: "Prof. Maria Rodriguez",
+    communityName: "Data Science Den",
     title: "Data Science & Analytics Specialist",
     avatar: "https://i.pravatar.cc/120?img=47",
     bio: "Expert in data science, statistical analysis, and business intelligence. Helps organizations make data-driven decisions through advanced analytics.",
@@ -126,6 +129,7 @@ export const instructorsDatabase = [
   {
     id: 4,
     name: "James Wilson",
+    communityName: "Full Stack Forge",
     title: "Full-Stack Development & DevOps Engineer",
     avatar: "https://i.pravatar.cc/120?img=60",
     bio: "Full-stack developer with expertise in modern web technologies and DevOps practices. Builds scalable applications and efficient deployment pipelines.",
@@ -163,6 +167,7 @@ export const instructorsDatabase = [
   {
     id: 5,
     name: "Dr. Priya Nair",
+    communityName: "Robotics Workshop",
     title: "AI for Robotics Specialist",
     avatar: "https://i.pravatar.cc/120?img=26",
     bio: "Expert in robotics and AI integration, focusing on real-world automation and intelligent systems.",
@@ -188,6 +193,7 @@ export const instructorsDatabase = [
   {
     id: 6,
     name: "Prof. Elena Petrova",
+    communityName: "MedTech Innovators",
     title: "AI in Healthcare Innovator",
     avatar: "https://i.pravatar.cc/120?img=52",
     bio: "Pioneer in applying AI to medical diagnostics and healthcare data analysis.",
@@ -213,6 +219,7 @@ export const instructorsDatabase = [
   {
     id: 7,
     name: "Mr. Samuel Lee",
+    communityName: "Code Bootcamp Central",
     title: "AI Coding Bootcamp Instructor",
     avatar: "https://i.pravatar.cc/120?img=11",
     bio: "Specialist in teaching practical AI coding skills for beginners and professionals alike.",
@@ -238,6 +245,7 @@ export const instructorsDatabase = [
   {
     id: 8,
     name: "Guy Rymberg",
+    communityName: "Prompt Masters",
     title: "AI Prompting Specialist & Business AI Expert",
     avatar: "https://i.pravatar.cc/120?img=13",
     bio: "AI teaching specialist with 15 years experience in AI and machine learning. Expert in helping professionals leverage AI prompting for competitive advantage. Has taught over 500 students the art of prompt engineering and AI communication. Passionate about the PeerLoop model of Learn → Teach → Earn.",
@@ -267,6 +275,7 @@ export const instructorsDatabase = [
   {
     id: 9,
     name: "Dr. Sarah Chen",
+    communityName: "AI Research Circle",
     title: "AI Research Scientist & Educator",
     avatar: "https://i.pravatar.cc/120?img=44",
     bio: "Former Google AI researcher, now dedicated to making artificial intelligence accessible to everyone. Specializes in breaking down complex AI concepts for beginners.",
@@ -295,6 +304,7 @@ export const instructorsDatabase = [
   {
     id: 10,
     name: "Marcus Johnson",
+    communityName: "DevOps Command",
     title: "DevOps Engineer & Open Source Advocate",
     avatar: "https://i.pravatar.cc/120?img=53",
     bio: "10+ years in software development, passionate about automation and developer tools. Core contributor to several open source projects and GitHub expert.",
@@ -323,6 +333,7 @@ export const instructorsDatabase = [
   {
     id: 11,
     name: "Elena Rodriguez",
+    communityName: "Automation Station",
     title: "Automation Specialist & No-Code Expert",
     avatar: "https://i.pravatar.cc/120?img=23",
     bio: "Helping businesses automate workflows without writing code. N8N certified trainer with expertise in connecting AI tools to business processes.",

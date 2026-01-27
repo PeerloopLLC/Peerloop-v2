@@ -4,6 +4,7 @@ import './Sidebar.css';
 import {  FaSearch,  FaBell,  FaEnvelope,  FaUser,  FaUsers,  FaChalkboardTeacher,  FaBook,  FaInfoCircle,  FaCog,  FaEllipsisH} from 'react-icons/fa';
 import useDeviceDetect from '../hooks/useDeviceDetect';
 import PostComposeModal from './PostComposeModal';
+import { getInstructorById } from '../data/database';
 
 /**
  * Sidebar Component
@@ -469,24 +470,16 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
                 }
               }}
             >
-              {selectedCommunity.id === 'town-hall' ? (
-                <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=100&h=100&fit=crop" alt="The Commons" className="community-selector-avatar" />
-              ) : selectedCommunity.avatar ? (
-                <img
-                  src={selectedCommunity.avatar}
-                  alt={selectedCommunity.name}
-                  className="community-selector-avatar"
-                />
-              ) : (
-                <div className="community-selector-avatar community-selector-avatar-letter">
-                  {(selectedCommunity.name || 'C').charAt(0).toUpperCase()}
-                </div>
-              )}
+              <div className="community-selector-avatar community-badge" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>👥</div>
               <div className="community-selector-info">
                 <span className="community-selector-name">
                   {selectedCommunity.id === 'town-hall'
                     ? 'The Commons'
-                    : `${selectedCommunity.name || 'Community'}`}
+                    : (() => {
+                        const instructorId = typeof selectedCommunity.id === 'string' ? parseInt(selectedCommunity.id.replace('creator-', '')) : selectedCommunity.instructorId;
+                        const instructor = getInstructorById(instructorId);
+                        return instructor?.communityName || `${selectedCommunity.name || 'Community'} Community`;
+                      })()}
                 </span>
                 {hasFollowedCommunities && <span className="community-selector-count">Choose A Community Feed</span>}
               </div>
@@ -514,15 +507,17 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
                     setIsFlyoutOpen(false);
                   }}
                 >
-                  <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" className="community-avatar community-avatar-img" />
+                  <div className="community-avatar community-badge" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>👥</div>
                   <span className="community-name">The Commons</span>
                 </div>
                 {/* Creator communities - only show instructor communities, not courses */}
                 {communities
                   .filter(c => c.type === 'creator' || (typeof c.id === 'string' && c.id.startsWith('creator-')))
                   .map((community) => {
-                  const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
-                  const initial = displayName.charAt(0).toUpperCase();
+                  // Get instructor for communityName
+                  const instructorId = typeof community.id === 'string' ? parseInt(community.id.replace('creator-', '')) : community.instructorId;
+                  const instructor = getInstructorById(instructorId);
+                  const communityNameDisplay = instructor?.communityName || `${community.name || community.id?.replace('creator-', '') || 'Community'} Community`;
 
                   return (
                     <div
@@ -533,16 +528,8 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
                         setIsFlyoutOpen(false);
                       }}
                     >
-                      {community.avatar ? (
-                        <img
-                          src={community.avatar}
-                          alt={displayName}
-                          className="community-avatar community-avatar-img"
-                        />
-                      ) : (
-                        <div className="community-avatar">{initial}</div>
-                      )}
-                      <span className="community-name">{displayName} Community</span>
+                      <div className="community-avatar community-badge" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>👥</div>
+                      <span className="community-name">{communityNameDisplay}</span>
                     </div>
                   );
                 })}
@@ -688,31 +675,25 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
                   className="community-item"
                   onClick={() => { setIsFlyoutOpen(false); handleCommunitySelect(townHall); }}
                 >
-                  <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" className="community-avatar community-avatar-img" />
+                  <div className="community-avatar community-badge" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>👥</div>
                   <span className="community-name">The Commons</span>
                 </div>
                 {/* Followed creator communities - only show instructor communities, not courses */}
                 {communities
                   .filter(c => c.type === 'creator' || (typeof c.id === 'string' && c.id.startsWith('creator-')))
                   .map((community) => {
-                  const displayName = community.name || community.id?.replace('creator-', '') || 'Community';
-                  const initial = displayName.charAt(0).toUpperCase();
+                  // Get instructor for communityName
+                  const instructorId = typeof community.id === 'string' ? parseInt(community.id.replace('creator-', '')) : community.instructorId;
+                  const instructor = getInstructorById(instructorId);
+                  const communityNameDisplay = instructor?.communityName || `${community.name || community.id?.replace('creator-', '') || 'Community'} Community`;
                   return (
                     <div
                       key={community.id}
                       className="community-item"
                       onClick={() => { setIsFlyoutOpen(false); handleCommunitySelect(community); }}
                     >
-                      {community.avatar ? (
-                        <img
-                          src={community.avatar}
-                          alt={displayName}
-                          className="community-avatar community-avatar-img"
-                        />
-                      ) : (
-                        <div className="community-avatar">{initial}</div>
-                      )}
-                      <span className="community-name">{displayName} Community</span>
+                      <div className="community-avatar community-badge" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>👥</div>
+                      <span className="community-name">{communityNameDisplay}</span>
                     </div>
                   );
                 })}

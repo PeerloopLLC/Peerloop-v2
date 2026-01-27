@@ -573,25 +573,19 @@ const MyCoursesView = ({
             gap: 16,
             marginBottom: 12
           }}>
+            {/* Community Badge */}
             <div style={{
               width: 56,
               height: 56,
-              borderRadius: '50%',
-              background: `linear-gradient(135deg, #6366f1 0%, #10b981 100%)`,
+              borderRadius: 12,
+              background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: 24,
-              fontWeight: 700,
-              color: '#fff',
-              flexShrink: 0,
-              overflow: 'hidden'
+              flexShrink: 0
             }}>
-              {instructor?.avatar ? (
-                <img src={instructor.avatar} alt={instructor.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                instructor?.name?.charAt(0) || '?'
-              )}
+              👥
             </div>
 
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -1264,25 +1258,19 @@ const MyCoursesView = ({
                         gap: 16,
                         marginBottom: 12
                       }}>
+                        {/* Community Badge */}
                         <div style={{
                           width: 56,
                           height: 56,
-                          borderRadius: '50%',
-                          background: `linear-gradient(135deg, #6366f1 0%, #10b981 100%)`,
+                          borderRadius: 12,
+                          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontSize: 24,
-                          fontWeight: 700,
-                          color: '#fff',
-                          flexShrink: 0,
-                          overflow: 'hidden'
+                          flexShrink: 0
                         }}>
-                          {instructor?.avatar ? (
-                            <img src={instructor.avatar} alt={instructor.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : (
-                            instructor?.name?.charAt(0) || '?'
-                          )}
+                          👥
                         </div>
 
                         <div style={{ flex: 1, minWidth: 0 }}>
