@@ -421,7 +421,23 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           ) : (
             /* Expanded sidebar: Feeds group with shared background */
             <div className="feeds-group">
-            {/* TOP: Community selector - shows selected community name + count + arrow (hidden in selector card mode) */}
+            {/* TOP: My Feeds static label - no arrow */}
+            <div
+              className={`nav-item feeds-label ${activeMenu === 'My Community' ? 'active' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                // Close slideout panel if it's open
+                if (isSlideoutPanelOpen) {
+                  window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
+                }
+                onMenuChange('My Community');
+              }}
+            >
+              <div className="nav-icon"><FaUsers /></div>
+              <span className="nav-label">My Feeds</span>
+            </div>
+
+            {/* SECOND: Community selector - shows selected community name + count + arrow (hidden in selector card mode) */}
             {communityNavStyle !== 'selector' && <div
               className={`community-selector ${isFlyoutOpen ? 'flyout-open' : ''}`}
               onClick={(e) => {
@@ -478,22 +494,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
                 <span className="community-selector-arrow">&rarr;</span>
               )}
             </div>}
-
-            {/* SECOND: My Feeds static label - no arrow */}
-            <div
-              className={`nav-item feeds-label ${activeMenu === 'My Community' ? 'active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                // Close slideout panel if it's open
-                if (isSlideoutPanelOpen) {
-                  window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
-                }
-                onMenuChange('My Community');
-              }}
-            >
-              <div className="nav-icon"><FaUsers /></div>
-              <span className="nav-label">My Feeds</span>
-            </div>
             </div>
           )}
 
@@ -682,10 +682,9 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
           </div>
         ))}
 
-        {/* Divider line and My Feeds - hidden when slideout panel is selected */}
-        {communityNavStyle !== 'slideout' && (
-          <>
-            <div className="nav-section-divider" />
+        {/* Divider line and My Feeds - always visible */}
+        <>
+          <div className="nav-section-divider" />
 
             {/* Scrollable Communities Section - My Feeds at bottom of sidebar */}
             <div
@@ -731,7 +730,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               </div>
             </div>
           </>
-        )}
 
       </nav>
 
