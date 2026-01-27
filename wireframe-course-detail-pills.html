@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Detail with Pill Tabs</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f7f9f9;
+        }
+
+        /* Layout */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 275px;
+            background: white;
+            border-right: 1px solid #eff3f4;
+            padding: 12px;
+            flex-shrink: 0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .logo-icon {
+            font-size: 24px;
+            color: #1d9bf0;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            border-radius: 9999px;
+            font-size: 20px;
+            color: #0f1419;
+            cursor: pointer;
+        }
+        .nav-item:hover {
+            background: #eff3f4;
+        }
+        .nav-item.active {
+            font-weight: 700;
+            color: #1d9bf0;
+        }
+        .nav-icon {
+            width: 26px;
+            text-align: center;
+        }
+
+        /* Main content */
+        .main {
+            flex: 1;
+            max-width: 600px;
+            border-right: 1px solid #eff3f4;
+            background: white;
+        }
+
+        /* Back button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            margin: 16px;
+            background: white;
+            border: 1px solid #cfd9de;
+            border-radius: 9999px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Course header */
+        .course-header {
+            padding: 0 16px 16px;
+        }
+        .course-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .course-title {
+            font-size: 23px;
+            font-weight: 700;
+            color: #0f1419;
+        }
+        .follow-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #cfd9de;
+            border-radius: 9999px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .instructor-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .instructor-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .instructor-name {
+            color: #1d9bf0;
+            font-size: 15px;
+        }
+        .course-desc {
+            font-size: 15px;
+            color: #536471;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+        .course-stats {
+            font-size: 14px;
+            color: #536471;
+            margin-bottom: 12px;
+        }
+        .enrolled-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        /* PILL TABS - The new style */
+        .pill-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 16px 16px;
+        }
+        .pill-tab {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #0f1419;
+            background: white;
+            border: 1px solid #cfd9de;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pill-tab:hover {
+            background: #f7f9f9;
+        }
+        .pill-tab.active {
+            background: #1d9bf0;
+            color: white;
+            border-color: #1d9bf0;
+        }
+
+        /* Content area */
+        .content-area {
+            padding: 16px;
+            background: #f7f9f9;
+            min-height: 400px;
+        }
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .content-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .module-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #eff3f4;
+            cursor: pointer;
+        }
+        .module-item:last-child {
+            border-bottom: none;
+        }
+        .module-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .module-icon {
+            color: #536471;
+        }
+        .module-name {
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .module-duration {
+            font-size: 13px;
+            color: #1d9bf0;
+            background: #e8f4fd;
+            padding: 4px 10px;
+            border-radius: 9999px;
+        }
+
+        /* Right sidebar */
+        .right-sidebar {
+            width: 350px;
+            padding: 16px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">∞</span>
+                <span>PeerLoop</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">👥</span>
+                <span>My Feeds</span>
+            </div>
+            <div class="nav-item active">
+                <span class="nav-icon">🔍</span>
+                <span>Discover</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">📚</span>
+                <span>My Courses</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">✉️</span>
+                <span>Messages</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">🔔</span>
+                <span>Notifications</span>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="main">
+            <button class="back-btn">← Back to Discover</button>
+
+            <div class="course-header">
+                <div class="course-title-row">
+                    <h1 class="course-title">Node.js Backend Development</h1>
+                    <button class="follow-btn">Following Course</button>
+                </div>
+
+                <div class="instructor-row">
+                    <div class="instructor-avatar"></div>
+                    <span class="instructor-name">Albert Einstein</span>
+                </div>
+
+                <p class="course-desc">Learn to build robust backend services with Node.js, Express, and MongoDB. Master REST APIs and authentication systems.</p>
+
+                <div class="course-stats">★ 4.8 (234) • 1,250 students • 3 Modules • 12 Lessons • 12 hours</div>
+
+                <div class="enrolled-badge">
+                    <span>✓</span>
+                    ENROLLED · Started Dec 10, 2024
+                </div>
+            </div>
+
+            <!-- PILL TABS -->
+            <div class="pill-tabs">
+                <button class="pill-tab active">Curriculum</button>
+                <button class="pill-tab">Session Files</button>
+                <button class="pill-tab">Course Feed</button>
+                <button class="pill-tab">Reviews</button>
+                <button class="pill-tab">About</button>
+            </div>
+
+            <!-- Content -->
+            <div class="content-area">
+                <div class="content-card">
+                    <h3 class="content-title">Course Curriculum</h3>
+
+                    <div class="module-item">
+                        <div class="module-left">
+                            <span class="module-icon">▶</span>
+                            <span class="module-name">Node.js Fundamentals</span>
+                        </div>
+                        <span class="module-duration">1h 15min</span>
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-left">
+                            <span class="module-icon">▶</span>
+                            <span class="module-name">Express Framework</span>
+                        </div>
+                        <span class="module-duration">2h 45min</span>
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-left">
+                            <span class="module-icon">▶</span>
+                            <span class="module-name">Database Integration</span>
+                        </div>
+                        <span class="module-duration">3h 30min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right sidebar placeholder -->
+        <div class="right-sidebar"></div>
+    </div>
+
+    <script>
+        // Interactive tabs
+        document.querySelectorAll('.pill-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.pill-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

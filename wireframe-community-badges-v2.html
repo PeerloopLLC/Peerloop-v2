@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Badge Options</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+      color: #1a1a1a;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .section {
+      max-width: 900px;
+      margin: 0 auto 40px;
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e5e5e5;
+      color: #333;
+    }
+
+    .section-title span {
+      background: #f0f0f0;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-left: 10px;
+      color: #666;
+    }
+
+    /* Community Header Mockups */
+    .community-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+      background: #fafafa;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #e8e8e8;
+    }
+
+    .community-header.recommended {
+      border: 2px solid #10b981;
+      background: #f0fdf4;
+    }
+
+    .community-header .label {
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      background: #10b981;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .community-header-wrapper {
+      position: relative;
+    }
+
+    /* Community Badge Styles */
+    .community-badge-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .badge-gradient-purple {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .badge-gradient-blue {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .badge-gradient-green {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .badge-gradient-orange {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .badge-gradient-gold {
+      background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+    }
+
+    .badge-solid-blue {
+      background: #3b82f6;
+    }
+
+    .badge-solid-dark {
+      background: #1e293b;
+    }
+
+    .badge-outline {
+      background: white;
+      border: 2px solid #3b82f6;
+    }
+
+    .badge-outline .badge-text {
+      color: #3b82f6;
+    }
+
+    .community-info {
+      flex: 1;
+    }
+
+    .community-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    /* Created By Styles */
+    .created-by {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .created-by-label {
+      color: #9ca3af;
+    }
+
+    .creator-link {
+      color: #3b82f6;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .creator-link:hover {
+      text-decoration: underline;
+    }
+
+    .creator-mini-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .creator-mini-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Stats line */
+    .stats-line {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 6px;
+    }
+
+    /* Options Grid */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .option-card {
+      padding: 20px;
+      background: #fafafa;
+      border-radius: 10px;
+      border: 1px solid #e8e8e8;
+    }
+
+    .option-card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #333;
+    }
+
+    .description {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 12px;
+      line-height: 1.4;
+    }
+
+    .note {
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #92400e;
+      margin-top: 16px;
+    }
+
+    .note.green {
+      background: #d1fae5;
+      border-color: #6ee7b7;
+      color: #065f46;
+    }
+
+    .note strong {
+      color: inherit;
+    }
+
+    /* Badge text inside icon */
+    .badge-text {
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .badge-initial {
+      color: white;
+      font-weight: 700;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Community Badge + Creator Avatar Options</h1>
+  <p class="subtitle">Badge replaces community photo, small avatar before creator name</p>
+
+  <!-- Current State -->
+  <div class="section">
+    <div class="section-title">Current State <span>Before</span></div>
+    <div class="community-header">
+      <div class="community-badge-icon badge-gradient-purple">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=128&h=128&fit=crop" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+      </div>
+      <div class="community-info">
+        <div class="community-name">The Physics Lab</div>
+        <div class="created-by">
+          <span class="created-by-label">Created by</span>
+          <span class="creator-link">Albert Einstein</span>
+        </div>
+        <div class="stats-line">2 Courses · 1,730 Students · 189 Posts</div>
+      </div>
+    </div>
+    <div class="note">
+      <strong>Current:</strong> Creator's photo is used as community icon. No small avatar before creator name.
+    </div>
+  </div>
+
+  <!-- Option 1: Emoji Icons -->
+  <div class="section">
+    <div class="section-title">Option 1: Emoji Icons</div>
+
+    <div class="options-grid">
+      <div class="option-card">
+        <h4>Group/People Icon 👥</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-blue">
+            👥
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Universal "community" symbol. Clear group meaning.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Building/Institution 🏛️</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-purple">
+            🏛️
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Suggests established institution or school.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Graduation Cap 🎓</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-green">
+            🎓
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Educational context. Perfect for learning communities.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Atom/Science ⚛️</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-orange">
+            ⚛️
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Topic-specific. Could vary per community topic.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Star/Featured ⭐</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-gold">
+            ⭐
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Premium or featured community indicator.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Lightbulb/Ideas 💡</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-solid-blue">
+            💡
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Ideas, learning, innovation focus.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option 2: Letter/Initial Badges -->
+  <div class="section">
+    <div class="section-title">Option 2: Letter/Initial Badges</div>
+
+    <div class="options-grid">
+      <div class="option-card">
+        <h4>Community Initial</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-purple">
+            <span class="badge-initial">P</span>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">First letter of community name. Simple and unique per community.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Two-Letter Abbreviation</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-blue">
+            <span class="badge-text" style="font-size:18px;">PL</span>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Two-letter abbreviation. More identifiable than single letter.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Initial + Icon Combo</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-green" style="flex-direction:column;gap:2px;">
+            <span style="font-size:20px;">⚛️</span>
+            <span class="badge-text" style="font-size:12px;">PL</span>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Topic icon + abbreviation. Rich but potentially busy.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Solid Dark with Initial</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-solid-dark">
+            <span class="badge-initial">P</span>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Clean, professional, minimal look.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option 3: Text Badges -->
+  <div class="section">
+    <div class="section-title">Option 3: Text Label Badges</div>
+
+    <div class="options-grid">
+      <div class="option-card">
+        <h4>"COMMUNITY" Text</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-blue" style="flex-direction:column;">
+            <span style="font-size:24px;">👥</span>
+            <span class="badge-text" style="font-size:8px;letter-spacing:0.5px;">COMMUNITY</span>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Explicit label. No ambiguity about what it represents.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>"HUB" Text Badge</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-purple">
+            <span class="badge-text" style="font-size:16px;">HUB</span>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Short, punchy text. Suggests central gathering place.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Outline Style</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-outline">
+            <span class="badge-text" style="color:#3b82f6;font-size:24px;">👥</span>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Lighter, less prominent. Draws less attention than filled.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Icon + "LAB"</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-green" style="flex-direction:column;">
+            <span style="font-size:22px;">🔬</span>
+            <span class="badge-text" style="font-size:10px;">LAB</span>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Pulls key word from community name. Context-aware.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option 4: SVG/Custom Icons -->
+  <div class="section">
+    <div class="section-title">Option 4: Custom SVG Icons</div>
+
+    <div class="options-grid">
+      <div class="option-card">
+        <h4>Circle Pattern</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-purple">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+              <circle cx="12" cy="8" r="4" fill-opacity="0.9"/>
+              <circle cx="6" cy="18" r="3" fill-opacity="0.7"/>
+              <circle cx="18" cy="18" r="3" fill-opacity="0.7"/>
+              <circle cx="12" cy="18" r="3" fill-opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Abstract representation of community members.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Three People Icon</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon badge-gradient-blue">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Material Design style people icon. Clean and recognizable.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Hexagon Badge</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon" style="background:transparent;">
+            <svg width="64" height="64" viewBox="0 0 64 64">
+              <polygon points="32,2 58,17 58,47 32,62 6,47 6,17" fill="url(#grad1)" stroke="none"/>
+              <text x="32" y="38" text-anchor="middle" fill="white" font-size="24" font-weight="bold">P</text>
+              <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#667eea"/>
+                  <stop offset="100%" style="stop-color:#764ba2"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Hexagon shape with initial. Distinctive badge feel.</p>
+      </div>
+
+      <div class="option-card">
+        <h4>Shield Badge</h4>
+        <div class="community-header" style="margin-bottom:0;">
+          <div class="community-badge-icon" style="background:transparent;">
+            <svg width="56" height="64" viewBox="0 0 56 64">
+              <path d="M28,2 L54,12 L54,32 C54,48 28,62 28,62 C28,62 2,48 2,32 L2,12 Z" fill="url(#grad2)"/>
+              <text x="28" y="38" text-anchor="middle" fill="white" font-size="22" font-weight="bold">👥</text>
+              <defs>
+                <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#11998e"/>
+                  <stop offset="100%" style="stop-color:#38ef7d"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="community-info">
+            <div class="community-name">The Physics Lab</div>
+            <div class="created-by">
+              <span class="created-by-label">Created by</span>
+              <span class="creator-link">
+                <span class="creator-mini-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="">
+                </span>
+                Albert Einstein
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="description">Shield shape suggests trust and protection.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recommendations -->
+  <div class="section">
+    <div class="section-title">Recommendations</div>
+
+    <div class="note green">
+      <strong>Best Options:</strong><br><br>
+      <strong>1. 👥 Group Icon</strong> - Universal, immediately recognizable as "community"<br>
+      <strong>2. 🎓 Graduation Cap</strong> - Perfect for educational platform<br>
+      <strong>3. Letter Initial (P)</strong> - Unique per community, clean design<br><br>
+      All options include the small creator avatar (20px) before "Albert Einstein" to clearly show the person behind the community.
+    </div>
+  </div>
+
+</body>
+</html>
