@@ -17,7 +17,7 @@ import PostComposeModal from './PostComposeModal';
  * @param {Object} currentUser - Current user object with id
  * @param {Function} onSelectCommunity - Callback when a community is selected from sidebar
  */
-const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) => {
+const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onLogout }) => {
   // Track which tooltip is visible (by index)
   const [visibleTooltip, setVisibleTooltip] = useState(null);
   const timerRef = useRef(null);
@@ -298,7 +298,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
   // Community navigation style preference from Profile settings
   const [communityNavStyle, setCommunityNavStyle] = useState(() => {
     const saved = localStorage.getItem('communityNavStyle');
-    return saved || 'selector'; // Default to selector card interface
+    return saved || 'slideout'; // Default to slideout panel
   });
 
   // Listen for community nav style changes from Profile settings
@@ -622,17 +622,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               </div>
               <div
                 className="more-popup-item"
-                onClick={() => {
-                  setIsMoreMenuOpen(false);
-                  // Toggle dark mode
-                  document.body.classList.toggle('dark-mode');
-                }}
-              >
-                <span className="more-popup-icon" role="img" aria-label="dark mode">&#x1F319;</span>
-                <span>Dark Mode</span>
-              </div>
-              <div
-                className="more-popup-item"
                 onClick={() => { setIsMoreMenuOpen(false); handleMenuClick('About'); }}
               >
                 <FaInfoCircle className="more-popup-icon" />
@@ -641,7 +630,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity }) =
               <div className="more-popup-divider" />
               <div
                 className="more-popup-item more-popup-item-danger"
-                onClick={() => { setIsMoreMenuOpen(false); /* Log out action */ }}
+                onClick={() => { setIsMoreMenuOpen(false); if (onLogout) onLogout(); }}
               >
                 <span className="more-popup-icon" role="img" aria-label="log out">&#x1F6AA;</span>
                 <span>Log out</span>
@@ -748,7 +737,8 @@ Sidebar.propTypes = {
   onMenuChange: PropTypes.func.isRequired,
   activeMenu: PropTypes.string.isRequired,
   currentUser: PropTypes.object,
-  onSelectCommunity: PropTypes.func
+  onSelectCommunity: PropTypes.func,
+  onLogout: PropTypes.func
 };
 
 export default Sidebar; 

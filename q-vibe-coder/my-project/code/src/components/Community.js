@@ -440,7 +440,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
   // Community navigation style preference from Profile settings
   const [communityNavStyle, setCommunityNavStyle] = useState(() => {
     const saved = localStorage.getItem('communityNavStyle');
-    return saved || 'selector'; // Default to selector card interface
+    return saved || 'slideout'; // Default to slideout panel
   });
 
   // Banner color from Profile settings

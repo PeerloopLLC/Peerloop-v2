@@ -63,7 +63,7 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
   // Community navigation style preference: 'pills' (top bar) or 'dropdown' (sidebar flyout)
   const [communityNavStyle, setCommunityNavStyle] = useState(() => {
     const saved = localStorage.getItem('communityNavStyle');
-    return saved || 'selector'; // Default to selector card interface
+    return saved || 'slideout'; // Default to slideout panel
   });
 
   // Banner color for profile header
