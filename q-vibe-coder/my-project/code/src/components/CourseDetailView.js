@@ -50,7 +50,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
   const getModulesBySession = (sessionNum) => {
     return (course.curriculum || [])
       .map((item, idx) => ({ ...item, originalIndex: idx }))
-      .filter(item => item.sessionNumber === sessionNum);
+      .filter(item => item.session === sessionNum || item.sessionNumber === sessionNum);
   };
 
   // Render a single module row
@@ -461,17 +461,9 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
         throw new Error(data.error || 'Failed to create meeting');
       }
 
-      // On iOS/Safari, open in new tab (iframe restrictions)
-      // On desktop, use the iframe modal
-      if (isMobileOrSafari()) {
-        window.open(data.joinUrl, '_blank');
-        setIsJoiningSession(false);
-      } else {
-        setBbbJoinUrl(null);
-        setShowBbbModal(true);
-        setBbbJoinUrl(data.joinUrl);
-        setIsJoiningSession(false);
-      }
+      // Always open in new tab (Blindside Networks requires this - no iframe embedding)
+      window.open(data.joinUrl, '_blank');
+      setIsJoiningSession(false);
     } catch (error) {
       console.error('Failed to join session:', error);
       alert('Failed to join session. Please try again.');

@@ -1,12 +1,12 @@
 import React from 'react';
-import { FaPlay, FaSearch, FaCalendarAlt, FaTimes } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 
 /**
  * EnrollOptionsModal - Shows enrollment options when user clicks Enroll
  * Options:
- * 1. Purchase Course Now, Schedule Later - Buy course, get instant access
- * 2. Find a Student Teacher - Browse certified student teachers
- * 3. Pick a Date First - Choose date, then see available teachers (existing flow)
+ * 1. Get Instant Access - Buy course, get instant access to feeds
+ * 2. Choose Your Teacher - Browse certified student teachers
+ * 3. Choose Your Schedule - Choose date, then see available teachers
  */
 const EnrollOptionsModal = ({
   course,
@@ -19,38 +19,27 @@ const EnrollOptionsModal = ({
 }) => {
   // Colors
   const bgPrimary = isDarkMode ? '#000' : '#fff';
-  const bgSecondary = isDarkMode ? '#16181c' : '#f8fafc';
   const textPrimary = isDarkMode ? '#e7e9ea' : '#0f172a';
   const textSecondary = isDarkMode ? '#71767b' : '#64748b';
   const borderColor = isDarkMode ? '#2f3336' : '#e2e8f0';
-  const accentBlue = '#1d9bf0';
 
   const options = [
     {
       id: 'purchase',
-      icon: <FaPlay />,
-      iconBg: 'rgba(139, 92, 246, 0.2)',
-      iconColor: '#8b5cf6',
-      title: 'Purchase Course Now, Schedule Later',
-      description: 'Get instant access. Schedule a student teacher when you\'re ready.',
+      title: 'Get Instant Access',
+      description: 'Start with course feed now. Schedule 1-on-1 sessions later.',
       onClick: onSelectPurchase
     },
     {
       id: 'find-teacher',
-      icon: <FaSearch />,
-      iconBg: 'rgba(59, 130, 246, 0.2)',
-      iconColor: '#3b82f6',
-      title: 'Find a Student Teacher',
-      description: 'Browse certified student teachers. See availability and book sessions.',
+      title: 'Choose Your Teacher',
+      description: 'Browse student teachers. See availability and book sessions.',
       onClick: onSelectFindTeacher
     },
     {
       id: 'pick-date',
-      icon: <FaCalendarAlt />,
-      iconBg: 'rgba(34, 197, 94, 0.2)',
-      iconColor: '#22c55e',
-      title: 'Pick a Date First',
-      description: 'Choose when you want to learn, then see available student teachers.',
+      title: 'Choose Your Schedule',
+      description: 'Pick dates that work for you. See who\'s available.',
       onClick: onSelectPickDate
     }
   ];
@@ -81,8 +70,8 @@ const EnrollOptionsModal = ({
       }}>
         {/* Header */}
         <div style={{
-          background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
           padding: '20px 24px',
+          borderBottom: `1px solid ${borderColor}`,
           position: 'relative'
         }}>
           <button
@@ -91,7 +80,7 @@ const EnrollOptionsModal = ({
               position: 'absolute',
               top: 16,
               right: 16,
-              background: 'rgba(255,255,255,0.2)',
+              background: 'transparent',
               border: 'none',
               borderRadius: '50%',
               width: 32,
@@ -100,80 +89,25 @@ const EnrollOptionsModal = ({
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              color: '#fff'
+              color: textSecondary
             }}
           >
             <FaTimes size={14} />
           </button>
           <h3 style={{
             fontSize: 18,
-            fontWeight: 700,
-            color: '#fff',
+            fontWeight: 600,
+            color: textPrimary,
             margin: 0,
-            marginBottom: 4
+            paddingRight: 40,
+            lineHeight: 1.4
           }}>
-            Purchase Course, Schedule Later
+            How do you want to enroll in {course?.title || 'this course'}?
           </h3>
-          <p style={{
-            fontSize: 14,
-            color: 'rgba(255,255,255,0.9)',
-            margin: 0
-          }}>
-            Choose your learning path
-          </p>
-        </div>
-
-        {/* Course Info */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '16px 24px',
-          borderBottom: `1px solid ${borderColor}`
-        }}>
-          <div style={{
-            width: 50,
-            height: 50,
-            borderRadius: 8,
-            background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            overflow: 'hidden'
-          }}>
-            {course?.thumbnail ? (
-              <img
-                src={course.thumbnail}
-                alt={course.title}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <span style={{ fontSize: 20 }}>📚</span>
-            )}
-          </div>
-          <div>
-            <h4 style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: textPrimary,
-              margin: 0,
-              marginBottom: 2
-            }}>
-              {course?.title || 'Course'}
-            </h4>
-            <p style={{
-              fontSize: 12,
-              color: textSecondary,
-              margin: 0
-            }}>
-              by {instructor?.name || 'Instructor'} • {course?.price || '$49'}
-            </p>
-          </div>
         </div>
 
         {/* Options */}
-        <div style={{ padding: 16 }}>
+        <div>
           {options.map((option, index) => (
             <button
               key={option.id}
@@ -181,46 +115,28 @@ const EnrollOptionsModal = ({
               style={{
                 width: '100%',
                 display: 'flex',
-                alignItems: 'flex-start',
-                gap: 14,
-                padding: 14,
-                borderRadius: 12,
-                border: `2px solid transparent`,
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '16px 24px',
+                borderTop: index > 0 ? `1px solid ${borderColor}` : 'none',
+                border: 'none',
+                borderBottom: 'none',
                 background: 'transparent',
                 cursor: 'pointer',
                 textAlign: 'left',
-                marginBottom: index < options.length - 1 ? 8 : 0,
-                transition: 'all 0.2s ease'
+                transition: 'background 0.15s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = isDarkMode ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)';
-                e.currentTarget.style.borderColor = '#6366f1';
+                e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.borderColor = 'transparent';
               }}
             >
-              {/* Icon */}
-              <div style={{
-                width: 40,
-                height: 40,
-                borderRadius: 10,
-                background: option.iconBg,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: option.iconColor,
-                fontSize: 16,
-                flexShrink: 0
-              }}>
-                {option.icon}
-              </div>
-
               {/* Content */}
               <div style={{ flex: 1 }}>
                 <h4 style={{
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: 600,
                   color: textPrimary,
                   margin: 0,
@@ -229,7 +145,7 @@ const EnrollOptionsModal = ({
                   {option.title}
                 </h4>
                 <p style={{
-                  fontSize: 12,
+                  fontSize: 13,
                   color: textSecondary,
                   margin: 0,
                   lineHeight: 1.4
@@ -241,8 +157,8 @@ const EnrollOptionsModal = ({
               {/* Arrow */}
               <span style={{
                 color: textSecondary,
-                fontSize: 18,
-                alignSelf: 'center'
+                fontSize: 20,
+                marginLeft: 12
               }}>
                 ›
               </span>

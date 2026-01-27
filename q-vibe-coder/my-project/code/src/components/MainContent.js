@@ -503,8 +503,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       const stored = localStorage.getItem(storageKey);
       if (stored) {
         const parsed = JSON.parse(stored);
-        // If stored data has scheduled sessions, use it; otherwise regenerate
-        if (parsed.length > 0 && parsed.some(s => s.status === 'scheduled')) {
+        // Load stored sessions (both scheduled and completed)
+        if (parsed.length > 0) {
           return parsed;
         }
       }
@@ -579,8 +579,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       const stored = localStorage.getItem(storageKey);
       if (stored) {
         const parsed = JSON.parse(stored);
-        // If stored data has scheduled sessions, use it
-        if (parsed.length > 0 && parsed.some(s => s.status === 'scheduled')) {
+        // Load stored sessions (both scheduled and completed)
+        if (parsed.length > 0) {
           setScheduledSessions(parsed);
           return;
         }
@@ -1141,15 +1141,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         throw new Error(data.error || 'Failed to create meeting');
       }
 
-      // On iOS/Safari, open in new tab (iframe restrictions)
-      // On desktop, use the iframe modal
-      if (isMobileOrSafari()) {
-        window.open(data.joinUrl, '_blank');
-      } else {
-        setBbbJoinUrl(null);
-        setShowBbbModal(true);
-        setBbbJoinUrl(data.joinUrl);
-      }
+      // Always open in new tab (Blindside Networks requires this - no iframe embedding)
+      window.open(data.joinUrl, '_blank');
     } catch (error) {
       console.error('Failed to join session:', error);
       alert('Failed to join session. Please try again.');
@@ -1896,6 +1889,35 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               onMenuChange('My Courses');
               setEnrollingCourse(null);
             }
+          }}
+        />
+      )}
+      {/* FindTeacherView for Browse flow */}
+      {showFindTeacher && enrollingCourse && (
+        <FindTeacherView
+          course={enrollingCourse}
+          isDarkMode={isDarkMode}
+          onClose={() => {
+            setShowFindTeacher(false);
+            setEnrollingCourse(null);
+          }}
+          onSelectTeacher={(teacher) => {
+            // Close find teacher view and open enrollment flow with pre-selected teacher
+            setShowFindTeacher(false);
+            setPreSelectedTeacher(teacher);
+            setShowEnrollmentFlow(true);
+          }}
+          onViewTeacherProfile={(user) => {
+            // Save state for back navigation
+            setNavigationHistory(prev => [...prev, {
+              menu: 'Browse',
+              showFindTeacher: true,
+              enrollingCourse: enrollingCourse
+            }]);
+            setShowFindTeacher(false);
+            setEnrollingCourse(null);
+            onMenuChange('Profile');
+            setViewingMemberProfile(user);
           }}
         />
       )}

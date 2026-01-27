@@ -3,9 +3,9 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-// BBB credentials - hardcoded for testing
-const BBB_URL = "https://biggerbluebutton.com/bigbluebutton/peerloop/api/";
-const BBB_SECRET = "yi97Xfc4CusF0VvNRuwL7WopWakRCwXRebpD2aficA8";
+// Blindside Networks BBB credentials
+const BBB_URL = "https://peerloop.api.rna1.blindsidenetworks.com/bigbluebutton/api/";
+const BBB_SECRET = "s0M7I97lXEMLFl2uYJk8WgEJsY8qaaeXoyf1amKMetfEWa4Kl9I8v0YIBOTKycw1OGSz0jA3Lpd3hk21HM6ywA";
 
 // Generate SHA-1 checksum for BBB API calls
 async function generateChecksum(callName: string, queryString: string): Promise<string> {
