@@ -884,14 +884,13 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
         )}
 
 
-        {/* Tabs */}
-        <div 
+        {/* Tabs - Pill Style */}
+        <div
           className="course-detail-tabs"
-          style={{ 
-            display: 'flex', 
-            gap: 0,
+          style={{
+            display: 'flex',
             flexWrap: 'wrap',
-            overflow: 'hidden'
+            gap: 8
           }}
         >
           {tabs.map(tab => (
@@ -900,18 +899,16 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
               onClick={() => setActiveTab(tab.id)}
               className="course-detail-tab-btn"
               style={{
-                background: 'none',
-                border: 'none',
-                padding: '12px 16px',
+                padding: '8px 16px',
                 fontSize: 14,
-                fontWeight: activeTab === tab.id ? 700 : 500,
-                color: activeTab === tab.id ? (isDarkMode ? '#e7e9ea' : '#0f1419') : (isDarkMode ? '#71767b' : '#536471'),
+                fontWeight: 500,
+                color: activeTab === tab.id ? 'white' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                background: activeTab === tab.id ? '#1d9bf0' : (isDarkMode ? '#16181c' : 'white'),
+                border: `1px solid ${activeTab === tab.id ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#cfd9de')}`,
+                borderRadius: 9999,
                 cursor: 'pointer',
-                borderBottom: activeTab === tab.id ? '3px solid #1d9bf0' : '3px solid transparent',
-                marginBottom: -1,
                 whiteSpace: 'nowrap',
-                flex: '1 1 auto',
-                minWidth: 0
+                transition: 'all 0.2s'
               }}
             >
               {tab.label}

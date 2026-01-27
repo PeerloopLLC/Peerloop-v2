@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Detail - Tabs to Pills Wireframe</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* CURRENT: Plain text tabs with underline */
+        .tabs-current {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .tab-current {
+            padding: 12px 20px;
+            font-size: 15px;
+            color: #536471;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        .tab-current.active {
+            color: #0f1419;
+            font-weight: 600;
+            border-bottom-color: #1d9bf0;
+        }
+
+        /* NEW: Pill buttons like My Feeds */
+        .tabs-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tab-pill {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #0f1419;
+            background: white;
+            border: 1px solid #cfd9de;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-pill:hover {
+            background: #f7f9f9;
+        }
+        .tab-pill.active {
+            background: #1d9bf0;
+            color: white;
+            border-color: #1d9bf0;
+        }
+
+        /* Course header mock */
+        .course-header {
+            margin-bottom: 20px;
+        }
+        .course-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f1419;
+            margin-bottom: 8px;
+        }
+        .course-meta {
+            font-size: 14px;
+            color: #536471;
+        }
+
+        /* Arrow indicator */
+        .arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #1d9bf0;
+            font-size: 32px;
+        }
+
+        /* Comparison layout */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .label {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        /* Reference section */
+        .reference {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+        }
+        .reference .section-title {
+            color: #0369a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Course Detail Tabs → Pills Conversion</h1>
+
+        <div class="comparison">
+            <!-- CURRENT -->
+            <div class="section">
+                <div class="section-title">Current: Plain Text Tabs</div>
+                <div class="course-header">
+                    <div class="course-title">Node.js Backend Development</div>
+                    <div class="course-meta">★ 4.8 (234) • 1,250 students • 12 hours</div>
+                </div>
+                <div class="tabs-current">
+                    <div class="tab-current active">Curriculum</div>
+                    <div class="tab-current">Session Files</div>
+                    <div class="tab-current">Course Feed</div>
+                    <div class="tab-current">Reviews</div>
+                    <div class="tab-current">About Course</div>
+                </div>
+                <div class="label">Underline style, spread across width</div>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <!-- NEW -->
+            <div class="section">
+                <div class="section-title">New: Pill Buttons</div>
+                <div class="course-header">
+                    <div class="course-title">Node.js Backend Development</div>
+                    <div class="course-meta">★ 4.8 (234) • 1,250 students • 12 hours</div>
+                </div>
+                <div class="tabs-pills">
+                    <div class="tab-pill active">Curriculum</div>
+                    <div class="tab-pill">Session Files</div>
+                    <div class="tab-pill">Course Feed</div>
+                    <div class="tab-pill">Reviews</div>
+                    <div class="tab-pill">About</div>
+                </div>
+                <div class="label">Rounded pills, compact, matches My Feeds</div>
+            </div>
+        </div>
+
+        <!-- Reference: My Feeds pills -->
+        <div class="section reference">
+            <div class="section-title">Reference: My Feeds Pills (Current Style)</div>
+            <div style="margin-bottom: 12px; font-size: 13px; color: #536471;">Choose a feed:</div>
+            <div class="tabs-pills">
+                <div class="tab-pill active">Main Hall</div>
+                <div class="tab-pill">Node.js Backend Development</div>
+                <div class="tab-pill">Cloud Architecture with AWS</div>
+            </div>
+        </div>
+
+        <!-- Spec -->
+        <div class="section">
+            <div class="section-title">Pill Specifications</div>
+            <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 8px 0; font-weight: 600;">Property</td>
+                    <td style="padding: 8px 0;">Default</td>
+                    <td style="padding: 8px 0;">Active/Selected</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 8px 0;">Background</td>
+                    <td style="padding: 8px 0;"><code>white</code></td>
+                    <td style="padding: 8px 0;"><code>#1d9bf0</code> (blue)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 8px 0;">Border</td>
+                    <td style="padding: 8px 0;"><code>1px solid #cfd9de</code></td>
+                    <td style="padding: 8px 0;"><code>1px solid #1d9bf0</code></td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 8px 0;">Text Color</td>
+                    <td style="padding: 8px 0;"><code>#0f1419</code></td>
+                    <td style="padding: 8px 0;"><code>white</code></td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 8px 0;">Border Radius</td>
+                    <td style="padding: 8px 0;" colspan="2"><code>9999px</code> (full pill)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 8px 0;">Padding</td>
+                    <td style="padding: 8px 0;" colspan="2"><code>8px 16px</code></td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 8px 0;">Font Size</td>
+                    <td style="padding: 8px 0;" colspan="2"><code>14px</code></td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0;">Font Weight</td>
+                    <td style="padding: 8px 0;" colspan="2"><code>500</code></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

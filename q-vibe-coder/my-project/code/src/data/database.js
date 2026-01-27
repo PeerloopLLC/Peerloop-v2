@@ -1,14 +1,33 @@
 /**
  * PeerLoop Database
- * 
+ *
  * This file contains all the mock data for the PeerLoop platform including:
  * - Creators with detailed profiles, qualifications, and expertise
  * - Courses with comprehensive information, curriculum, and learning objectives
  * - Helper functions for querying and searching the data
- * 
+ *
  * PeerLoop Model: Learn → Certify → Teach → Earn (70/15/15 split)
  * Price Range: $300-600 (1-on-1 tutoring pricing)
  */
+
+// =============================================================================
+// GLOBAL ICON CONFIGURATION
+// Change these values to update icons across the entire app
+// =============================================================================
+export const iconConfig = {
+  // Community badge icon and styling
+  community: {
+    icon: '👥',
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    borderRadius: 12
+  },
+  // Course badge icon and styling
+  course: {
+    icon: '📚',
+    gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+    borderRadius: 12
+  }
+};
 
 // Database for creators (experts who create courses)
 export const instructorsDatabase = [
@@ -378,9 +397,19 @@ export const coursesDatabase = [
     price: "$399",
     badge: "Bestseller",
     thumbnail: "https://via.placeholder.com/300x200/4ECDC4/ffffff?text=AI+PM",
+    thumbnailGradient: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)",
     instructorId: 2, // Links to Jane Doe
     category: "AI & Product Management",
     tags: ["AI", "Product Management", "Machine Learning", "Strategy"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "AI Foundations & ML Concepts", duration: "90 min", modules: [1, 2, 3] },
+        { number: 2, title: "Strategy & Implementation", duration: "90 min", modules: [4, 5, 6] }
+      ]
+    },
     learningObjectives: [
       "Evaluate AI technologies for product development",
       "Build comprehensive AI roadmaps",
@@ -433,9 +462,19 @@ export const coursesDatabase = [
     price: "$349",
     badge: null,
     thumbnail: "https://via.placeholder.com/300x200/00D2FF/ffffff?text=Node",
+    thumbnailGradient: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
     instructorId: 1, // Links to Albert Einstein
     category: "Backend Development",
     tags: ["Node.js", "Express", "MongoDB", "REST API"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Node.js & Express Basics", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Database & Deployment", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Build robust backend services with Node.js",
       "Master REST API development and authentication",
@@ -473,9 +512,19 @@ export const coursesDatabase = [
     price: "$399",
     badge: "Popular",
     thumbnail: "https://via.placeholder.com/300x200/FF9900/ffffff?text=AWS",
+    thumbnailGradient: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
     instructorId: 1, // Links to Albert Einstein
     category: "Cloud Computing",
     tags: ["AWS", "Serverless", "Lambda", "CloudFormation"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "AWS & Serverless Foundations", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Infrastructure as Code", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Design scalable cloud architectures",
       "Implement serverless applications",
@@ -513,9 +562,19 @@ export const coursesDatabase = [
     price: "$399",
     badge: "Featured",
     thumbnail: "https://via.placeholder.com/300x200/FF6B6B/ffffff?text=AI",
+    thumbnailGradient: "linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)",
     instructorId: 2, // Links to Jane Doe
     category: "Machine Learning",
     tags: ["Deep Learning", "Neural Networks", "TensorFlow", "PyTorch"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Neural Network Foundations", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Advanced Architectures", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Understand neural network fundamentals",
       "Build and train deep learning models",
@@ -553,9 +612,19 @@ export const coursesDatabase = [
     price: "$349",
     badge: null,
     thumbnail: "https://via.placeholder.com/300x200/4ECDC4/ffffff?text=CV",
+    thumbnailGradient: "linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)",
     instructorId: 2, // Links to Jane Doe
     category: "Computer Vision",
     tags: ["OpenCV", "Image Processing", "Object Detection", "CNN"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Vision Basics & Object Detection", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Advanced CV Techniques", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Master computer vision fundamentals",
       "Build image recognition systems",
@@ -593,9 +662,19 @@ export const coursesDatabase = [
     price: "$349",
     badge: "Popular",
     thumbnail: "https://via.placeholder.com/300x200/9B59B6/ffffff?text=NLP",
+    thumbnailGradient: "linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)",
     instructorId: 2, // Links to Jane Doe
     category: "Natural Language Processing",
     tags: ["NLP", "Transformers", "BERT", "Text Analysis"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "NLP Foundations & Text Processing", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Transformers & Applications", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Master NLP fundamentals and techniques",
       "Build text analysis and processing systems",
@@ -633,9 +712,19 @@ export const coursesDatabase = [
     price: "$299",
     badge: "Bestseller",
     thumbnail: "https://via.placeholder.com/300x200/FFD93D/000000?text=Data",
+    thumbnailGradient: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
     instructorId: 3, // Links to Prof. Maria Rodriguez
     category: "Data Science",
     tags: ["Python", "Pandas", "Matplotlib", "Statistics"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Python & Statistics Foundations", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Data Visualization & Analysis", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Master Python for data analysis",
       "Understand statistical concepts",
@@ -673,9 +762,19 @@ export const coursesDatabase = [
     price: "$349",
     badge: null,
     thumbnail: "https://via.placeholder.com/300x200/00B894/ffffff?text=BI",
+    thumbnailGradient: "linear-gradient(135deg, #10b981 0%, #34d399 100%)",
     instructorId: 3, // Links to Prof. Maria Rodriguez
     category: "Business Analytics",
     tags: ["Tableau", "Power BI", "SQL", "Dashboard Design"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "BI Foundations & Dashboard Design", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Advanced Analytics", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Transform data into business insights",
       "Create compelling dashboards and reports",
@@ -713,9 +812,19 @@ export const coursesDatabase = [
     price: "$449",
     badge: "Popular",
     thumbnail: "https://via.placeholder.com/300x200/6C5CE7/ffffff?text=Full",
+    thumbnailGradient: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
     instructorId: 4, // Links to James Wilson
     category: "Full-Stack Development",
     tags: ["React", "Node.js", "MongoDB", "Deployment"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Full-Stack Foundations & Frontend", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Backend & Deployment", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Build complete web applications",
       "Master frontend and backend development",
@@ -753,9 +862,19 @@ export const coursesDatabase = [
     price: "$329",
     badge: "Featured",
     thumbnail: "https://via.placeholder.com/300x200/FF7675/ffffff?text=DevOps",
+    thumbnailGradient: "linear-gradient(135deg, #ef4444 0%, #f97316 100%)",
     instructorId: 4, // Links to James Wilson
     category: "DevOps",
     tags: ["Docker", "Kubernetes", "Jenkins", "GitHub Actions"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "DevOps & Containerization", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "CI/CD Pipelines", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Master DevOps principles and practices",
       "Implement containerization with Docker",
@@ -793,9 +912,19 @@ export const coursesDatabase = [
     price: "$379",
     badge: null,
     thumbnail: "https://via.placeholder.com/300x200/74B9FF/ffffff?text=Micro",
+    thumbnailGradient: "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)",
     instructorId: 4, // Links to James Wilson
     category: "System Design",
     tags: ["Microservices", "API Gateway", "Service Mesh", "Distributed Systems"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Microservices & Service Communication", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Deployment & Scaling", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Design scalable microservices architectures",
       "Implement service communication patterns",
@@ -833,9 +962,19 @@ export const coursesDatabase = [
     price: "$399",
     badge: "New",
     thumbnail: "https://via.placeholder.com/300x200/00B894/ffffff?text=RoboticsAI",
+    thumbnailGradient: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)",
     instructorId: 5, // Links to Dr. Priya Nair
     category: "AI & Robotics",
     tags: ["Robotics", "AI", "Python", "Reinforcement Learning"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Robotics AI & Path Planning", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Reinforcement Learning", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Implement AI algorithms for robotics",
       "Code path planning and control systems",
@@ -859,9 +998,19 @@ export const coursesDatabase = [
     price: "$499",
     badge: "Featured",
     thumbnail: "https://via.placeholder.com/300x200/0984e3/ffffff?text=MedAI",
+    thumbnailGradient: "linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)",
     instructorId: 6, // Links to Prof. Elena Petrova
     category: "AI in Healthcare",
     tags: ["Medical AI", "Deep Learning", "Python", "Diagnostics"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Medical AI & Image Analysis", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Diagnostics Projects", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Build AI models for medical diagnostics",
       "Analyze medical images with deep learning",
@@ -885,9 +1034,19 @@ export const coursesDatabase = [
     price: "$299",
     badge: "Bestseller",
     thumbnail: "https://via.placeholder.com/300x200/636e72/ffffff?text=BootcampAI",
+    thumbnailGradient: "linear-gradient(135deg, #475569 0%, #64748b 100%)",
     instructorId: 7, // Links to Mr. Samuel Lee
     category: "AI Coding",
     tags: ["Python", "AI", "Machine Learning", "Projects"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Python Basics & ML Project 1", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Advanced ML Project", duration: "90 min", modules: [3] }
+      ]
+    },
     learningObjectives: [
       "Learn Python for AI coding",
       "Complete real-world ML projects",
@@ -911,6 +1070,7 @@ export const coursesDatabase = [
     price: "$450",
     badge: "New",
     thumbnail: "https://via.placeholder.com/300x200/1d9bf0/ffffff?text=AI+Prompting",
+    thumbnailGradient: "linear-gradient(135deg, #1d9bf0 0%, #60a5fa 100%)",
     instructorId: 8, // Links to Guy Rymberg
     category: "AI & Prompt Engineering",
     tags: ["AI Prompting", "Prompt Engineering", "ChatGPT", "LLM", "Business AI", "Productivity"],
@@ -1005,9 +1165,19 @@ export const coursesDatabase = [
     price: "$249",
     badge: "Bestseller",
     thumbnail: "https://via.placeholder.com/300x200/10B981/ffffff?text=AI+Basics",
+    thumbnailGradient: "linear-gradient(135deg, #10b981 0%, #6ee7b7 100%)",
     instructorId: 9, // Dr. Sarah Chen
     category: "AI Fundamentals",
     tags: ["AI", "Beginner", "No-Code", "Business AI", "Fundamentals"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "AI Fundamentals & Types", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Real-World AI Applications", duration: "90 min", modules: [3, 4] }
+      ]
+    },
     learningObjectives: [
       "Understand what AI is and how it works",
       "Learn key AI terminology and concepts",
@@ -1034,9 +1204,19 @@ export const coursesDatabase = [
     price: "$399",
     badge: "Featured",
     thumbnail: "https://via.placeholder.com/300x200/8B5CF6/ffffff?text=ML+Essentials",
+    thumbnailGradient: "linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)",
     instructorId: 9, // Dr. Sarah Chen
     category: "Machine Learning",
     tags: ["Machine Learning", "Python", "Algorithms", "Data Science"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "ML Foundations & Supervised Learning", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Unsupervised Learning & Evaluation", duration: "90 min", modules: [3, 4] }
+      ]
+    },
     learningObjectives: [
       "Master supervised and unsupervised learning",
       "Implement common ML algorithms from scratch",
@@ -1063,9 +1243,19 @@ export const coursesDatabase = [
     price: "$149",
     badge: "Bestseller",
     thumbnail: "https://via.placeholder.com/300x200/1F2937/ffffff?text=GitHub+101",
+    thumbnailGradient: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)",
     instructorId: 10, // Marcus Johnson
     category: "Developer Tools",
     tags: ["GitHub", "Git", "Version Control", "Collaboration", "Beginner"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Git & GitHub Fundamentals", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Collaboration & Advanced Features", duration: "90 min", modules: [3, 4] }
+      ]
+    },
     learningObjectives: [
       "Set up and configure Git and GitHub",
       "Master basic Git commands and workflows",
@@ -1092,9 +1282,19 @@ export const coursesDatabase = [
     price: "$299",
     badge: "Popular",
     thumbnail: "https://via.placeholder.com/300x200/374151/ffffff?text=Git+Teams",
+    thumbnailGradient: "linear-gradient(135deg, #334155 0%, #475569 100%)",
     instructorId: 10, // Marcus Johnson
     category: "Developer Tools",
     tags: ["Git", "Team Workflows", "Branching", "Code Review", "Advanced"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "Branching & Advanced Merging", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "CI/CD & Team Best Practices", duration: "90 min", modules: [3, 4] }
+      ]
+    },
     learningObjectives: [
       "Implement GitFlow and trunk-based development",
       "Design effective branching strategies",
@@ -1121,9 +1321,19 @@ export const coursesDatabase = [
     price: "$349",
     badge: "Featured",
     thumbnail: "https://via.placeholder.com/300x200/EA580C/ffffff?text=N8N+Automation",
+    thumbnailGradient: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
     instructorId: 11, // Elena Rodriguez
     category: "Automation",
     tags: ["N8N", "Automation", "No-Code", "Workflows", "Integration"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "N8N Fundamentals & Workflows", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "Advanced Integrations & Deployment", duration: "90 min", modules: [3, 4] }
+      ]
+    },
     learningObjectives: [
       "Set up and configure N8N",
       "Build multi-step automated workflows",
@@ -1150,9 +1360,19 @@ export const coursesDatabase = [
     price: "$299",
     badge: "New",
     thumbnail: "https://via.placeholder.com/300x200/F59E0B/ffffff?text=No-Code+AI",
+    thumbnailGradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
     instructorId: 11, // Elena Rodriguez
     category: "AI & Automation",
     tags: ["AI", "No-Code", "ChatGPT", "Automation", "Integration"],
+    sessions: {
+      count: 2,
+      duration: "90 min each",
+      format: "Live 1-on-1 via video call",
+      list: [
+        { number: 1, title: "AI APIs & ChatGPT Integration", duration: "90 min", modules: [1, 2] },
+        { number: 2, title: "AI Workflows & Advanced Patterns", duration: "90 min", modules: [3, 4] }
+      ]
+    },
     learningObjectives: [
       "Connect ChatGPT and other AI tools to workflows",
       "Build AI-powered automations",
@@ -1179,6 +1399,7 @@ export const coursesDatabase = [
     price: "$249",
     badge: "New",
     thumbnail: "https://via.placeholder.com/300x200/667eea/ffffff?text=AI+Tools",
+    thumbnailGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     instructorId: 8,
     category: "AI Tools",
     tags: ["AI Tools", "ChatGPT", "Claude", "AI Coding", "AI Image Generation", "AI Video", "Tool Selection", "Beginner"],
@@ -1239,6 +1460,7 @@ export const coursesDatabase = [
     price: "$249",
     badge: "New",
     thumbnail: "https://via.placeholder.com/300x200/1d9bf0/ffffff?text=Claude+Code",
+    thumbnailGradient: "linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)",
     instructorId: 8,
     category: "AI Coding",
     tags: ["AI Coding Assistant", "Terminal Tools", "Beginner", "No-Code", "Automation", "Claude AI"],
@@ -1295,6 +1517,7 @@ export const coursesDatabase = [
     price: "$249",
     badge: "New",
     thumbnail: "https://via.placeholder.com/300x200/EA580C/ffffff?text=n8n+101",
+    thumbnailGradient: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)",
     instructorId: 8,
     category: "Workflow Automation",
     tags: ["Workflow Automation", "No-Code", "n8n", "App Integration", "Business Automation", "Productivity"],
@@ -1355,6 +1578,7 @@ export const coursesDatabase = [
     price: "$249",
     badge: "New",
     thumbnail: "https://via.placeholder.com/300x200/10B981/ffffff?text=Vibe+Coding",
+    thumbnailGradient: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
     instructorId: 8,
     category: "AI Development",
     tags: ["Vibe Coding", "AI Development", "GitHub", "Vercel Deployment", "Web Development", "Project Planning", "Q-System"],
