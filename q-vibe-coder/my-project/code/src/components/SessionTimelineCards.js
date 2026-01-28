@@ -137,12 +137,19 @@ const SessionTimelineCards = ({
               gap: 12,
               padding: '14px 16px',
               background: rowState === 'completed'
-                ? (isDarkMode ? 'rgba(16, 185, 129, 0.08)' : 'rgba(16, 185, 129, 0.05)')
+                ? (isDarkMode ? 'rgba(16, 185, 129, 0.08)' : '#ecfdf5')
                 : rowState === 'scheduled'
-                ? (isDarkMode ? 'rgba(29, 155, 240, 0.08)' : 'rgba(29, 155, 240, 0.05)')
+                ? (isDarkMode ? 'rgba(29, 155, 240, 0.08)' : '#eff6ff')
                 : rowState === 'locked'
-                ? (isDarkMode ? 'rgba(113, 118, 123, 0.05)' : 'rgba(156, 163, 175, 0.05)')
-                : 'transparent'
+                ? (isDarkMode ? 'rgba(113, 118, 123, 0.05)' : '#f3f4f6')
+                : (isDarkMode ? 'transparent' : '#f9fafb'),
+              borderLeft: rowState === 'completed'
+                ? '4px solid #10b981'
+                : rowState === 'scheduled'
+                ? '4px solid #1d9bf0'
+                : rowState === 'ready'
+                ? '4px solid #9ca3af'
+                : '4px solid transparent'
             }}>
               {/* Session Number Circle */}
               <div style={{

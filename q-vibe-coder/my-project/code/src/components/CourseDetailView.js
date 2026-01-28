@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaStar, FaUsers, FaClock, FaPlay, FaBook, FaCertificate, FaChalkboardTeacher, FaCheck, FaPlus, FaInfinity, FaGraduationCap, FaHeart, FaComment, FaRetweet, FaShare, FaImage, FaLink, FaPaperclip, FaVideo, FaFileAlt, FaDownload, FaExclamationTriangle, FaChevronDown, FaChevronRight } from 'react-icons/fa';
+import { FaStar, FaUsers, FaClock, FaPlay, FaBook, FaCertificate, FaChalkboardTeacher, FaCheck, FaPlus, FaInfinity, FaGraduationCap, FaHeart, FaComment, FaRetweet, FaShare, FaImage, FaLink, FaPaperclip, FaVideo, FaFileAlt, FaDownload, FaExclamationTriangle, FaChevronDown, FaChevronRight, FaCalendar } from 'react-icons/fa';
 import { getInstructorById } from '../data/database';
 import SessionTimelineCards from './SessionTimelineCards';
 import './MainContent.css';
@@ -413,6 +413,35 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
     .filter(s => s.courseId === course?.id && s.status === 'scheduled')
     .sort((a, b) => a.date.localeCompare(b.date));
 
+  // Get the next actionable session (scheduled or ready to schedule)
+  const getNextActionableSession = () => {
+    if (!course?.sessions?.list) return null;
+    const courseCompletion = sessionCompletion[course?.id] || {};
+
+    for (const session of course.sessions.list) {
+      const isComplete = courseCompletion[session.number]?.completed;
+      if (isComplete) continue;
+
+      // Check if scheduled
+      const scheduled = courseScheduledSessions.find(s => s.sessionNumber === session.number);
+      if (scheduled) {
+        return { type: 'scheduled', session, scheduledData: scheduled };
+      }
+
+      // Check if ready (not locked - previous session completed or first session)
+      const previousComplete = session.number === 1 || courseCompletion[session.number - 1]?.completed;
+      if (previousComplete) {
+        return { type: 'ready', session };
+      }
+
+      // Otherwise locked, stop looking
+      break;
+    }
+    return null;
+  };
+
+  const nextActionable = isCoursePurchased ? getNextActionableSession() : null;
+
   // Handle post submission
   const handleSubmitPost = async () => {
     if (!newPostText.trim() || isPosting) return;
@@ -579,10 +608,87 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
   ];
 
   return (
-    <div style={{ 
-      background: isDarkMode ? '#000' : '#fff', 
+    <div style={{
+      background: isDarkMode ? '#000' : '#fff',
       minHeight: '100vh'
     }}>
+      {/* Back Button */}
+      {onBack && (
+        <div style={{
+          padding: '16px',
+          borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb',
+          background: isDarkMode ? '#0a0a0a' : '#fff'
+        }}>
+          <button
+            onClick={onBack}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              background: isDarkMode ? '#1a1a24' : '#f3f4f6',
+              border: isDarkMode ? '1px solid #3f3f46' : '1px solid #d1d5db',
+              borderRadius: 8,
+              padding: '10px 16px',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: 15,
+              color: isDarkMode ? '#f5f5f7' : '#374151'
+            }}
+          >
+            <span>←</span> Back
+          </button>
+        </div>
+      )}
+
+      {/* Community Mini-Header Card */}
+      <div
+        onClick={() => onViewInstructor && onViewInstructor(course.instructorId)}
+        style={{
+          margin: '0 24px',
+          marginTop: 16,
+          padding: '10px 16px',
+          background: isDarkMode
+            ? 'linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.08) 100%)'
+            : 'linear-gradient(135deg, rgba(79, 172, 254, 0.12) 0%, rgba(0, 242, 254, 0.06) 100%)',
+          borderRadius: 10,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          cursor: 'pointer',
+          border: isDarkMode ? '1px solid rgba(79, 172, 254, 0.2)' : '1px solid rgba(79, 172, 254, 0.15)',
+          transition: 'all 0.2s'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = isDarkMode
+            ? 'linear-gradient(135deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0.12) 100%)'
+            : 'linear-gradient(135deg, rgba(79, 172, 254, 0.18) 0%, rgba(0, 242, 254, 0.1) 100%)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = isDarkMode
+            ? 'linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.08) 100%)'
+            : 'linear-gradient(135deg, rgba(79, 172, 254, 0.12) 0%, rgba(0, 242, 254, 0.06) 100%)';
+        }}
+      >
+        <span style={{ fontSize: 18 }}>👥</span>
+        <span style={{
+          fontWeight: 600,
+          fontSize: 14,
+          color: isDarkMode ? '#e7e9ea' : '#0f1419',
+          flex: 1
+        }}>
+          {instructor?.communityName || `${instructor?.name} Community`}
+        </span>
+        <span style={{
+          color: isDarkMode ? '#71767b' : '#536471',
+          fontSize: 13,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4
+        }}>
+          Go to Community <span style={{ fontSize: 16 }}>→</span>
+        </span>
+      </div>
+
       {/* Header Section */}
       <div style={{
         padding: '24px 24px 0 24px',
@@ -850,6 +956,150 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
             <span>• Certificate</span>
           </div>
         </div>
+        )}
+
+        {/* Next Session Hero Card - Only for enrolled users with an actionable session */}
+        {isCoursePurchased && nextActionable && (
+          <div style={{
+            background: nextActionable.type === 'scheduled'
+              ? (isDarkMode ? 'linear-gradient(135deg, rgba(29, 155, 240, 0.15) 0%, rgba(29, 155, 240, 0.05) 100%)' : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)')
+              : (isDarkMode ? 'linear-gradient(135deg, rgba(156, 163, 175, 0.15) 0%, rgba(156, 163, 175, 0.05) 100%)' : 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)'),
+            border: nextActionable.type === 'scheduled'
+              ? (isDarkMode ? '1px solid rgba(29, 155, 240, 0.3)' : '1px solid #bfdbfe')
+              : (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb'),
+            borderRadius: 12,
+            padding: 20,
+            marginBottom: 16
+          }}>
+            {/* Hero Header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              marginBottom: 12
+            }}>
+              <span style={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: nextActionable.type === 'scheduled' ? '#1d9bf0' : '#9ca3af'
+              }} />
+              <span style={{
+                fontSize: 12,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+                color: nextActionable.type === 'scheduled' ? '#1d9bf0' : (isDarkMode ? '#9ca3af' : '#6b7280')
+              }}>
+                {nextActionable.type === 'scheduled' ? 'YOUR NEXT SESSION' : 'SCHEDULE YOUR NEXT SESSION'}
+              </span>
+            </div>
+
+            {/* Session Title */}
+            <h3 style={{
+              fontSize: 18,
+              fontWeight: 700,
+              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+              margin: '0 0 8px 0'
+            }}>
+              Session {nextActionable.session.number}: {nextActionable.session.title}
+            </h3>
+
+            {/* Session Details */}
+            {nextActionable.type === 'scheduled' ? (
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6,
+                marginBottom: 16
+              }}>
+                <div style={{
+                  fontSize: 14,
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8
+                }}>
+                  <FaCalendar style={{ color: '#1d9bf0', fontSize: 13 }} />
+                  {formatDateForDisplay(nextActionable.scheduledData.date)} at {nextActionable.scheduledData.time}
+                </div>
+                <div style={{
+                  fontSize: 14,
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8
+                }}>
+                  <FaChalkboardTeacher style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 13 }} />
+                  with {nextActionable.scheduledData.studentTeacherName || nextActionable.scheduledData.teacherName || 'your teacher'}
+                </div>
+              </div>
+            ) : (
+              <div style={{
+                fontSize: 14,
+                color: isDarkMode ? '#71767b' : '#536471',
+                marginBottom: 16
+              }}>
+                {nextActionable.session.duration} • {nextActionable.session.modules?.length || 0} modules
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: 10 }}>
+              {nextActionable.type === 'scheduled' ? (
+                <>
+                  <button
+                    onClick={handleJoinSession}
+                    disabled={isJoiningSession}
+                    style={{
+                      background: '#1d9bf0',
+                      color: '#fff',
+                      border: 'none',
+                      padding: '10px 24px',
+                      borderRadius: 20,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: isJoiningSession ? 'wait' : 'pointer',
+                      opacity: isJoiningSession ? 0.7 : 1
+                    }}
+                  >
+                    {isJoiningSession ? 'Joining...' : 'Join Session'}
+                  </button>
+                  <button
+                    onClick={() => onRescheduleSession && onRescheduleSession(nextActionable.scheduledData)}
+                    style={{
+                      background: 'transparent',
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                      padding: '10px 24px',
+                      borderRadius: 20,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Reschedule
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => onBrowseStudentTeachers && onBrowseStudentTeachers(course, nextActionable.session.number)}
+                  style={{
+                    background: '#1d9bf0',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '10px 24px',
+                    borderRadius: 20,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Schedule Session
+                </button>
+              )}
+            </div>
+          </div>
         )}
 
         {/* Session Timeline Cards - Only for enrolled users with sessions defined */}
