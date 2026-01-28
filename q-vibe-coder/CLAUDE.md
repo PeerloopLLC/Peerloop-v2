@@ -15,6 +15,14 @@ This works 100% of the time. Always try Edit first, but switch to Python immedia
 
 ---
 
+## Project Commands
+
+| Command | What it does |
+|---------|--------------|
+| **publish** | Deploy to GitHub Pages: `cd my-project/code && npm run deploy` |
+
+---
+
 **You bring the vision and taste. We bring the engineering.**
 
 ---
