@@ -265,12 +265,12 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
                 className="slideout-community-item"
                 onClick={(e) => handleCommunityClick(townHall, e)}
               >
-                {/* Community Badge Icon */}
+                {/* Community Circle Avatar */}
                 <div
                   style={{
                     width: 32,
                     height: 32,
-                    borderRadius: 8,
+                    borderRadius: '50%',
                     background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                     display: 'flex',
                     alignItems: 'center',
@@ -308,12 +308,12 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
                     className="slideout-community-item"
                     onClick={(e) => handleCommunityClick(community, e)}
                   >
-                    {/* Community Badge Icon */}
+                    {/* Community Circle Avatar */}
                     <div
                       style={{
                         width: 32,
                         height: 32,
-                        borderRadius: 8,
+                        borderRadius: '50%',
                         background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                         display: 'flex',
                         alignItems: 'center',

@@ -4,7 +4,7 @@ import { FaBook, FaUser, FaSearch, FaFolder, FaPlay, FaFileAlt, FaLink } from 'r
 import { AiOutlineStar, AiOutlineTeam, AiOutlineClockCircle, AiOutlineBarChart } from 'react-icons/ai';
 import CourseDetailView from './CourseDetailView';
 import EnrollmentFlow from './EnrollmentFlow';
-import { getInstructorById, getCourseById, getInstructorWithCourses } from '../data/database';
+import { getInstructorById, getCourseById, getInstructorWithCourses, iconConfig } from '../data/database';
 
 /**
  * BrowseView - Displays the Browse page with Course Listings and Creator Profiles tabs
@@ -574,13 +574,14 @@ const BrowseView = ({
         }}>
           {/* Top Row: Avatar + Name + Buttons */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
-            {/* Community Badge Icon */}
+            {/* Community Circle Avatar */}
             <div
               style={{
                 width: 64,
                 height: 64,
-                borderRadius: 12,
+                borderRadius: '50%',
                 background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                border: '3px solid rgba(255,255,255,0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -861,12 +862,6 @@ const BrowseView = ({
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {creatorCourses.map((course, index) => {
                   const isFollowed = isCourseFollowed(course.id);
-                  const thumbGradients = [
-                    'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)',
-                    'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
-                    'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
-                    'linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)'
-                  ];
 
                   return (
                     <div
@@ -902,8 +897,16 @@ const BrowseView = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         overflow: 'hidden',
-                        background: thumbGradients[index % 4]
+                        background: course.thumbnailGradient || iconConfig.course.gradient
                       }}>
+                        <span style={{
+                          color: '#fff',
+                          fontSize: 20,
+                          fontWeight: 700,
+                          textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                        }}>
+                          {iconConfig.course.icon}
+                        </span>
                       </div>
 
                       <div style={{ flex: 1, minWidth: 0 }}>

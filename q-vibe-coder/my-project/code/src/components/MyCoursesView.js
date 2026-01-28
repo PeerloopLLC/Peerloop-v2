@@ -2,7 +2,57 @@ import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { FaBook, FaSearch, FaCheckCircle, FaPlay, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
-import { getInstructorById } from '../data/database';
+import { getInstructorById, iconConfig } from '../data/database';
+
+// Course abbreviation helper - matches DiscoverView
+const getCourseAbbreviation = (title) => {
+  if (!title) return '??';
+
+  const mappings = {
+    'ai': 'AI',
+    'machine learning': 'ML',
+    'deep learning': 'DL',
+    'data science': 'DS',
+    'full-stack': 'FS',
+    'full stack': 'FS',
+    'devops': 'DO',
+    'ci/cd': 'CI',
+    'github': 'GH',
+    'node.js': 'NJ',
+    'nodejs': 'NJ',
+    'python': 'PY',
+    'robotics': 'RB',
+    'medical': 'MD',
+    'healthcare': 'HC',
+    'automation': 'AU',
+    'n8n': 'N8',
+    'prompt': 'PM',
+    'claude': 'CC',
+    'computer vision': 'CV',
+    'business intelligence': 'BI',
+    'microservices': 'MS',
+    'cloud': 'CL',
+    'aws': 'AWS'
+  };
+
+  const lowerTitle = title.toLowerCase();
+
+  for (const [key, abbr] of Object.entries(mappings)) {
+    if (lowerTitle.includes(key)) return abbr;
+  }
+
+  const words = title.split(/[\s\-:]+/).filter(w =>
+    w.length > 2 && !['the', 'and', 'for', 'with', 'to', 'of', 'in', 'a', 'an'].includes(w.toLowerCase())
+  );
+
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  } else if (words.length === 1) {
+    return words[0].substring(0, 2).toUpperCase();
+  }
+
+  return title.substring(0, 2).toUpperCase();
+};
 
 // Calendar Component
 const CourseCalendar = ({ isDarkMode, scheduledDates, selectedDate, onSelectDate }) => {
@@ -573,16 +623,17 @@ const MyCoursesView = ({
             gap: 16,
             marginBottom: 12
           }}>
-            {/* Community Badge */}
+            {/* Community Circle Avatar */}
             <div style={{
               width: 56,
               height: 56,
-              borderRadius: 12,
+              borderRadius: '50%',
               background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+              border: '3px solid rgba(255,255,255,0.3)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 24,
+              fontSize: 26,
               flexShrink: 0
             }}>
               👥
@@ -593,29 +644,38 @@ const MyCoursesView = ({
                 display: 'flex',
                 alignItems: 'center',
                 flexWrap: 'wrap',
-                gap: 4,
-                marginBottom: 4
+                gap: 4
               }}>
                 <span style={{
-                  fontSize: 18,
-                  fontWeight: 600,
-                  color: isDarkMode ? '#f5f5f7' : '#111827'
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
                 }}>
-                  {highlightMatch(instructor?.name || 'Unknown Instructor', searchQuery)}
+                  {highlightMatch(instructor?.communityName || `${instructor?.name} Community`, searchQuery)}
                 </span>
                 <span style={{
                   color: isDarkMode ? '#71767b' : '#536471',
                   fontSize: 15
                 }}>
-                  @{instructor?.name?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
+                  @{(instructor?.communityName || instructor?.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
                 </span>
+              </div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                marginTop: 2
+              }}>
+                <span style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>Created by</span>
+                <span style={{ fontSize: 13, color: '#1d9bf0', fontWeight: 500 }}>{instructor?.name}</span>
               </div>
               <div style={{
                 fontSize: 14,
                 color: isDarkMode ? '#a1a1aa' : '#6b7280',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 4
+                gap: 4,
+                marginTop: 2
               }}>
                 <AiOutlineTeam style={{ fontSize: 16 }} />
                 <span>{(instructor?.stats?.studentsTaught || 0).toLocaleString()} followers</span>
@@ -687,12 +747,6 @@ const MyCoursesView = ({
             const isLast = index === courses.length - 1;
             const courseIsCompleted = isCourseCompleted(course.id) || course.progress === 100;
             const isFollowed = isCourseFollowed ? isCourseFollowed(course.id) : false;
-            const thumbGradients = [
-              'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)',
-              'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
-              'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
-              'linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)'
-            ];
 
             // Get completion date for completed courses
             const completedSession = scheduledSessions
@@ -752,13 +806,25 @@ const MyCoursesView = ({
                 >
                   {/* Course Thumbnail */}
                   <div style={{
-                    width: 100,
-                    height: 70,
-                    borderRadius: 8,
+                    width: 56,
+                    height: 56,
+                    borderRadius: 12,
                     flexShrink: 0,
-                    background: thumbGradients[index % 4],
-                    position: 'relative'
+                    background: course.thumbnailGradient || iconConfig.course.gradient,
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}>
+                    {/* Course Letter Badge */}
+                    <span style={{
+                      color: '#fff',
+                      fontSize: 18,
+                      fontWeight: 700,
+                      textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                    }}>
+                      {getCourseAbbreviation(course.title)}
+                    </span>
                     {/* Certified Badge for completed courses */}
                     {isCompletedSection && (
                       <div style={{
@@ -1258,16 +1324,17 @@ const MyCoursesView = ({
                         gap: 16,
                         marginBottom: 12
                       }}>
-                        {/* Community Badge */}
+                        {/* Community Circle Avatar */}
                         <div style={{
                           width: 56,
                           height: 56,
-                          borderRadius: 12,
+                          borderRadius: '50%',
                           background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                          border: '3px solid rgba(255,255,255,0.3)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: 24,
+                          fontSize: 26,
                           flexShrink: 0
                         }}>
                           👥
@@ -1278,29 +1345,38 @@ const MyCoursesView = ({
                             display: 'flex',
                             alignItems: 'center',
                             flexWrap: 'wrap',
-                            gap: 4,
-                            marginBottom: 4
+                            gap: 4
                           }}>
                             <span style={{
-                              fontSize: 18,
-                              fontWeight: 600,
-                              color: isDarkMode ? '#f5f5f7' : '#111827'
+                              fontSize: 15,
+                              fontWeight: 700,
+                              color: isDarkMode ? '#e7e9ea' : '#0f1419'
                             }}>
-                              {instructor?.name || 'Unknown Instructor'}
+                              {instructor?.communityName || `${instructor?.name} Community`}
                             </span>
                             <span style={{
                               color: isDarkMode ? '#71767b' : '#536471',
                               fontSize: 15
                             }}>
-                              @{instructor?.name?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
+                              @{(instructor?.communityName || instructor?.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
                             </span>
+                          </div>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            marginTop: 2
+                          }}>
+                            <span style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>Created by</span>
+                            <span style={{ fontSize: 13, color: '#1d9bf0', fontWeight: 500 }}>{instructor?.name}</span>
                           </div>
                           <div style={{
                             fontSize: 14,
                             color: isDarkMode ? '#a1a1aa' : '#6b7280',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 4
+                            gap: 4,
+                            marginTop: 2
                           }}>
                             <AiOutlineTeam style={{ fontSize: 16 }} />
                             <span>{(instructor?.stats?.studentsTaught || 0).toLocaleString()} followers</span>
@@ -1371,12 +1447,6 @@ const MyCoursesView = ({
                       {courses.map((course, index) => {
                         const isLast = index === courses.length - 1;
                         const isFollowed = isCourseFollowed ? isCourseFollowed(course.id) : false;
-                        const thumbGradients = [
-                          'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%)',
-                          'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
-                          'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
-                          'linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)'
-                        ];
 
                         return (
                           <div
@@ -1431,12 +1501,24 @@ const MyCoursesView = ({
                             >
                               {/* Course Thumbnail */}
                               <div style={{
-                                width: 100,
-                                height: 70,
-                                borderRadius: 8,
+                                width: 56,
+                                height: 56,
+                                borderRadius: 12,
                                 flexShrink: 0,
-                                background: thumbGradients[index % 4]
-                              }} />
+                                background: course.thumbnailGradient || iconConfig.course.gradient,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}>
+                                <span style={{
+                                  color: '#fff',
+                                  fontSize: 18,
+                                  fontWeight: 700,
+                                  textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                                }}>
+                                  {getCourseAbbreviation(course.title)}
+                                </span>
+                              </div>
 
                               {/* Course Info */}
                               <div style={{ flex: 1, minWidth: 0 }}>
