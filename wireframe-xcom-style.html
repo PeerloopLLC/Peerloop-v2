@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X.com Style - Community + Courses</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .option-label {
+      background: #333;
+      color: white;
+      padding: 8px 16px;
+      font-weight: 600;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      border-radius: 4px;
+    }
+
+    /* ========== X.COM STYLE ========== */
+    .community-wrapper {
+      background: #d1d5db;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 32px;
+    }
+
+    .community-header {
+      background: #374151;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 12px;
+    }
+
+    .community-header .name {
+      font-size: 24px;
+      font-weight: 700;
+      font-style: italic;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .community-header .description {
+      font-size: 15px;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.5;
+    }
+
+    .course-card {
+      background: #f3f4f6;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .course-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .course-thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: 10px;
+      background: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9ca3af;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .course-info {
+      flex: 1;
+    }
+
+    .course-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+
+    .course-desc {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+
+    /* ========== VARIATION A: With Stats ========== */
+    .community-wrapper-a {
+      background: #e5e7eb;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 32px;
+    }
+
+    .community-header-a {
+      background: #1f2937;
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .community-header-a .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+    }
+
+    .community-header-a .info {
+      flex: 1;
+    }
+
+    .community-header-a .name {
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 2px;
+    }
+
+    .community-header-a .meta {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .community-header-a .follow-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      background: white;
+      color: #1f2937;
+      border: none;
+      cursor: pointer;
+    }
+
+    .community-bio-a {
+      background: #374151;
+      border-radius: 12px;
+      padding: 14px 20px;
+      margin-bottom: 12px;
+    }
+
+    .community-bio-a .creator {
+      font-size: 13px;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 4px;
+    }
+
+    .community-bio-a .text {
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.4;
+    }
+
+    .course-card-a {
+      background: white;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .course-card-a:last-child {
+      margin-bottom: 0;
+    }
+
+    .course-card-a .badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .course-card-a .course-info {
+      flex: 1;
+    }
+
+    .course-card-a .course-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 2px;
+    }
+
+    .course-card-a .course-stats {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .course-card-a .enroll-btn {
+      padding: 6px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #22c55e;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ========== VARIATION B: Softer Colors ========== */
+    .community-wrapper-b {
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 32px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .community-header-b {
+      background: #475569;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+
+    .community-header-b .top-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .community-header-b .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: white;
+    }
+
+    .community-header-b .info {
+      flex: 1;
+    }
+
+    .community-header-b .name {
+      font-size: 19px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .community-header-b .meta {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .community-header-b .follow-btn {
+      padding: 7px 18px;
+      border-radius: 18px;
+      font-weight: 600;
+      font-size: 13px;
+      background: white;
+      color: #475569;
+      border: none;
+      cursor: pointer;
+    }
+
+    .community-header-b .creator-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .community-header-b .creator-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+    }
+
+    .community-header-b .creator-name {
+      font-size: 13px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .community-header-b .bio {
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.4;
+    }
+
+    .courses-label-b {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      padding-left: 4px;
+    }
+
+    .course-card-b {
+      background: white;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+      align-items: center;
+      border: 1px solid #e2e8f0;
+    }
+
+    .course-card-b:last-child {
+      margin-bottom: 0;
+    }
+
+    .course-card-b .badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .course-card-b .course-info {
+      flex: 1;
+    }
+
+    .course-card-b .course-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 2px;
+    }
+
+    .course-card-b .course-stats {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .course-card-b .enroll-btn {
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #22c55e;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ========== VARIATION C: Minimal ========== */
+    .community-wrapper-c {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 0;
+      margin-bottom: 32px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .community-header-c {
+      background: #334155;
+      padding: 18px 20px;
+    }
+
+    .community-header-c .top-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .community-header-c .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: white;
+    }
+
+    .community-header-c .info {
+      flex: 1;
+    }
+
+    .community-header-c .name {
+      font-size: 17px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .community-header-c .meta {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .community-header-c .follow-btn {
+      padding: 6px 16px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 12px;
+      background: white;
+      color: #334155;
+      border: none;
+      cursor: pointer;
+    }
+
+    .courses-section-c {
+      padding: 14px 16px 16px;
+    }
+
+    .course-row-c {
+      display: flex;
+      gap: 10px;
+      padding: 12px;
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      align-items: center;
+      border: 1px solid #e2e8f0;
+    }
+
+    .course-row-c:last-child {
+      margin-bottom: 0;
+    }
+
+    .course-row-c .badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: #22c55e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .course-row-c .course-info {
+      flex: 1;
+    }
+
+    .course-row-c .course-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e40af;
+    }
+
+    .course-row-c .course-stats {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .course-row-c .enroll-btn {
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #22c55e;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>X.com Style: Community + Courses</h1>
+    <p class="subtitle">Dark community header, light course cards nested inside grey wrapper</p>
+
+    <!-- Original X.com Style -->
+    <div class="option-label">EXACT MATCH: X.com Reference</div>
+
+    <div class="community-wrapper">
+      <div class="community-header">
+        <div class="name">The Physics Lab</div>
+        <div class="description">A brief description of the community. Join us to learn and grow together.</div>
+      </div>
+      <div class="course-card">
+        <div class="course-thumb">🖼</div>
+        <div class="course-info">
+          <div class="course-title">Course 1: Introduction to Physics</div>
+          <div class="course-desc">A brief description of the course, introducing the fundamentals and key concepts.</div>
+        </div>
+      </div>
+      <div class="course-card">
+        <div class="course-thumb">🖼</div>
+        <div class="course-info">
+          <div class="course-title">Course 2: Advanced Techniques</div>
+          <div class="course-desc">Building on the basics, this course covers advanced methods and applications.</div>
+        </div>
+      </div>
+      <div class="course-card">
+        <div class="course-thumb">🖼</div>
+        <div class="course-info">
+          <div class="course-title">Course 3: Specialization</div>
+          <div class="course-desc">Deep dive into specialized topics and real-world problem solving.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variation A -->
+    <div class="option-label">VARIATION A: With Avatar, Stats, Buttons</div>
+
+    <div class="community-wrapper-a">
+      <div class="community-header-a">
+        <div class="avatar">👥</div>
+        <div class="info">
+          <div class="name">The Physics Lab</div>
+          <div class="meta">@thephysicslab · 1,730 followers · 2 courses</div>
+        </div>
+        <button class="follow-btn">Following</button>
+      </div>
+      <div class="community-bio-a">
+        <div class="creator">Albert Einstein · Theoretical Physicist</div>
+        <div class="text">Revolutionary physicist who developed the theory of relativity, one of the two pillars of modern physics.</div>
+      </div>
+      <div class="course-card-a">
+        <div class="badge">NJ</div>
+        <div class="course-info">
+          <div class="course-title">Node.js Backend Development</div>
+          <div class="course-stats">★ 4.8 · 1,250 students · 12 hours</div>
+        </div>
+        <button class="enroll-btn">Following</button>
+      </div>
+      <div class="course-card-a">
+        <div class="badge">CL</div>
+        <div class="course-info">
+          <div class="course-title">Cloud Architecture with AWS</div>
+          <div class="course-stats">★ 4.8 · 1,250 students · 12 hours</div>
+        </div>
+        <button class="enroll-btn">$399</button>
+      </div>
+    </div>
+
+    <!-- Variation B -->
+    <div class="option-label">VARIATION B: Softer Colors, All Info in Header</div>
+
+    <div class="community-wrapper-b">
+      <div class="community-header-b">
+        <div class="top-row">
+          <div class="avatar">👥</div>
+          <div class="info">
+            <div class="name">The Physics Lab</div>
+            <div class="meta">@thephysicslab · 1,730 followers · 2 courses</div>
+          </div>
+          <button class="follow-btn">Following</button>
+        </div>
+        <div class="creator-row">
+          <div class="creator-avatar"></div>
+          <span class="creator-name">Albert Einstein · Theoretical Physicist</span>
+        </div>
+        <div class="bio">Revolutionary physicist who developed the theory of relativity.</div>
+      </div>
+      <div class="courses-label-b">Courses</div>
+      <div class="course-card-b">
+        <div class="badge">NJ</div>
+        <div class="course-info">
+          <div class="course-title">Node.js Backend Development</div>
+          <div class="course-stats">★ 4.8 · 1,250 students · 12 hours</div>
+        </div>
+        <button class="enroll-btn">Following</button>
+      </div>
+      <div class="course-card-b">
+        <div class="badge">CL</div>
+        <div class="course-info">
+          <div class="course-title">Cloud Architecture with AWS</div>
+          <div class="course-stats">★ 4.8 · 1,250 students · 12 hours</div>
+        </div>
+        <button class="enroll-btn">$399</button>
+      </div>
+    </div>
+
+    <!-- Variation C -->
+    <div class="option-label">VARIATION C: Minimal, Compact</div>
+
+    <div class="community-wrapper-c">
+      <div class="community-header-c">
+        <div class="top-row">
+          <div class="avatar">👥</div>
+          <div class="info">
+            <div class="name">The Physics Lab</div>
+            <div class="meta">@thephysicslab · 1,730 followers · by Albert Einstein</div>
+          </div>
+          <button class="follow-btn">Following</button>
+        </div>
+      </div>
+      <div class="courses-section-c">
+        <div class="course-row-c">
+          <div class="badge">NJ</div>
+          <div class="course-info">
+            <div class="course-title">Node.js Backend Development</div>
+            <div class="course-stats">★ 4.8 · 1,250 students · 12 hours</div>
+          </div>
+          <button class="enroll-btn">Following</button>
+        </div>
+        <div class="course-row-c">
+          <div class="badge">CL</div>
+          <div class="course-info">
+            <div class="course-title">Cloud Architecture with AWS</div>
+            <div class="course-stats">★ 4.8 · 1,250 students · 12 hours</div>
+          </div>
+          <button class="enroll-btn">$399</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

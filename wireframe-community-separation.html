@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community vs Course Separation - Mockups</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .option-label {
+      background: #333;
+      color: white;
+      padding: 8px 16px;
+      font-weight: 600;
+      margin-top: 50px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+    }
+
+    .option-desc {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 16px;
+      padding-left: 4px;
+    }
+
+    /* ========== OPTION 1: Full Grey Community Card ========== */
+    .community-card-grey {
+      background: #e9ecef;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .community-card-grey .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .community-card-grey .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #6c757d;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .community-card-grey .info { flex: 1; }
+
+    .community-card-grey .name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+
+    .community-card-grey .meta {
+      font-size: 13px;
+      color: #6c757d;
+      display: flex;
+      gap: 12px;
+    }
+
+    .community-card-grey .follow-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .community-card-grey .creator-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .community-card-grey .creator-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #adb5bd;
+    }
+
+    .community-card-grey .creator-name {
+      color: #495057;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .community-card-grey .creator-title {
+      color: #6c757d;
+      font-size: 13px;
+    }
+
+    .community-card-grey .bio {
+      color: #495057;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ========== OPTION 2: Bordered Community Card ========== */
+    .community-card-bordered {
+      background: white;
+      border: 3px solid #dee2e6;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .community-card-bordered .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .community-card-bordered .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6c757d, #495057);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .community-card-bordered .info { flex: 1; }
+
+    .community-card-bordered .name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+
+    .community-card-bordered .meta {
+      font-size: 13px;
+      color: #6c757d;
+      display: flex;
+      gap: 12px;
+    }
+
+    .community-card-bordered .follow-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .community-card-bordered .creator-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .community-card-bordered .creator-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e9ecef;
+    }
+
+    .community-card-bordered .creator-name {
+      color: #495057;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .community-card-bordered .creator-title {
+      color: #6c757d;
+      font-size: 13px;
+    }
+
+    .community-card-bordered .bio {
+      color: #495057;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ========== OPTION 3: Left Accent Bar ========== */
+    .community-card-accent {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-left: 6px solid #6c757d;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .community-card-accent .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .community-card-accent .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #6c757d;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .community-card-accent .info { flex: 1; }
+
+    .community-card-accent .name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+
+    .community-card-accent .meta {
+      font-size: 13px;
+      color: #6c757d;
+      display: flex;
+      gap: 12px;
+    }
+
+    .community-card-accent .follow-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .community-card-accent .creator-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .community-card-accent .creator-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e9ecef;
+    }
+
+    .community-card-accent .creator-name {
+      color: #495057;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .community-card-accent .creator-title {
+      color: #6c757d;
+      font-size: 13px;
+    }
+
+    .community-card-accent .bio {
+      color: #495057;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ========== OPTION 4: Compact Header + Indented Courses ========== */
+    .community-card-compact {
+      background: #495057;
+      border-radius: 10px;
+      padding: 14px 20px;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .community-card-compact .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .community-card-compact .info { flex: 1; }
+
+    .community-card-compact .name {
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .community-card-compact .meta {
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      display: flex;
+      gap: 10px;
+    }
+
+    .community-card-compact .follow-btn {
+      padding: 6px 16px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 13px;
+      background: white;
+      color: #495057;
+      border: none;
+      cursor: pointer;
+    }
+
+    .courses-indented {
+      margin-left: 24px;
+      padding: 16px 0 16px 20px;
+      border-left: 2px solid #dee2e6;
+    }
+
+    /* ========== OPTION 5: Card-in-Card (Nested) ========== */
+    .community-wrapper {
+      background: #e9ecef;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .community-card-nested {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .community-card-nested .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .community-card-nested .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #6c757d;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .community-card-nested .info { flex: 1; }
+
+    .community-card-nested .name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+
+    .community-card-nested .meta {
+      font-size: 12px;
+      color: #6c757d;
+      display: flex;
+      gap: 10px;
+    }
+
+    .community-card-nested .follow-btn {
+      padding: 6px 16px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 13px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .community-card-nested .creator-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .community-card-nested .creator-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #e9ecef;
+    }
+
+    .community-card-nested .creator-name {
+      color: #495057;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .community-card-nested .creator-title {
+      color: #6c757d;
+      font-size: 12px;
+    }
+
+    .community-card-nested .bio {
+      color: #495057;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .courses-label-nested {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      padding-left: 4px;
+    }
+
+    /* ========== COURSE CARDS (same for all) ========== */
+    .course-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 12px;
+      transition: all 0.15s ease;
+    }
+
+    .course-card:hover {
+      border-color: #22c55e;
+      box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+    }
+
+    .course-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .course-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .course-info { flex: 1; }
+
+    .course-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 4px;
+    }
+
+    .course-desc {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .course-benefits {
+      display: flex;
+      gap: 14px;
+      font-size: 11px;
+      color: #22c55e;
+      margin-bottom: 4px;
+    }
+
+    .course-stats {
+      font-size: 11px;
+      color: #888;
+    }
+
+    .enroll-btn {
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      align-self: center;
+      background: #22c55e;
+      border: none;
+      color: white;
+    }
+
+    .courses-section {
+      margin-bottom: 24px;
+    }
+
+    .courses-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .divider {
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Community vs Course Separation</h1>
+    <p class="subtitle">The entire community card (header + creator + bio) needs to be distinct from course cards</p>
+
+    <!-- OPTION 1 -->
+    <div class="option-label">OPTION 1: Full Grey Background</div>
+    <p class="option-desc">Entire community card has grey background. Courses are white cards below.</p>
+
+    <div class="community-card-grey">
+      <div class="header">
+        <div class="avatar">👥</div>
+        <div class="info">
+          <div class="name">The Physics Lab</div>
+          <div class="meta">
+            <span>@thephysicslab</span>
+            <span>👥 1,730 followers</span>
+            <span>📚 2 courses</span>
+          </div>
+        </div>
+        <button class="follow-btn">Following</button>
+      </div>
+      <div class="creator-row">
+        <div class="creator-avatar"></div>
+        <span class="creator-name">Albert Einstein</span>
+        <span class="creator-title">• Theoretical Physicist</span>
+      </div>
+      <div class="bio">Revolutionary physicist who developed the theory of relativity, one of the two pillars of modern physics.</div>
+    </div>
+
+    <div class="courses-section">
+      <div class="courses-label">Courses in this community</div>
+      <div class="course-card">
+        <div class="course-badge">NJ</div>
+        <div class="course-info">
+          <div class="course-title">Node.js Backend Development</div>
+          <div class="course-desc">Learn to build robust backend services with Node.js, Express, and MongoDB.</div>
+          <div class="course-benefits">
+            <span>✓ 1-on-1 sessions</span>
+            <span>✓ Community Access</span>
+            <span>✓ Certificate</span>
+          </div>
+          <div class="course-stats">★ 4.8 (234) • 1,250 students • 12 hours</div>
+        </div>
+        <button class="enroll-btn">Following</button>
+      </div>
+      <div class="course-card">
+        <div class="course-badge">CL</div>
+        <div class="course-info">
+          <div class="course-title">Cloud Architecture with AWS</div>
+          <div class="course-desc">Design and deploy scalable cloud solutions using AWS services.</div>
+          <div class="course-benefits">
+            <span>✓ 1-on-1 sessions</span>
+            <span>✓ Community Access</span>
+            <span>✓ Certificate</span>
+          </div>
+          <div class="course-stats">★ 4.8 (234) • 1,250 students • 12 hours</div>
+        </div>
+        <button class="enroll-btn">Enroll $399</button>
+      </div>
+    </div>
+
+    <!-- OPTION 2 -->
+    <div class="option-label">OPTION 2: Thick Border</div>
+    <p class="option-desc">Community card has prominent border. Courses have thin/no border.</p>
+
+    <div class="community-card-bordered">
+      <div class="header">
+        <div class="avatar">👥</div>
+        <div class="info">
+          <div class="name">The Physics Lab</div>
+          <div class="meta">
+            <span>@thephysicslab</span>
+            <span>👥 1,730 followers</span>
+            <span>📚 2 courses</span>
+          </div>
+        </div>
+        <button class="follow-btn">Following</button>
+      </div>
+      <div class="creator-row">
+        <div class="creator-avatar"></div>
+        <span class="creator-name">Albert Einstein</span>
+        <span class="creator-title">• Theoretical Physicist</span>
+      </div>
+      <div class="bio">Revolutionary physicist who developed the theory of relativity, one of the two pillars of modern physics.</div>
+    </div>
+
+    <div class="courses-section">
+      <div class="courses-label">Courses in this community</div>
+      <div class="course-card">
+        <div class="course-badge">NJ</div>
+        <div class="course-info">
+          <div class="course-title">Node.js Backend Development</div>
+          <div class="course-desc">Learn to build robust backend services with Node.js, Express, and MongoDB.</div>
+          <div class="course-benefits">
+            <span>✓ 1-on-1 sessions</span>
+            <span>✓ Community Access</span>
+            <span>✓ Certificate</span>
+          </div>
+          <div class="course-stats">★ 4.8 (234) • 1,250 students • 12 hours</div>
+        </div>
+        <button class="enroll-btn">Following</button>
+      </div>
+      <div class="course-card">
+        <div class="course-badge">CL</div>
+        <div class="course-info">
+          <div class="course-title">Cloud Architecture with AWS</div>
+          <div class="course-desc">Design and deploy scalable cloud solutions using AWS services.</div>
+          <div class="course-benefits">
+            <span>✓ 1-on-1 sessions</span>
+            <span>✓ Community Access</span>
+            <span>✓ Certificate</span>
+          </div>
+          <div class="course-stats">★ 4.8 (234) • 1,250 students • 12 hours</div>
+        </div>
+        <button class="enroll-btn">Enroll $399</button>
+      </div>
+    </div>
+
+    <!-- OPTION 3 -->
+    <div class="option-label">OPTION 3: Left Accent Bar</div>
+    <p class="option-desc">Community has thick left border accent. Courses have green badge as accent.</p>
+
+    <div class="community-card-accent">
+      <div class="header">
+        <div class="avatar">👥</div>
+        <div class="info">
+          <div class="name">The Physics Lab</div>
+          <div class="meta">
+            <span>@thephysicslab</span>
+            <span>👥 1,730 followers</span>
+            <span>📚 2 courses</span>
+          </div>
+        </div>
+        <button class="follow-btn">Following</button>
+      </div>
+      <div class="creator-row">
+        <div class="creator-avatar"></div>
+        <span class="creator-name">Albert Einstein</span>
+        <span class="creator-title">• Theoretical Physicist</span>
+      </div>
+      <div class="bio">Revolutionary physicist who developed the theory of relativity, one of the two pillars of modern physics.</div>
+    </div>
+
+    <div class="courses-section">
+      <div class="courses-label">Courses in this community</div>
+      <div class="course-card">
+        <div class="course-badge">NJ</div>
+        <div class="course-info">
+          <div class="course-title">Node.js Backend Development</div>
+          <div class="course-desc">Learn to build robust backend services with Node.js, Express, and MongoDB.</div>
+          <div class="course-benefits">
+            <span>✓ 1-on-1 sessions</span>
+            <span>✓ Community Access</span>
+            <span>✓ Certificate</span>
+          </div>
+          <div class="course-stats">★ 4.8 (234) • 1,250 students • 12 hours</div>
+        </div>
+        <button class="enroll-btn">Following</button>
+      </div>
+      <div class="course-card">
+        <div class="course-badge">CL</div>
+        <div class="course-info">
+          <div class="course-title">Cloud Architecture with AWS</div>
+          <div class="course-desc">Design and deploy scalable cloud solutions using AWS services.</div>
+          <div class="course-benefits">
+            <span>✓ 1-on-1 sessions</span>
+            <span>✓ Community Access</span>
+            <span>✓ Certificate</span>
+          </div>
+          <div class="course-stats">★ 4.8 (234) • 1,250 students • 12 hours</div>
+        </div>
+        <button class="enroll-btn">Enroll $399</button>
+      </div>
+    </div>
+
+    <!-- OPTION 4 -->
+    <div class="option-label">OPTION 4: Compact Header + Indented Courses</div>
+    <p class="option-desc">Community is just a compact dark bar. Courses indent below with connector line.</p>
+
+    <div class="community-card-compact">
+      <div class="avatar">👥</div>
+      <div class="info">
+        <div class="name">The Physics Lab</div>
+        <div class="meta">
+          <span>@thephysicslab</span>
+          <span>👥 1,730 followers</span>
+          <span>📚 2 courses</span>
+          <span>• Albert Einstein</span>
+        </div>
+      </div>
+      <button class="follow-btn">Following</button>
+    </div>
+    <div class="courses-indented">
+      <div class="course-card">
+        <div class="course-badge">NJ</div>
+        <div class="course-info">
+          <div class="course-title">Node.js Backend Development</div>
+          <div class="course-desc">Learn to build robust backend services with Node.js, Express, and MongoDB.</div>
+          <div class="course-benefits">
+            <span>✓ 1-on-1 sessions</span>
+            <span>✓ Community Access</span>
+            <span>✓ Certificate</span>
+          </div>
+          <div class="course-stats">★ 4.8 (234) • 1,250 students • 12 hours</div>
+        </div>
+        <button class="enroll-btn">Following</button>
+      </div>
+      <div class="course-card">
+        <div class="course-badge">CL</div>
+        <div class="course-info">
+          <div class="course-title">Cloud Architecture with AWS</div>
+          <div class="course-desc">Design and deploy scalable cloud solutions using AWS services.</div>
+          <div class="course-benefits">
+            <span>✓ 1-on-1 sessions</span>
+            <span>✓ Community Access</span>
+            <span>✓ Certificate</span>
+          </div>
+          <div class="course-stats">★ 4.8 (234) • 1,250 students • 12 hours</div>
+        </div>
+        <button class="enroll-btn">Enroll $399</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- OPTION 5 -->
+    <div class="option-label">OPTION 5: Card-in-Card (Nested Container)</div>
+    <p class="option-desc">Grey outer wrapper contains white community card + courses. Clear grouping.</p>
+
+    <div class="community-wrapper">
+      <div class="community-card-nested">
+        <div class="header">
+          <div class="avatar">👥</div>
+          <div class="info">
+            <div class="name">The Physics Lab</div>
+            <div class="meta">
+              <span>@thephysicslab</span>
+              <span>👥 1,730 followers</span>
+              <span>📚 2 courses</span>
+            </div>
+          </div>
+          <button class="follow-btn">Following</button>
+        </div>
+        <div class="creator-row">
+          <div class="creator-avatar"></div>
+          <span class="creator-name">Albert Einstein</span>
+          <span class="creator-title">• Theoretical Physicist</span>
+        </div>
+        <div class="bio">Revolutionary physicist who developed the theory of relativity, one of the two pillars of modern physics.</div>
+      </div>
+
+      <div class="courses-label-nested">Courses in this community</div>
+      <div class="course-card">
+        <div class="course-badge">NJ</div>
+        <div class="course-info">
+          <div class="course-title">Node.js Backend Development</div>
+          <div class="course-desc">Learn to build robust backend services with Node.js, Express, and MongoDB.</div>
+          <div class="course-benefits">
+            <span>✓ 1-on-1 sessions</span>
+            <span>✓ Community Access</span>
+            <span>✓ Certificate</span>
+          </div>
+          <div class="course-stats">★ 4.8 (234) • 1,250 students • 12 hours</div>
+        </div>
+        <button class="enroll-btn">Following</button>
+      </div>
+      <div class="course-card">
+        <div class="course-badge">CL</div>
+        <div class="course-info">
+          <div class="course-title">Cloud Architecture with AWS</div>
+          <div class="course-desc">Design and deploy scalable cloud solutions using AWS services.</div>
+          <div class="course-benefits">
+            <span>✓ 1-on-1 sessions</span>
+            <span>✓ Community Access</span>
+            <span>✓ Certificate</span>
+          </div>
+          <div class="course-stats">★ 4.8 (234) • 1,250 students • 12 hours</div>
+        </div>
+        <button class="enroll-btn">Enroll $399</button>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
