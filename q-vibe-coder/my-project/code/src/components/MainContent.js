@@ -1121,6 +1121,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     try {
       const userName = currentUser?.name || 'Teacher';
 
+      // Get course data to include sessionFiles for BBB pre-upload
+      const course = getCourseById(session.courseId);
+
       // Call Supabase Edge Function to create meeting and get join URL
       const response = await fetch('https://vnleonyfgwkfpvprpbqa.supabase.co/functions/v1/bbb-join', {
         method: 'POST',
@@ -1131,7 +1134,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         body: JSON.stringify({
           courseId: session.courseId,
           courseName: session.courseName || 'Course Session',
-          userName: userName
+          userName: userName,
+          sessionFiles: course?.sessionFiles || [],
+          baseUrl: window.location.origin
         })
       });
 

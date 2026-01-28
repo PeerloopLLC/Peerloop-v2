@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover - Option D (Tree/Indent)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+            color: #666;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .pill:hover {
+            border-color: #999;
+        }
+
+        .pill.active {
+            background: #1a1a1a;
+            color: white;
+            border-color: #1a1a1a;
+        }
+
+        /* Creator Group */
+        .creator-group {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .creator-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .creator-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .creator-header:hover .creator-name {
+            text-decoration: underline;
+        }
+
+        .creator-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .creator-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .creator-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .creator-meta {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .join-btn {
+            padding: 5px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #e0e0e0;
+            background: white;
+            color: #333;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .join-btn:hover {
+            border-color: #333;
+        }
+
+        .join-btn.joined {
+            background: #f0f0f0;
+            color: #666;
+            border-color: transparent;
+        }
+
+        /* Course List (tree style) */
+        .course-list {
+            margin-left: 42px;
+            padding-left: 12px;
+            border-left: 2px solid #f0f0f0;
+        }
+
+        .course-item {
+            display: flex;
+            align-items: center;
+            padding: 7px 0;
+            gap: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .course-item:hover {
+            background: #fafafa;
+            margin-left: -8px;
+            padding-left: 8px;
+            margin-right: -8px;
+            padding-right: 8px;
+        }
+
+        .course-item::before {
+            content: '';
+            position: absolute;
+            left: -14px;
+            top: 50%;
+            width: 10px;
+            height: 2px;
+            background: #f0f0f0;
+        }
+
+        .course-title {
+            font-size: 14px;
+            color: #1a1a1a;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .course-item:hover .course-title {
+            color: #4f46e5;
+        }
+
+        .course-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+            white-space: nowrap;
+        }
+
+        .course-rating {
+            font-size: 12px;
+            color: #f59e0b;
+            white-space: nowrap;
+        }
+
+        .course-modules {
+            font-size: 11px;
+            color: #999;
+            white-space: nowrap;
+        }
+
+        /* Separator dot */
+        .dot {
+            color: #ccc;
+            font-size: 10px;
+        }
+
+        /* Alt color avatars */
+        .creator-avatar.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .creator-avatar.green { background: linear-gradient(135deg, #10b981, #059669); }
+        .creator-avatar.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .creator-avatar.pink { background: linear-gradient(135deg, #ec4899, #be185d); }
+        .creator-avatar.teal { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+        .creator-avatar.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .creator-avatar.indigo { background: linear-gradient(135deg, #6366f1, #4338ca); }
+        .creator-avatar.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .creator-avatar.slate { background: linear-gradient(135deg, #64748b, #475569); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Discover Communities and Courses</h1>
+
+        <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="Search communities & courses...">
+        </div>
+
+        <div class="filter-pills">
+            <span class="pill active">All</span>
+            <span class="pill">AI Fundamentals</span>
+            <span class="pill">Machine Learning</span>
+            <span class="pill">Generative AI</span>
+            <span class="pill">Prompt Engineering</span>
+            <span class="pill">Data Science</span>
+            <span class="pill">DevOps</span>
+        </div>
+
+        <!-- Guy Rymberg -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar purple">GR</div>
+                <div class="creator-info">
+                    <span class="creator-name">Guy Rymberg</span>
+                    <span class="dot">·</span>
+                    <span class="creator-meta">527 followers</span>
+                </div>
+                <button class="join-btn joined">Joined ▾</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <span class="course-title">AI Prompting Mastery</span>
+                    <span class="course-modules">5 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$450</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">AI Tools Overview</span>
+                    <span class="course-modules">8 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$249</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">Intro to Claude Code</span>
+                    <span class="course-modules">8 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$249</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jane Doe -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar blue">JD</div>
+                <div class="creator-info">
+                    <span class="creator-name">Jane Doe</span>
+                    <span class="dot">·</span>
+                    <span class="creator-meta">19.9k followers</span>
+                </div>
+                <button class="join-btn joined">Joined ▾</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <span class="course-title">AI for Product Managers</span>
+                    <span class="course-modules">6 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$399</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">Deep Learning Fundamentals</span>
+                    <span class="course-modules">3 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$399</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">Computer Vision with Python</span>
+                    <span class="course-modules">3 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$349</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dr. Sarah Chen -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar green">SC</div>
+                <div class="creator-info">
+                    <span class="creator-name">Dr. Sarah Chen</span>
+                    <span class="dot">·</span>
+                    <span class="creator-meta">8.5k followers</span>
+                </div>
+                <button class="join-btn">Join</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <span class="course-title">AI for Beginners</span>
+                    <span class="course-modules">4 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$249</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">Machine Learning Essentials</span>
+                    <span class="course-modules">4 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$399</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prof. Maria Rodriguez -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar orange">MR</div>
+                <div class="creator-info">
+                    <span class="creator-name">Prof. Maria Rodriguez</span>
+                    <span class="dot">·</span>
+                    <span class="creator-meta">2.4k followers</span>
+                </div>
+                <button class="join-btn">Join</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <span class="course-title">Data Science Fundamentals</span>
+                    <span class="course-modules">3 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$299</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">Business Intelligence & Analytics</span>
+                    <span class="course-modules">3 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$349</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- James Wilson -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar teal">JW</div>
+                <div class="creator-info">
+                    <span class="creator-name">James Wilson</span>
+                    <span class="dot">·</span>
+                    <span class="creator-meta">2.9k followers</span>
+                </div>
+                <button class="join-btn">Join</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <span class="course-title">Full-Stack Web Development</span>
+                    <span class="course-modules">3 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$449</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">DevOps & CI/CD Mastery</span>
+                    <span class="course-modules">3 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$329</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">Microservices Architecture</span>
+                    <span class="course-modules">3 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$379</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marcus Johnson -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar slate">MJ</div>
+                <div class="creator-info">
+                    <span class="creator-name">Marcus Johnson</span>
+                    <span class="dot">·</span>
+                    <span class="creator-meta">12k followers</span>
+                </div>
+                <button class="join-btn">Join</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <span class="course-title">Introduction to GitHub</span>
+                    <span class="course-modules">4 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$149</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">Git for Teams</span>
+                    <span class="course-modules">4 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$299</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Elena Rodriguez -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar pink">ER</div>
+                <div class="creator-info">
+                    <span class="creator-name">Elena Rodriguez</span>
+                    <span class="dot">·</span>
+                    <span class="creator-meta">5.2k followers</span>
+                </div>
+                <button class="join-btn">Join</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <span class="course-title">N8N Workflow Automation</span>
+                    <span class="course-modules">4 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$349</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">No-Code AI Integration</span>
+                    <span class="course-modules">4 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$299</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Albert Einstein -->
+        <div class="creator-group">
+            <div class="creator-header">
+                <div class="creator-avatar indigo">AE</div>
+                <div class="creator-info">
+                    <span class="creator-name">Albert Einstein</span>
+                    <span class="dot">·</span>
+                    <span class="creator-meta">1.7k followers</span>
+                </div>
+                <button class="join-btn joined">Joined ▾</button>
+            </div>
+            <div class="course-list">
+                <div class="course-item">
+                    <span class="course-title">Node.js Backend Development</span>
+                    <span class="course-modules">3 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$349</span>
+                </div>
+                <div class="course-item">
+                    <span class="course-title">Cloud Architecture with AWS</span>
+                    <span class="course-modules">3 Mod</span>
+                    <span class="course-rating">★ 4.8</span>
+                    <span class="course-price">$399</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

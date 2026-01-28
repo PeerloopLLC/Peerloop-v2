@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Detail Redesign - Wireframe Mockup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
+
+    .container { max-width: 700px; margin: 0 auto; }
+
+    h1 { font-size: 24px; margin-bottom: 20px; color: #333; text-align: center; }
+    h2 { font-size: 16px; margin: 30px 0 15px 0; color: #666; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+
+    .mockup { background: #fff; border-radius: 12px; padding: 0; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+
+    /* Community Mini Header */
+    .community-header {
+      background: linear-gradient(135deg, #e8f4f8 0%, #d0e8f0 100%);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #c5dce4;
+    }
+    .community-avatar {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .community-info {
+      flex: 1;
+    }
+    .community-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: #0f1419;
+    }
+    .community-label {
+      font-size: 12px;
+      color: #536471;
+    }
+    .community-link {
+      color: #1d9bf0;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    /* Course Header */
+    .course-header {
+      padding: 20px;
+      border-bottom: 1px solid #eff3f4;
+    }
+    .course-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0f1419;
+      margin-bottom: 8px;
+    }
+    .instructor-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .instructor-avatar {
+      width: 24px;
+      height: 24px;
+      background: #ddd;
+      border-radius: 50%;
+    }
+    .instructor-name {
+      color: #1d9bf0;
+      font-size: 14px;
+    }
+    .course-desc {
+      color: #536471;
+      font-size: 15px;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    .course-stats {
+      font-size: 14px;
+      color: #0f1419;
+    }
+    .course-stats span { color: #fbbf24; }
+
+    /* Next Session Hero Card */
+    .next-session-hero {
+      margin: 20px;
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      border-radius: 12px;
+      padding: 20px;
+      border: 2px solid #93c5fd;
+    }
+    .hero-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1d9bf0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #0f1419;
+      margin-bottom: 8px;
+    }
+    .hero-details {
+      font-size: 14px;
+      color: #536471;
+      margin-bottom: 4px;
+    }
+    .hero-details img, .hero-details span.icon { margin-right: 6px; }
+    .hero-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+    }
+    .btn-primary {
+      background: #1d9bf0;
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      background: transparent;
+      color: #1d9bf0;
+      border: 1px solid #1d9bf0;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Schedule Hero Variant */
+    .next-session-hero.schedule {
+      background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+      border: 2px solid #d1d5db;
+    }
+    .next-session-hero.schedule .hero-label {
+      color: #6b7280;
+    }
+
+    /* Session List */
+    .sessions-section {
+      padding: 20px;
+    }
+    .sessions-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: #536471;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .progress-badge {
+      background: #10b981;
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* Session Cards with Background Colors */
+    .session-card {
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Completed - Green */
+    .session-card.completed {
+      background: #ecfdf5;
+      border-left: 4px solid #10b981;
+    }
+    .session-card.completed .session-icon {
+      background: #10b981;
+      color: #fff;
+    }
+    .session-card.completed .session-status {
+      color: #059669;
+      font-weight: 600;
+    }
+
+    /* Scheduled - Blue */
+    .session-card.scheduled {
+      background: #eff6ff;
+      border-left: 4px solid #1d9bf0;
+    }
+    .session-card.scheduled .session-icon {
+      background: #1d9bf0;
+      color: #fff;
+    }
+    .session-card.scheduled .session-status {
+      color: #1d9bf0;
+      font-weight: 600;
+    }
+
+    /* Ready - Grey */
+    .session-card.ready {
+      background: #f9fafb;
+      border-left: 4px solid #9ca3af;
+    }
+    .session-card.ready .session-icon {
+      background: #9ca3af;
+      color: #fff;
+    }
+
+    /* Locked - Faded */
+    .session-card.locked {
+      background: #f3f4f6;
+      border-left: 4px solid #e5e7eb;
+      opacity: 0.7;
+    }
+    .session-card.locked .session-icon {
+      background: #d1d5db;
+      color: #9ca3af;
+    }
+
+    .session-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .session-info {
+      flex: 1;
+    }
+    .session-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: #0f1419;
+      margin-bottom: 2px;
+    }
+    .session-meta {
+      font-size: 13px;
+      color: #536471;
+    }
+    .session-status {
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    .session-action {
+      flex-shrink: 0;
+    }
+    .btn-small {
+      background: #1d9bf0;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-small.grey {
+      background: #e5e7eb;
+      color: #9ca3af;
+    }
+
+    .divider {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-size: 13px;
+    }
+    .annotation {
+      background: #fff3cd;
+      border: 1px dashed #ffc107;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #856404;
+      margin: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Course Detail Page Redesign</h1>
+
+    <h2>POST-ENROLL View (Scheduled Session)</h2>
+    <div class="mockup">
+      <!-- Community Mini Header -->
+      <div class="community-header">
+        <div class="community-avatar">👥</div>
+        <div class="community-info">
+          <div class="community-name">Prompt Masters</div>
+          <div class="community-label">Community</div>
+        </div>
+        <a href="#" class="community-link">Go to Community →</a>
+      </div>
+
+      <div class="annotation">NEW: Community mini-header shows which community this course belongs to</div>
+
+      <!-- Course Header -->
+      <div class="course-header">
+        <h1 class="course-title">AI Prompting Mastery</h1>
+        <div class="instructor-link">
+          <div class="instructor-avatar"></div>
+          <span class="instructor-name">Guy Rymberg</span>
+        </div>
+        <p class="course-desc">Learn to write effective AI prompts for business use. Master the art of communicating with AI.</p>
+        <div class="course-stats"><span>★</span> 4.9 (234) • 127 students • 6 weeks</div>
+      </div>
+
+      <!-- Next Session Hero -->
+      <div class="next-session-hero">
+        <div class="hero-label">🔵 Your Next Session</div>
+        <div class="hero-title">Session 4: Advanced Techniques</div>
+        <div class="hero-details">📅 Dec 24, 2024 at 2:00 PM EST</div>
+        <div class="hero-details">👤 with Alex Sanders</div>
+        <div class="hero-actions">
+          <button class="btn-primary">Join Session</button>
+          <button class="btn-secondary">Reschedule</button>
+        </div>
+      </div>
+
+      <div class="annotation">NEW: "Next Session" hero card - prominent, actionable</div>
+
+      <!-- Session List -->
+      <div class="sessions-section">
+        <div class="sessions-header">
+          All Sessions <span class="progress-badge">3 of 6 complete</span>
+        </div>
+
+        <div class="session-card completed">
+          <div class="session-icon">✓</div>
+          <div class="session-info">
+            <div class="session-title">Session 1: Introduction</div>
+            <div class="session-meta">45 min • 2 modules</div>
+            <div class="session-status">Completed Dec 10</div>
+          </div>
+        </div>
+
+        <div class="session-card completed">
+          <div class="session-icon">✓</div>
+          <div class="session-info">
+            <div class="session-title">Session 2: Core Concepts</div>
+            <div class="session-meta">60 min • 3 modules</div>
+            <div class="session-status">Completed Dec 14</div>
+          </div>
+        </div>
+
+        <div class="session-card completed">
+          <div class="session-icon">✓</div>
+          <div class="session-info">
+            <div class="session-title">Session 3: Practical Applications</div>
+            <div class="session-meta">60 min • 3 modules</div>
+            <div class="session-status">Completed Dec 18</div>
+          </div>
+        </div>
+
+        <div class="session-card scheduled">
+          <div class="session-icon">4</div>
+          <div class="session-info">
+            <div class="session-title">Session 4: Advanced Techniques</div>
+            <div class="session-meta">📅 Dec 24 at 2:00 PM</div>
+            <div class="session-status">Scheduled with Alex Sanders</div>
+          </div>
+          <div class="session-action">
+            <button class="btn-small">Join</button>
+          </div>
+        </div>
+
+        <div class="session-card ready">
+          <div class="session-icon">5</div>
+          <div class="session-info">
+            <div class="session-title">Session 5: Real-World Projects</div>
+            <div class="session-meta">75 min • 4 modules</div>
+          </div>
+          <div class="session-action">
+            <button class="btn-small" style="background: #9ca3af;">Schedule</button>
+          </div>
+        </div>
+
+        <div class="session-card locked">
+          <div class="session-icon">🔒</div>
+          <div class="session-info">
+            <div class="session-title">Session 6: Final Project</div>
+            <div class="session-meta">90 min • 5 modules</div>
+          </div>
+          <div class="session-action">
+            <button class="btn-small grey">Locked</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">Session cards with tinted backgrounds: Green=Completed, Blue=Scheduled, Grey=Ready, Faded=Locked</div>
+    </div>
+
+    <h2>POST-ENROLL View (Ready to Schedule)</h2>
+    <div class="mockup">
+      <!-- Community Mini Header -->
+      <div class="community-header">
+        <div class="community-avatar">👥</div>
+        <div class="community-info">
+          <div class="community-name">Prompt Masters</div>
+          <div class="community-label">Community</div>
+        </div>
+        <a href="#" class="community-link">Go to Community →</a>
+      </div>
+
+      <!-- Course Header -->
+      <div class="course-header">
+        <h1 class="course-title">AI Prompting Mastery</h1>
+        <div class="instructor-link">
+          <div class="instructor-avatar"></div>
+          <span class="instructor-name">Guy Rymberg</span>
+        </div>
+        <p class="course-desc">Learn to write effective AI prompts for business use. Master the art of communicating with AI.</p>
+        <div class="course-stats"><span>★</span> 4.9 (234) • 127 students • 6 weeks</div>
+      </div>
+
+      <!-- Schedule Hero -->
+      <div class="next-session-hero schedule">
+        <div class="hero-label">⏳ Schedule Your Next Session</div>
+        <div class="hero-title">Session 4: Advanced Techniques</div>
+        <div class="hero-details">75 min • 4 modules</div>
+        <div class="hero-actions">
+          <button class="btn-primary">Schedule Session</button>
+        </div>
+      </div>
+
+      <div class="annotation">When no session is scheduled, the hero prompts user to schedule</div>
+    </div>
+
+    <h2>PRE-ENROLL View</h2>
+    <div class="mockup">
+      <!-- Community Mini Header -->
+      <div class="community-header">
+        <div class="community-avatar">👥</div>
+        <div class="community-info">
+          <div class="community-name">Prompt Masters</div>
+          <div class="community-label">Community</div>
+        </div>
+        <a href="#" class="community-link">Go to Community →</a>
+      </div>
+
+      <div class="annotation">Community header also shows for pre-enroll users</div>
+
+      <!-- Course Header -->
+      <div class="course-header">
+        <h1 class="course-title">AI Prompting Mastery</h1>
+        <div class="instructor-link">
+          <div class="instructor-avatar"></div>
+          <span class="instructor-name">Guy Rymberg</span>
+        </div>
+        <p class="course-desc">Learn to write effective AI prompts for business use. Master the art of communicating with AI.</p>
+        <div class="course-stats"><span>★</span> 4.9 (234) • 127 students • 6 weeks</div>
+        <div style="margin-top: 16px;">
+          <button class="btn-primary" style="background: #10b981; padding: 12px 32px; font-size: 16px;">Enroll for $450</button>
+        </div>
+      </div>
+
+      <div class="annotation">Pre-enroll shows community context + Enroll button (no session cards)</div>
+    </div>
+
+  </div>
+</body>
+</html>

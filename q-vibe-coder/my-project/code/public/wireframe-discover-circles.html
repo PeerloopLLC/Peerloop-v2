@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover - Option A: Circle vs Square Badges</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: #0f1419;
+      line-height: 1.4;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      margin-bottom: 30px;
+      border-radius: 12px;
+    }
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    .legend {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      margin-bottom: 30px;
+      padding: 16px;
+      background: #f7f9f9;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .legend-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .legend-square {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    /* Community Card */
+    .community-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: linear-gradient(135deg, #e8f4f8 0%, #d0e8f0 100%);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .community-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border: 2px solid #1d9bf0;
+      margin: -2px;
+      margin-bottom: 6px;
+    }
+
+    /* CIRCLE badge for communities */
+    .community-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%; /* CIRCLE */
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3);
+    }
+
+    .community-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .community-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1d9bf0;
+      cursor: pointer;
+    }
+    .community-name:hover {
+      text-decoration: underline;
+    }
+    .community-handle {
+      color: #536471;
+      font-size: 14px;
+    }
+    .community-creator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 14px;
+      color: #536471;
+    }
+    .creator-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1d9bf0;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .creator-link {
+      color: #1d9bf0;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .creator-link:hover {
+      text-decoration: underline;
+    }
+    .community-stats {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 14px;
+      color: #536471;
+    }
+    .community-bio {
+      margin-top: 8px;
+      font-size: 15px;
+      color: #0f1419;
+      line-height: 1.4;
+    }
+    .follow-btn {
+      background: #f7f9f9;
+      border: 1px solid #cfd9de;
+      color: #0f1419;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .follow-btn:hover {
+      background: #eef1f2;
+    }
+
+    /* Course Cards Container */
+    .courses-container {
+      margin-left: 70px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    /* Course Card */
+    .course-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #f7f9f9;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .course-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      border-color: #10b981;
+      background: #fff;
+    }
+
+    .course-top-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    /* SQUARE badge for courses */
+    .course-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px; /* ROUNDED SQUARE */
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .course-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .course-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1d9bf0;
+    }
+    .course-title:hover {
+      text-decoration: underline;
+    }
+    .course-desc {
+      font-size: 14px;
+      color: #536471;
+      margin-top: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .enroll-btn {
+      background: white;
+      border: 1px solid #cfd9de;
+      color: #0f1419;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .enroll-btn:hover {
+      background: #f7f9f9;
+    }
+
+    .course-benefits {
+      font-size: 14px;
+      color: #0f1419;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+    }
+    .benefit-check {
+      color: #10b981;
+    }
+
+    .course-stats {
+      font-size: 14px;
+      color: #0f1419;
+    }
+    .course-stats .star {
+      color: #fbbf24;
+    }
+    .course-stats .sep {
+      color: #536471;
+    }
+
+    /* Chevron indicator */
+    .chevron {
+      color: #536471;
+      font-size: 18px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      margin-left: auto;
+      padding-left: 8px;
+    }
+    .community-card:hover .chevron,
+    .course-card:hover .chevron {
+      opacity: 1;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: #eff3f4;
+      margin: 20px 0;
+    }
+
+    /* See all button */
+    .see-all-btn {
+      margin-left: 70px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 2px solid #cfd9de;
+      background: #f7f9f9;
+      color: #0f1419;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 20px;
+    }
+    .see-all-btn:hover {
+      background: #eef1f2;
+    }
+
+    /* Comparison note */
+    .note {
+      background: #fffbeb;
+      border: 1px solid #fbbf24;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 30px;
+    }
+    .note h3 {
+      color: #92400e;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    .note ul {
+      margin-left: 20px;
+      color: #78350f;
+      font-size: 14px;
+    }
+    .note li {
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Option A: Circle vs Square Badges</h1>
+      <p>Communities get CIRCLE badges, Courses get SQUARE badges</p>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-circle">&#x1F465;</div>
+        <span><strong>Circle</strong> = Community (social, group)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-square">AI</div>
+        <span><strong>Square</strong> = Course (content, structured)</span>
+      </div>
+    </div>
+
+    <div class="note">
+      <h3>&#x1F4A1; Design Rationale</h3>
+      <ul>
+        <li><strong>Circle badges</strong> are universally associated with people, profiles, and social groups (LinkedIn, Twitter, Slack)</li>
+        <li><strong>Square badges</strong> are associated with content, products, and structured items (app icons, course thumbnails)</li>
+        <li>This creates <strong>instant visual differentiation</strong> without requiring users to read text</li>
+        <li>Hover effects: <strong>shadow lift + border highlight</strong> for clear clickability</li>
+      </ul>
+    </div>
+
+    <!-- Community 1 -->
+    <div class="community-card">
+      <div class="community-badge">&#x1F465;</div>
+      <div class="community-info">
+        <div>
+          <span class="community-name">Guy Rymberg Community</span>
+          <span class="community-handle"> @guyrymberg</span>
+        </div>
+        <div class="community-creator">
+          Created by
+          <div class="creator-avatar">G</div>
+          <span class="creator-link">Guy Rymberg</span>
+        </div>
+        <div class="community-stats">
+          &#x1F465; 2,450 followers &bull; AI Prompting Specialist
+        </div>
+        <div class="community-bio">
+          Master AI prompting, Claude Code, n8n automation, and vibe coding. Learn to build real software without traditional programming.
+        </div>
+      </div>
+      <button class="follow-btn">Follow Community</button>
+      <span class="chevron">&#x203A;</span>
+    </div>
+
+    <!-- Courses under Community 1 -->
+    <div class="courses-container">
+      <div class="course-card">
+        <div class="course-top-row">
+          <div class="course-badge">PM</div>
+          <div class="course-info">
+            <div class="course-title">Mastering AI Prompts</div>
+            <div class="course-desc">Learn advanced prompting techniques for ChatGPT, Claude, and other LLMs. From basics to expert-level prompt engineering.</div>
+          </div>
+          <button class="enroll-btn">Enroll $99</button>
+          <span class="chevron">&#x203A;</span>
+        </div>
+        <div class="course-benefits">
+          <span><span class="benefit-check">&#x2713;</span> 1-on-1 sessions with Student-Teacher</span>
+          <span><span class="benefit-check">&#x2713;</span> Access to AI Prompters Community</span>
+          <span><span class="benefit-check">&#x2713;</span> Certificate</span>
+        </div>
+        <div class="course-stats">
+          <span class="star">&#x2605;</span> 4.9 (456) <span class="sep">&bull;</span> 2,340 students <span class="sep">&bull;</span> 8 Modules <span class="sep">&bull;</span> 15 hours
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-top-row">
+          <div class="course-badge">CC</div>
+          <div class="course-info">
+            <div class="course-title">Claude Code Fundamentals</div>
+            <div class="course-desc">Build full applications using Claude as your coding partner. Perfect for non-programmers who want to ship real software.</div>
+          </div>
+          <button class="enroll-btn">Enroll $149</button>
+          <span class="chevron">&#x203A;</span>
+        </div>
+        <div class="course-benefits">
+          <span><span class="benefit-check">&#x2713;</span> 1-on-1 sessions with Student-Teacher</span>
+          <span><span class="benefit-check">&#x2713;</span> Access to AI Prompters Community</span>
+          <span><span class="benefit-check">&#x2713;</span> Certificate</span>
+        </div>
+        <div class="course-stats">
+          <span class="star">&#x2605;</span> 4.8 (234) <span class="sep">&bull;</span> 1,250 students <span class="sep">&bull;</span> 6 Modules <span class="sep">&bull;</span> 12 hours
+        </div>
+      </div>
+    </div>
+
+    <button class="see-all-btn">See all 5 courses</button>
+
+    <div class="divider"></div>
+
+    <!-- Community 2 -->
+    <div class="community-card">
+      <div class="community-badge">&#x1F465;</div>
+      <div class="community-info">
+        <div>
+          <span class="community-name">Jane Doe Community</span>
+          <span class="community-handle"> @janedoe</span>
+        </div>
+        <div class="community-creator">
+          Created by
+          <div class="creator-avatar">J</div>
+          <span class="creator-link">Jane Doe</span>
+        </div>
+        <div class="community-stats">
+          &#x1F465; 3,890 followers &bull; Leading AI Strategist
+        </div>
+        <div class="community-bio">
+          AI for Product Managers, Deep Learning, Computer Vision, and NLP. Transform your career with cutting-edge AI knowledge.
+        </div>
+      </div>
+      <button class="follow-btn">Follow Community</button>
+      <span class="chevron">&#x203A;</span>
+    </div>
+
+    <!-- Courses under Community 2 -->
+    <div class="courses-container">
+      <div class="course-card">
+        <div class="course-top-row">
+          <div class="course-badge">AI</div>
+          <div class="course-info">
+            <div class="course-title">AI for Product Managers</div>
+            <div class="course-desc">Understand AI capabilities, limitations, and how to integrate them into your product roadmap effectively.</div>
+          </div>
+          <button class="enroll-btn">Enroll $199</button>
+          <span class="chevron">&#x203A;</span>
+        </div>
+        <div class="course-benefits">
+          <span><span class="benefit-check">&#x2713;</span> 1-on-1 sessions with Student-Teacher</span>
+          <span><span class="benefit-check">&#x2713;</span> Access to AI Prompters Community</span>
+          <span><span class="benefit-check">&#x2713;</span> Certificate</span>
+        </div>
+        <div class="course-stats">
+          <span class="star">&#x2605;</span> 4.7 (189) <span class="sep">&bull;</span> 890 students <span class="sep">&bull;</span> 10 Modules <span class="sep">&bull;</span> 20 hours
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-top-row">
+          <div class="course-badge">DL</div>
+          <div class="course-info">
+            <div class="course-title">Deep Learning Fundamentals</div>
+            <div class="course-desc">Master neural networks, backpropagation, and modern deep learning architectures from the ground up.</div>
+          </div>
+          <button class="enroll-btn">Enroll $249</button>
+          <span class="chevron">&#x203A;</span>
+        </div>
+        <div class="course-benefits">
+          <span><span class="benefit-check">&#x2713;</span> 1-on-1 sessions with Student-Teacher</span>
+          <span><span class="benefit-check">&#x2713;</span> Access to AI Prompters Community</span>
+          <span><span class="benefit-check">&#x2713;</span> Certificate</span>
+        </div>
+        <div class="course-stats">
+          <span class="star">&#x2605;</span> 4.9 (312) <span class="sep">&bull;</span> 1,567 students <span class="sep">&bull;</span> 12 Modules <span class="sep">&bull;</span> 25 hours
+        </div>
+      </div>
+    </div>
+
+    <button class="see-all-btn">See all 4 courses</button>
+
+  </div>
+</body>
+</html>

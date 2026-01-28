@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover - Option B: Compact Layout</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f7f9f9;
+      color: #0f1419;
+      line-height: 1.4;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      margin-bottom: 20px;
+      border-radius: 12px;
+    }
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    /* Community Section */
+    .community-section {
+      margin-bottom: 16px;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .community-section:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    .community-header {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      padding: 14px 16px;
+      cursor: pointer;
+    }
+    .community-header:hover {
+      filter: brightness(1.05);
+    }
+
+    .community-header-content {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .community-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 3px solid rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .community-header-info {
+      flex: 1;
+      color: white;
+    }
+    .community-name {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .community-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 14px;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    .follow-btn-header {
+      background: rgba(255,255,255,0.95);
+      border: none;
+      color: #1d9bf0;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Community body */
+    .community-body {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eff3f4;
+    }
+    .creator-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #536471;
+      margin-bottom: 6px;
+    }
+    .creator-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1d9bf0;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .creator-link {
+      color: #1d9bf0;
+      font-weight: 500;
+    }
+    .community-bio {
+      font-size: 15px;
+      color: #0f1419;
+      line-height: 1.5;
+    }
+
+    /* Courses container */
+    .courses-inside {
+      padding: 12px 16px 14px;
+      background: #fafbfc;
+    }
+    .courses-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #536471;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    /* Course cards */
+    .course-card {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .course-card:hover {
+      border-color: #10b981;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+      transform: translateY(-1px);
+    }
+    .course-card:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .course-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .course-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .course-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .course-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1d9bf0;
+      margin-bottom: 4px;
+    }
+
+    .course-description {
+      font-size: 14px;
+      color: #536471;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .course-benefits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: #059669;
+    }
+
+    .course-stats {
+      font-size: 13px;
+      color: #536471;
+    }
+    .course-stats .star {
+      color: #fbbf24;
+    }
+
+    .enroll-btn {
+      background: #f0fdf4;
+      border: 1px solid #10b981;
+      color: #059669;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .enroll-btn:hover {
+      background: #10b981;
+      color: white;
+    }
+
+    .following-btn {
+      background: #1d9bf0;
+      border: 1px solid #1d9bf0;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .see-all-link {
+      text-align: center;
+      padding: 10px;
+      margin-top: 8px;
+      color: #1d9bf0;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .see-all-link:hover {
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Option B: Compact Layout</h1>
+      <p>Communities as headers with full course details</p>
+    </div>
+
+    <!-- Guy Rymberg's Prompt Masters Community -->
+    <div class="community-section">
+      <div class="community-header">
+        <div class="community-header-content">
+          <div class="community-avatar">👥</div>
+          <div class="community-header-info">
+            <div class="community-name">Prompt Masters</div>
+            <div class="community-meta">
+              <span>@promptmasters</span>
+              <span>👥 527 followers</span>
+              <span>📚 5 courses</span>
+            </div>
+          </div>
+          <button class="follow-btn-header">Following</button>
+        </div>
+      </div>
+
+      <div class="community-body">
+        <div class="creator-row">
+          <div class="creator-avatar">G</div>
+          <span class="creator-link">Guy Rymberg</span>
+          <span>• AI Prompting Specialist & Business AI Expert</span>
+        </div>
+        <div class="community-bio">
+          AI teaching specialist with 15 years experience in AI and machine learning. Expert in helping professionals leverage AI prompting for competitive advantage. Has taught over 500 students the art of prompt engineering and AI communication. Passionate about the PeerLoop model of Learn → Teach → Earn.
+        </div>
+      </div>
+
+      <div class="courses-inside">
+        <div class="courses-label">Courses in this community</div>
+
+        <!-- Course 1: AI Prompting Mastery -->
+        <div class="course-card">
+          <div class="course-badge">AI</div>
+          <div class="course-content">
+            <div class="course-top-row">
+              <div>
+                <div class="course-title">AI Prompting Mastery</div>
+                <div class="course-description">
+                  Learn to write effective AI prompts for business use. Master the art of communicating with AI to boost your productivity. This comprehensive course teaches you the fundamentals and advanced techniques of prompt engineering.
+                </div>
+              </div>
+              <button class="following-btn">Following</button>
+            </div>
+            <div class="course-benefits">
+              <span>✓ 1-on-1 sessions with Student-Teacher</span>
+              <span>✓ Access to AI Prompters Community</span>
+              <span>✓ Certificate</span>
+            </div>
+            <div class="course-stats">
+              <span class="star">★</span> 4.8 (234) • 1,250 students • 5 Modules • 12 hours
+            </div>
+          </div>
+        </div>
+
+        <!-- Course 2: AI Tools Overview -->
+        <div class="course-card">
+          <div class="course-badge">AI</div>
+          <div class="course-content">
+            <div class="course-top-row">
+              <div>
+                <div class="course-title">AI Tools Overview</div>
+                <div class="course-description">
+                  Navigate the overwhelming world of AI tools with confidence. This practical course cuts through the noise and helps you understand what AI tools exist, what they're actually good for, and how to choose the right ones for your specific needs - without getting lost in the hype.
+                </div>
+              </div>
+              <button class="following-btn">Following</button>
+            </div>
+            <div class="course-benefits">
+              <span>✓ 1-on-1 sessions with Student-Teacher</span>
+              <span>✓ Access to AI Prompters Community</span>
+              <span>✓ Certificate</span>
+            </div>
+            <div class="course-stats">
+              <span class="star">★</span> 4.8 (234) • 1,250 students • 8 Modules • 12 hours
+            </div>
+          </div>
+        </div>
+
+        <!-- Course 3: Intro to Claude Code -->
+        <div class="course-card">
+          <div class="course-badge">CC</div>
+          <div class="course-content">
+            <div class="course-top-row">
+              <div>
+                <div class="course-title">Intro to Claude Code</div>
+                <div class="course-description">
+                  Learn to harness the power of AI-assisted development with Claude Code - Anthropic's revolutionary terminal-based coding assistant. This hands-on course transforms complete beginners into confident AI-powered builders, without requiring any prior coding experience.
+                </div>
+              </div>
+              <button class="following-btn">Following</button>
+            </div>
+            <div class="course-benefits">
+              <span>✓ 1-on-1 sessions with Student-Teacher</span>
+              <span>✓ Access to AI Prompters Community</span>
+              <span>✓ Certificate</span>
+            </div>
+            <div class="course-stats">
+              <span class="star">★</span> 4.8 (234) • 1,250 students • 7 Modules • 12 hours
+            </div>
+          </div>
+        </div>
+
+        <div class="see-all-link">See all 5 courses →</div>
+      </div>
+    </div>
+
+    <!-- Jane Doe's AI Pioneers Hub -->
+    <div class="community-section">
+      <div class="community-header" style="background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);">
+        <div class="community-header-content">
+          <div class="community-avatar">👥</div>
+          <div class="community-header-info">
+            <div class="community-name">AI Pioneers Hub</div>
+            <div class="community-meta">
+              <span>@aipioneershub</span>
+              <span>👥 19,928 followers</span>
+              <span>📚 4 courses</span>
+            </div>
+          </div>
+          <button class="follow-btn-header" style="color: #7c3aed;">Following</button>
+        </div>
+      </div>
+
+      <div class="community-body">
+        <div class="creator-row">
+          <div class="creator-avatar" style="background: #7c3aed;">J</div>
+          <span class="creator-link">Jane Doe</span>
+          <span>• Leading AI Strategist at TechCorp</span>
+        </div>
+        <div class="community-bio">
+          Leading AI strategist with 10+ years experience in product management and AI implementation. Expert in helping companies leverage AI for competitive advantage.
+        </div>
+      </div>
+
+      <div class="courses-inside">
+        <div class="courses-label">Courses in this community</div>
+
+        <!-- Course: AI for Product Managers -->
+        <div class="course-card">
+          <div class="course-badge">AI</div>
+          <div class="course-content">
+            <div class="course-top-row">
+              <div>
+                <div class="course-title">AI for Product Managers</div>
+                <div class="course-description">
+                  Master the skills to lead AI-driven products. Learn to evaluate AI technologies, build AI roadmaps, and make data-driven decisions. This comprehensive course covers everything from machine learning fundamentals to advanced AI strategy.
+                </div>
+              </div>
+              <button class="enroll-btn">Enroll $399</button>
+            </div>
+            <div class="course-benefits">
+              <span>✓ 1-on-1 sessions with Student-Teacher</span>
+              <span>✓ Access to AI Prompters Community</span>
+              <span>✓ Certificate</span>
+            </div>
+            <div class="course-stats">
+              <span class="star">★</span> 4.8 (234) • 1,250 students • 6 Modules • 12 hours
+            </div>
+          </div>
+        </div>
+
+        <!-- Course: Deep Learning Fundamentals -->
+        <div class="course-card">
+          <div class="course-badge">DL</div>
+          <div class="course-content">
+            <div class="course-top-row">
+              <div>
+                <div class="course-title">Deep Learning Fundamentals</div>
+                <div class="course-description">
+                  Master the fundamentals of deep learning, neural networks, and modern AI architectures. Build and deploy real-world AI applications.
+                </div>
+              </div>
+              <button class="enroll-btn">Enroll $399</button>
+            </div>
+            <div class="course-benefits">
+              <span>✓ 1-on-1 sessions with Student-Teacher</span>
+              <span>✓ Access to AI Prompters Community</span>
+              <span>✓ Certificate</span>
+            </div>
+            <div class="course-stats">
+              <span class="star">★</span> 4.8 (234) • 1,250 students • 3 Modules • 12 hours
+            </div>
+          </div>
+        </div>
+
+        <div class="see-all-link">See all 4 courses →</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,280 @@
+- generic [ref=e48]:
+  - generic [ref=e49]:
+    - generic [ref=e51] [cursor=pointer]:
+      - generic [ref=e52]: ∞
+      - generic [ref=e53]: PeerLoop
+    - navigation [ref=e54]:
+      - generic [ref=e57] [cursor=pointer]:
+        - img [ref=e59]
+        - generic [ref=e61]: My Feeds
+      - generic [ref=e63] [cursor=pointer]:
+        - img [ref=e65]
+        - generic [ref=e67]: Discover
+      - generic [ref=e68] [cursor=pointer]:
+        - img [ref=e70]
+        - generic [ref=e72]: My Courses
+      - generic [ref=e73] [cursor=pointer]:
+        - img [ref=e75]
+        - generic [ref=e77]: Messages
+      - generic [ref=e78] [cursor=pointer]:
+        - img [ref=e80]
+        - generic [ref=e82]: Notifications
+      - generic [ref=e83] [cursor=pointer]:
+        - img [ref=e85]
+        - generic [ref=e87]: Workspace
+      - generic [ref=e88] [cursor=pointer]:
+        - img [ref=e90]
+        - generic [ref=e92]: Profile
+      - generic [ref=e93] [cursor=pointer]:
+        - img [ref=e95]
+        - generic [ref=e97]: Settings
+      - generic [ref=e99]:
+        - generic [ref=e101]: My Feeds
+        - generic [ref=e102]:
+          - generic [ref=e103] [cursor=pointer]:
+            - img "The Commons" [ref=e104]
+            - generic [ref=e105]: The Commons
+          - generic [ref=e106] [cursor=pointer]:
+            - img "Albert Einstein" [ref=e107]
+            - generic [ref=e108]: Albert Einstein Community
+          - generic [ref=e109] [cursor=pointer]:
+            - img "Jane Doe" [ref=e110]
+            - generic [ref=e111]: Jane Doe Community
+          - generic [ref=e112] [cursor=pointer]:
+            - img "Prof. Maria Rodriguez" [ref=e113]
+            - generic [ref=e114]: Prof. Maria Rodriguez Community
+          - generic [ref=e115] [cursor=pointer]:
+            - img "James Wilson" [ref=e116]
+            - generic [ref=e117]: James Wilson Community
+          - generic [ref=e118] [cursor=pointer]:
+            - img "Dr. Priya Nair" [ref=e119]
+            - generic [ref=e120]: Dr. Priya Nair Community
+          - generic [ref=e121] [cursor=pointer]:
+            - img "Prof. Elena Petrova" [ref=e122]
+            - generic [ref=e123]: Prof. Elena Petrova Community
+          - generic [ref=e124] [cursor=pointer]:
+            - img "Mr. Samuel Lee" [ref=e125]
+            - generic [ref=e126]: Mr. Samuel Lee Community
+          - generic [ref=e127] [cursor=pointer]:
+            - img "Guy Rymberg" [ref=e128]
+            - generic [ref=e129]: Guy Rymberg Community
+          - generic [ref=e130] [cursor=pointer]:
+            - img "Dr. Sarah Chen" [ref=e131]
+            - generic [ref=e132]: Dr. Sarah Chen Community
+          - generic [ref=e133] [cursor=pointer]:
+            - img "Marcus Johnson" [ref=e134]
+            - generic [ref=e135]: Marcus Johnson Community
+          - generic [ref=e136] [cursor=pointer]:
+            - img "Elena Rodriguez" [ref=e137]
+            - generic [ref=e138]: Elena Rodriguez Community
+  - generic [ref=e142]:
+    - generic [ref=e143]:
+      - generic [ref=e145] [cursor=pointer]:
+        - img [ref=e146]
+        - img "Albert Einstein" [ref=e3594]
+        - generic [ref=e149]: Albert Einstein
+        - img [ref=e150]
+        - img [ref=e152]
+      - generic [ref=e156]:
+        - generic [ref=e157]:
+          - generic [ref=e158]:
+            - generic [ref=e3595] [cursor=pointer]: Albert Einstein Community
+            - generic [ref=e3596] [cursor=pointer]: Go to Profile
+            - button "View All Courses" [ref=e3597] [cursor=pointer]
+          - generic [ref=e159]: Theoretical Physicist & Nobel Laureate
+          - generic [ref=e3598]: 2 Courses · 1,730 Students · 189 Posts
+          - generic [ref=e3599]: Revolutionary physicist who developed the theory of relativity, one of the two pillars of modern physics. Nobel Prize winner and one of the most influ...
+        - button "Main Hall" [ref=e3602] [cursor=pointer]
+    - generic [ref=e162]:
+      - generic [ref=e164]:
+        - generic [ref=e165]:
+          - generic "View your profile" [ref=e166] [cursor=pointer]: GR
+          - textbox "Ask a question or share an insight..." [ref=e3603]
+        - generic [ref=e168]:
+          - generic [ref=e169]:
+            - button "Add image" [ref=e170] [cursor=pointer]:
+              - img [ref=e171]
+            - button "Add link" [ref=e173] [cursor=pointer]:
+              - img [ref=e174]
+            - button "Attach file" [ref=e176] [cursor=pointer]:
+              - img [ref=e177]
+          - button "Post" [disabled] [ref=e179]
+      - generic [ref=e180]:
+        - generic [ref=e3604] [cursor=pointer]:
+          - generic [ref=e3605]:
+            - img "Albert Einstein" [ref=e3606]
+            - generic [ref=e3607]:
+              - generic [ref=e3608]:
+                - generic [ref=e3609]: Albert Einstein
+                - generic [ref=e3610]: "@alberteinstein"
+                - generic [ref=e3611]: ·
+                - generic [ref=e3612]: 2 days ago
+              - generic [ref=e3613]:
+                - generic [ref=e3614]: 📌 Pinned
+                - generic [ref=e3615]: Einstein's Town Hall
+          - generic [ref=e3616]: Welcome to my Town Hall! Here we discuss backend development, cloud architecture, and the beautiful simplicity of well-designed systems. "Everything should be made as simple as possible, but not simpler." Ask questions, share projects, connect with fellow learners!
+          - generic [ref=e3617]:
+            - button "156" [ref=e3618]:
+              - img [ref=e3619]
+              - generic [ref=e3621]: "156"
+            - button "567" [ref=e3622]:
+              - img [ref=e3623]
+              - generic [ref=e3625]: "567"
+            - button "1890" [ref=e3626]:
+              - img [ref=e3627]
+              - generic [ref=e3629]: "1890"
+            - button [ref=e3630]:
+              - img [ref=e3631]
+            - button [ref=e3633]:
+              - img [ref=e3634]
+        - generic [ref=e3636] [cursor=pointer]:
+          - generic [ref=e3637]:
+            - img "Albert Einstein" [ref=e3638]
+            - generic [ref=e3639]:
+              - generic [ref=e3640]:
+                - generic [ref=e3641]: Albert Einstein
+                - generic [ref=e3642]: "@alberteinstein"
+                - generic [ref=e3643]: ·
+                - generic [ref=e3644]: 4 hours ago
+              - generic [ref=e3646]: Einstein's Town Hall
+          - generic [ref=e3647]: Office Hours this Thursday! I'll be answering questions about serverless architecture and when to use Lambda vs containers. Drop your questions below and I'll address the most upvoted ones live. 🎥
+          - generic [ref=e3648]:
+            - button "89" [ref=e3649]:
+              - img [ref=e3650]
+              - generic [ref=e3652]: "89"
+            - button "216" [ref=e3653]:
+              - img [ref=e3654]
+              - generic [ref=e3656]: "216"
+            - button "720" [ref=e3657]:
+              - img [ref=e3658]
+              - generic [ref=e3660]: "720"
+            - button [ref=e3661]:
+              - img [ref=e3662]
+            - button [ref=e3664]:
+              - img [ref=e3665]
+        - generic [ref=e3667] [cursor=pointer]:
+          - generic [ref=e3668]:
+            - img "ServerSideSam" [ref=e3669]
+            - generic [ref=e3670]:
+              - generic [ref=e3671]:
+                - generic [ref=e3672]: ServerSideSam
+                - generic [ref=e3673]: "@serversam"
+                - generic [ref=e3674]: ·
+                - generic [ref=e3675]: 2 hours ago
+              - generic [ref=e3677]: Einstein's Town Hall
+          - generic [ref=e3678]: "Question for the community: I'm choosing between Lambda and ECS for a new project. ~100 requests/sec, variable load. What would you recommend? Been watching Albert's AWS course but want real-world opinions too."
+          - generic [ref=e3679]:
+            - button "34" [ref=e3680]:
+              - img [ref=e3681]
+              - generic [ref=e3683]: "34"
+            - button "46" [ref=e3684]:
+              - img [ref=e3685]
+              - generic [ref=e3687]: "46"
+            - button "156" [ref=e3688]:
+              - img [ref=e3689]
+              - generic [ref=e3691]: "156"
+            - button [ref=e3692]:
+              - img [ref=e3693]
+            - button [ref=e3695]:
+              - img [ref=e3696]
+        - generic [ref=e3698] [cursor=pointer]:
+          - generic [ref=e3699]:
+            - img "CloudNovice_Kay" [ref=e3700]
+            - generic [ref=e3701]:
+              - generic [ref=e3702]:
+                - generic [ref=e3703]: CloudNovice_Kay
+                - generic [ref=e3704]: "@cloudnovice"
+                - generic [ref=e3705]: ·
+                - generic [ref=e3706]: 5 hours ago
+              - generic [ref=e3708]: Einstein's Town Hall
+          - generic [ref=e3709]: Just passed my AWS Solutions Architect exam! Huge thanks to this community—your study tips in last week's thread were gold. Special shoutout to @BackendBoss99 for the mock exam resources! 🎉
+          - generic [ref=e3710]:
+            - button "42" [ref=e3711]:
+              - img [ref=e3712]
+              - generic [ref=e3714]: "42"
+            - button "86" [ref=e3715]:
+              - img [ref=e3716]
+              - generic [ref=e3718]: "86"
+            - button "289" [ref=e3719]:
+              - img [ref=e3720]
+              - generic [ref=e3722]: "289"
+            - button [ref=e3723]:
+              - img [ref=e3724]
+            - button [ref=e3726]:
+              - img [ref=e3727]
+        - generic [ref=e3729] [cursor=pointer]:
+          - generic [ref=e3730]:
+            - img "Albert Einstein" [ref=e3731]
+            - generic [ref=e3732]:
+              - generic [ref=e3733]:
+                - generic [ref=e3734]: Albert Einstein
+                - generic [ref=e3735]: "@alberteinstein"
+                - generic [ref=e3736]: ·
+                - generic [ref=e3737]: 1 day ago
+              - generic [ref=e3739]: Einstein's Town Hall
+          - generic [ref=e3740]: "Proud of this community! 47 of my students became certified Student-Teachers last month. You're not just learning—you're building the next generation of developers. The relativity of teaching: the more you teach, the more you understand."
+          - generic [ref=e3741]:
+            - button "98" [ref=e3742]:
+              - img [ref=e3743]
+              - generic [ref=e3745]: "98"
+            - button "435" [ref=e3746]:
+              - img [ref=e3747]
+              - generic [ref=e3749]: "435"
+            - button "1450" [ref=e3750]:
+              - img [ref=e3751]
+              - generic [ref=e3753]: "1450"
+            - button [ref=e3754]:
+              - img [ref=e3755]
+            - button [ref=e3757]:
+              - img [ref=e3758]
+        - generic [ref=e3760] [cursor=pointer]:
+          - generic [ref=e3761]:
+            - img "BackendBetty" [ref=e3762]
+            - generic [ref=e3763]:
+              - generic [ref=e3764]:
+                - generic [ref=e3765]: BackendBetty
+                - generic [ref=e3766]: "@backendbetty"
+                - generic [ref=e3767]: ·
+                - generic [ref=e3768]: 1 day ago
+              - generic [ref=e3770]: Einstein's Town Hall
+          - generic [ref=e3771]: Sharing my notes from Albert's serverless module—created a visual diagram of Lambda cold starts vs warm starts. DM me if you want the PDF! Helped me understand it way better.
+          - generic [ref=e3772]:
+            - button "67" [ref=e3773]:
+              - img [ref=e3774]
+              - generic [ref=e3776]: "67"
+            - button "133" [ref=e3777]:
+              - img [ref=e3778]
+              - generic [ref=e3780]: "133"
+            - button "445" [ref=e3781]:
+              - img [ref=e3782]
+              - generic [ref=e3784]: "445"
+            - button [ref=e3785]:
+              - img [ref=e3786]
+            - button [ref=e3788]:
+              - img [ref=e3789]
+        - generic [ref=e3791] [cursor=pointer]:
+          - generic [ref=e3792]:
+            - img "NodeNinja_Dev" [ref=e3793]
+            - generic [ref=e3794]:
+              - generic [ref=e3795]:
+                - generic [ref=e3796]: NodeNinja_Dev
+                - generic [ref=e3797]: "@nodeninja"
+                - generic [ref=e3798]: ·
+                - generic [ref=e3799]: 8 hours ago
+              - generic [ref=e3801]: Einstein's Town Hall
+          - generic [ref=e3802]: Anyone else struggling with connection pooling in Node.js + PostgreSQL? My app keeps timing out under load. Tried pg-pool but still having issues. Would appreciate any debugging tips!
+          - generic [ref=e3803]:
+            - button "23" [ref=e3804]:
+              - img [ref=e3805]
+              - generic [ref=e3807]: "23"
+            - button "23" [ref=e3808]:
+              - img [ref=e3809]
+              - generic [ref=e3811]: "23"
+            - button "78" [ref=e3812]:
+              - img [ref=e3813]
+              - generic [ref=e3815]: "78"
+            - button [ref=e3816]:
+              - img [ref=e3817]
+            - button [ref=e3819]:
+              - img [ref=e3820]
+  - generic [ref=e3593] [cursor=pointer]: 📱 desktop

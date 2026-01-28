@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Detail - AI Prompting Mastery (Pre-Enrollment)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #e7e9ea;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Top Nav */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .back-link {
+            color: #1d9bf0;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: #e7e9ea;
+            border: 1px solid #2f3336;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-login:hover {
+            background: #16181c;
+        }
+
+        .btn-signup {
+            background: #e7e9ea;
+            color: #000;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-signup:hover {
+            background: #d6d9db;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .thumbnail-container {
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            aspect-ratio: 16/10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .thumbnail-text {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .play-btn {
+            position: absolute;
+            width: 56px;
+            height: 56px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .play-btn:hover {
+            background: rgba(0,0,0,0.8);
+        }
+
+        .play-btn::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 18px solid #fff;
+            border-top: 11px solid transparent;
+            border-bottom: 11px solid transparent;
+            margin-left: 4px;
+        }
+
+        .hero-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-title {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .hero-creator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .hero-creator-text {
+            font-size: 14px;
+            color: #71767b;
+        }
+
+        .hero-creator-text a {
+            color: #1d9bf0;
+            text-decoration: none;
+        }
+
+        .hero-subtitle {
+            font-size: 13px;
+            color: #71767b;
+            margin-bottom: 8px;
+        }
+
+        .hero-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #71767b;
+            margin-bottom: 16px;
+        }
+
+        .stars {
+            color: #f5a623;
+        }
+
+        .hero-description {
+            font-size: 15px;
+            color: #e7e9ea;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .meta-item {
+            font-size: 14px;
+            color: #71767b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: #2f3336;
+            margin: 16px 0;
+        }
+
+        /* What You'll Learn */
+        .learn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .learn-item {
+            background: #000;
+            border: 1px solid #2f3336;
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .learn-check {
+            color: #10b981;
+            font-weight: 700;
+            flex-shrink: 0;
+            font-size: 15px;
+        }
+
+        .learn-text {
+            font-size: 14px;
+            color: #e7e9ea;
+        }
+
+        /* Curriculum + Enrollment */
+        .curriculum-enrollment {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* Curriculum */
+        .module-item {
+            border-bottom: 1px solid #2f3336;
+            padding: 14px 0;
+        }
+
+        .module-item:last-child {
+            border-bottom: none;
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .module-header:hover .module-name {
+            color: #1d9bf0;
+        }
+
+        .module-chevron {
+            font-size: 12px;
+            color: #71767b;
+            transition: transform 0.2s;
+            width: 16px;
+        }
+
+        .module-chevron.expanded {
+            transform: rotate(90deg);
+        }
+
+        .module-name {
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .module-meta {
+            font-size: 12px;
+            color: #71767b;
+            margin-left: auto;
+        }
+
+        .module-content {
+            display: none;
+            padding: 12px 0 4px 26px;
+        }
+
+        .module-content.expanded {
+            display: block;
+        }
+
+        .module-content-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+            color: #71767b;
+        }
+
+        .content-icon {
+            font-size: 12px;
+        }
+
+        /* Enrollment Card */
+        .enrollment-card {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 24px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .enrollment-price {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .enrollment-subtext {
+            font-size: 13px;
+            color: #71767b;
+            margin-bottom: 20px;
+        }
+
+        .enrollment-benefits {
+            margin-bottom: 20px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 14px;
+            color: #e7e9ea;
+        }
+
+        .benefit-check {
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .enroll-btn {
+            display: block;
+            width: 100%;
+            background: #1d9bf0;
+            color: #fff;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+        }
+
+        .enroll-btn:hover {
+            background: #1a8cd8;
+        }
+
+        /* Learn & Earn */
+        .learn-earn-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .flow-step {
+            background: #000;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            min-width: 180px;
+            flex: 1;
+        }
+
+        .flow-step-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .flow-step-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .flow-step-desc {
+            font-size: 12px;
+            color: #71767b;
+            line-height: 1.4;
+        }
+
+        .flow-arrow {
+            font-size: 20px;
+            color: #71767b;
+        }
+
+        .bloom-quote {
+            font-size: 13px;
+            color: #71767b;
+            font-style: italic;
+            text-align: center;
+            padding-top: 8px;
+            border-top: 1px solid #2f3336;
+        }
+
+        /* About Creator */
+        .creator-section {
+            display: flex;
+            gap: 20px;
+        }
+
+        .creator-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .creator-info {
+            flex: 1;
+        }
+
+        .creator-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .creator-title {
+            font-size: 14px;
+            color: #71767b;
+            margin-bottom: 12px;
+        }
+
+        .creator-bio {
+            font-size: 14px;
+            color: #e7e9ea;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .credentials-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #71767b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .credential-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            padding: 4px 0;
+        }
+
+        .credential-check {
+            color: #10b981;
+        }
+
+        .creator-stats {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #71767b;
+        }
+
+        /* Student Teachers */
+        .teachers-subtitle {
+            font-size: 14px;
+            color: #71767b;
+            margin-bottom: 16px;
+        }
+
+        .teachers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .teacher-card {
+            background: #000;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .teacher-avatar-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #2f3336;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #e7e9ea;
+            margin-bottom: 10px;
+        }
+
+        .teacher-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .teacher-stats {
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        .teacher-cert {
+            font-size: 11px;
+            color: #71767b;
+            margin-top: 4px;
+        }
+
+        .teachers-note {
+            font-size: 12px;
+            color: #71767b;
+            font-style: italic;
+            margin-top: 12px;
+        }
+
+        /* Footer CTA */
+        .footer-cta {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 16px;
+        }
+
+        .footer-cta-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .footer-cta-price {
+            font-size: 16px;
+            color: #71767b;
+            margin-bottom: 16px;
+        }
+
+        .footer-enroll-btn {
+            display: inline-block;
+            background: #1d9bf0;
+            color: #fff;
+            border: none;
+            padding: 14px 48px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+        }
+
+        .footer-enroll-btn:hover {
+            background: #1a8cd8;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .curriculum-enrollment {
+                grid-template-columns: 1fr;
+            }
+
+            .enrollment-card {
+                position: static;
+            }
+
+            .learn-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .teachers-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .learn-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .teachers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .learn-earn-flow {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .creator-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Nav -->
+        <div class="top-nav">
+            <a class="back-link">← Back to Courses</a>
+            <div class="nav-actions">
+                <button class="btn-login">Login</button>
+                <button class="btn-signup">Sign Up</button>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="thumbnail-container">
+                <span class="thumbnail-text">Course Preview</span>
+                <div class="play-btn"></div>
+            </div>
+            <div class="hero-info">
+                <h1 class="hero-title">AI Prompting Mastery</h1>
+                <div class="hero-creator">
+                    <span class="hero-creator-text">by <a href="#">Guy Rymberg</a></span>
+                </div>
+                <div class="hero-subtitle">AI Teaching Specialist</div>
+                <div class="hero-rating">
+                    <span class="stars">★★★★★</span>
+                    <span>(4.9)</span>
+                    <span>•</span>
+                    <span>127 students</span>
+                </div>
+                <div class="hero-description">
+                    Learn to write effective AI prompts for business use. Master the art of communicating with AI to boost your productivity.
+                </div>
+                <div class="hero-meta">
+                    <div class="meta-item">📚 5 modules</div>
+                    <div class="meta-item">⏱ 4-6 weeks</div>
+                    <div class="meta-item">👥 1-on-1 with certified teacher</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- What You'll Learn -->
+        <div class="section-card">
+            <div class="section-title">🎯 What You'll Learn</div>
+            <div class="learn-grid">
+                <div class="learn-item">
+                    <span class="learn-check">✓</span>
+                    <span class="learn-text">Fundamentals of prompt engineering</span>
+                </div>
+                <div class="learn-item">
+                    <span class="learn-check">✓</span>
+                    <span class="learn-text">Advanced techniques for business apps</span>
+                </div>
+                <div class="learn-item">
+                    <span class="learn-check">✓</span>
+                    <span class="learn-text">Building your own prompt library</span>
+                </div>
+                <div class="learn-item">
+                    <span class="learn-check">✓</span>
+                    <span class="learn-text">Iteration and refinement</span>
+                </div>
+                <div class="learn-item">
+                    <span class="learn-check">✓</span>
+                    <span class="learn-text">Context and constraint design</span>
+                </div>
+                <div class="learn-item">
+                    <span class="learn-check">✓</span>
+                    <span class="learn-text">Real-world use cases</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Curriculum + Enrollment -->
+        <div class="curriculum-enrollment">
+            <!-- Curriculum -->
+            <div class="section-card">
+                <div class="section-title">📖 Course Curriculum</div>
+                <div class="module-item">
+                    <div class="module-header" onclick="toggleModule(this)">
+                        <span class="module-chevron">▶</span>
+                        <span class="module-name">Module 1: Foundations</span>
+                        <span class="module-meta">3 videos • 2 readings</span>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-content-item"><span class="content-icon">🎬</span> Video 1: What is AI Prompting</div>
+                        <div class="module-content-item"><span class="content-icon">🎬</span> Video 2: Your First Prompt</div>
+                        <div class="module-content-item"><span class="content-icon">🎬</span> Video 3: Understanding AI Responses</div>
+                        <div class="module-content-item"><span class="content-icon">📄</span> Reading: Prompt Framework Guide</div>
+                        <div class="module-content-item"><span class="content-icon">📄</span> Reading: AI Model Comparison</div>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-header" onclick="toggleModule(this)">
+                        <span class="module-chevron">▶</span>
+                        <span class="module-name">Module 2: Intermediate Techniques</span>
+                        <span class="module-meta">2 videos • 1 reading</span>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-content-item"><span class="content-icon">🎬</span> Video 1: Chain-of-Thought Prompting</div>
+                        <div class="module-content-item"><span class="content-icon">🎬</span> Video 2: Few-Shot Examples</div>
+                        <div class="module-content-item"><span class="content-icon">📄</span> Reading: Prompt Patterns Catalog</div>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-header" onclick="toggleModule(this)">
+                        <span class="module-chevron">▶</span>
+                        <span class="module-name">Module 3: Advanced Applications</span>
+                        <span class="module-meta">2 videos • 1 reading</span>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-content-item"><span class="content-icon">🎬</span> Video 1: Business Use Cases</div>
+                        <div class="module-content-item"><span class="content-icon">🎬</span> Video 2: Multi-Step Workflows</div>
+                        <div class="module-content-item"><span class="content-icon">📄</span> Reading: Enterprise AI Integration</div>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-header" onclick="toggleModule(this)">
+                        <span class="module-chevron">▶</span>
+                        <span class="module-name">Module 4: Specialization</span>
+                        <span class="module-meta">2 videos • 1 reading</span>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-content-item"><span class="content-icon">🎬</span> Video 1: Domain-Specific Prompting</div>
+                        <div class="module-content-item"><span class="content-icon">🎬</span> Video 2: Building Your Prompt Library</div>
+                        <div class="module-content-item"><span class="content-icon">📄</span> Reading: Prompt Template Collection</div>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-header" onclick="toggleModule(this)">
+                        <span class="module-chevron">▶</span>
+                        <span class="module-name">Module 5: Certification Prep</span>
+                        <span class="module-meta">1 video • Final assessment</span>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-content-item"><span class="content-icon">🎬</span> Video: Exam Review & Tips</div>
+                        <div class="module-content-item"><span class="content-icon">📝</span> Final Assessment</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enrollment Card -->
+            <div class="enrollment-card">
+                <div class="section-title">💰 Enrollment</div>
+                <div class="enrollment-price">$450</div>
+                <div class="enrollment-subtext">one-time payment</div>
+                <div class="section-divider"></div>
+                <div class="enrollment-benefits">
+                    <div class="benefit-item"><span class="benefit-check">✓</span> Full course access</div>
+                    <div class="benefit-item"><span class="benefit-check">✓</span> 1-on-1 peer teaching sessions</div>
+                    <div class="benefit-item"><span class="benefit-check">✓</span> Certificate on completion</div>
+                    <div class="benefit-item"><span class="benefit-check">✓</span> Lifetime access to materials</div>
+                </div>
+                <div class="section-divider"></div>
+                <button class="enroll-btn">Enroll Now</button>
+            </div>
+        </div>
+
+        <!-- Learn & Earn -->
+        <div class="section-card">
+            <div class="section-title">🎓 Learn & Earn - The PeerLoop Model</div>
+            <div class="learn-earn-flow">
+                <div class="flow-step">
+                    <div class="flow-step-icon">📚</div>
+                    <div class="flow-step-title">LEARN</div>
+                    <div class="flow-step-desc">Complete the course with 1-on-1 help</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-icon">🎓</div>
+                    <div class="flow-step-title">CERTIFY</div>
+                    <div class="flow-step-desc">Pass the certification assessment</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-icon">💰</div>
+                    <div class="flow-step-title">EARN 70%</div>
+                    <div class="flow-step-desc">Teach others and keep 70% of tuition</div>
+                </div>
+            </div>
+            <div class="bloom-quote">
+                "The Bloom 2 Sigma effect: 1-on-1 tutoring is 2 standard deviations more effective than traditional classroom learning"
+            </div>
+        </div>
+
+        <!-- About the Creator -->
+        <div class="section-card">
+            <div class="section-title">👤 About the Creator</div>
+            <div class="creator-section">
+                <img class="creator-avatar" src="https://i.pravatar.cc/150?img=13" alt="Guy Rymberg">
+                <div class="creator-info">
+                    <div class="creator-name">Guy Rymberg</div>
+                    <div class="creator-title">AI Teaching Specialist</div>
+                    <div class="creator-bio">
+                        Guy has spent 15 years in AI and machine learning, working with Fortune 500 companies to implement AI solutions. He's taught over 500 students the art of prompt engineering.
+                    </div>
+                    <div class="credentials-title">Credentials</div>
+                    <div class="credential-item"><span class="credential-check">✓</span> PhD in Computer Science, MIT</div>
+                    <div class="credential-item"><span class="credential-check">✓</span> Former AI Lead at Google</div>
+                    <div class="credential-item"><span class="credential-check">✓</span> Published author: "AI for Business"</div>
+                    <div class="creator-stats">127 students taught • 4.9 avg rating • 3 courses</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Teachers -->
+        <div class="section-card">
+            <div class="section-title">👩‍🏫 Your Student-Teachers</div>
+            <div class="teachers-subtitle">Learn 1-on-1 with a certified peer who completed this course</div>
+            <div class="teachers-grid">
+                <div class="teacher-card">
+                    <div class="teacher-avatar-circle">MC</div>
+                    <div class="teacher-name">Marcus Chen</div>
+                    <div class="teacher-stats">12 students taught</div>
+                    <div class="teacher-cert">Certified Dec 2024</div>
+                </div>
+                <div class="teacher-card">
+                    <div class="teacher-avatar-circle">JT</div>
+                    <div class="teacher-name">Jessica Torres</div>
+                    <div class="teacher-stats">8 students taught</div>
+                    <div class="teacher-cert">Certified Nov 2024</div>
+                </div>
+                <div class="teacher-card">
+                    <div class="teacher-avatar-circle">AR</div>
+                    <div class="teacher-name">Alex R.</div>
+                    <div class="teacher-stats">5 students</div>
+                    <div class="teacher-cert">Certified Jan 25</div>
+                </div>
+            </div>
+            <div class="teachers-note">Note: Ratings not displayed in Block 1</div>
+        </div>
+
+        <!-- Footer CTA -->
+        <div class="footer-cta">
+            <div class="footer-cta-text">Ready to transform your AI prompting skills?</div>
+            <div class="footer-cta-price">$450 • Enroll Now</div>
+            <button class="footer-enroll-btn">Enroll Now</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleModule(header) {
+            const chevron = header.querySelector('.module-chevron');
+            const content = header.nextElementSibling;
+            chevron.classList.toggle('expanded');
+            content.classList.toggle('expanded');
+        }
+    </script>
+</body>
+</html>

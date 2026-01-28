@@ -1,0 +1,203 @@
+ALPHA PEER: 8 THINGS TO LAUNCH
+================================
+
+1. MVP PLATFORM LIVE
+--------------------
+What this means: A working web application where creators can host courses, students can pay and schedule live sessions with student-teachers, and everyone can access course-specific chat feeds.
+
+Key components:
+- User accounts (creators, students, student-teachers)
+- Course creation and hosting (video, materials, curriculum)
+- Payment processing with 70/15/15 split (student-teacher / platform / creator)
+- Scheduling system for 1-on-1 live sessions
+- Video conferencing (integrate Zoom/Meet or built-in)
+- Chat feeds exclusive to course completers
+- Basic notifications (session reminders)
+
+Success looks like: A student can sign up, pay for a course, book a session with a student-teacher, complete the session, and access the course chat feed.
+
+Watch out for: Overbuilding. Launch with minimum viable features - polish comes later.
+
+
+2. LIFETIME EARLY ADOPTER OFFER DEFINED
+---------------------------------------
+What this means: A compelling, time-limited incentive that rewards the first creators and students for taking a risk on an unproven platform.
+
+Possible offers for creators:
+- No monthly fee forever (waive the $25/month)
+- Higher revenue share permanently (75% instead of 70%)
+- "Founding Creator" badge and prominent placement
+- First 100 creators only - creates urgency
+
+Possible offers for students:
+- Discounted first course
+- Free access to one bonus course
+- Priority scheduling with top student-teachers
+- "Genesis Student" status with perks
+
+Success looks like: An offer compelling enough that creators/students feel stupid saying no, but sustainable enough you won't regret it at scale.
+
+Watch out for: Being too generous - these people get this forever. Make it valuable but bounded.
+
+
+3. FINALIZE INTERFACE DETAILS
+-----------------------------
+What this means: Lock down the UI/UX decisions so the platform feels intuitive, professional, and consistent before launch.
+
+Key areas to finalize:
+- Navigation flow: How do users move between dashboard, courses, scheduling, chat?
+- Course detail page: What info does a student see before enrolling? (description, price, student-teacher availability, reviews)
+- Scheduling experience: Calendar view, time zone handling, confirmation flow
+- Session interface: How do users join live sessions? Pre-session checklist?
+- Chat feed layout: Threaded vs. flat? Notifications? Moderation tools?
+- Mobile experience: Does it work well on phones/tablets?
+- Creator dashboard: Course analytics, earnings, student-teacher management
+- Student-teacher dashboard: Upcoming sessions, earnings, ratings
+
+Design decisions:
+- Color palette, typography, button styles (consistent throughout)
+- Empty states (what do users see when they have no courses/sessions yet?)
+- Error handling (clear messages when something goes wrong)
+- Loading states (users know something is happening)
+
+Success looks like: A new user can navigate the platform without asking "where do I click?" Everything feels cohesive and polished.
+
+Watch out for: Endless tweaking. Set a deadline, make decisions, ship. You can refine post-launch based on real user feedback.
+
+
+4. CREATOR ONBOARDING PROCESS DOCUMENTED
+----------------------------------------
+What this means: A clear, step-by-step guide that takes a new creator from "I'm interested" to "my course is live and students are enrolling."
+
+What to include:
+- Account setup and profile creation
+- Course creation walkthrough (curriculum, pricing, materials)
+- How the payment split works
+- How to recruit and approve student-teachers
+- Platform rules and quality expectations
+- Support channels and resources
+- Timeline: "Most creators launch within X days"
+
+Formats:
+- Written guide (PDF or web page)
+- Video walkthrough (screen recording)
+- Checklist they can print and follow
+- Optional: live onboarding call for founding creators
+
+Success looks like: A creator can go from signup to live course with minimal hand-holding. They feel confident, not confused.
+
+Watch out for: Making it too long. People skim. Use visuals, keep steps short.
+
+
+5. STUDENT-TEACHER TRAINING MATERIALS CREATED
+---------------------------------------------
+What this means: Resources that prepare students to become effective teachers, setting clear expectations and giving them practical skills.
+
+Key content areas:
+- The philosophy: "You're a peer guide, not a professor"
+- Session structure: How to run a 30/60 minute session
+- What to do when you don't know the answer (it's okay - use the chat feed)
+- How to handle difficult students or situations
+- Scheduling etiquette: show up on time, communicate cancellations
+- How ratings and feedback work
+- How you get paid
+
+Formats:
+- Short video series (5-10 min each)
+- Quick reference guide (1-2 pages)
+- FAQ document
+- Optional: practice session with feedback
+
+Success looks like: Student-teachers feel prepared, not thrown into the deep end. Session quality stays consistent.
+
+Watch out for: Overtraining. These are peers, not employees. Keep it light and practical.
+
+
+6. FIRST 50 PAYING STUDENTS ENROLLED
+------------------------------------
+What this means: Real humans paying real money to take courses on the platform. This is the moment of truth.
+
+How to get them:
+- Founders' personal networks (friends, colleagues, social media)
+- Creator audiences (each founding creator promotes to their list)
+- Targeted ads (Facebook, Google, LinkedIn for AI skills)
+- Early adopter communities (Product Hunt, Indie Hackers, relevant Discords)
+- Partnerships with bootcamps, companies doing upskilling
+
+Key metrics to track:
+- Cost per acquisition (how much marketing spend per student)
+- Completion rate (what % finish the course)
+- Student-to-teacher conversion (what % sign up to teach)
+- Satisfaction/NPS scores
+
+Success looks like: 50 students enrolled, 30+ complete, 6-10 sign up to become student-teachers. Flywheel starts.
+
+Watch out for: Vanity signups. You want paying, engaged students - not free trials who ghost.
+
+
+7. REFERRAL/AFFILIATE PROGRAM DESIGNED
+--------------------------------------
+What this means: A built-in system that rewards people for bringing new students and creators to the platform.
+
+Possible structures:
+- Student referral: "Give a friend $10 off, get $10 credit when they enroll"
+- Student-teacher incentive: Bonus for each new student they recruit to their sessions
+- Creator affiliate: Creators earn % of revenue from students they refer to other creators' courses
+- External affiliates: Bloggers, influencers, newsletter writers get commission for referrals
+
+Key decisions:
+- Cash vs. platform credit?
+- One-time bonus or recurring?
+- Tracking mechanism (referral codes, links)
+- Fraud prevention (no self-referrals, minimum purchase required)
+
+Success looks like: 20-30% of new students come from referrals within 6 months. Acquisition cost drops.
+
+Watch out for: Complexity. Start simple (one referral type), expand later.
+
+
+8. SOCIAL PROOF COLLECTED
+-------------------------
+What this means: Real testimonials, case studies, and success stories that prove the platform works - essential for convincing skeptical new users.
+
+What to collect:
+- Student testimonials: "I learned X and now I can do Y"
+- Student-teacher testimonials: "I earned $Z teaching what I just learned"
+- Creator testimonials: "My course has X active student-teachers generating revenue"
+- Metrics: completion rates, earnings data, satisfaction scores
+- Before/after stories: "I knew nothing about AI, now I'm teaching it"
+
+How to collect:
+- Automated email after course completion asking for review
+- Short video interviews with willing participants
+- Screenshot earnings/achievements (with permission)
+- Case study interviews with top performers
+
+Where to use it:
+- Landing page
+- Course pages
+- Marketing emails
+- Social media
+- Pitch decks for investors/partners
+
+Success looks like: A library of 10-20 genuine testimonials you can rotate through marketing. Real faces, real names, real results.
+
+Watch out for: Fake or incentivized reviews. Keep it authentic - one genuine story beats ten generic ones.
+
+
+================================================================================
+SUMMARY TABLE
+================================================================================
+
+#   Item                      Core Question
+--  ------------------------  ------------------------------------------------
+1   MVP Platform              Can a student pay, learn, and become a teacher?
+2   Early Adopter Offer       Why should someone take a chance on us now?
+3   Finalize Interface        Does the platform feel intuitive and polished?
+4   Creator Onboarding        Can a creator launch without hand-holding?
+5   Student-Teacher Training  Can peers teach effectively with light training?
+6   First 50 Students         Can we get real people to pay real money?
+7   Referral Program          Can growth become self-sustaining?
+8   Social Proof              Can we prove this works to skeptics?
+
+================================================================================

@@ -737,12 +737,24 @@ const MyCoursesView = ({
           )}
         </div>
 
-        {/* Courses List - Tree Style */}
+        {/* Courses Section with Connector Lines - Matches Discover */}
         <div style={{
+          position: 'relative',
           paddingLeft: 48,
           paddingRight: 20,
-          paddingBottom: 8
+          paddingBottom: 16,
+          marginLeft: 20
         }}>
+          {/* Vertical Connector Line */}
+          <div style={{
+            position: 'absolute',
+            left: 28,
+            top: 0,
+            bottom: 24,
+            width: 2,
+            background: isDarkMode ? '#2f3336' : '#d0e8f0'
+          }} />
+
           {courses.map((course, index) => {
             const isLast = index === courses.length - 1;
             const courseIsCompleted = isCourseCompleted(course.id) || course.progress === 100;
@@ -757,44 +769,45 @@ const MyCoursesView = ({
               <div
                 key={course.id}
                 style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
                   position: 'relative',
-                  paddingLeft: 24
+                  marginBottom: 12
                 }}
               >
-                {/* Tree connector lines */}
+                {/* Horizontal Connector Line */}
                 <div style={{
                   position: 'absolute',
-                  left: 0,
-                  top: 0,
-                  bottom: isLast ? '50%' : 0,
-                  width: 1,
-                  background: isDarkMode ? '#3f3f46' : '#e5e7eb'
-                }} />
-                <div style={{
-                  position: 'absolute',
-                  left: 0,
+                  left: -12,
                   top: '50%',
-                  width: 16,
-                  height: 1,
-                  background: isDarkMode ? '#3f3f46' : '#e5e7eb'
+                  width: 10,
+                  height: 2,
+                  background: isDarkMode ? '#2f3336' : '#d0e8f0'
+                }} />
+                {/* Connector Dot */}
+                <div style={{
+                  position: 'absolute',
+                  left: -16,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: '#4facfe',
+                  border: '2px solid #fff',
+                  boxShadow: isDarkMode ? '0 0 0 2px #2f3336' : '0 0 0 2px #d0e8f0',
+                  zIndex: 1
                 }} />
 
                 {/* Course Card */}
                 <div
                   onClick={() => onViewCourse && onViewCourse(course.id)}
                   style={{
-                    flex: 1,
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: 12,
-                    padding: 12,
-                    marginBottom: 8,
+                    padding: 16,
                     background: isDarkMode ? '#16181c' : '#f7f9f9',
                     borderRadius: 12,
                     cursor: 'pointer',
-                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
                     transition: 'all 0.2s'
                   }}
                   onMouseEnter={(e) => {
@@ -1438,12 +1451,24 @@ const MyCoursesView = ({
                       )}
                     </div>
 
-                    {/* Courses List - Tree Style */}
+                    {/* Courses Section with Connector Lines - Matches Discover */}
                     <div style={{
+                      position: 'relative',
                       paddingLeft: 48,
                       paddingRight: 20,
-                      paddingBottom: 8
+                      paddingBottom: 16,
+                      marginLeft: 20
                     }}>
+                      {/* Vertical Connector Line */}
+                      <div style={{
+                        position: 'absolute',
+                        left: 28,
+                        top: 0,
+                        bottom: 24,
+                        width: 2,
+                        background: isDarkMode ? '#2f3336' : '#d0e8f0'
+                      }} />
+
                       {courses.map((course, index) => {
                         const isLast = index === courses.length - 1;
                         const isFollowed = isCourseFollowed ? isCourseFollowed(course.id) : false;
@@ -1452,44 +1477,45 @@ const MyCoursesView = ({
                           <div
                             key={course.id}
                             style={{
-                              display: 'flex',
-                              alignItems: 'flex-start',
                               position: 'relative',
-                              paddingLeft: 24
+                              marginBottom: 12
                             }}
                           >
-                            {/* Tree connector lines */}
+                            {/* Horizontal Connector Line */}
                             <div style={{
                               position: 'absolute',
-                              left: 0,
-                              top: 0,
-                              bottom: isLast ? '50%' : 0,
-                              width: 1,
-                              background: isDarkMode ? '#3f3f46' : '#e5e7eb'
-                            }} />
-                            <div style={{
-                              position: 'absolute',
-                              left: 0,
+                              left: -12,
                               top: '50%',
-                              width: 16,
-                              height: 1,
-                              background: isDarkMode ? '#3f3f46' : '#e5e7eb'
+                              width: 10,
+                              height: 2,
+                              background: isDarkMode ? '#2f3336' : '#d0e8f0'
+                            }} />
+                            {/* Connector Dot */}
+                            <div style={{
+                              position: 'absolute',
+                              left: -16,
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              width: 8,
+                              height: 8,
+                              borderRadius: '50%',
+                              background: '#4facfe',
+                              border: '2px solid #fff',
+                              boxShadow: isDarkMode ? '0 0 0 2px #2f3336' : '0 0 0 2px #d0e8f0',
+                              zIndex: 1
                             }} />
 
                             {/* Course Card */}
                             <div
                               onClick={() => onViewCourse && onViewCourse(course.id)}
                               style={{
-                                flex: 1,
                                 display: 'flex',
                                 alignItems: 'flex-start',
                                 gap: 12,
-                                padding: 12,
-                                marginBottom: 8,
+                                padding: 16,
                                 background: isDarkMode ? '#16181c' : '#f7f9f9',
                                 borderRadius: 12,
                                 cursor: 'pointer',
-                                border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
                                 transition: 'all 0.2s'
                               }}
                               onMouseEnter={(e) => {

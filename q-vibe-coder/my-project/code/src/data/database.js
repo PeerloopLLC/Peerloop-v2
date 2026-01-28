@@ -1089,6 +1089,14 @@ export const coursesDatabase = [
         { number: 2, title: "Advanced Techniques & Library Building", duration: "90 min", modules: [3, 4, 5] }
       ]
     },
+    // Files to automatically upload to BigBlueButton when joining a session
+    sessionFiles: [
+      {
+        name: "AI Short Course Sample Material",
+        filename: "AI-Short-Course-Sample-Material.pdf",
+        url: "https://vnleonyfgwkfpvprpbqa.supabase.co/storage/v1/object/public/session-files/AI-Short-Course-Sample-Material.pdf"
+      }
+    ],
     learningObjectives: [
       "Fundamentals of prompt engineering",
       "Advanced techniques for business applications",

@@ -103,7 +103,12 @@
       "WebFetch(domain:blindsidenetworks.com)",
       "WebFetch(domain:docs.google.com)",
       "WebFetch(domain:docs.bigbluebutton.org)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(bash:*)",
+      "Bash(where:*)",
+      "Bash(npx md-to-pdf:*)",
+      "WebFetch(domain:guyrymberg.com)",
+      "WebFetch(domain:peerloopllc.github.io)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,44 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - heading "🎓 PeerLoop" [level=1] [ref=e6]
+    - paragraph [ref=e7]: Select a demo account
+  - generic [ref=e8]:
+    - paragraph [ref=e9]: "Choose a user to experience different roles:"
+    - generic [ref=e10] [cursor=pointer]:
+      - generic [ref=e11]: NU
+      - generic [ref=e12]:
+        - generic [ref=e13]: New User
+        - generic [ref=e14]: ✨ New User
+        - generic [ref=e15]: Just joined PeerLoop! Excited to start learning.
+      - generic [ref=e16]: →
+    - generic [ref=e17] [cursor=pointer]:
+      - generic [ref=e18]: AS
+      - generic [ref=e19]:
+        - generic [ref=e20]: Alex Sanders
+        - generic [ref=e21]: 📚🎓 Student & Teacher
+        - generic [ref=e22]: Lifelong learner passionate about AI and machine learning. Currently studying Deep Learning and teaching Python basics to beginners. Love helping others on their learning journey!
+      - generic [ref=e23]: →
+    - generic [ref=e24] [cursor=pointer]:
+      - generic [ref=e25]: GR
+      - generic [ref=e26]:
+        - generic [ref=e27]: Guy Rymberg
+        - generic [ref=e28]: 🎬 Creator
+        - generic [ref=e29]: AI teaching specialist with 15 years experience. Created the AI Prompting Mastery course. Passionate about the PeerLoop model - Learn, Teach, Earn. Former AI Lead at Google, published author of "AI Prompting for Business".
+      - generic [ref=e30]: →
+    - generic [ref=e31] [cursor=pointer]:
+      - generic [ref=e32]: SM
+      - generic [ref=e33]:
+        - generic [ref=e34]: Sarah Miller
+        - generic [ref=e35]: 📚 Student
+        - generic [ref=e36]: New to coding, excited to learn web development! Coming from a marketing background, I discovered my passion for tech and am now diving into full-stack development.
+      - generic [ref=e37]: →
+    - generic [ref=e38] [cursor=pointer]:
+      - generic [ref=e39]: MJ
+      - generic [ref=e40]:
+        - generic [ref=e41]: Marcus Johnson
+        - generic [ref=e42]: ⭐ Admin
+        - generic [ref=e43]: Platform admin and senior instructor. 15 years in tech education. Here to help build the future of peer-to-peer learning!
+      - generic [ref=e44]: →
+    - paragraph [ref=e46]:
+      - text: Have a real account?
+      - button "Sign In" [ref=e47] [cursor=pointer]

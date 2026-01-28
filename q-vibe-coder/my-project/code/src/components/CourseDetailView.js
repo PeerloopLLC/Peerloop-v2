@@ -471,6 +471,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
       const userName = currentUser?.name || 'Student';
 
       // Call Supabase Edge Function to create meeting and get join URL
+      // Include sessionFiles if the course has pre-upload materials for BBB
       const response = await fetch('https://vnleonyfgwkfpvprpbqa.supabase.co/functions/v1/bbb-join', {
         method: 'POST',
         headers: {
@@ -480,7 +481,9 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
         body: JSON.stringify({
           courseId: course.id,
           courseName: course.title,
-          userName: userName
+          userName: userName,
+          sessionFiles: course.sessionFiles || [],
+          baseUrl: window.location.origin
         })
       });
 

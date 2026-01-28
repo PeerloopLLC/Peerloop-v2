@@ -6,6 +6,29 @@ import CourseDetailView from './CourseDetailView';
 import EnrollmentFlow from './EnrollmentFlow';
 import { getInstructorById, getCourseById, getInstructorWithCourses, iconConfig } from '../data/database';
 
+// Generate course abbreviation from title (matching DiscoverView.js)
+const getCourseAbbreviation = (title) => {
+  if (!title) return '??';
+  const mappings = {
+    'ai': 'AI', 'machine learning': 'ML', 'deep learning': 'DL', 'data science': 'DS',
+    'full-stack': 'FS', 'full stack': 'FS', 'devops': 'DO', 'ci/cd': 'CI', 'github': 'GH',
+    'node.js': 'NJ', 'nodejs': 'NJ', 'python': 'PY', 'robotics': 'RB', 'medical': 'MD',
+    'healthcare': 'HC', 'automation': 'AU', 'n8n': 'N8', 'prompt': 'PM', 'claude': 'CC',
+    'computer vision': 'CV', 'business intelligence': 'BI', 'microservices': 'MS',
+    'cloud': 'CL', 'aws': 'AWS', 'natural language': 'NL', 'nlp': 'NL'
+  };
+  const lowerTitle = title.toLowerCase();
+  for (const [key, abbr] of Object.entries(mappings)) {
+    if (lowerTitle.includes(key)) return abbr;
+  }
+  const words = title.split(/[\s\-:]+/).filter(w =>
+    w.length > 2 && !['the', 'and', 'for', 'with', 'to', 'of', 'in', 'a', 'an'].includes(w.toLowerCase())
+  );
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
+  return title.substring(0, 2).toUpperCase();
+};
+
 /**
  * BrowseView - Displays the Browse page with Course Listings and Creator Profiles tabs
  * Extracted from MainContent.js for better code organization
@@ -855,139 +878,205 @@ const BrowseView = ({
           </button>
         </div>
 
-        {/* Courses Tab Content */}
+        {/* Courses Tab Content - With Connector Lines (matching Discover design) */}
         {activeProfileTab === 'courses' && (
-          <div style={{ padding: '16px' }}>
+          <div style={{
+            position: 'relative',
+            padding: '8px 20px 12px'
+          }}>
             {creatorCourses.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <>
+                {/* Vertical Connector Line */}
+                <div style={{
+                  position: 'absolute',
+                  left: 28,
+                  top: 0,
+                  bottom: 24,
+                  width: 2,
+                  background: isDarkMode ? '#2f3336' : '#d0e8f0'
+                }} />
+
+                {/* Course Cards */}
                 {creatorCourses.map((course, index) => {
                   const isFollowed = isCourseFollowed(course.id);
 
                   return (
                     <div
                       key={course.id}
-                      onClick={() => {
-                        setSelectedCourse(course);
-                        setCurrentInstructorForCourse(creator);
-                      }}
                       style={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: 12,
-                        padding: 12,
-                        border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
-                        borderRadius: 12,
-                        background: isDarkMode ? '#16181c' : '#f7f9f9',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
+                        position: 'relative',
+                        marginLeft: 20,
+                        marginBottom: index < creatorCourses.length - 1 ? 8 : 0
                       }}
                     >
+                      {/* Horizontal Connector Line */}
                       <div style={{
-                        width: 100,
-                        height: 70,
-                        borderRadius: 8,
-                        flexShrink: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                        background: course.thumbnailGradient || iconConfig.course.gradient
-                      }}>
-                        <span style={{
-                          color: '#fff',
-                          fontSize: 20,
-                          fontWeight: 700,
-                          textShadow: '0 1px 2px rgba(0,0,0,0.3)'
-                        }}>
-                          {iconConfig.course.icon}
-                        </span>
-                      </div>
-
-                      <div style={{ flex: 1, minWidth: 0 }}>
+                        position: 'absolute',
+                        left: -12,
+                        top: '50%',
+                        width: 10,
+                        height: 2,
+                        background: isDarkMode ? '#2f3336' : '#d0e8f0'
+                      }} />
+                      {/* Connector Dot */}
+                      <div style={{
+                        position: 'absolute',
+                        left: -16,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        background: '#4facfe',
+                        border: '2px solid #fff',
+                        boxShadow: isDarkMode ? '0 0 0 2px #2f3336' : '0 0 0 2px #d0e8f0',
+                        zIndex: 1
+                      }} />
+                      {/* Course Card */}
+                      <div
+                        onClick={() => {
+                          setSelectedCourse(course);
+                          setCurrentInstructorForCourse(creator);
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: 12,
+                          padding: 12,
+                          border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                          borderRadius: 12,
+                          background: isDarkMode ? '#16181c' : '#f7f9f9',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = '#22c55e';
+                          e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#e5e7eb';
+                          e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
+                        }}
+                      >
+                        {/* Course Badge - Green Square */}
                         <div style={{
-                          fontSize: 15,
-                          fontWeight: 600,
-                          color: '#1d9bf0'
+                          width: 56,
+                          height: 56,
+                          borderRadius: 10,
+                          flexShrink: 0,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                          color: 'white',
+                          fontSize: 16,
+                          fontWeight: 700
                         }}>
-                          {course.title}
+                          {getCourseAbbreviation(course.title)}
                         </div>
+
+                        {/* Course Content */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          {/* Course Title - Blue */}
+                          <div style={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: '#1d9bf0',
+                            marginBottom: 4
+                          }}>
+                            {course.title}
+                          </div>
+                          {/* Course Description */}
+                          <div style={{
+                            fontSize: 14,
+                            color: isDarkMode ? '#a0a0a0' : '#536471',
+                            lineHeight: 1.4,
+                            marginBottom: 6,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden'
+                          }}>
+                            {course.description}
+                          </div>
+                          {/* Stats Line */}
+                          <div style={{
+                            fontSize: 14,
+                            color: isDarkMode ? '#71767b' : '#6b7280',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4
+                          }}>
+                            <span style={{ color: '#fbbf24' }}>★</span> {course.rating || '4.7'} · {(course.students || 980).toLocaleString()} students · {course.duration || '6 weeks'}
+                          </div>
+                        </div>
+
+                        {/* Buttons */}
                         <div style={{
-                          fontSize: 14,
-                          color: isDarkMode ? '#71767b' : '#536471',
-                          lineHeight: 1.4,
-                          marginTop: 4,
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden'
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 8,
+                          alignItems: 'flex-end',
+                          justifyContent: 'center',
+                          flexShrink: 0
                         }}>
-                          {course.description}
+                          {isCoursePurchased(course.id) ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleFollowCourse(course.id);
+                              }}
+                              disabled={isFollowingLoading}
+                              style={{
+                                background: 'white',
+                                border: '1px solid #0f1419',
+                                color: '#0f1419',
+                                padding: '8px 16px',
+                                borderRadius: 20,
+                                fontSize: 14,
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              {isFollowed ? 'Following Course' : 'Follow Course'}
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEnrollingCourse(course);
+                                setShowEnrollOptions(true);
+                              }}
+                              style={{
+                                background: '#22c55e',
+                                border: 'none',
+                                color: 'white',
+                                padding: '8px 16px',
+                                borderRadius: 20,
+                                fontSize: 14,
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                transition: 'all 0.2s'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = '#16a34a';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = '#22c55e';
+                              }}
+                            >
+                              Enroll {course.price}
+                            </button>
+                          )}
                         </div>
                       </div>
-
-                      {isCoursePurchased(course.id) ? (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleFollowCourse(course.id);
-                          }}
-                          disabled={isFollowingLoading}
-                          style={{
-                            background: isDarkMode ? '#2f3336' : '#eff3f4',
-                            border: 'none',
-                            color: isDarkMode ? '#71767b' : '#536471',
-                            padding: '6px 16px',
-                            borderRadius: 20,
-                            fontSize: 14,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                            flexShrink: 0,
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          {isFollowed ? 'Following' : 'Follow'}
-                        </button>
-                      ) : (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEnrollingCourse(course);
-                            setShowEnrollOptions(true);
-                          }}
-                          style={{
-                            background: isDarkMode ? 'transparent' : 'white',
-                            border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                            color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                            padding: '6px 16px',
-                            borderRadius: 20,
-                            fontSize: 14,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                            flexShrink: 0,
-                            transition: 'all 0.2s'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = isDarkMode ? 'transparent' : 'white';
-                          }}
-                        >
-                          Enroll {course.price}
-                        </button>
-                      )}
                     </div>
                   );
                 })}
-              </div>
+              </>
             ) : (
               <div style={{ padding: '32px 16px', textAlign: 'center', color: isDarkMode ? '#71767b' : '#536471' }}>
                 No courses available yet.

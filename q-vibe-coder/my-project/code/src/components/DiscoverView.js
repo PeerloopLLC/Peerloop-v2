@@ -1205,7 +1205,7 @@ const DiscoverView = ({
                       e.currentTarget.style.boxShadow = isDarkMode ? 'none' : '0 1px 3px rgba(0,0,0,0.08)';
                     }}
                   >
-                    {/* Community Header - Full Width Gradient Banner */}
+                    {/* Community Header - Light Cyan Gradient (X.com Style with Connector Lines) */}
                     <div
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1215,26 +1215,30 @@ const DiscoverView = ({
                       style={{
                         background: isDarkMode
                           ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
-                          : 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                        padding: '14px 16px',
+                          : 'linear-gradient(135deg, #e8f4f8 0%, #d0e8f0 100%)',
+                        padding: 20,
+                        borderRadius: 16,
+                        marginBottom: 4,
                         cursor: 'pointer',
-                        transition: 'filter 0.2s'
+                        transition: 'all 0.2s'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.05)'}
-                      onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
+                      onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                     >
+                      {/* Top Row: Avatar + Info + Button */}
                       <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 14
+                        gap: 16,
+                        marginBottom: 12
                       }}>
-                        {/* Community Circle Avatar */}
+                        {/* Community Circle Avatar - Teal/Cyan Gradient */}
                         <div style={{
                           width: 56,
                           height: 56,
                           borderRadius: '50%',
-                          background: 'rgba(255,255,255,0.2)',
-                          border: '3px solid rgba(255,255,255,0.5)',
+                          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                          border: '3px solid rgba(255,255,255,0.3)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -1244,38 +1248,80 @@ const DiscoverView = ({
                           👥
                         </div>
 
-                        {/* Community Info - White Text */}
-                        <div style={{ flex: 1, minWidth: 0, color: 'white' }}>
-                          <div style={{
-                            fontSize: 20,
-                            fontWeight: 700
-                          }}>
-                            {highlightMatch(instructor.communityName || `${instructor.name} Community`, searchQuery)}
-                          </div>
+                        {/* Community Info */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          {/* Name Row */}
                           <div style={{
                             display: 'flex',
-                            gap: 12,
-                            fontSize: 14,
-                            opacity: 0.9,
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            gap: 4
+                          }}>
+                            <span style={{
+                              fontSize: 15,
+                              fontWeight: 700,
+                              color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                            }}>
+                              {highlightMatch(instructor.communityName || `${instructor.name} Community`, searchQuery)}
+                            </span>
+                            <span style={{
+                              fontSize: 15,
+                              color: isDarkMode ? '#71767b' : '#536471'
+                            }}>
+                              @{(instructor.communityName || instructor.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '')}
+                            </span>
+                          </div>
+                          {/* Creator Row */}
+                          <div style={{
+                            fontSize: 13,
+                            color: isDarkMode ? '#71767b' : '#536471',
                             marginTop: 2
                           }}>
-                            <span>@{(instructor.communityName || instructor.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '')}</span>
+                            Created by{' '}
+                            <span
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (onViewCreatorProfile) {
+                                  onViewCreatorProfile(instructor);
+                                }
+                              }}
+                              style={{
+                                color: '#1d9bf0',
+                                fontWeight: 500,
+                                cursor: 'pointer'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                            >
+                              {instructor.name}
+                            </span>
+                          </div>
+                          {/* Meta Row */}
+                          <div style={{
+                            fontSize: 14,
+                            color: isDarkMode ? '#a0a0a0' : '#6b7280',
+                            marginTop: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4
+                          }}>
                             <span>👥 {(instructor.stats?.studentsTaught || 0).toLocaleString()} followers</span>
-                            <span>📚 {totalCourses} courses</span>
+                            <span>•</span>
+                            <span>{instructor.title}</span>
                           </div>
                         </div>
 
-                        {/* Follow Button in Header */}
+                        {/* Follow Button */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleFollowInstructor(instructor.id);
                           }}
                           style={{
-                            background: 'rgba(255,255,255,0.95)',
-                            border: 'none',
-                            color: '#1d9bf0',
-                            padding: '10px 20px',
+                            background: isDarkMode ? 'transparent' : '#f7f9f9',
+                            border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                            color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                            padding: '8px 16px',
                             borderRadius: 20,
                             fontSize: 14,
                             fontWeight: 600,
@@ -1287,113 +1333,50 @@ const DiscoverView = ({
                           onMouseEnter={(e) => {
                             if (isFollowing) {
                               e.currentTarget.style.color = '#f4212e';
+                              e.currentTarget.style.borderColor = '#f4212e';
                               e.currentTarget.textContent = 'Unfollow';
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (isFollowing) {
-                              e.currentTarget.style.color = '#1d9bf0';
-                              e.currentTarget.textContent = 'Following';
+                              e.currentTarget.style.color = isDarkMode ? '#e7e9ea' : '#0f1419';
+                              e.currentTarget.style.borderColor = isDarkMode ? '#536471' : '#cfd9de';
+                              e.currentTarget.textContent = 'Following Community';
                             }
                           }}
                         >
-                          {isFollowing ? 'Following' : 'Follow'}
+                          {isFollowing ? 'Following Community' : 'Follow Community'}
                         </button>
                       </div>
-                    </div>
 
-                    {/* Community Body - Creator Row + Bio */}
-                    <div style={{
-                      padding: '12px 16px',
-                      borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-                    }}>
-                      {/* Creator Row */}
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 8,
-                        fontSize: 14,
-                        color: isDarkMode ? '#71767b' : '#536471',
-                        marginBottom: 6
-                      }}>
-                        {instructor.avatar ? (
-                          <img
-                            src={instructor.avatar}
-                            alt={instructor.name}
-                            style={{
-                              width: 24,
-                              height: 24,
-                              borderRadius: '50%',
-                              objectFit: 'cover',
-                              flexShrink: 0
-                            }}
-                          />
-                        ) : (
-                          <div style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: '50%',
-                            background: '#1d9bf0',
-                            color: '#fff',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: 11,
-                            fontWeight: 700,
-                            flexShrink: 0
-                          }}>
-                            {instructor.name?.charAt(0)}
-                          </div>
-                        )}
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (onViewCreatorProfile) {
-                              onViewCreatorProfile(instructor);
-                            }
-                          }}
-                          style={{
-                            color: '#1d9bf0',
-                            fontWeight: 500,
-                            cursor: 'pointer'
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                          onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
-                        >
-                          {instructor.name}
-                        </span>
-                        <span>• {instructor.title}</span>
-                      </div>
-
-                      {/* Bio */}
+                      {/* Bio - Indented under avatar */}
                       {instructor.bio && (
                         <div style={{
-                          fontSize: 15,
-                          lineHeight: 1.5,
-                          color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                          fontSize: 14,
+                          lineHeight: 1.6,
+                          color: isDarkMode ? '#a0a0a0' : '#4b5563',
+                          paddingLeft: 72
                         }}>
                           {highlightMatch(instructor.bio, searchQuery)}
                         </div>
                       )}
                     </div>
 
-                    {/* Courses Container - Gray Background */}
+                    {/* Courses Section with Connector Lines */}
                     {matchingCourses.length > 0 && (
                       <div style={{
-                        padding: '12px 16px 14px',
-                        background: isDarkMode ? '#1d1f23' : '#fafbfc'
+                        position: 'relative',
+                        padding: '8px 20px 12px'
                       }}>
-                        {/* Courses Label */}
+                        {/* Vertical Connector Line */}
                         <div style={{
-                          fontSize: 12,
-                          fontWeight: 600,
-                          color: isDarkMode ? '#71767b' : '#536471',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                          marginBottom: 10
-                        }}>
-                          Courses in this community
-                        </div>
+                          position: 'absolute',
+                          left: 28,
+                          top: 0,
+                          bottom: 24,
+                          width: 2,
+                          background: isDarkMode ? '#2f3336' : '#d0e8f0'
+                        }} />
 
                         {/* Course Cards */}
                         {matchingCourses.map((course, index) => {
@@ -1403,80 +1386,119 @@ const DiscoverView = ({
                           return (
                             <div
                               key={course.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                saveScrollPosition();
-                                onViewCourse && onViewCourse(course);
-                              }}
                               style={{
-                                display: 'flex',
-                                gap: 12,
-                                padding: 12,
-                                background: isDarkMode ? '#16181c' : 'white',
-                                border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
-                                borderRadius: 10,
-                                marginBottom: index < matchingCourses.length - 1 ? 8 : 0,
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = '#10b981';
-                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.15)';
-                                e.currentTarget.style.transform = 'translateY(-1px)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#e5e7eb';
-                                e.currentTarget.style.boxShadow = 'none';
-                                e.currentTarget.style.transform = 'translateY(0)';
+                                position: 'relative',
+                                marginLeft: 20,
+                                marginBottom: index < matchingCourses.length - 1 ? 8 : 0
                               }}
                             >
-                              {/* Course Badge */}
+                              {/* Horizontal Connector Line */}
                               <div style={{
-                                width: 56,
-                                height: 56,
-                                borderRadius: 12,
-                                flexShrink: 0,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                background: getCourseGradient(course.title),
-                                color: 'white',
-                                fontSize: 18,
-                                fontWeight: 800,
-                                letterSpacing: '-0.5px'
-                              }}>
-                                {getCourseAbbreviation(course.title)}
-                              </div>
+                                position: 'absolute',
+                                left: -12,
+                                top: '50%',
+                                width: 10,
+                                height: 2,
+                                background: isDarkMode ? '#2f3336' : '#d0e8f0'
+                              }} />
+                              {/* Connector Dot */}
+                              <div style={{
+                                position: 'absolute',
+                                left: -16,
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                width: 8,
+                                height: 8,
+                                borderRadius: '50%',
+                                background: isDarkMode ? '#4facfe' : '#4facfe',
+                                border: '2px solid #fff',
+                                boxShadow: isDarkMode ? '0 0 0 2px #2f3336' : '0 0 0 2px #d0e8f0',
+                                zIndex: 1
+                              }} />
+                              {/* Course Card */}
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  saveScrollPosition();
+                                  onViewCourse && onViewCourse(course);
+                                }}
+                                style={{
+                                  display: 'flex',
+                                  gap: 12,
+                                  padding: 12,
+                                  background: isDarkMode ? '#16181c' : '#f7f9f9',
+                                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+                                  borderRadius: 12,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.borderColor = '#22c55e';
+                                  e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#e5e7eb';
+                                  e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
+                                }}
+                              >
+                                {/* Course Badge - Green Square */}
+                                <div style={{
+                                  width: 56,
+                                  height: 56,
+                                  borderRadius: 10,
+                                  flexShrink: 0,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                                  color: 'white',
+                                  fontSize: 16,
+                                  fontWeight: 700
+                                }}>
+                                  {getCourseAbbreviation(course.title)}
+                                </div>
 
-                              {/* Course Content */}
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                {/* Top Row: Title + Button */}
+                                {/* Course Content */}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  {/* Course Title - Blue */}
+                                  <div style={{
+                                    fontSize: 15,
+                                    fontWeight: 600,
+                                    color: '#1d9bf0',
+                                    marginBottom: 4
+                                  }}>
+                                    {highlightMatch(course.title, searchQuery)}
+                                  </div>
+                                  {/* Course Description */}
+                                  <div style={{
+                                    fontSize: 14,
+                                    color: isDarkMode ? '#a0a0a0' : '#536471',
+                                    lineHeight: 1.4,
+                                    marginBottom: 6
+                                  }}>
+                                    {highlightMatch(course.description, searchQuery)}
+                                  </div>
+                                  {/* Stats Line */}
+                                  <div style={{
+                                    fontSize: 14,
+                                    color: isDarkMode ? '#71767b' : '#6b7280',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 4
+                                  }}>
+                                    <span style={{ color: '#fbbf24' }}>★</span> {course.rating || '4.7'} · {(course.students || 980).toLocaleString()} students · {course.duration || '6 weeks'}
+                                  </div>
+                                </div>
+
+                                {/* Buttons - Right Side */}
                                 <div style={{
                                   display: 'flex',
-                                  justifyContent: 'space-between',
-                                  alignItems: 'flex-start',
-                                  gap: 10
+                                  flexDirection: 'column',
+                                  gap: 8,
+                                  alignItems: 'flex-end',
+                                  justifyContent: 'center',
+                                  flexShrink: 0
                                 }}>
-                                  <div>
-                                    <div style={{
-                                      fontSize: 16,
-                                      fontWeight: 600,
-                                      color: '#1d9bf0',
-                                      marginBottom: 4
-                                    }}>
-                                      {highlightMatch(course.title, searchQuery)}
-                                    </div>
-                                    <div style={{
-                                      fontSize: 14,
-                                      color: isDarkMode ? '#71767b' : '#536471',
-                                      lineHeight: 1.5,
-                                      marginBottom: 8
-                                    }}>
-                                      {highlightMatch(course.description, searchQuery)}
-                                    </div>
-                                  </div>
-
-                                  {/* Enroll/Following Button */}
                                   {isPurchased ? (
                                     <button
                                       onClick={(e) => {
@@ -1486,34 +1508,33 @@ const DiscoverView = ({
                                         }
                                       }}
                                       style={{
-                                        background: '#1d9bf0',
-                                        border: '1px solid #1d9bf0',
-                                        color: 'white',
+                                        background: 'white',
+                                        border: '1px solid #0f1419',
+                                        color: '#0f1419',
                                         padding: '8px 16px',
                                         borderRadius: 20,
                                         fontSize: 14,
                                         fontWeight: 600,
                                         cursor: 'pointer',
                                         whiteSpace: 'nowrap',
-                                        flexShrink: 0,
                                         transition: 'all 0.2s'
                                       }}
                                       onMouseEnter={(e) => {
                                         if (isFollowed) {
-                                          e.currentTarget.style.background = '#f4212e';
+                                          e.currentTarget.style.color = '#f4212e';
                                           e.currentTarget.style.borderColor = '#f4212e';
                                           e.currentTarget.textContent = 'Unfollow';
                                         }
                                       }}
                                       onMouseLeave={(e) => {
                                         if (isFollowed) {
-                                          e.currentTarget.style.background = '#1d9bf0';
-                                          e.currentTarget.style.borderColor = '#1d9bf0';
-                                          e.currentTarget.textContent = 'Following';
+                                          e.currentTarget.style.color = '#0f1419';
+                                          e.currentTarget.style.borderColor = '#0f1419';
+                                          e.currentTarget.textContent = 'Following Course';
                                         }
                                       }}
                                     >
-                                      {isFollowed ? 'Following' : 'Follow'}
+                                      {isFollowed ? 'Following Course' : 'Follow Course'}
                                     </button>
                                   ) : (
                                     <button
@@ -1525,52 +1546,27 @@ const DiscoverView = ({
                                         }
                                       }}
                                       style={{
-                                        background: isDarkMode ? '#16181c' : '#f0fdf4',
-                                        border: '1px solid #10b981',
-                                        color: '#059669',
+                                        background: '#22c55e',
+                                        border: 'none',
+                                        color: 'white',
                                         padding: '8px 16px',
                                         borderRadius: 20,
                                         fontSize: 14,
                                         fontWeight: 600,
                                         cursor: 'pointer',
                                         whiteSpace: 'nowrap',
-                                        flexShrink: 0,
                                         transition: 'all 0.2s'
                                       }}
                                       onMouseEnter={(e) => {
-                                        e.currentTarget.style.background = '#10b981';
-                                        e.currentTarget.style.color = 'white';
+                                        e.currentTarget.style.background = '#16a34a';
                                       }}
                                       onMouseLeave={(e) => {
-                                        e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f0fdf4';
-                                        e.currentTarget.style.color = '#059669';
+                                        e.currentTarget.style.background = '#22c55e';
                                       }}
                                     >
                                       Enroll {course.price}
                                     </button>
                                   )}
-                                </div>
-
-                                {/* Benefits Line */}
-                                <div style={{
-                                  display: 'flex',
-                                  flexWrap: 'wrap',
-                                  gap: '6px 14px',
-                                  marginBottom: 6,
-                                  fontSize: 13,
-                                  color: '#059669'
-                                }}>
-                                  <span>✓ 1-on-1 sessions with Student-Teacher</span>
-                                  <span>✓ Access to AI Prompters Community</span>
-                                  <span>✓ Certificate</span>
-                                </div>
-
-                                {/* Stats Line */}
-                                <div style={{
-                                  fontSize: 13,
-                                  color: isDarkMode ? '#71767b' : '#536471'
-                                }}>
-                                  <span style={{ color: '#fbbf24' }}>★</span> 4.8 (234) • 1,250 students • {course.curriculum?.length || 5} Modules • 12 hours
                                 </div>
                               </div>
                             </div>
@@ -1587,11 +1583,11 @@ const DiscoverView = ({
                             }}
                             style={{
                               textAlign: 'center',
-                              padding: 10,
+                              padding: 12,
                               marginTop: 8,
                               color: '#1d9bf0',
-                              fontSize: 14,
-                              fontWeight: 500,
+                              fontSize: 16,
+                              fontWeight: 600,
                               cursor: 'pointer'
                             }}
                             onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
