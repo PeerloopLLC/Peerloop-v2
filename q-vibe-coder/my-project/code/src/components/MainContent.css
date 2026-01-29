@@ -13,6 +13,13 @@
   position: relative;
   box-sizing: border-box;
   padding: 0;
+  /* Hide scrollbar while keeping scroll functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.main-content::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 /* Full-width mode for Creator Dashboard - fills remaining space after sidebar */
@@ -41,6 +48,13 @@
   border-left: 1px solid var(--border-color, #e2e8f0);
   overflow-y: auto;
   height: 100%;
+  /* Hide scrollbar while keeping scroll functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.center-column::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 /* Browse layout - same as default now */

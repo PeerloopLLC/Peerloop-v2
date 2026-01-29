@@ -346,9 +346,9 @@ const DiscoverView = ({
     return title.substring(0, 2).toUpperCase();
   };
 
-  // Single green gradient for all course badges (Option 5: Blue communities + Green courses)
+  // Single cyan gradient for all course badges (matching community header)
   const getCourseGradient = () => {
-    return 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    return 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
   };
 
   // Filter pill options - AI Subject categories
@@ -1450,7 +1450,7 @@ const DiscoverView = ({
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'center',
-                                  background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                                  background: getCourseGradient(),
                                   color: 'white',
                                   fontSize: 16,
                                   fontWeight: 700

@@ -120,6 +120,13 @@
 .feed-list {
   max-height: 500px;
   overflow-y: auto;
+  /* Hide scrollbar while keeping scroll functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.feed-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 .activity-item {

@@ -24,7 +24,7 @@ export const iconConfig = {
   // Course badge icon and styling
   course: {
     icon: '📚',
-    gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     borderRadius: 12
   }
 };
@@ -462,7 +462,7 @@ export const coursesDatabase = [
     price: "$349",
     badge: null,
     thumbnail: "https://via.placeholder.com/300x200/00D2FF/ffffff?text=Node",
-    thumbnailGradient: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    thumbnailGradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
     instructorId: 1, // Links to Albert Einstein
     category: "Backend Development",
     tags: ["Node.js", "Express", "MongoDB", "REST API"],
@@ -762,7 +762,7 @@ export const coursesDatabase = [
     price: "$349",
     badge: null,
     thumbnail: "https://via.placeholder.com/300x200/00B894/ffffff?text=BI",
-    thumbnailGradient: "linear-gradient(135deg, #10b981 0%, #34d399 100%)",
+    thumbnailGradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
     instructorId: 3, // Links to Prof. Maria Rodriguez
     category: "Business Analytics",
     tags: ["Tableau", "Power BI", "SQL", "Dashboard Design"],
@@ -1173,7 +1173,7 @@ export const coursesDatabase = [
     price: "$249",
     badge: "Bestseller",
     thumbnail: "https://via.placeholder.com/300x200/10B981/ffffff?text=AI+Basics",
-    thumbnailGradient: "linear-gradient(135deg, #10b981 0%, #6ee7b7 100%)",
+    thumbnailGradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
     instructorId: 9, // Dr. Sarah Chen
     category: "AI Fundamentals",
     tags: ["AI", "Beginner", "No-Code", "Business AI", "Fundamentals"],
@@ -1586,7 +1586,7 @@ export const coursesDatabase = [
     price: "$249",
     badge: "New",
     thumbnail: "https://via.placeholder.com/300x200/10B981/ffffff?text=Vibe+Coding",
-    thumbnailGradient: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+    thumbnailGradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
     instructorId: 8,
     category: "AI Development",
     tags: ["Vibe Coding", "AI Development", "GitHub", "Vercel Deployment", "Web Development", "Project Planning", "Q-System"],

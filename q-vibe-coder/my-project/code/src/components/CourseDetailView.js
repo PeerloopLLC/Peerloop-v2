@@ -6,9 +6,28 @@ import './MainContent.css';
 
 /**
  * CourseCurriculumSection - Expandable module accordion grouped by sessions
+ * Now includes file download links and "+ Add File" button for creators
  */
-const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpandedModules }) => {
+const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpandedModules, isCreator = false, currentUser }) => {
   const [expandedSessions, setExpandedSessions] = useState({ 1: true, 2: true });
+
+  // Handle file upload click (placeholder - would open file picker)
+  const handleAddFile = (moduleIndex, e) => {
+    e.stopPropagation();
+    // TODO: Implement actual file upload
+    alert(`Add file to module ${moduleIndex + 1}`);
+  };
+
+  // Handle file download click
+  const handleDownloadFile = (file, e) => {
+    e.stopPropagation();
+    // If file has a URL, open it
+    if (file.url) {
+      window.open(file.url, '_blank');
+    } else {
+      alert(`Download: ${file.name}`);
+    }
+  };
 
   // Module details data (would come from course data in real implementation)
   const getModuleDetails = (moduleIndex, moduleTitle) => {
@@ -60,6 +79,8 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
     const originalIdx = item.originalIndex !== undefined ? item.originalIndex : idx;
     const isExpanded = expandedModules[originalIdx];
     const details = getModuleDetails(originalIdx, title);
+    // Get files for this module (from item.files array)
+    const moduleFiles = (typeof item === 'object' && item.files) ? item.files : [];
 
     return (
       <div key={originalIdx} style={{
@@ -72,18 +93,18 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
           onClick={() => toggleModule(originalIdx)}
           style={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             gap: 12,
             padding: '12px 0 12px 20px',
             cursor: 'pointer'
           }}
         >
           {/* Expand/Collapse Icon */}
-          <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 12 }}>
+          <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 12, marginTop: 4 }}>
             {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
           </div>
 
-          {/* Module Title */}
+          {/* Module Info */}
           <div style={{ flex: 1 }}>
             <span style={{
               fontWeight: 500,
@@ -92,19 +113,91 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
             }}>
               {title}
             </span>
+            <div style={{
+              fontSize: 13,
+              color: isDarkMode ? '#71767b' : '#536471',
+              marginTop: 2
+            }}>
+              {duration}
+            </div>
+
+            {/* File Links Row - Always visible */}
+            {(moduleFiles.length > 0 || isCreator) && (
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 6,
+                alignItems: 'center',
+                marginTop: 8
+              }}>
+                {/* File Download Buttons */}
+                {moduleFiles.map((file, fileIdx) => (
+                  <button
+                    key={fileIdx}
+                    onClick={(e) => handleDownloadFile(file, e)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      background: isDarkMode ? '#2f3336' : '#eff3f4',
+                      color: isDarkMode ? '#a1a1aa' : '#536471',
+                      padding: '6px 12px',
+                      borderRadius: 8,
+                      fontSize: 13,
+                      fontWeight: 500,
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = isDarkMode ? '#3a3f45' : '#cfd9de';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#eff3f4';
+                    }}
+                  >
+                    <FaDownload style={{ fontSize: 11 }} />
+                    {file.name}
+                    {file.size && <span style={{ opacity: 0.7, fontSize: 11 }}>{file.size}</span>}
+                  </button>
+                ))}
+
+                {/* Add File Button - Creator Only */}
+                {isCreator && (
+                  <button
+                    onClick={(e) => handleAddFile(originalIdx, e)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      background: isDarkMode ? '#16181c' : 'white',
+                      color: isDarkMode ? '#71767b' : '#536471',
+                      border: isDarkMode ? '1px dashed #2f3336' : '1px dashed #cfd9de',
+                      padding: '6px 12px',
+                      borderRadius: 8,
+                      fontSize: 13,
+                      fontWeight: 500,
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#1d9bf0';
+                      e.currentTarget.style.color = '#1d9bf0';
+                      e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : '#e8f4fd';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#cfd9de';
+                      e.currentTarget.style.color = isDarkMode ? '#71767b' : '#536471';
+                      e.currentTarget.style.background = isDarkMode ? '#16181c' : 'white';
+                    }}
+                  >
+                    <FaPlus style={{ fontSize: 10 }} />
+                    Add File
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Duration Badge */}
-          <span style={{
-            background: isDarkMode ? '#2f3336' : '#e5e7eb',
-            color: isDarkMode ? '#9ca3af' : '#536471',
-            padding: '4px 10px',
-            borderRadius: 12,
-            fontSize: 12,
-            fontWeight: 500
-          }}>
-            {duration}
-          </span>
+          {/* Duration Badge - Hidden now since duration is inline */}
         </div>
 
         {/* Expanded Content */}
@@ -598,12 +691,11 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
   };
 
   // Different tabs for enrolled vs non-enrolled users
+  // Note: Session Files tab removed - files are now integrated into Curriculum
   const tabs = isCoursePurchased ? [
     { id: 'curriculum', label: 'Curriculum' },
-    { id: 'sessions', label: 'Session Files' },
     { id: 'feed', label: 'Course Feed' },
-    { id: 'reviews', label: 'Reviews' },
-    { id: 'about', label: 'About Course' }
+    { id: 'reviews', label: 'Reviews' }
   ] : [
     { id: 'curriculum', label: 'Curriculum' },
     { id: 'feed', label: 'Course Feed' },
@@ -615,37 +707,8 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
       background: isDarkMode ? '#000' : '#fff',
       minHeight: '100vh'
     }}>
-      {/* Back Button */}
-      {onBack && (
-        <div style={{
-          padding: '16px',
-          borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb',
-          background: isDarkMode ? '#0a0a0a' : '#fff'
-        }}>
-          <button
-            onClick={onBack}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              background: isDarkMode ? '#1a1a24' : '#f3f4f6',
-              border: isDarkMode ? '1px solid #3f3f46' : '1px solid #d1d5db',
-              borderRadius: 8,
-              padding: '10px 16px',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: 15,
-              color: isDarkMode ? '#f5f5f7' : '#374151'
-            }}
-          >
-            <span>←</span> Back
-          </button>
-        </div>
-      )}
-
       {/* Community Mini-Header Card */}
       <div
-        onClick={() => onViewInstructor && onViewInstructor(course.instructorId)}
         style={{
           margin: '0 24px',
           marginTop: 16,
@@ -657,19 +720,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
           display: 'flex',
           alignItems: 'center',
           gap: 10,
-          cursor: 'pointer',
-          border: isDarkMode ? '1px solid rgba(79, 172, 254, 0.2)' : '1px solid rgba(79, 172, 254, 0.15)',
-          transition: 'all 0.2s'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = isDarkMode
-            ? 'linear-gradient(135deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0.12) 100%)'
-            : 'linear-gradient(135deg, rgba(79, 172, 254, 0.18) 0%, rgba(0, 242, 254, 0.1) 100%)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = isDarkMode
-            ? 'linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.08) 100%)'
-            : 'linear-gradient(135deg, rgba(79, 172, 254, 0.12) 0%, rgba(0, 242, 254, 0.06) 100%)';
+          border: isDarkMode ? '1px solid rgba(79, 172, 254, 0.2)' : '1px solid rgba(79, 172, 254, 0.15)'
         }}
       >
         <span style={{ fontSize: 18 }}>👥</span>
@@ -680,15 +731,6 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
           flex: 1
         }}>
           {instructor?.communityName || `${instructor?.name} Community`}
-        </span>
-        <span style={{
-          color: isDarkMode ? '#71767b' : '#536471',
-          fontSize: 13,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4
-        }}>
-          Go to Community <span style={{ fontSize: 16 }}>→</span>
         </span>
       </div>
 
@@ -961,189 +1003,15 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
         </div>
         )}
 
-        {/* Next Session Hero Card - Only for enrolled users with an actionable session */}
-        {isCoursePurchased && nextActionable && (
-          <div style={{
-            background: nextActionable.type === 'scheduled'
-              ? (isDarkMode ? 'linear-gradient(135deg, rgba(29, 155, 240, 0.15) 0%, rgba(29, 155, 240, 0.05) 100%)' : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)')
-              : (isDarkMode ? 'linear-gradient(135deg, rgba(156, 163, 175, 0.15) 0%, rgba(156, 163, 175, 0.05) 100%)' : 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)'),
-            border: nextActionable.type === 'scheduled'
-              ? (isDarkMode ? '1px solid rgba(29, 155, 240, 0.3)' : '1px solid #bfdbfe')
-              : (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb'),
-            borderRadius: 12,
-            padding: 20,
-            marginBottom: 16
-          }}>
-            {/* Hero Header */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              marginBottom: 12
-            }}>
-              <span style={{
-                width: 10,
-                height: 10,
-                borderRadius: '50%',
-                background: nextActionable.type === 'scheduled' ? '#1d9bf0' : '#9ca3af'
-              }} />
-              <span style={{
-                fontSize: 12,
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
-                color: nextActionable.type === 'scheduled' ? '#1d9bf0' : (isDarkMode ? '#9ca3af' : '#6b7280')
-              }}>
-                {nextActionable.type === 'scheduled' ? 'YOUR NEXT SESSION' : 'SCHEDULE YOUR NEXT SESSION'}
-              </span>
-            </div>
-
-            {/* Session Title */}
-            <h3 style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: isDarkMode ? '#e7e9ea' : '#0f1419',
-              margin: '0 0 8px 0'
-            }}>
-              Session {nextActionable.session.number}: {nextActionable.session.title}
-            </h3>
-
-            {/* Session Details */}
-            {nextActionable.type === 'scheduled' ? (
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-                marginBottom: 16
-              }}>
-                <div style={{
-                  fontSize: 14,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8
-                }}>
-                  <FaCalendar style={{ color: '#1d9bf0', fontSize: 13 }} />
-                  {formatDateForDisplay(nextActionable.scheduledData.date)} at {nextActionable.scheduledData.time}
-                </div>
-                <div style={{
-                  fontSize: 14,
-                  color: isDarkMode ? '#71767b' : '#536471',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8
-                }}>
-                  <FaChalkboardTeacher style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 13 }} />
-                  with {nextActionable.scheduledData.studentTeacherName || nextActionable.scheduledData.teacherName || 'your teacher'}
-                </div>
-              </div>
-            ) : (
-              <div style={{
-                fontSize: 14,
-                color: isDarkMode ? '#71767b' : '#536471',
-                marginBottom: 16
-              }}>
-                {nextActionable.session.duration} • {nextActionable.session.modules?.length || 0} modules
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: 10 }}>
-              {nextActionable.type === 'scheduled' ? (
-                <>
-                  <button
-                    onClick={handleJoinSession}
-                    disabled={isJoiningSession}
-                    style={{
-                      background: '#1d9bf0',
-                      color: '#fff',
-                      border: 'none',
-                      padding: '10px 24px',
-                      borderRadius: 20,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      cursor: isJoiningSession ? 'wait' : 'pointer',
-                      opacity: isJoiningSession ? 0.7 : 1
-                    }}
-                  >
-                    {isJoiningSession ? 'Joining...' : 'Join Session'}
-                  </button>
-                  <button
-                    onClick={() => onRescheduleSession && onRescheduleSession(nextActionable.scheduledData)}
-                    style={{
-                      background: 'transparent',
-                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                      padding: '10px 24px',
-                      borderRadius: 20,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Reschedule
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => onBrowseStudentTeachers && onBrowseStudentTeachers(course, nextActionable.session.number)}
-                  style={{
-                    background: '#1d9bf0',
-                    color: '#fff',
-                    border: 'none',
-                    padding: '10px 24px',
-                    borderRadius: 20,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Schedule Session
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Session Timeline Cards - Only for enrolled users with sessions defined */}
-        {isCoursePurchased && course?.sessions?.list && (
-          <SessionTimelineCards
-            course={course}
-            scheduledSessions={courseScheduledSessions}
-            sessionCompletion={sessionCompletion}
-            onScheduleSession={(sessionNum) => onBrowseStudentTeachers && onBrowseStudentTeachers(course, sessionNum)}
-            onJoinSession={handleJoinSession}
-            onRescheduleSession={onRescheduleSession}
-            isDarkMode={isDarkMode}
-          />
-        )}
-
-        {/* Enrolled Badge - Only for purchased courses */}
-        {isCoursePurchased && enrollmentData && (
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            background: 'rgba(16, 185, 129, 0.15)',
-            color: '#10b981',
-            padding: '6px 12px',
-            borderRadius: 20,
-            fontSize: 13,
-            fontWeight: 600,
-            marginBottom: 12
-          }}>
-            <FaCheck style={{ fontSize: 10 }} /> ENROLLED · Started {enrollmentData.enrolledDate}
-          </span>
-        )}
-
-
-        {/* Tabs - Pill Style */}
+        {/* Tabs - Pill Style - Now above Your Sessions */}
         <div
           className="course-detail-tabs"
           style={{
             display: 'flex',
             flexWrap: 'wrap',
-            gap: 8
+            gap: 8,
+            paddingBottom: 16,
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
           }}
         >
           {tabs.map(tab => (
@@ -2342,11 +2210,27 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
       {/* Course Curriculum - Full Width Below Topics */}
       {activeTab === 'curriculum' && (
         <div style={{ padding: '0 24px 24px 24px', maxWidth: 1200, margin: '0 auto' }}>
+          {/* Your Sessions Card - Only for enrolled users */}
+          {isCoursePurchased && course?.sessions?.list && (
+            <div style={{ marginBottom: 20 }}>
+              <SessionTimelineCards
+                course={course}
+                scheduledSessions={courseScheduledSessions}
+                sessionCompletion={sessionCompletion}
+                onScheduleSession={(sessionNum) => onBrowseStudentTeachers && onBrowseStudentTeachers(course, sessionNum)}
+                onJoinSession={handleJoinSession}
+                onRescheduleSession={onRescheduleSession}
+                isDarkMode={isDarkMode}
+              />
+            </div>
+          )}
           <CourseCurriculumSection
             course={course}
             isDarkMode={isDarkMode}
             expandedModules={expandedModules}
             setExpandedModules={setExpandedModules}
+            isCreator={currentUser?.name === instructor?.name}
+            currentUser={currentUser}
           />
         </div>
       )}

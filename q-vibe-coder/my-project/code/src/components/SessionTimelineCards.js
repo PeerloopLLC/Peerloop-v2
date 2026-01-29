@@ -139,19 +139,19 @@ const SessionTimelineCards = ({
               background: rowState === 'completed'
                 ? (isDarkMode ? 'rgba(16, 185, 129, 0.08)' : '#ecfdf5')
                 : rowState === 'scheduled'
-                ? (isDarkMode ? 'rgba(29, 155, 240, 0.08)' : '#eff6ff')
+                ? (isDarkMode ? 'rgba(156, 163, 175, 0.08)' : '#f9fafb')
                 : rowState === 'locked'
                 ? (isDarkMode ? 'rgba(113, 118, 123, 0.05)' : '#f3f4f6')
                 : (isDarkMode ? 'transparent' : '#f9fafb'),
               borderLeft: rowState === 'completed'
                 ? '4px solid #10b981'
                 : rowState === 'scheduled'
-                ? '4px solid #1d9bf0'
+                ? '4px solid #9ca3af'
                 : rowState === 'ready'
                 ? '4px solid #9ca3af'
                 : '4px solid transparent'
             }}>
-              {/* Session Number Circle */}
+              {/* Session Number Circle - Grey for all except completed (green) */}
               <div style={{
                 width: 32,
                 height: 32,
@@ -161,9 +161,8 @@ const SessionTimelineCards = ({
                 justifyContent: 'center',
                 flexShrink: 0,
                 background: rowState === 'completed' ? '#10b981' :
-                            rowState === 'scheduled' ? '#1d9bf0' :
-                            rowState === 'ready' ? '#1d9bf0' :
-                            (isDarkMode ? '#2f3336' : '#e5e7eb'),
+                            rowState === 'locked' ? (isDarkMode ? '#2f3336' : '#e5e7eb') :
+                            (isDarkMode ? '#536471' : '#9ca3af'),
                 color: rowState === 'locked' ? (isDarkMode ? '#71767b' : '#9ca3af') : '#fff',
                 fontSize: 13,
                 fontWeight: 700
@@ -236,7 +235,7 @@ const SessionTimelineCards = ({
                     <button
                       onClick={() => onJoinSession && onJoinSession(scheduledSession)}
                       style={{
-                        background: '#1d9bf0',
+                        background: '#10b981',
                         color: '#fff',
                         border: 'none',
                         padding: '6px 14px',
