@@ -439,6 +439,12 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
   const [showHelpPanel, setShowHelpPanel] = useState(false);
   const [expandedFileSessions, setExpandedFileSessions] = useState({ 1: true }); // Session 1 expanded by default
 
+  // Check if student is certified (all sessions completed)
+  const courseCompletion = sessionCompletion[course?.id] || {};
+  const totalSessions = course?.sessions?.list?.length || 0;
+  const completedSessionCount = Object.values(courseCompletion).filter(s => s?.completed).length;
+  const isCertified = isCoursePurchased && totalSessions > 0 && completedSessionCount >= totalSessions;
+
   // Find real scheduled session for this course
   const realNextSession = scheduledSessions
     .filter(s => s.courseId === course?.id && s.status === 'scheduled')
@@ -853,6 +859,37 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
                 }}
               >
                 {isFollowing ? 'Following Course' : 'Follow Course'}
+              </button>
+            )}
+            {/* Apply to Teach button - shown when student is certified */}
+            {isCertified && (
+              <button
+                onClick={() => {
+                  // TODO: Implement apply to teach flow
+                  alert('Apply to Teach feature coming soon! You will be able to teach: ' + course.name);
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: 20,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                Apply to Teach
               </button>
             )}
           </div>
