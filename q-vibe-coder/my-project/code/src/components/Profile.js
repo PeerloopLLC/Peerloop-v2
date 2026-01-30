@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Profile.css';
+import { getCourseById, getInstructorById } from '../data/database';
 import {
   FaUserEdit,
   FaBookmark,
@@ -129,6 +130,64 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
   // Sub-tab state for Edit Profile section
   const [profileSubTab, setProfileSubTab] = useState('posts');
 
+  // Get completed courses from localStorage sessionCompletion data
+  const getCompletedCoursesFromStorage = (userId) => {
+    if (!userId) return [];
+
+    try {
+      const stored = localStorage.getItem(`sessionCompletion_${userId}`);
+      if (!stored) return [];
+
+      const sessionCompletion = JSON.parse(stored);
+      const completedCourses = [];
+
+      // Group completed courses by community (instructor)
+      const coursesByInstructor = {};
+
+      Object.keys(sessionCompletion).forEach(courseId => {
+        const courseData = sessionCompletion[courseId];
+        // Check if both sessions are completed
+        const session1Done = courseData[1]?.completed === true;
+        const session2Done = courseData[2]?.completed === true;
+
+        if (session1Done && session2Done) {
+          const course = getCourseById(parseInt(courseId) || courseId);
+          if (course) {
+            const instructor = getInstructorById(course.instructorId);
+            const communityName = instructor?.communityName || instructor?.name || 'Unknown Community';
+
+            if (!coursesByInstructor[communityName]) {
+              coursesByInstructor[communityName] = [];
+            }
+
+            coursesByInstructor[communityName].push({
+              title: course.title,
+              status: 'completed',
+              hours: course.duration || 10,
+              date: new Date(courseData[2]?.completedAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+              score: 100,
+              rank: 'Certified',
+              skills: course.skills || ['Course Completed']
+            });
+          }
+        }
+      });
+
+      // Convert to array format expected by profile
+      Object.keys(coursesByInstructor).forEach(community => {
+        completedCourses.push({
+          community,
+          courses: coursesByInstructor[community]
+        });
+      });
+
+      return completedCourses;
+    } catch (e) {
+      console.error('Error reading sessionCompletion:', e);
+      return [];
+    }
+  };
+
   // User-specific profile data - pulls from actual user data
   const getUserProfileData = () => {
     const userType = displayUser?.userType || 'student';
@@ -144,6 +203,13 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
 
     const { role, roleColor } = roleConfig[userType] || roleConfig.student;
 
+    // Get dynamically completed courses from localStorage
+    const completedFromStorage = getCompletedCoursesFromStorage(displayUser?.id);
+    // Merge with any static coursesTaken data
+    const allCoursesTaken = completedFromStorage.length > 0
+      ? completedFromStorage
+      : (displayUser?.coursesTaken || []);
+
     // Use actual user data with sensible fallbacks
     return {
       role,
@@ -154,8 +220,8 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
       website: displayUser?.website ? displayUser.website.replace(/^https?:\/\//, '') : '',
       // Use actual posts from user data, or empty array
       posts: displayUser?.posts || [],
-      // Use actual courses data
-      coursesTaken: displayUser?.coursesTaken || [],
+      // Use dynamically completed courses
+      coursesTaken: allCoursesTaken,
       coursesTaught: displayUser?.coursesTaught || [],
       // Teaching stats for student-teachers and creators
       teachingStats: displayUser?.teachingStats || (displayUser?.stats ? {
@@ -864,27 +930,89 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
           </div>
         </div>
 
-        {/* Sub-tabs */}
-        <div className="ep-tabs">
-          <div
-            className={`ep-tab${profileSubTab === 'posts' ? ' active' : ''}`}
+        {/* Sub-tabs - Pill format */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '12px 20px 16px 20px'
+        }}>
+          <button
             onClick={() => setProfileSubTab('posts')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 16px',
+              borderRadius: 20,
+              border: profileSubTab === 'posts'
+                ? '2px solid #1d9bf0'
+                : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+              background: profileSubTab === 'posts'
+                ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+              color: profileSubTab === 'posts'
+                ? '#1d9bf0'
+                : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
           >
             Posts
-          </div>
-          <div
-            className={`ep-tab${profileSubTab === 'courses-taken' ? ' active' : ''}`}
+          </button>
+          <button
             onClick={() => setProfileSubTab('courses-taken')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 16px',
+              borderRadius: 20,
+              border: profileSubTab === 'courses-taken'
+                ? '2px solid #1d9bf0'
+                : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+              background: profileSubTab === 'courses-taken'
+                ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+              color: profileSubTab === 'courses-taken'
+                ? '#1d9bf0'
+                : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
           >
             Courses Taken
-          </div>
+          </button>
           {showTeachingTab && (
-            <div
-              className={`ep-tab${profileSubTab === 'courses-taught' ? ' active' : ''}`}
+            <button
               onClick={() => setProfileSubTab('courses-taught')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '8px 16px',
+                borderRadius: 20,
+                border: profileSubTab === 'courses-taught'
+                  ? '2px solid #1d9bf0'
+                  : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                background: profileSubTab === 'courses-taught'
+                  ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                  : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                color: profileSubTab === 'courses-taught'
+                  ? '#1d9bf0'
+                  : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
             >
               Courses Taught
-            </div>
+            </button>
           )}
         </div>
 
@@ -944,40 +1072,34 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
             <span className="ep-community-count">{community.courses.length} courses</span>
           </div>
           {community.courses.map((course, courseIndex) => (
-            <div key={courseIndex} className="ep-course-item">
-              <div className={`ep-course-badge ${course.status}`}>
-                <span>{course.status === 'completed' ? '🏆' : '📚'}</span>
-                <span className="ep-course-badge-label">
-                  {course.status === 'completed' ? 'CERT' : `${course.progress}%`}
-                </span>
-              </div>
-              <div className="ep-course-details">
-                <h3 className="ep-course-title">{course.title}</h3>
-                <div className={`ep-course-status ${course.status}`}>
-                  {course.status === 'completed' ? '✅ Completed • Certificate Earned' : '🔄 In Progress'}
+            <div key={courseIndex} className="ep-course-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flex: 1 }}>
+                <div className={`ep-course-badge ${course.status}`}>
+                  <span>{course.status === 'completed' ? '🏆' : '📚'}</span>
+                  <span className="ep-course-badge-label">
+                    {course.status === 'completed' ? 'CERT' : `${course.progress}%`}
+                  </span>
                 </div>
-                <div className="ep-course-meta">
-                  <span>{course.hours}h</span>
-                  {course.date && <span>{course.date}</span>}
-                  {course.score && <span>Score: {course.score}%</span>}
-                  {course.rank && <span>{course.rank}</span>}
-                </div>
-                <div className="ep-skill-tags">
-                  {course.skills.map((skill, sIndex) => (
-                    <span key={sIndex} className="ep-skill-tag">{skill}</span>
-                  ))}
-                </div>
-                <div className="ep-course-actions">
-                  {course.status === 'completed' ? (
-                    <>
-                      <button className="ep-course-btn primary">View Certificate</button>
-                      <button className="ep-course-btn secondary">Share</button>
-                    </>
-                  ) : (
-                    <button className="ep-course-btn primary">Continue →</button>
-                  )}
+                <div className="ep-course-details">
+                  <h3 className="ep-course-title">{course.title}</h3>
+                  <div className={`ep-course-status ${course.status}`}>
+                    {course.status === 'completed' ? '✅ Completed' : '🔄 In Progress'}
+                  </div>
+                  <div className="ep-course-meta">
+                    <span>{course.hours}h</span>
+                    {course.date && <span>{course.date}</span>}
+                  </div>
                 </div>
               </div>
+              {course.status === 'completed' && (
+                <div style={{
+                  fontSize: 32,
+                  marginLeft: 16,
+                  opacity: 0.9
+                }} title="Certificate Earned">
+                  📜
+                </div>
+              )}
             </div>
           ))}
         </div>

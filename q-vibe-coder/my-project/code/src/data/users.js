@@ -1308,10 +1308,10 @@ export const communityUsers = {
     website: null,
     joinedDate: 'October 2024',
     stats: {
-      coursesCompleted: 3,
+      coursesCompleted: 0,
       coursesTeaching: 0,
       studentsHelped: 0,
-      hoursLearned: 45,
+      hoursLearned: 0,
       avgRating: 0,
       totalEarnings: 0
     },
@@ -1326,13 +1326,7 @@ export const communityUsers = {
       { type: 'question', time: '2h ago', context: 'The Commons > Web Development', content: 'What\'s the best way to learn React hooks? I keep getting confused by useState vs useEffect.', stats: { replies: 5, resolved: false } },
       { type: 'win', time: '1d ago', context: 'Code Academy > JavaScript', content: 'Just completed my first JavaScript course! Arrays were tough but finally clicking!', badge: 'JavaScript Basics', stats: { likes: 12, replies: 3 } }
     ],
-    coursesTaken: [
-      { community: 'Code Academy', courses: [
-        { title: 'JavaScript Basics', status: 'completed', hours: 15, date: 'Jan 2025', score: 88, rank: 'Top 15%', skills: ['Variables', 'Functions', 'Arrays'] },
-        { title: 'HTML & CSS Fundamentals', status: 'completed', hours: 10, date: 'Dec 2024', score: 92, rank: 'Top 10%', skills: ['HTML5', 'CSS3', 'Flexbox'] },
-        { title: 'React Basics', status: 'in-progress', hours: 8, progress: 45, skills: ['Components', 'Props', 'State'] }
-      ]}
-    ],
+    coursesTaken: [],
     coursesTaught: []
   },
 

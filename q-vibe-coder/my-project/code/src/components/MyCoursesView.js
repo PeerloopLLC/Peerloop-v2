@@ -574,13 +574,37 @@ const MyCoursesView = ({
   const allCompletedCount = myCoursesData.filter(c => c.progress === 100).length;
 
   // Check if a course is completed (certified) based on sessions
+  // A course requires BOTH session 1 and session 2 to be certified
   const isCourseCompleted = (courseId) => {
+    // Primary check: sessionCompletion data (set by teacher when certifying)
+    if (currentUser?.id) {
+      try {
+        const stored = localStorage.getItem(`sessionCompletion_${currentUser.id}`);
+        if (stored) {
+          const sessionCompletion = JSON.parse(stored);
+          const courseCompletion = sessionCompletion[courseId] || {};
+          // Course requires both sessions to be certified
+          const session1Done = courseCompletion[1]?.completed === true;
+          const session2Done = courseCompletion[2]?.completed === true;
+          if (session1Done && session2Done) {
+            return true;
+          }
+          // If we have session data but not both done, course is NOT complete
+          if (session1Done || session2Done) {
+            return false;
+          }
+        }
+      } catch (e) {
+        // Fall through to legacy check
+      }
+    }
+
+    // Legacy fallback: check scheduled sessions (need 2+ completed)
     const courseSessions = scheduledSessions.filter(s => s.courseId === courseId);
     if (courseSessions.length === 0) return false;
-    // Course is completed if ALL sessions are completed (none scheduled)
+    const completedCount = courseSessions.filter(s => s.status === 'completed').length;
     const hasScheduled = courseSessions.some(s => s.status === 'scheduled');
-    const hasCompleted = courseSessions.some(s => s.status === 'completed');
-    return !hasScheduled && hasCompleted;
+    return !hasScheduled && completedCount >= 2;
   };
 
   // Split courses into Active and Completed groups by instructor

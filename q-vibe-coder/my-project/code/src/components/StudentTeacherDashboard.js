@@ -147,7 +147,7 @@ const StudentTeacherDashboard = ({
   const quickStats = [
     { value: stTeacherStats?.activeStudents?.length || 0, label: 'Active', sublabel: 'Students' },
     { value: stTeacherStats?.completedStudents?.length || 0, label: 'Total', sublabel: 'Taught' },
-    { value: `$${(stTeacherStats?.totalEarned || 0).toLocaleString()}`, label: 'Total', sublabel: 'Earned' }
+    { value: `$${(stTeacherStats?.totalEarned || 0).toFixed(2)}`, label: 'Total', sublabel: 'Earned' }
   ];
 
   // S-T Rating and earnings - use real data from stTeacherStats prop
@@ -648,10 +648,12 @@ const StudentTeacherDashboard = ({
     Object.entries(studentMap).forEach(([studentName, student]) => {
       Object.entries(student.courses).forEach(([courseId, course]) => {
         // Try multiple localStorage key patterns
+        // Priority: actual userId (demo_sarah) first, then display name fallbacks
         const keysToTry = [
+          student.studentId ? `sessionCompletion_${student.studentId}` : null, // e.g., sessionCompletion_demo_sarah
           `sessionCompletion_${studentName}`,           // e.g., sessionCompletion_Sarah Miller
           `sessionCompletion_${studentName}-${courseId}` // e.g., sessionCompletion_Sarah Miller-15
-        ];
+        ].filter(Boolean);
 
         for (const key of keysToTry) {
           try {
@@ -785,7 +787,7 @@ const StudentTeacherDashboard = ({
             <span style={{ color: textSecondary }}>Taught</span>
           </span>
           <span>
-            <strong style={{ color: accentGreen }}>${(stTeacherStats?.totalEarned || 0).toLocaleString()}</strong>{' '}
+            <strong style={{ color: accentGreen }}>${(stTeacherStats?.totalEarned || 0).toFixed(2)}</strong>{' '}
             <span style={{ color: textSecondary }}>Earned</span>
           </span>
         </div>
@@ -1164,7 +1166,7 @@ const StudentTeacherDashboard = ({
           Pending Balance
         </div>
         <div style={{ fontSize: 24, fontWeight: 700, color: textPrimary, marginBottom: 4 }}>
-          ${pendingBalance}.00
+          ${pendingBalance.toFixed(2)}
         </div>
         <div style={{ fontSize: 12, color: textSecondary }}>
           (Released after student certification)
@@ -1407,7 +1409,7 @@ const StudentTeacherDashboard = ({
               }}>
                 <span style={{ fontSize: 18 }}>⚠️</span>
                 <div style={{ fontSize: 13, color: textPrimary }}>
-                  This will release <strong>$315</strong> to your pending balance
+                  Certifying all sessions will release <strong>$315</strong> to your earnings
                 </div>
               </div>
 

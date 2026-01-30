@@ -303,64 +303,18 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     setViewingCourseFromCommunity(null);
     onMenuChange(previousPage);
   };
-  // Helper function to get default follows (all creators)
+  // Helper function to get default follows (empty - users follow communities by purchasing courses or manually)
   const getDefaultFollows = () => {
-    const allInstructors = getAllInstructors();
-    return allInstructors.map(instructor => {
-      const courseIds = instructor.courses || [];
-      let totalStudents = 0;
-      courseIds.forEach(cid => {
-        const course = getCourseById(cid);
-        if (course) totalStudents += course.students;
-      });
-      return {
-        id: `creator-${instructor.id}`,
-        type: 'creator',
-        name: instructor.name,
-        instructorId: instructor.id,
-        instructorName: instructor.name,
-        courseIds: courseIds,
-        followedCourseIds: [], // Empty until courses are purchased
-        description: instructor.bio,
-        members: Math.floor(totalStudents * 0.8),
-        posts: Math.floor(totalStudents * 0.24),
-        avatar: instructor.avatar
-      };
-    });
-  };
-
-  // Helper function to get Sarah's default communities (only 2 to start)
-  const getSarahDefaultCommunities = () => {
-    const allInstructors = getAllInstructors();
-    const allCourses = getAllCourses();
-
-    // Sarah only starts with 2 communities joined (first 2 instructors)
-    const sarahInstructors = allInstructors.slice(0, 2);
-
-    return sarahInstructors.map(instructor => {
-      const instructorCourses = allCourses.filter(c => c.instructorId === instructor.id);
-      return {
-        id: `creator-${instructor.id}`,
-        type: 'creator', // Required for Community.js to recognize this as a creator follow
-        name: instructor.name,
-        avatar: instructor.avatar,
-        instructorId: instructor.id,
-        followedCourseIds: instructorCourses.map(c => c.id),
-        isFullCreatorFollow: true
-      };
-    });
+    // Return empty array - users start with no communities
+    // Communities are auto-joined when purchasing courses
+    return [];
   };
 
   // Helper function to load follows for a specific user
   const loadFollowsForUser = (userId, isNewUser) => {
-    // New User (demo_new) starts with no communities - completely fresh
+    // New User (demo_new) always starts completely fresh
     if (userId === 'demo_new') {
       return [];
-    }
-
-    // Sarah (demo_sarah) starts with only 2 communities joined
-    if (userId === 'demo_sarah') {
-      return getSarahDefaultCommunities();
     }
 
     // New users always start with empty follows
@@ -368,7 +322,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       return [];
     }
 
-    // Load from user-specific localStorage key
+    // Load from user-specific localStorage key (for all users including Sarah)
     try {
       const storageKey = `followedCommunities_${userId}`;
       const stored = localStorage.getItem(storageKey);
@@ -433,6 +387,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // This ensures the welcome card disappears in both views after completing signup
   const [signupCompleted, setSignupCompleted] = useState(false);
 
+  // Track previous user ID to detect user switches (prevents saving old user's data to new user's key)
+  const prevUserIdRef = useRef(currentUser?.id);
+
   // ========== UNIFIED USER STATUS (new consolidated state) ==========
   // This hook consolidates followedCommunities, purchasedCourses, scheduledSessions, and sessionCompletion
   // into ONE localStorage key: userStatus_${userId}
@@ -494,9 +451,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     }
   }, [currentUser?.id]);
 
-  // Save purchased courses to localStorage
+  // Save purchased courses to localStorage (only when courses change, not on user switch)
   React.useEffect(() => {
-    if (currentUser?.id && purchasedCourses.length > 0) {
+    if (!currentUser?.id) return;
+    // Skip saving during user switch
+    if (prevUserIdRef.current !== currentUser.id) return;
+    if (purchasedCourses.length > 0) {
       localStorage.setItem(`purchasedCourses_${currentUser.id}`, JSON.stringify(purchasedCourses));
     }
   }, [purchasedCourses, currentUser?.id]);
@@ -945,12 +905,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     }));
   };
 
-  // Helper: When student session is certified (releases partial payout per session)
+  // Helper: When student session is certified (payout only when course complete)
   // sessionNumber: which session (1, 2, etc.) is being certified
   // totalSessions: total sessions in the course (default 2)
   const certifyStudent = (studentId, studentName, courseName, courseId, sessionNumber = 1, totalSessions = 2) => {
-    // Calculate per-session payout (split $315 across sessions, but we'll pay full $315 per session for simplicity)
-    const perSessionPayout = 315;
+    // Course costs $450, teacher gets 70% = $315 total (paid when course complete)
+    const coursePayout = 315;
 
     // Parse enrollment ID to get actual student userId
     const lastDashIndex = studentId.lastIndexOf('-');
@@ -1002,20 +962,18 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       }
     }
 
-    // Update S-T stats - only move to completedStudents when ALL sessions done
+    // Update S-T stats - only update money and move to completedStudents when ALL sessions done
     setStTeacherStats(prev => {
-      const updates = {
-        ...prev,
-        pendingBalance: Math.max(0, prev.pendingBalance - perSessionPayout),
-        totalEarned: prev.totalEarned + perSessionPayout,
-        earningsHistory: [
-          { studentId, studentName, courseName, sessionNumber, amount: perSessionPayout, date: new Date().toISOString() },
-          ...(prev.earningsHistory || [])
-        ]
-      };
+      const updates = { ...prev };
 
-      // Only move student to completed when all sessions are done
+      // Only update money when course is complete (all sessions certified)
       if (allSessionsComplete) {
+        updates.pendingBalance = Math.max(0, prev.pendingBalance - coursePayout);
+        updates.totalEarned = prev.totalEarned + coursePayout;
+        updates.earningsHistory = [
+          { studentId, studentName, courseName, amount: coursePayout, date: new Date().toISOString() },
+          ...(prev.earningsHistory || [])
+        ];
         updates.activeStudents = prev.activeStudents.filter(s => s.id !== studentId);
         updates.completedStudents = [...prev.completedStudents, studentId];
       }
@@ -1280,15 +1238,16 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       return [...prev, courseId];
     });
 
-    // Auto-follow the creator
+    // Auto-follow the creator (use callback to avoid stale closure)
     const creatorId = `creator-${course.instructorId}`;
-    const isCreatorFollowed = followedCommunities.some(c => c.id === creatorId);
+    const instructor = getInstructorById(course.instructorId);
 
-    if (!isCreatorFollowed) {
-      const instructor = getInstructorById(course.instructorId);
-      if (instructor) {
+    setFollowedCommunities(prev => {
+      const isCreatorFollowed = prev.some(c => c.id === creatorId);
+
+      if (!isCreatorFollowed && instructor) {
         const courseIds = instructor.courses || [];
-        setFollowedCommunities(prev => [...prev, {
+        return [...prev, {
           id: creatorId,
           type: 'creator',
           name: instructor.name,
@@ -1298,20 +1257,21 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           followedCourseIds: [courseId], // Start with just the purchased course
           description: instructor.bio,
           avatar: instructor.avatar
-        }]);
+        }];
+      } else if (isCreatorFollowed) {
+        // Creator already followed - add this course to their followedCourseIds
+        return prev.map(c => {
+          if (c.id === creatorId) {
+            return {
+              ...c,
+              followedCourseIds: [...new Set([...(c.followedCourseIds || []), courseId])]
+            };
+          }
+          return c;
+        });
       }
-    } else {
-      // Creator already followed - add this course to their followedCourseIds
-      setFollowedCommunities(prev => prev.map(c => {
-        if (c.id === creatorId) {
-          return {
-            ...c,
-            followedCourseIds: [...new Set([...(c.followedCourseIds || []), courseId])]
-          };
-        }
-        return c;
-      }));
-    }
+      return prev;
+    });
   };
 
     // Only reset Browse state when explicitly requested (double-click Browse or Browse_Reset)
@@ -1456,6 +1416,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // When followedCommunities changes, save to user-specific localStorage key
   useEffect(() => {
     if (!currentUser?.id) return;
+
+    // Skip saving if user just switched (prevents saving old user's data to new user's key)
+    if (prevUserIdRef.current !== currentUser.id) {
+      prevUserIdRef.current = currentUser.id;
+      return;
+    }
 
     const saveFollowedCommunities = () => {
       try {
@@ -1801,42 +1767,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             }
           }
 
-          // Auto-join the course's community if not already following
-          if (course.instructorId) {
-            const creatorId = `creator-${course.instructorId}`;
-            const instructor = getInstructorById(course.instructorId);
-
-            // Use prev state inside callback to avoid stale closure issues
-            setFollowedCommunities(prev => {
-              const alreadyFollowing = prev.some(c => c.id === creatorId);
-              if (!alreadyFollowing && instructor) {
-                console.log('Auto-joined community:', instructor.name);
-                return [...prev, {
-                  id: creatorId,
-                  type: 'creator',
-                  name: instructor.name,
-                  instructorId: instructor.id,
-                  instructorName: instructor.name,
-                  courseIds: instructor.courses || [],
-                  followedCourseIds: [course.id],
-                  description: instructor.bio,
-                  avatar: instructor.avatar
-                }];
-              } else if (alreadyFollowing) {
-                // Already following - just add this course to followedCourseIds if not already there
-                return prev.map(c => {
-                  if (c.id === creatorId && !(c.followedCourseIds || []).includes(course.id)) {
-                    return {
-                      ...c,
-                      followedCourseIds: [...(c.followedCourseIds || []), course.id]
-                    };
-                  }
-                  return c;
-                });
-              }
-              return prev;
-            });
-          }
+          // Auto-join handled by handleCoursePurchase (called by BrowseView)
 
           // Navigate to My Courses and show the purchased course detail
           setViewingCourseFromCommunity(course);
@@ -1879,39 +1810,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             setEnrollingCourse(null);
           }}
           onPurchaseComplete={(destination) => {
-            // Complete the purchase
+            // Complete the purchase (also auto-joins community)
             handleCoursePurchase(enrollingCourse.id);
-
-            // Auto-join the course's community
-            if (enrollingCourse.instructorId) {
-              const creatorId = `creator-${enrollingCourse.instructorId}`;
-              const instructor = getInstructorById(enrollingCourse.instructorId);
-
-              setFollowedCommunities(prev => {
-                const alreadyFollowing = prev.some(c => c.id === creatorId);
-                if (!alreadyFollowing && instructor) {
-                  return [...prev, {
-                    id: creatorId,
-                    type: 'creator',
-                    name: instructor.name,
-                    instructorId: instructor.id,
-                    instructorName: instructor.name,
-                    courseIds: instructor.courses || [],
-                    followedCourseIds: [enrollingCourse.id],
-                    description: instructor.bio,
-                    avatar: instructor.avatar
-                  }];
-                } else if (alreadyFollowing) {
-                  return prev.map(c => {
-                    if (c.id === creatorId && !(c.followedCourseIds || []).includes(enrollingCourse.id)) {
-                      return { ...c, followedCourseIds: [...(c.followedCourseIds || []), enrollingCourse.id] };
-                    }
-                    return c;
-                  });
-                }
-                return prev;
-              });
-            }
 
             // Close modal and navigate based on destination
             setShowPurchaseModal(false);
@@ -2381,39 +2281,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               setEnrollingCourse(null);
             }}
             onPurchaseComplete={(destination) => {
-              // Complete the purchase
+              // Complete the purchase (also auto-joins community)
               handleCoursePurchase(enrollingCourse.id);
-
-              // Auto-join the course's community
-              if (enrollingCourse.instructorId) {
-                const creatorId = `creator-${enrollingCourse.instructorId}`;
-                const instructor = getInstructorById(enrollingCourse.instructorId);
-
-                setFollowedCommunities(prev => {
-                  const existingCommunity = prev.find(c => c.id === creatorId);
-                  if (!existingCommunity) {
-                    return [...prev, {
-                      id: creatorId,
-                      instructorId: enrollingCourse.instructorId,
-                      instructorName: instructor.name,
-                      courseIds: instructor.courses || [],
-                      followedCourseIds: [enrollingCourse.id],
-                      description: instructor.bio,
-                      avatar: instructor.avatar
-                    }];
-                  } else {
-                    return prev.map(c => {
-                      if (c.id === creatorId && !(c.followedCourseIds || []).includes(enrollingCourse.id)) {
-                        return {
-                          ...c,
-                          followedCourseIds: [...(c.followedCourseIds || []), enrollingCourse.id]
-                        };
-                      }
-                      return c;
-                    });
-                  }
-                });
-              }
 
               setShowPurchaseModal(false);
 
@@ -2568,42 +2437,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
                 }
               }
 
-              // Auto-join the course's community if not already following
-              if (enrollingCourse.instructorId) {
-                const creatorId = `creator-${enrollingCourse.instructorId}`;
-                const instructor = getInstructorById(enrollingCourse.instructorId);
-
-                // Use prev state inside callback to avoid stale closure issues
-                setFollowedCommunities(prev => {
-                  const alreadyFollowing = prev.some(c => c.id === creatorId);
-                  if (!alreadyFollowing && instructor) {
-                    console.log('Auto-joined community:', instructor.name);
-                    return [...prev, {
-                      id: creatorId,
-                      type: 'creator',
-                      name: instructor.name,
-                      instructorId: instructor.id,
-                      instructorName: instructor.name,
-                      courseIds: instructor.courses || [],
-                      followedCourseIds: [enrollingCourse.id],
-                      description: instructor.bio,
-                      avatar: instructor.avatar
-                    }];
-                  } else if (alreadyFollowing) {
-                    // Already following - just add this course to followedCourseIds if not already there
-                    return prev.map(c => {
-                      if (c.id === creatorId && !(c.followedCourseIds || []).includes(enrollingCourse.id)) {
-                        return {
-                          ...c,
-                          followedCourseIds: [...(c.followedCourseIds || []), enrollingCourse.id]
-                        };
-                      }
-                      return c;
-                    });
-                  }
-                  return prev;
-                });
-              }
+              // Auto-join handled by handleCoursePurchase above
 
               setShowEnrollmentFlow(false);
               // Show the purchased course detail
