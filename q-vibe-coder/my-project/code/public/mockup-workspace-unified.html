@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspace Mockup - Unified Student Cards</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f7f9f9;
+      color: #0f1419;
+      padding: 20px 24px;
+      max-width: 700px;
+    }
+
+    /* Top bar with logo, tabs, user */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eff3f4;
+    }
+
+    .logo {
+      font-size: 20px;
+      color: #1d9bf0;
+      font-weight: 700;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid transparent;
+      background: none;
+    }
+
+    .tab.active {
+      background: rgba(29, 155, 240, 0.1);
+      border-color: #1d9bf0;
+      color: #1d9bf0;
+    }
+
+    .tab:not(.active) {
+      background: transparent;
+      color: #536471;
+    }
+
+    .tab:not(.active):hover {
+      background: rgba(0,0,0,0.03);
+    }
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: #f7f9f9;
+      border: 1px solid #eff3f4;
+      cursor: pointer;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1d9bf0, #1a8cd8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .welcome {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f1419;
+    }
+
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #f7b928;
+      font-size: 14px;
+    }
+
+    .rating-count {
+      color: #536471;
+      font-size: 13px;
+    }
+
+    .role {
+      color: #536471;
+      font-size: 15px;
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+
+    .stats-inline {
+      display: flex;
+      gap: 24px;
+      font-size: 15px;
+    }
+
+    .stat-item strong {
+      color: #0f1419;
+      font-weight: 700;
+    }
+
+    .stat-item span {
+      color: #536471;
+    }
+
+    .stat-item.earnings strong {
+      color: #00ba7c;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: #eff3f4;
+      margin: 20px 0;
+    }
+
+    /* Student Card */
+    .student-card {
+      margin-bottom: 8px;
+    }
+
+    .student-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1d9bf0, #1a8cd8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .student-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f1419;
+    }
+
+    .student-subtitle {
+      font-size: 13px;
+      color: #536471;
+    }
+
+    /* Course Card */
+    .course-cards {
+      margin-left: 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .course-card {
+      background: #fff;
+      border: 1px solid #eff3f4;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .course-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f1419;
+      margin-bottom: 12px;
+    }
+
+    .course-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .course-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .course-row-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .certified {
+      color: #00ba7c;
+      font-weight: 500;
+    }
+
+    .not-scheduled {
+      color: #536471;
+    }
+
+    .upcoming {
+      color: #0f1419;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 6px 14px;
+      border-radius: 16px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-join {
+      background: #1d9bf0;
+      color: #fff;
+    }
+
+    .btn-join:hover {
+      background: #1a8cd8;
+    }
+
+    .btn-certify {
+      background: #00ba7c;
+      color: #fff;
+    }
+
+    .btn-certify:hover {
+      background: #00a06a;
+    }
+
+    .btn-outline {
+      background: #fff;
+      border: 1px solid #cfd9de;
+      color: #0f1419;
+    }
+
+    .btn-outline:hover {
+      background: #f7f9f9;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Completed Section */
+    .completed-divider {
+      border-top: 1px dashed #eff3f4;
+      margin: 12px 0;
+    }
+
+    .completed-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .completed-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .completed-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #536471;
+    }
+
+    .completed-info .check {
+      color: #00ba7c;
+    }
+
+    /* Pending Balance */
+    .pending-balance {
+      background: #fff;
+      border: 1px solid #eff3f4;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .pending-label {
+      font-size: 13px;
+      color: #536471;
+      margin-bottom: 4px;
+    }
+
+    .pending-amount {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0f1419;
+      margin-bottom: 4px;
+    }
+
+    .pending-note {
+      font-size: 12px;
+      color: #536471;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo">&#8734;</div>
+    <div class="tabs">
+      <button class="tab active">Workspace</button>
+      <button class="tab">Availability</button>
+    </div>
+    <div class="user-badge">
+      <div class="user-avatar">AS</div>
+      <span class="user-name">Alex</span>
+      <span>&#9662;</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div class="welcome">
+        <span>&#128075;</span>
+        <span>Welcome back, Alex!</span>
+      </div>
+      <div class="rating">
+        <span>&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span class="rating-count">(0)</span>
+      </div>
+    </div>
+    <div class="role">Student-Teacher: AI Prompting Mastery</div>
+    <div class="stats-inline">
+      <div class="stat-item"><strong>2</strong> <span>Students</span></div>
+      <div class="stat-item"><strong>5</strong> <span>Taught</span></div>
+      <div class="stat-item earnings"><strong>$3,465</strong> <span>Earned</span></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Student 1: Sarah Miller -->
+  <div class="student-card">
+    <div class="student-header">
+      <div class="avatar">SM</div>
+      <div>
+        <div class="student-name">Sarah Miller</div>
+        <div class="student-subtitle">2 courses &middot; 2 sessions completed</div>
+      </div>
+    </div>
+
+    <div class="course-cards">
+      <!-- Course 1: Node.js - Not certified, has completed session -->
+      <div class="course-card">
+        <div class="course-title">Node.js Backend Development</div>
+        <div class="course-row">
+          <div class="course-row-left not-scheduled">
+            <span>&#128197;</span>
+            <span>Not scheduled</span>
+          </div>
+        </div>
+        <div class="completed-divider"></div>
+        <div class="completed-row">
+          <div class="completed-info">
+            <span class="check">&#10003;</span>
+            <span>Jan 28, 1:00 PM</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-certify">Certify</button>
+            <button class="btn btn-outline">Recording</button>
+            <button class="btn btn-outline">Notes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course 2: AI Prompting - Certified -->
+      <div class="course-card">
+        <div class="course-title">AI Prompting Mastery</div>
+        <div class="course-row">
+          <div class="course-row-left certified">
+            <span>&#10004;</span>
+            <span>Certified</span>
+          </div>
+        </div>
+        <div class="completed-divider"></div>
+        <div class="completed-row">
+          <div class="completed-info">
+            <span class="check">&#10003;</span>
+            <span>Jan 28, 7:20 PM</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-outline">Recording</button>
+            <button class="btn btn-outline">Notes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Student 2: Alex Sanders -->
+  <div class="student-card">
+    <div class="student-header">
+      <div class="avatar">AS</div>
+      <div>
+        <div class="student-name">Alex Sanders</div>
+        <div class="student-subtitle">3 courses &middot; 3 sessions completed</div>
+      </div>
+    </div>
+
+    <div class="course-cards">
+      <!-- Course 1: Node.js - Not certified, has upcoming + completed -->
+      <div class="course-card">
+        <div class="course-title">Node.js Backend Development</div>
+        <div class="course-row">
+          <div class="course-row-left upcoming">
+            <span>&#128197;</span>
+            <span>Jan 27, 1:00 PM</span>
+          </div>
+          <button class="btn btn-join">
+            <span>&#127909;</span>
+            Join
+          </button>
+        </div>
+        <div class="completed-divider"></div>
+        <div class="completed-row">
+          <div class="completed-info">
+            <span class="check">&#10003;</span>
+            <span>Jan 25, 2:00 PM</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-certify">Certify</button>
+            <button class="btn btn-outline">Recording</button>
+            <button class="btn btn-outline">Notes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course 2: Intro to n8n - Certified, has upcoming -->
+      <div class="course-card">
+        <div class="course-title">Intro to n8n</div>
+        <div class="course-row">
+          <div class="course-row-left certified">
+            <span>&#10004;</span>
+            <span>Certified</span>
+          </div>
+        </div>
+        <div class="course-row">
+          <div class="course-row-left upcoming">
+            <span>&#128197;</span>
+            <span>Jan 27, 1:00 PM</span>
+          </div>
+          <button class="btn btn-join">
+            <span>&#127909;</span>
+            Join
+          </button>
+        </div>
+        <div class="completed-divider"></div>
+        <div class="completed-row">
+          <div class="completed-info">
+            <span class="check">&#10003;</span>
+            <span>Jan 28, 1:00 PM</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-outline">Recording</button>
+            <button class="btn btn-outline">Notes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course 3: AI Prompting - Certified, no upcoming -->
+      <div class="course-card">
+        <div class="course-title">AI Prompting Mastery</div>
+        <div class="course-row">
+          <div class="course-row-left certified">
+            <span>&#10004;</span>
+            <span>Certified</span>
+          </div>
+        </div>
+        <div class="completed-divider"></div>
+        <div class="completed-row">
+          <div class="completed-info">
+            <span class="check">&#10003;</span>
+            <span>Jan 28, 7:15 PM</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-outline">Recording</button>
+            <button class="btn btn-outline">Notes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Pending Balance -->
+  <div class="pending-balance">
+    <div class="pending-label">Pending Balance</div>
+    <div class="pending-amount">$0.00</div>
+    <div class="pending-note">(Released after student certification)</div>
+  </div>
+
+</body>
+</html>

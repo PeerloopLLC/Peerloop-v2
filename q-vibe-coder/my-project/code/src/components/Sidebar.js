@@ -235,7 +235,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
     ['creator', 'admin', 'student_teacher'].includes(currentUser.userType);
 
   const personalItems = [
-    { icon: <FaBook />, label: 'My Courses', displayLabel: 'My Courses' }, // User's enrolled courses
     { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
     ...(showDashboard ? [{ icon: <FaChalkboardTeacher />, label: 'Workspace', displayLabel: 'Workspace' }] : []), // User workspace (only for creators/admins)
@@ -386,25 +385,18 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
       
       {/* Main navigation menu */}
       <nav className="sidebar-nav">
-        {/* Feeds Section with scrollable communities */}
-        <div
-          className="feeds-section"
-        >
-          {/* Feeds header - works for both collapsed and expanded sidebar */}
+        {/* TOP: The Commons slideout menu */}
+        <div className="feeds-section">
           {shouldCollapse ? (
             /* Collapsed sidebar: Compact feed button */
             <div
               className={`feeds-compact-btn ${activeMenu === 'My Community' ? 'active' : ''} ${isFlyoutOpen ? 'flyout-open' : ''} ${!hasFollowedCommunities || communityNavStyle === 'pills' ? 'no-flyout' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                // Navigate to My Community (preserves current community selection)
                 onMenuChange('My Community');
-                // Toggle slideout panel if slideout mode is enabled
                 if (hasFollowedCommunities && communityNavStyle === 'slideout') {
                   window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
-                }
-                // Only toggle flyout if user has followed communities AND dropdown mode is enabled
-                else if (hasFollowedCommunities && communityNavStyle === 'dropdown') {
+                } else if (hasFollowedCommunities && communityNavStyle === 'dropdown') {
                   const willOpen = !isFlyoutOpen;
                   setIsFlyoutOpen(willOpen);
                   if (willOpen) {
@@ -414,48 +406,25 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
                   }
                 }
               }}
-              >
+            >
               <div className="feeds-compact-main-icon"><FaUsers /></div>
               <div className="feeds-compact-count">{allCommunities.length}</div>
               {hasFollowedCommunities && (communityNavStyle === 'dropdown' || communityNavStyle === 'slideout') && <div className="feeds-compact-arrow">{isFlyoutOpen ? '◀' : '▶'}</div>}
             </div>
           ) : (
-            /* Expanded sidebar: Feeds group with shared background */
-            <div className="feeds-group">
-            {/* TOP: My Feeds static label - no arrow */}
-            <div
-              className={`nav-item feeds-label ${activeMenu === 'My Community' ? 'active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                // Close slideout panel if it's open
-                if (isSlideoutPanelOpen) {
-                  window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
-                }
-                onMenuChange('My Community');
-              }}
-            >
-              <div className="nav-icon"><FaUsers /></div>
-              <span className="nav-label">My Feeds</span>
-            </div>
-
-            {/* SECOND: Community selector - shows selected community name + count + arrow (hidden in selector card mode) */}
-            {communityNavStyle !== 'selector' && <div
+            /* Expanded sidebar: Community selector at top */
+            communityNavStyle !== 'selector' && <div
               className={`community-selector ${isFlyoutOpen ? 'flyout-open' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                // Toggle slideout panel if slideout mode is enabled
                 if (hasFollowedCommunities && communityNavStyle === 'slideout') {
-                  // If panel is already open, just close it (don't navigate)
                   if (isSlideoutPanelOpen) {
                     window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
                   } else {
-                    // Panel is closed - navigate to community and open panel
                     handleCommunitySelect(selectedCommunity);
                     window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
                   }
-                }
-                // Or toggle flyout if dropdown mode is enabled
-                else if (hasFollowedCommunities && communityNavStyle === 'dropdown') {
+                } else if (hasFollowedCommunities && communityNavStyle === 'dropdown') {
                   const willOpen = !isFlyoutOpen;
                   setIsFlyoutOpen(willOpen);
                   if (willOpen) {
@@ -463,9 +432,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
                   } else {
                     clearFlyoutCloseTimer();
                   }
-                }
-                // If no communities followed or pills mode, just navigate
-                else {
+                } else {
                   handleCommunitySelect(selectedCommunity);
                 }
               }}
@@ -486,7 +453,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
               {hasFollowedCommunities && (
                 <span className="community-selector-arrow">&rarr;</span>
               )}
-            </div>}
             </div>
           )}
 
@@ -499,7 +465,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
                 My Feeds ({allCommunities.length})
               </div>
               <div className="feeds-flyout-list">
-                {/* The Commons - always first in the list */}
                 <div
                   className="feeds-flyout-item"
                   onClick={() => {
@@ -510,15 +475,12 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
                   <div className="community-avatar community-badge" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>👥</div>
                   <span className="community-name">The Commons</span>
                 </div>
-                {/* Creator communities - only show instructor communities, not courses */}
                 {communities
                   .filter(c => c.type === 'creator' || (typeof c.id === 'string' && c.id.startsWith('creator-')))
                   .map((community) => {
-                  // Get instructor for communityName
                   const instructorId = typeof community.id === 'string' ? parseInt(community.id.replace('creator-', '')) : community.instructorId;
                   const instructor = getInstructorById(instructorId);
                   const communityNameDisplay = instructor?.communityName || `${community.name || community.id?.replace('creator-', '') || 'Community'} Community`;
-
                   return (
                     <div
                       key={community.id}
@@ -538,8 +500,36 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
           )}
         </div>
 
-        {/* Divider between Feeds and Discover */}
+        {/* My Feeds - below The Commons with consistent spacing */}
+        <div
+          className={`nav-item ${activeMenu === 'My Community' ? 'active' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsFlyoutOpen(false);
+            if (isSlideoutPanelOpen) {
+              window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
+            }
+            onMenuChange('My Community');
+          }}
+        >
+          <div className="nav-icon"><FaUsers /></div>
+          <span className="nav-label">My Feeds</span>
+        </div>
+
+        {/* Divider under My Feeds */}
         <div className="nav-section-divider" />
+
+        {/* My Courses - above Discover */}
+        <div
+          className={`nav-item ${activeMenu === 'My Courses' ? 'active' : ''}`}
+          onClick={() => {
+            setIsFlyoutOpen(false);
+            handleMenuClick('My Courses');
+          }}
+        >
+          <div className="nav-icon"><FaBook /></div>
+          <span className="nav-label">My Courses</span>
+        </div>
 
         {/* Discover item */}
         <div
@@ -557,7 +547,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
           </span>
         </div>
 
-        {/* Personal items - My Courses, Notifications, Dashboard, Messages, Profile */}
+        {/* Personal items - Messages, Notifications, Dashboard, Profile */}
         {personalItems.map((item, index) => (
           <div
             key={index + primaryItems.length}

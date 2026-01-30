@@ -756,7 +756,7 @@ const MyCoursesView = ({
                   <div style={{
                     width: 48,
                     height: 48,
-                    background: course.thumbnailGradient || 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                     borderRadius: 10,
                     display: 'flex',
                     alignItems: 'center',
@@ -937,7 +937,7 @@ const MyCoursesView = ({
                   <div style={{
                     width: 48,
                     height: 48,
-                    background: course.thumbnailGradient || 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                     borderRadius: 10,
                     display: 'flex',
                     alignItems: 'center',
@@ -1387,7 +1387,7 @@ const MyCoursesView = ({
                     height: 56,
                     borderRadius: 12,
                     flexShrink: 0,
-                    background: course.thumbnailGradient || iconConfig.course.gradient,
+                    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                     position: 'relative',
                     display: 'flex',
                     alignItems: 'center',
@@ -2398,7 +2398,7 @@ const MyCoursesView = ({
                                 height: 56,
                                 borderRadius: 12,
                                 flexShrink: 0,
-                                background: course.thumbnailGradient || iconConfig.course.gradient,
+                                background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center'

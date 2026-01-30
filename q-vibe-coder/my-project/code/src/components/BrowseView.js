@@ -856,26 +856,38 @@ const BrowseView = ({
           )}
         </div>
 
-        {/* Tab Menu Header */}
+        {/* Tab Menu Header - Pills Style */}
         <div style={{
           display: 'flex',
-          gap: 0,
-          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-          background: isDarkMode ? '#000' : '#fff'
+          alignItems: 'center',
+          gap: 8,
+          padding: '12px 16px',
+          background: isDarkMode ? '#000' : '#fff',
+          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
         }}>
           {/* Courses Tab */}
           <button
             onClick={() => setActiveProfileTab('courses')}
+            className={`course-pill ${activeProfileTab === 'courses' ? 'course-pill-selected' : ''}`}
             style={{
-              background: 'none',
-              border: 'none',
-              padding: '12px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 16px',
+              borderRadius: 20,
+              border: activeProfileTab === 'courses'
+                ? '2px solid #1d9bf0'
+                : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+              background: activeProfileTab === 'courses'
+                ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+              color: activeProfileTab === 'courses'
+                ? '#1d9bf0'
+                : (isDarkMode ? '#e7e9ea' : '#0f1419'),
               fontSize: 14,
-              fontWeight: activeProfileTab === 'courses' ? 700 : 500,
-              color: activeProfileTab === 'courses' ? (isDarkMode ? '#e7e9ea' : '#0f1419') : (isDarkMode ? '#71767b' : '#536471'),
+              fontWeight: 600,
               cursor: 'pointer',
-              borderBottom: activeProfileTab === 'courses' ? '3px solid #1d9bf0' : '3px solid transparent',
-              marginBottom: -1
+              whiteSpace: 'nowrap'
             }}
           >
             Courses
@@ -889,19 +901,57 @@ const BrowseView = ({
                 setSelectedContentItem(generalContent.sections[0].items[0]);
               }
             }}
+            className={`course-pill ${activeProfileTab === 'general-content' ? 'course-pill-selected' : ''}`}
             style={{
-              background: 'none',
-              border: 'none',
-              padding: '12px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 16px',
+              borderRadius: 20,
+              border: activeProfileTab === 'general-content'
+                ? '2px solid #1d9bf0'
+                : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+              background: activeProfileTab === 'general-content'
+                ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+              color: activeProfileTab === 'general-content'
+                ? '#1d9bf0'
+                : (isDarkMode ? '#e7e9ea' : '#0f1419'),
               fontSize: 14,
-              fontWeight: activeProfileTab === 'general-content' ? 700 : 500,
-              color: activeProfileTab === 'general-content' ? (isDarkMode ? '#e7e9ea' : '#0f1419') : (isDarkMode ? '#71767b' : '#536471'),
+              fontWeight: 600,
               cursor: 'pointer',
-              borderBottom: activeProfileTab === 'general-content' ? '3px solid #1d9bf0' : '3px solid transparent',
-              marginBottom: -1
+              whiteSpace: 'nowrap'
             }}
           >
             Content
+          </button>
+
+          {/* Community Calendar Tab */}
+          <button
+            onClick={() => setActiveProfileTab('community-calendar')}
+            className={`course-pill ${activeProfileTab === 'community-calendar' ? 'course-pill-selected' : ''}`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 16px',
+              borderRadius: 20,
+              border: activeProfileTab === 'community-calendar'
+                ? '2px solid #1d9bf0'
+                : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+              background: activeProfileTab === 'community-calendar'
+                ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+              color: activeProfileTab === 'community-calendar'
+                ? '#1d9bf0'
+                : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            Community Calendar
           </button>
         </div>
 
@@ -1343,6 +1393,127 @@ const BrowseView = ({
                   Select an item from the left to view its content
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Community Calendar Tab Content */}
+        {activeProfileTab === 'community-calendar' && (
+          <div style={{
+            padding: '20px 16px',
+            minHeight: 400
+          }}>
+            {/* Calendar Header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 20
+            }}>
+              <h3 style={{
+                fontSize: 18,
+                fontWeight: 600,
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                margin: 0
+              }}>
+                Upcoming Events
+              </h3>
+              <div style={{
+                fontSize: 13,
+                color: isDarkMode ? '#71767b' : '#536471'
+              }}>
+                {selectedInstructor?.communityName || selectedInstructor?.name}'s Community
+              </div>
+            </div>
+
+            {/* Calendar Events */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {/* Sample Events - These would come from real data */}
+              {[
+                { title: 'Live Q&A Session', date: 'Tomorrow', time: '2:00 PM EST', type: 'live', attendees: 45 },
+                { title: 'Office Hours', date: 'Thursday', time: '10:00 AM EST', type: 'office-hours', attendees: 12 },
+                { title: 'Community Meetup', date: 'Saturday', time: '4:00 PM EST', type: 'meetup', attendees: 78 },
+                { title: 'Course Workshop', date: 'Next Monday', time: '1:00 PM EST', type: 'workshop', attendees: 32 }
+              ].map((event, index) => (
+                <div
+                  key={index}
+                  style={{
+                    background: isDarkMode ? '#16181c' : '#f8fafc',
+                    borderRadius: 12,
+                    padding: 16,
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 16
+                  }}
+                >
+                  {/* Date Badge */}
+                  <div style={{
+                    background: event.type === 'live' ? '#ef4444' :
+                               event.type === 'office-hours' ? '#1d9bf0' :
+                               event.type === 'meetup' ? '#10b981' : '#8b5cf6',
+                    color: '#fff',
+                    borderRadius: 8,
+                    padding: '8px 12px',
+                    textAlign: 'center',
+                    minWidth: 60
+                  }}>
+                    <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.9 }}>{event.date}</div>
+                    <div style={{ fontSize: 12, fontWeight: 600 }}>{event.time.split(' ')[0]}</div>
+                  </div>
+
+                  {/* Event Info */}
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                      marginBottom: 4
+                    }}>
+                      {event.title}
+                    </div>
+                    <div style={{
+                      fontSize: 13,
+                      color: isDarkMode ? '#71767b' : '#536471'
+                    }}>
+                      {event.attendees} attending • {event.time}
+                    </div>
+                  </div>
+
+                  {/* RSVP Button */}
+                  <button style={{
+                    background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                    border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                    borderRadius: 20,
+                    padding: '8px 16px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    cursor: 'pointer'
+                  }}>
+                    RSVP
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* View Full Calendar Link */}
+            <div style={{
+              textAlign: 'center',
+              marginTop: 20,
+              paddingTop: 16,
+              borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
+            }}>
+              <button style={{
+                background: 'none',
+                border: 'none',
+                color: '#1d9bf0',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}>
+                View Full Calendar →
+              </button>
             </div>
           </div>
         )}

@@ -81,7 +81,8 @@ const StudentTeacherDashboard = ({
   // Open certify modal for a student
   const handleOpenCertify = (student) => {
     setSelectedStudent(student);
-    setSelectedSessionNumber(1); // Default to session 1
+    // Use the sessionNumber passed from the button click (1 or 2)
+    setSelectedSessionNumber(student.sessionNumber || 1);
     setModuleChecks({ module1: false, module2: false, module3: false, module4: false });
     setCertifyNotes('');
     setShowCertifyModal(true);
@@ -483,198 +484,299 @@ const StudentTeacherDashboard = ({
     </div>
   );
 
-  // Render Dashboard Tab
+  // Build unified student data structure for the new layout
+  // Groups all info by student, then by course, with per-session tracking
+  const buildUnifiedStudentData = () => {
+    const studentMap = {};
+
+    // Helper to format date
+    const formatDate = (dateStr, time) => {
+      const date = new Date(dateStr);
+      const options = { month: 'short', day: 'numeric' };
+      return time ? `${date.toLocaleDateString('en-US', options)}, ${time}` : date.toLocaleDateString('en-US', options);
+    };
+
+    // Initialize course template with per-session fields
+    const createCourseEntry = (courseId, courseName) => ({
+      courseId,
+      courseName,
+      // Session 1 fields
+      session1Id: null,
+      session1Date: null,
+      session1Certified: false,
+      session1CertifiedDate: null,
+      // Session 2 fields
+      session2Id: null,
+      session2Date: null,
+      session2Certified: false,
+      session2CertifiedDate: null,
+      // Legacy fields for compatibility
+      certified: false,
+      upcomingSession: null,
+      completedSessions: []
+    });
+
+    // First, add all active students and their courses
+    (stTeacherStats?.activeStudents || []).forEach(student => {
+      if (!studentMap[student.name]) {
+        studentMap[student.name] = {
+          name: student.name,
+          initials: student.name.split(' ').map(n => n[0]).join(''),
+          courses: {}
+        };
+      }
+      if (!studentMap[student.name].courses[student.courseId]) {
+        studentMap[student.name].courses[student.courseId] = createCourseEntry(student.courseId, student.courseName);
+      }
+    });
+
+    // Collect all sessions per student/course for sorting
+    const sessionsByStudentCourse = {};
+
+    // Add scheduled sessions
+    scheduledSessions
+      .filter(s => s.teacherId === currentUser?.id && s.status === 'scheduled')
+      .forEach(session => {
+        const studentName = session.studentName || 'Unknown Student';
+        const key = `${studentName}|${session.courseId}`;
+        if (!sessionsByStudentCourse[key]) {
+          sessionsByStudentCourse[key] = { scheduled: [], completed: [] };
+        }
+        sessionsByStudentCourse[key].scheduled.push(session);
+
+        // Ensure student/course exists
+        if (!studentMap[studentName]) {
+          studentMap[studentName] = {
+            name: studentName,
+            initials: studentName.split(' ').map(n => n[0]).join(''),
+            courses: {}
+          };
+        }
+        if (!studentMap[studentName].courses[session.courseId]) {
+          studentMap[studentName].courses[session.courseId] = createCourseEntry(session.courseId, session.courseName);
+        }
+      });
+
+    // Add completed sessions
+    scheduledSessions
+      .filter(s => s.teacherId === currentUser?.id && s.status === 'completed')
+      .forEach(session => {
+        const studentName = session.studentName || 'Unknown Student';
+        const key = `${studentName}|${session.courseId}`;
+        if (!sessionsByStudentCourse[key]) {
+          sessionsByStudentCourse[key] = { scheduled: [], completed: [] };
+        }
+        sessionsByStudentCourse[key].completed.push(session);
+
+        // Ensure student/course exists
+        if (!studentMap[studentName]) {
+          studentMap[studentName] = {
+            name: studentName,
+            initials: studentName.split(' ').map(n => n[0]).join(''),
+            courses: {}
+          };
+        }
+        if (!studentMap[studentName].courses[session.courseId]) {
+          studentMap[studentName].courses[session.courseId] = createCourseEntry(session.courseId, session.courseName);
+        }
+      });
+
+    // Assign sessions to Session 1 and Session 2 slots
+    Object.entries(sessionsByStudentCourse).forEach(([key, { scheduled, completed }]) => {
+      const [studentName, courseId] = key.split('|');
+      if (!studentMap[studentName]?.courses[courseId]) return;
+
+      const course = studentMap[studentName].courses[courseId];
+
+      // Sort by date
+      completed.sort((a, b) => new Date(a.date) - new Date(b.date));
+      scheduled.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // Assign completed sessions first (Session 1 = first completed, Session 2 = second completed)
+      if (completed.length >= 1) {
+        course.session1Date = formatDate(completed[0].date, completed[0].time);
+        course.session1Id = completed[0].id;
+        course.completedSessions.push({
+          id: completed[0].id,
+          date: course.session1Date,
+          rawDate: completed[0].date
+        });
+      }
+      if (completed.length >= 2) {
+        course.session2Date = formatDate(completed[1].date, completed[1].time);
+        course.session2Id = completed[1].id;
+        course.completedSessions.push({
+          id: completed[1].id,
+          date: course.session2Date,
+          rawDate: completed[1].date
+        });
+      }
+
+      // Fill empty slots with scheduled sessions
+      if (!course.session1Date && scheduled.length >= 1) {
+        course.session1Date = formatDate(scheduled[0].date, scheduled[0].time);
+        course.session1Id = scheduled[0].id;
+        course.upcomingSession = { id: scheduled[0].id, date: course.session1Date };
+      }
+      if (!course.session2Date && scheduled.length >= (course.session1Date && completed.length === 0 ? 2 : 1)) {
+        const idx = course.session1Date && completed.length === 0 ? 1 : 0;
+        if (scheduled[idx]) {
+          course.session2Date = formatDate(scheduled[idx].date, scheduled[idx].time);
+          course.session2Id = scheduled[idx].id;
+        }
+      }
+    });
+
+    // Check per-session certification from localStorage
+    // Try multiple key patterns since certification can be stored under different keys
+    Object.entries(studentMap).forEach(([studentName, student]) => {
+      Object.entries(student.courses).forEach(([courseId, course]) => {
+        // Try multiple localStorage key patterns
+        const keysToTry = [
+          `sessionCompletion_${studentName}`,           // e.g., sessionCompletion_Sarah Miller
+          `sessionCompletion_${studentName}-${courseId}` // e.g., sessionCompletion_Sarah Miller-15
+        ];
+
+        for (const key of keysToTry) {
+          try {
+            const stored = localStorage.getItem(key);
+            if (stored) {
+              const sessionCompletion = JSON.parse(stored);
+              const courseCompletion = sessionCompletion[courseId] || {};
+
+              // Check Session 1 certification
+              if (courseCompletion[1]?.completed) {
+                course.session1Certified = true;
+                const certDate = courseCompletion[1].completedAt;
+                if (certDate) {
+                  const d = new Date(certDate);
+                  course.session1CertifiedDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }
+              }
+
+              // Check Session 2 certification
+              if (courseCompletion[2]?.completed) {
+                course.session2Certified = true;
+                const certDate = courseCompletion[2].completedAt;
+                if (certDate) {
+                  const d = new Date(certDate);
+                  course.session2CertifiedDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }
+              }
+
+              // Mark course as fully certified if both sessions done
+              if (course.session1Certified && course.session2Certified) {
+                course.certified = true;
+              }
+
+              // If we found data, no need to try more keys
+              if (course.session1Certified || course.session2Certified) {
+                break;
+              }
+            }
+          } catch (e) {
+            // Silently continue to next key
+          }
+        }
+      });
+    });
+
+    // Also check completedStudents for legacy/full certification
+    (stTeacherStats?.completedStudents || []).forEach(student => {
+      if (studentMap[student.name] && studentMap[student.name].courses[student.courseId]) {
+        const course = studentMap[student.name].courses[student.courseId];
+        course.certified = true;
+      }
+    });
+
+    // Convert to array format
+    return Object.values(studentMap).map(student => {
+      const coursesArray = Object.values(student.courses);
+      const certifiedSessionCount = coursesArray.reduce((sum, course) => {
+        return sum + (course.session1Certified ? 1 : 0) + (course.session2Certified ? 1 : 0);
+      }, 0);
+      const totalSessionCount = coursesArray.length * 2;
+
+      return {
+        ...student,
+        courses: coursesArray,
+        totalCourses: coursesArray.length,
+        totalCompletedSessions: coursesArray.reduce(
+          (sum, course) => sum + course.completedSessions.length, 0
+        ),
+        certifiedSessionCount,
+        totalSessionCount
+      };
+    });
+  };
+
+  const unifiedStudents = buildUnifiedStudentData();
+
+  // Render Dashboard Tab - NEW UNIFIED LAYOUT
   const renderDashboardTab = () => (
-    <div style={{ padding: 24, maxWidth: 800, margin: '0 auto' }}>
-      {/* Welcome Section */}
-      <div style={{ marginBottom: 24 }}>
+    <div style={{ padding: 24, maxWidth: 700, margin: '0 auto' }}>
+      {/* Welcome Header with Inline Stats */}
+      <div style={{ marginBottom: 20 }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          marginBottom: 4
         }}>
           <h1 style={{
-            fontSize: 24,
+            fontSize: 22,
             fontWeight: 700,
             color: textPrimary,
             margin: 0,
             display: 'flex',
             alignItems: 'center',
-            gap: 8
+            gap: 10
           }}>
-            <span style={{ fontSize: 28 }}>👋</span> Welcome back, {stInfo.name.split(' ')[0]}!
+            <span>👋</span> Welcome back, {stInfo.name.split(' ')[0]}!
           </h1>
           {/* Star Rating */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
-            color: '#fbbf24'
+            gap: 4,
+            color: '#f7b928',
+            fontSize: 14
           }}>
-            <span style={{ fontSize: 18 }}>★★★★★</span>
-            <span style={{ color: textPrimary, fontWeight: 600 }}>({stRating})</span>
+            <span>★★★★★</span>
+            <span style={{ color: textSecondary, fontSize: 13 }}>({stRating})</span>
           </div>
         </div>
         <p style={{
           fontSize: 15,
           color: textSecondary,
-          margin: '8px 0 0 0'
+          fontStyle: 'italic',
+          margin: '0 0 12px 0'
         }}>
           Student-Teacher: {stInfo.courseName}
         </p>
-      </div>
-
-      {/* Quick Stats */}
-      <div style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: textSecondary,
-          margin: '0 0 12px 0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6
-        }}>
-          📊 QUICK STATS
-        </h2>
+        {/* Inline Stats - Twitter style */}
         <div style={{
           display: 'flex',
-          gap: 12
+          gap: 24,
+          fontSize: 15
         }}>
-          {quickStats.map((stat, index) => (
-            <div
-              key={index}
-              style={{
-                flex: 1,
-                background: bgCard,
-                borderRadius: 12,
-                padding: 16,
-                border: `1px solid ${borderColor}`,
-                textAlign: 'center'
-              }}
-            >
-              <div style={{
-                fontSize: 28,
-                fontWeight: 700,
-                color: textPrimary,
-                marginBottom: 4
-              }}>
-                {stat.value}
-              </div>
-              <div style={{ fontSize: 13, color: textSecondary }}>
-                {stat.label}
-              </div>
-              <div style={{ fontSize: 12, color: textSecondary, opacity: 0.8 }}>
-                {stat.sublabel}
-              </div>
-            </div>
-          ))}
+          <span>
+            <strong style={{ color: textPrimary }}>{stTeacherStats?.activeStudents?.length || 0}</strong>{' '}
+            <span style={{ color: textSecondary }}>Students</span>
+          </span>
+          <span>
+            <strong style={{ color: textPrimary }}>{stTeacherStats?.completedStudents?.length || 0}</strong>{' '}
+            <span style={{ color: textSecondary }}>Taught</span>
+          </span>
+          <span>
+            <strong style={{ color: accentGreen }}>${(stTeacherStats?.totalEarned || 0).toLocaleString()}</strong>{' '}
+            <span style={{ color: textSecondary }}>Earned</span>
+          </span>
         </div>
       </div>
 
-      {/* My Students */}
-      <div style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: textSecondary,
-          margin: '0 0 12px 0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6
-        }}>
-          👥 MY STUDENTS
-        </h2>
-        <div style={{
-          background: bgCard,
-          borderRadius: 12,
-          border: `1px solid ${borderColor}`,
-          overflow: 'hidden'
-        }}>
-          {/* Empty State */}
-          {studentGroups.length === 0 ? (
-            <div style={{
-              padding: '32px 16px',
-              textAlign: 'center',
-              color: textSecondary
-            }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>👥</div>
-              <div style={{ fontSize: 14 }}>No students yet</div>
-              <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
-                Students will appear here when they enroll with you
-              </div>
-            </div>
-          ) : (
-            /* Grouped by Student */
-            studentGroups.map((group, groupIndex) => (
-              <div key={group.name} style={{
-                borderBottom: groupIndex < studentGroups.length - 1 ? `1px solid ${borderColor}` : 'none'
-              }}>
-                {/* Student Name Header */}
-                <div style={{
-                  padding: '12px 16px 8px 16px',
-                  background: bgSecondary,
-                  borderBottom: `1px solid ${borderColor}`
-                }}>
-                  <div style={{
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: textPrimary,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
-                  }}>
-                    {group.name}
-                  </div>
-                  <div style={{
-                    fontSize: 12,
-                    color: textSecondary,
-                    marginTop: 2
-                  }}>
-                    {group.courses.length} course{group.courses.length !== 1 ? 's' : ''}
-                  </div>
-                </div>
-
-                {/* Courses for this Student */}
-                {group.courses.map((course, courseIndex) => (
-                  <div
-                    key={course.id || courseIndex}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 140px 90px',
-                      padding: '12px 16px 12px 24px',
-                      borderBottom: courseIndex < group.courses.length - 1 ? `1px solid ${borderColor}` : 'none',
-                      alignItems: 'center',
-                      background: bgCard
-                    }}
-                  >
-                    <div style={{ fontSize: 14, color: textPrimary }}>
-                      {course.courseName || 'Untitled Course'}
-                    </div>
-                    <div style={{ fontSize: 13, color: course.nextSession ? textPrimary : textSecondary }}>
-                      {course.nextSession || 'Not scheduled'}
-                    </div>
-                    <button
-                      onClick={() => handleOpenCertify(course)}
-                      style={{
-                        padding: '6px 12px',
-                        background: accentGreen,
-                        border: 'none',
-                        borderRadius: 6,
-                        color: '#fff',
-                        fontSize: 12,
-                        fontWeight: 600,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Certify
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+      {/* Divider */}
+      <div style={{ height: 1, background: borderColor, margin: '20px 0' }} />
 
       {/* Reschedule Notifications */}
       {rescheduleNotifications.length > 0 && (
@@ -702,10 +804,10 @@ const StudentTeacherDashboard = ({
               >
                 <div style={{ fontSize: 20 }}>🔄</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#1e293b', marginBottom: 2 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: textPrimary, marginBottom: 2 }}>
                     {notif.studentName} rescheduled
                   </div>
-                  <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#64748b' }}>
+                  <div style={{ fontSize: 12, color: textSecondary }}>
                     {notif.courseName}: {formatNotifDate(notif.oldDate)} {notif.oldTime} → {formatNotifDate(notif.newDate)} {notif.newTime}
                   </div>
                 </div>
@@ -714,7 +816,7 @@ const StudentTeacherDashboard = ({
                   style={{
                     background: isDarkMode ? '#2f3336' : '#e5e7eb',
                     border: 'none',
-                    color: isDarkMode ? '#e7e9ea' : '#374151',
+                    color: textPrimary,
                     padding: '6px 12px',
                     borderRadius: 6,
                     fontSize: 12,
@@ -730,284 +832,324 @@ const StudentTeacherDashboard = ({
         </div>
       )}
 
-      {/* Upcoming Sessions */}
-      <div style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: textSecondary,
-          margin: '0 0 12px 0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6
-        }}>
-          📅 UPCOMING SESSIONS
-        </h2>
+      {/* Unified Student Cards */}
+      {unifiedStudents.length === 0 ? (
         <div style={{
-          background: bgCard,
-          borderRadius: 12,
-          border: `1px solid ${borderColor}`,
-          overflow: 'hidden'
+          padding: '48px 16px',
+          textAlign: 'center',
+          color: textSecondary
         }}>
-          {upcomingSessions.length === 0 ? (
-            <div style={{
-              padding: '32px 16px',
-              textAlign: 'center',
-              color: textSecondary
-            }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>📅</div>
-              <div style={{ fontSize: 14 }}>No upcoming sessions</div>
-              <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
-                Sessions will appear here when students book with you
-              </div>
-            </div>
-          ) : (
-            upcomingSessions.map((session, index) => (
-              <div
-                key={session.id || index}
-                style={{
-                  padding: 16,
-                  borderBottom: index < upcomingSessions.length - 1 ? `1px solid ${borderColor}` : 'none'
-                }}
-              >
+          <div style={{ fontSize: 48, marginBottom: 12 }}>👥</div>
+          <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 4 }}>No students yet</div>
+          <div style={{ fontSize: 14, opacity: 0.8 }}>
+            Students will appear here when they enroll with you
+          </div>
+        </div>
+      ) : (
+        unifiedStudents.map((student, studentIndex) => (
+          <div key={student.name}>
+            {/* Student Card */}
+            <div style={{ marginBottom: 8 }}>
+              {/* Student Header */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                marginBottom: 12
+              }}>
                 <div style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #1d9bf0, #1a8cd8)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 8,
-                  marginBottom: 4
+                  justifyContent: 'center',
+                  fontSize: 16,
+                  fontWeight: 600,
+                  color: '#fff'
                 }}>
-                  <FaCalendarAlt style={{ color: accentBlue, fontSize: 14 }} />
-                  <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>
-                    {session.date}
-                  </span>
-                  <span style={{ color: textSecondary }}>-</span>
-                  <span style={{ fontSize: 14, color: textPrimary }}>
-                    {session.student}
-                  </span>
+                  {student.initials}
                 </div>
-                <div style={{
-                  fontSize: 13,
-                  color: textSecondary,
-                  marginBottom: 12,
-                  marginLeft: 22
-                }}>
-                  {session.module}
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: textPrimary }}>
+                    {student.name}
+                  </div>
+                  <div style={{ fontSize: 13, color: textSecondary }}>
+                    {student.totalCourses} course{student.totalCourses !== 1 ? 's' : ''} · {student.certifiedSessionCount}/{student.totalSessionCount} sessions certified
+                  </div>
                 </div>
-                <button
-                  onClick={() => {
-                    if (joiningSessionId) return; // Prevent double-click
-                    setJoiningSessionId(session.id);
-                    onJoinSession && onJoinSession(session);
-                  }}
-                  disabled={joiningSessionId === session.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '10px 16px',
-                    background: joiningSessionId === session.id ? '#64748b' : accentBlue,
-                    border: 'none',
-                    borderRadius: 8,
-                    color: '#fff',
-                    fontSize: 14,
-                    fontWeight: 500,
-                    cursor: joiningSessionId === session.id ? 'wait' : 'pointer',
-                    width: '100%',
-                    justifyContent: 'center',
-                    opacity: joiningSessionId === session.id ? 0.8 : 1
-                  }}>
-                  {joiningSessionId === session.id ? (
-                    <>
-                      <span style={{
-                        width: 14,
-                        height: 14,
-                        border: '2px solid #fff',
-                        borderTopColor: 'transparent',
-                        borderRadius: '50%',
-                        animation: 'spin 1s linear infinite'
-                      }} />
-                      Connecting...
-                    </>
-                  ) : (
-                    <>
-                      <FaVideo style={{ fontSize: 14 }} />
-                      Join Session
-                    </>
-                  )}
-                </button>
               </div>
-            ))
-          )}
-        </div>
-      </div>
 
-      {/* Completed Sessions */}
-      <div style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: textSecondary,
-          margin: '0 0 12px 0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6
-        }}>
-          ✅ COMPLETED SESSIONS
-        </h2>
-        <div style={{
-          background: bgCard,
-          borderRadius: 12,
-          border: `1px solid ${borderColor}`,
-          overflow: 'hidden'
-        }}>
-          {completedSessions.length === 0 ? (
-            <div style={{
-              padding: '32px 16px',
-              textAlign: 'center',
-              color: textSecondary
-            }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>✅</div>
-              <div style={{ fontSize: 14 }}>No completed sessions yet</div>
-              <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
-                Sessions will appear here after they're completed
+              {/* Course Cards */}
+              <div style={{ marginLeft: 60, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {student.courses.map((course, courseIndex) => (
+                  <div
+                    key={course.courseId || courseIndex}
+                    style={{
+                      background: bgCard,
+                      border: `1px solid ${borderColor}`,
+                      borderRadius: 12,
+                      padding: '14px 16px'
+                    }}
+                  >
+                    {/* Course Title + Full Certification Status */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: 12
+                    }}>
+                      <div style={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: textPrimary
+                      }}>
+                        {course.courseName || 'Untitled Course'}
+                      </div>
+                      {/* Show "Fully Certified" when both sessions are certified */}
+                      {course.session1Certified && course.session2Certified && (
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          fontSize: 13,
+                          color: accentGreen,
+                          fontWeight: 600
+                        }}>
+                          <span>✅</span>
+                          <span>Fully Certified</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Session 1 Row */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: 10,
+                      padding: '8px 0',
+                      borderBottom: `1px solid ${borderColor}`
+                    }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: textPrimary, marginBottom: 4 }}>
+                          Session 1: Foundations
+                        </div>
+                        {course.session1Certified ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: accentGreen }}>
+                            <span>✅</span>
+                            <span>Certified {course.session1CertifiedDate || ''}</span>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: course.session1Date ? textPrimary : textSecondary }}>
+                            <span>📅</span>
+                            <span>{course.session1Date || 'Not scheduled'}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        {course.session1Certified ? (
+                          <button
+                            style={{
+                              padding: '6px 14px',
+                              background: bgCard,
+                              border: `1px solid ${borderColor}`,
+                              borderRadius: 16,
+                              color: textPrimary,
+                              fontSize: 13,
+                              fontWeight: 600,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Recording
+                          </button>
+                        ) : (
+                          <>
+                            {course.session1Id && (
+                              <button
+                                onClick={() => {
+                                  if (joiningSessionId) return;
+                                  setJoiningSessionId(course.session1Id);
+                                  onJoinSession && onJoinSession({
+                                    id: course.session1Id,
+                                    courseId: course.courseId,
+                                    courseName: course.courseName
+                                  });
+                                }}
+                                disabled={joiningSessionId === course.session1Id}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  padding: '6px 14px',
+                                  background: joiningSessionId === course.session1Id ? '#64748b' : accentBlue,
+                                  border: 'none',
+                                  borderRadius: 16,
+                                  color: '#fff',
+                                  fontSize: 13,
+                                  fontWeight: 600,
+                                  cursor: joiningSessionId === course.session1Id ? 'wait' : 'pointer'
+                                }}
+                              >
+                                {joiningSessionId === course.session1Id ? '...' : <><span>🎥</span> Join</>}
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleOpenCertify({
+                                id: `${student.name}-${course.courseId}-session1`,
+                                name: student.name,
+                                courseName: course.courseName,
+                                courseId: course.courseId,
+                                sessionNumber: 1
+                              })}
+                              style={{
+                                padding: '6px 14px',
+                                background: accentGreen,
+                                border: 'none',
+                                borderRadius: 16,
+                                color: '#fff',
+                                fontSize: 13,
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Certify
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Session 2 Row */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 0'
+                    }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: textPrimary, marginBottom: 4 }}>
+                          Session 2: Advanced
+                        </div>
+                        {course.session2Certified ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: accentGreen }}>
+                            <span>✅</span>
+                            <span>Certified {course.session2CertifiedDate || ''}</span>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: course.session2Date ? textPrimary : textSecondary }}>
+                            <span>📅</span>
+                            <span>{course.session2Date || 'Not scheduled'}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        {course.session2Certified ? (
+                          <button
+                            style={{
+                              padding: '6px 14px',
+                              background: bgCard,
+                              border: `1px solid ${borderColor}`,
+                              borderRadius: 16,
+                              color: textPrimary,
+                              fontSize: 13,
+                              fontWeight: 600,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Recording
+                          </button>
+                        ) : (
+                          <>
+                            {course.session2Id && (
+                              <button
+                                onClick={() => {
+                                  if (joiningSessionId) return;
+                                  setJoiningSessionId(course.session2Id);
+                                  onJoinSession && onJoinSession({
+                                    id: course.session2Id,
+                                    courseId: course.courseId,
+                                    courseName: course.courseName
+                                  });
+                                }}
+                                disabled={joiningSessionId === course.session2Id}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  padding: '6px 14px',
+                                  background: joiningSessionId === course.session2Id ? '#64748b' : accentBlue,
+                                  border: 'none',
+                                  borderRadius: 16,
+                                  color: '#fff',
+                                  fontSize: 13,
+                                  fontWeight: 600,
+                                  cursor: joiningSessionId === course.session2Id ? 'wait' : 'pointer'
+                                }}
+                              >
+                                {joiningSessionId === course.session2Id ? '...' : <><span>🎥</span> Join</>}
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleOpenCertify({
+                                id: `${student.name}-${course.courseId}-session2`,
+                                name: student.name,
+                                courseName: course.courseName,
+                                courseId: course.courseId,
+                                sessionNumber: 2
+                              })}
+                              style={{
+                                padding: '6px 14px',
+                                background: accentGreen,
+                                border: 'none',
+                                borderRadius: 16,
+                                color: '#fff',
+                                fontSize: 13,
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Certify
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ) : (
-            completedSessions.map((session, index) => (
-              <div
-                key={session.id || index}
-                style={{
-                  padding: 16,
-                  borderBottom: index < completedSessions.length - 1 ? `1px solid ${borderColor}` : 'none'
-                }}
-              >
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  marginBottom: 4
-                }}>
-                  <FaCalendarAlt style={{ color: accentGreen, fontSize: 14 }} />
-                  <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>
-                    {session.date}
-                  </span>
-                  <span style={{ color: textSecondary }}>-</span>
-                  <span style={{ fontSize: 14, color: textPrimary }}>
-                    {session.student}
-                  </span>
-                </div>
-                <div style={{
-                  fontSize: 13,
-                  color: textSecondary,
-                  marginLeft: 22
-                }}>
-                  {session.module}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+
+            {/* Divider between students */}
+            {studentIndex < unifiedStudents.length - 1 && (
+              <div style={{ height: 1, background: borderColor, margin: '20px 0' }} />
+            )}
+          </div>
+        ))
+      )}
+
+      {/* Divider before pending balance */}
+      {unifiedStudents.length > 0 && (
+        <div style={{ height: 1, background: borderColor, margin: '20px 0' }} />
+      )}
 
       {/* Pending Balance */}
       <div style={{
-        marginBottom: 24,
-        padding: 16,
         background: bgCard,
+        border: `1px solid ${borderColor}`,
         borderRadius: 12,
-        border: `1px solid ${borderColor}`
+        padding: 16,
+        textAlign: 'center'
       }}>
-        <div style={{
-          fontSize: 14,
-          color: textSecondary,
-          marginBottom: 4
-        }}>
+        <div style={{ fontSize: 13, color: textSecondary, marginBottom: 4 }}>
           Pending Balance
         </div>
-        <div style={{
-          fontSize: 24,
-          fontWeight: 700,
-          color: accentGreen,
-          marginBottom: 4
-        }}>
+        <div style={{ fontSize: 24, fontWeight: 700, color: textPrimary, marginBottom: 4 }}>
           ${pendingBalance}.00
         </div>
-        <div style={{
-          fontSize: 13,
-          color: textSecondary
-        }}>
+        <div style={{ fontSize: 12, color: textSecondary }}>
           (Released after student certification)
-        </div>
-      </div>
-
-      {/* Quick Links */}
-      <div style={{ marginBottom: 24 }}>
-        <h2 style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: textSecondary,
-          margin: '0 0 12px 0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6
-        }}>
-          🔗 QUICK LINKS
-        </h2>
-        <div style={{
-          display: 'flex',
-          gap: 12
-        }}>
-          <button
-            onClick={() => setActiveTab('availability')}
-            style={{
-              flex: 1,
-              padding: '14px 16px',
-              background: bgCard,
-              border: `1px solid ${borderColor}`,
-              borderRadius: 12,
-              color: accentBlue,
-              fontSize: 14,
-              fontWeight: 500,
-              cursor: 'pointer',
-              textAlign: 'center'
-            }}
-          >
-            Set Availability
-          </button>
-          <button
-            style={{
-              flex: 1,
-              padding: '14px 16px',
-              background: bgCard,
-              border: `1px solid ${borderColor}`,
-              borderRadius: 12,
-              color: textSecondary,
-              fontSize: 14,
-              fontWeight: 500,
-              cursor: 'not-allowed',
-              textAlign: 'center',
-              opacity: 0.6
-            }}
-          >
-            My Students
-          </button>
-          <button
-            style={{
-              flex: 1,
-              padding: '14px 16px',
-              background: bgCard,
-              border: `1px solid ${borderColor}`,
-              borderRadius: 12,
-              color: textSecondary,
-              fontSize: 14,
-              fontWeight: 500,
-              cursor: 'not-allowed',
-              textAlign: 'center',
-              opacity: 0.6
-            }}
-          >
-            Earnings History
-          </button>
         </div>
       </div>
     </div>
@@ -1175,68 +1317,34 @@ const StudentTeacherDashboard = ({
                 Course: <span style={{ color: textPrimary, fontWeight: 500 }}>{selectedStudent.courseName || 'Course'}</span>
               </div>
 
-              {/* Session Selection */}
-              <div style={{ marginBottom: 20 }}>
-                <div style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: textPrimary,
-                  marginBottom: 12
-                }}>
-                  Which session are you certifying?
+              {/* Session Info - show which session is being certified */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '14px 16px',
+                background: isDarkMode ? 'rgba(0, 186, 124, 0.15)' : 'rgba(0, 186, 124, 0.1)',
+                borderRadius: 10,
+                marginBottom: 20,
+                border: `2px solid ${accentGreen}`
+              }}>
+                <span style={{ color: accentGreen, fontSize: 20 }}>✓</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{
+                    fontSize: 15,
+                    fontWeight: 600,
+                    color: textPrimary
+                  }}>
+                    {selectedSessionNumber === 1 ? 'Session 1: Foundations & Frameworks' : 'Session 2: Advanced Techniques'}
+                  </div>
+                  <div style={{
+                    fontSize: 13,
+                    color: textSecondary,
+                    marginTop: 2
+                  }}>
+                    90 min
+                  </div>
                 </div>
-                {[
-                  { number: 1, label: 'Session 1: Foundations & Frameworks', duration: '90 min' },
-                  { number: 2, label: 'Session 2: Advanced Techniques', duration: '90 min' }
-                ].map(session => (
-                  <label
-                    key={session.number}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '14px 16px',
-                      background: selectedSessionNumber === session.number ? (isDarkMode ? 'rgba(0, 186, 124, 0.15)' : 'rgba(0, 186, 124, 0.1)') : bgSecondary,
-                      borderRadius: 10,
-                      marginBottom: 10,
-                      cursor: 'pointer',
-                      border: `2px solid ${selectedSessionNumber === session.number ? accentGreen : borderColor}`,
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name="sessionNumber"
-                      checked={selectedSessionNumber === session.number}
-                      onChange={() => setSelectedSessionNumber(session.number)}
-                      style={{
-                        width: 20,
-                        height: 20,
-                        accentColor: accentGreen,
-                        cursor: 'pointer'
-                      }}
-                    />
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        fontSize: 15,
-                        fontWeight: 600,
-                        color: textPrimary
-                      }}>
-                        {session.label}
-                      </div>
-                      <div style={{
-                        fontSize: 13,
-                        color: textSecondary,
-                        marginTop: 2
-                      }}>
-                        {session.duration}
-                      </div>
-                    </div>
-                    {selectedSessionNumber === session.number && (
-                      <span style={{ color: accentGreen, fontSize: 18 }}>✓</span>
-                    )}
-                  </label>
-                ))}
               </div>
 
               {/* Certification Notes */}

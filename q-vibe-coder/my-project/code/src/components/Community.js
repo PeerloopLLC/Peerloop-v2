@@ -2307,6 +2307,32 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     >
                       Member Search
                     </button>
+                    <button
+                      onClick={() => setCommonsActiveFeed('App Tour')}
+                      className={`course-pill ${commonsActiveFeed === 'App Tour' ? 'course-pill-selected' : ''}`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: '8px 16px',
+                        borderRadius: 20,
+                        border: commonsActiveFeed === 'App Tour'
+                          ? '2px solid #1d9bf0'
+                          : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                        background: commonsActiveFeed === 'App Tour'
+                          ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                          : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                        color: commonsActiveFeed === 'App Tour'
+                          ? '#1d9bf0'
+                          : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      Take App Tour
+                    </button>
                   </div>
                 </div>
               ) : (() => {
@@ -2768,7 +2794,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 >
                   Main Hall
                 </button>
-                {['Member Search'].map(num => (
+                {['Member Search', 'App Tour'].map(num => (
                   <button
                     key={num}
                     onClick={() => setCommonsActiveFeed(num)}
@@ -2796,7 +2822,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       transition: 'all 0.3s ease-out'
                     }}
                   >
-                    {num}
+                    {num === 'App Tour' ? 'Take App Tour' : num}
                   </button>
                 ))}
               </div>
@@ -3213,8 +3239,114 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
               />
             )}
 
+            {/* App Tour View - Shows when Take App Tour pill is selected */}
+            {communityMode === 'hub' && commonsActiveFeed === 'App Tour' && (
+              <div style={{ padding: '24px 16px' }}>
+
+                {/* Welcome to PeerLoop Card - Same as new user card */}
+                <div
+                  style={{
+                    background: isDarkMode ? '#16181c' : '#fff',
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #e1e8ed',
+                    borderRadius: 12,
+                    padding: '20px',
+                    display: 'flex',
+                    gap: 20,
+                    marginBottom: 32,
+                    boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  {/* Video Thumbnail - Click to open popup */}
+                  <div
+                    onClick={() => setShowWelcomeVideo(true)}
+                    style={{
+                      width: 240,
+                      height: 160,
+                      flexShrink: 0,
+                      background: isDarkMode ? '#2f3336' : '#f0f0f0',
+                      borderRadius: 10,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      transition: 'transform 0.2s ease'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                  >
+                    {/* Thumbnail image from Vimeo */}
+                    <img
+                      src="https://vumbnail.com/1155787226.jpg"
+                      alt="Welcome video thumbnail"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                    {/* Play button overlay */}
+                    <div style={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: '50%',
+                      background: 'rgba(0, 0, 0, 0.7)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 2
+                    }}>
+                      <FaPlay style={{ fontSize: 24, color: '#fff', marginLeft: 4 }} />
+                    </div>
+                  </div>
+
+                  {/* Content - Right Side */}
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
+                    <h1 style={{ fontSize: 28, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: 0 }}>
+                      Welcome to PeerLoop
+                    </h1>
+                    <p style={{ fontSize: 17, color: isDarkMode ? '#71767b' : '#536471', margin: 0, fontWeight: 500 }}>
+                      A peer-to-peer knowledge sharing community
+                    </p>
+                    <p style={{ fontSize: 16, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '6px 0 0 0', lineHeight: 1.6 }}>
+                      Learn from people who've been where you are. Teach what you've mastered.
+                      Follow creators, take courses, and share your own knowledge when you're ready.
+                    </p>
+                    <button
+                      onClick={() => setCommonsActiveFeed('main')}
+                      style={{
+                        background: '#1d9bf0',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 9999,
+                        padding: '12px 28px',
+                        fontSize: 15,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        marginTop: 8,
+                        alignSelf: 'flex-start'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#1a8cd8'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#1d9bf0'}
+                    >
+                      Start Exploring →
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
             {/* Post Box - Clean Card Design (hidden when Member Search is active) */}
-            {commonsActiveFeed !== 'Member Search' && <div
+            {commonsActiveFeed !== 'Member Search' && commonsActiveFeed !== 'App Tour' && <div
               className="post-composer"
               style={{
                 borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
@@ -3470,7 +3602,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
             </div>}
 
             {/* Welcome Post - Only for new users who haven't completed signup (hidden when Member Search is active) */}
-            {commonsActiveFeed !== 'Member Search' && currentUser?.isNewUser && communityMode === 'hub' && !signupCompleted && (
+            {commonsActiveFeed !== 'Member Search' && commonsActiveFeed !== 'App Tour' && currentUser?.isNewUser && communityMode === 'hub' && !signupCompleted && (
               <div
                 className="welcome-post-card"
                 style={{
@@ -3576,8 +3708,9 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
               </div>
             )}
 
-            {/* Posts Feed (hidden when Member Search is active) */}
-            {commonsActiveFeed !== 'Member Search' && (groupedByCreator.length > 0 || realPosts.length > 0 || communityMode === 'hub' || (communityMode === 'creators' && selectedCreatorId)) ? (
+            {/* Posts Feed (hidden when Member Search or App Tour is active) */}
+            {commonsActiveFeed !== 'Member Search' && commonsActiveFeed !== 'App Tour' && (
+              (groupedByCreator.length > 0 || realPosts.length > 0 || communityMode === 'hub' || (communityMode === 'creators' && selectedCreatorId)) ? (
               <div className="posts-feed">
                 {displayedPosts.length > 0 ? (
                   displayedPosts.map(post => {
@@ -3763,6 +3896,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 <p>Join courses from <strong>Browse → Courses</strong> or <strong>Communities</strong> to see their community posts here.</p>
                 <p className="empty-state-hint">Communities you join will appear as tabs above ↑</p>
               </div>
+            )
             )}
           </div>
         </div>

@@ -1094,7 +1094,8 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
   const tabs = isCoursePurchased ? [
     { id: 'curriculum', label: 'Curriculum' },
     { id: 'feed', label: 'Course Feed' },
-    { id: 'reviews', label: 'Reviews' }
+    { id: 'reviews', label: 'Reviews' },
+    { id: 'about', label: 'About Course' }
   ] : [
     { id: 'curriculum', label: 'Curriculum' },
     { id: 'feed', label: 'Course Feed' },
@@ -1448,12 +1449,11 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
         </div>
         )}
 
-        {/* Tabs - Pill Style - Now above Your Sessions */}
+        {/* Tabs - Pill Style - Matching My Feeds format */}
         <div
-          className="course-detail-tabs"
           style={{
             display: 'flex',
-            flexWrap: 'wrap',
+            alignItems: 'center',
             gap: 8,
             paddingBottom: 16,
             borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
@@ -1463,18 +1463,26 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="course-detail-tab-btn"
+              className={`course-pill ${activeTab === tab.id ? 'course-pill-selected' : ''}`}
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
                 padding: '8px 16px',
+                borderRadius: 20,
+                border: activeTab === tab.id
+                  ? '2px solid #1d9bf0'
+                  : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                background: activeTab === tab.id
+                  ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                  : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                color: activeTab === tab.id
+                  ? '#1d9bf0'
+                  : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                 fontSize: 14,
-                fontWeight: 500,
-                color: activeTab === tab.id ? 'white' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                background: activeTab === tab.id ? '#1d9bf0' : (isDarkMode ? '#16181c' : 'white'),
-                border: `1px solid ${activeTab === tab.id ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#cfd9de')}`,
-                borderRadius: 9999,
+                fontWeight: 600,
                 cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.2s'
+                whiteSpace: 'nowrap'
               }}
             >
               {tab.label}
