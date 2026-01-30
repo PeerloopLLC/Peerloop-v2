@@ -28,11 +28,35 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     return saved || 'slideout';
   });
 
+  // Discover listing format preference
+  const [discoverListingFormat, setDiscoverListingFormat] = useState(() => {
+    const saved = localStorage.getItem('discoverListingFormat');
+    return saved || 'standard';
+  });
+
+  // Compact view text scale preference (0.8 to 1.5)
+  const [compactTextScale, setCompactTextScale] = useState(() => {
+    const saved = localStorage.getItem('compactTextScale');
+    return saved ? parseFloat(saved) : 1.0;
+  });
+
   // Save community navigation preference when it changes
   useEffect(() => {
     localStorage.setItem('communityNavStyle', communityNavStyle);
     window.dispatchEvent(new CustomEvent('communityNavStyleChanged', { detail: communityNavStyle }));
   }, [communityNavStyle]);
+
+  // Save discover listing format preference when it changes
+  useEffect(() => {
+    localStorage.setItem('discoverListingFormat', discoverListingFormat);
+    window.dispatchEvent(new CustomEvent('discoverListingFormatChanged', { detail: discoverListingFormat }));
+  }, [discoverListingFormat]);
+
+  // Save compact text scale preference when it changes
+  useEffect(() => {
+    localStorage.setItem('compactTextScale', compactTextScale.toString());
+    window.dispatchEvent(new CustomEvent('compactTextScaleChanged', { detail: compactTextScale }));
+  }, [compactTextScale]);
 
   const settingsSections = [
     { id: 'settings', label: 'Settings', icon: <FaCog /> },
@@ -261,6 +285,144 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
           </div>
         </div>
       </div>
+
+      {/* Discover Listing Format Section */}
+      <div style={{ marginBottom: 32 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+          Discover Listing Format
+        </h3>
+        <div style={{
+          background: 'var(--bg-secondary, #16181c)',
+          borderRadius: 12,
+          padding: '16px 20px'
+        }}>
+          <p style={{
+            color: 'var(--text-secondary, #71767b)',
+            fontSize: 13,
+            marginBottom: 12,
+            marginTop: 0
+          }}>
+            Choose how courses are displayed in Discover
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { value: 'standard', label: 'Standard Listing', description: 'Community header and course cards shown separately' },
+              { value: 'compact', label: 'Compact Listing', description: 'Combined community + course in single card' }
+            ].map(option => (
+              <label
+                key={option.value}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 12,
+                  padding: '12px 16px',
+                  borderRadius: 12,
+                  border: discoverListingFormat === option.value
+                    ? '2px solid #1d9bf0'
+                    : '1px solid var(--border-color, #2f3336)',
+                  background: discoverListingFormat === option.value
+                    ? 'rgba(29, 155, 240, 0.1)'
+                    : 'transparent',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <input
+                  type="radio"
+                  name="discoverListingFormat"
+                  value={option.value}
+                  checked={discoverListingFormat === option.value}
+                  onChange={(e) => setDiscoverListingFormat(e.target.value)}
+                  style={{
+                    width: 18,
+                    height: 18,
+                    accentColor: '#1d9bf0',
+                    marginTop: 2
+                  }}
+                />
+                <div>
+                  <div style={{
+                    color: discoverListingFormat === option.value ? '#1d9bf0' : 'var(--text-primary, #e7e9ea)',
+                    fontWeight: discoverListingFormat === option.value ? 600 : 400,
+                    fontSize: 14,
+                    marginBottom: 2
+                  }}>
+                    {option.label}
+                  </div>
+                  <div style={{
+                    color: 'var(--text-secondary, #71767b)',
+                    fontSize: 12
+                  }}>
+                    {option.description}
+                  </div>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Compact View Text Size (only shown when compact is selected) */}
+      {discoverListingFormat === 'compact' && (
+        <div style={{ marginBottom: 32 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+            Compact View Text Size
+          </h3>
+          <div style={{
+            background: 'var(--bg-secondary, #16181c)',
+            borderRadius: 12,
+            padding: '16px 20px'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 12
+            }}>
+              <span style={{ color: 'var(--text-secondary, #71767b)', fontSize: 13 }}>
+                Adjust text size for compact listings
+              </span>
+              <span style={{
+                color: '#1d9bf0',
+                fontWeight: 600,
+                fontSize: 14,
+                minWidth: 50,
+                textAlign: 'right'
+              }}>
+                {Math.round(compactTextScale * 100)}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0.8"
+              max="1.6"
+              step="0.05"
+              value={compactTextScale}
+              onChange={(e) => setCompactTextScale(parseFloat(e.target.value))}
+              style={{
+                width: '100%',
+                height: 6,
+                borderRadius: 3,
+                appearance: 'none',
+                background: `linear-gradient(to right, #1d9bf0 0%, #1d9bf0 ${((compactTextScale - 0.8) / 0.8) * 100}%, var(--border-color, #2f3336) ${((compactTextScale - 0.8) / 0.8) * 100}%, var(--border-color, #2f3336) 100%)`,
+                cursor: 'pointer',
+                accentColor: '#1d9bf0'
+              }}
+            />
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginTop: 8,
+              fontSize: 11,
+              color: 'var(--text-secondary, #71767b)'
+            }}>
+              <span>Small (80%)</span>
+              <span>Normal (100%)</span>
+              <span>Large (160%)</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Notifications Section */}
       <div style={{ marginBottom: 32 }}>

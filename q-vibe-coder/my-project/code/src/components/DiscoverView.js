@@ -32,6 +32,17 @@ const DiscoverView = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
 
+  // Discover listing format preference
+  const [discoverListingFormat, setDiscoverListingFormat] = useState(() => {
+    return localStorage.getItem('discoverListingFormat') || 'standard';
+  });
+
+  // Compact view text scale preference
+  const [compactTextScale, setCompactTextScale] = useState(() => {
+    const saved = localStorage.getItem('compactTextScale');
+    return saved ? parseFloat(saved) : 1.0;
+  });
+
   // Dropdown state for community follow menu
   const [openCommunityFollowDropdown, setOpenCommunityFollowDropdown] = useState(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -188,6 +199,24 @@ const DiscoverView = ({
     setSelectedInterests([]);
     setSelectedCommunities([]);
   }, [currentUser?.id]);
+
+  // Listen for discover listing format changes from Settings
+  useEffect(() => {
+    const handleFormatChange = (e) => {
+      setDiscoverListingFormat(e.detail);
+    };
+    window.addEventListener('discoverListingFormatChanged', handleFormatChange);
+    return () => window.removeEventListener('discoverListingFormatChanged', handleFormatChange);
+  }, []);
+
+  // Listen for compact text scale changes from Settings
+  useEffect(() => {
+    const handleScaleChange = (e) => {
+      setCompactTextScale(e.detail);
+    };
+    window.addEventListener('compactTextScaleChanged', handleScaleChange);
+    return () => window.removeEventListener('compactTextScaleChanged', handleScaleChange);
+  }, []);
 
   // Handle scroll to collapse/expand header based on scroll position
   useEffect(() => {
@@ -496,6 +525,459 @@ const DiscoverView = ({
           borderRadius: 2
         }}>{part}</mark>
       ) : part
+    );
+  };
+
+  // Render compact course card (combined community + course)
+  const renderCompactCourseCard = (course, instructor, isFollowing, isPurchased) => {
+    const handle = (instructor.communityName || instructor.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '');
+    // Scale helper for text sizes
+    const s = (size) => Math.round(size * compactTextScale);
+    const iconSize = Math.round(40 * compactTextScale);
+    const padding = Math.round(12 * compactTextScale);
+
+    return (
+      <div
+        key={`compact-${course.id}`}
+        style={{
+          marginBottom: 12,
+          borderRadius: 12,
+          overflow: 'hidden',
+          boxShadow: isDarkMode ? 'none' : '0 2px 8px rgba(0,0,0,0.08)',
+          background: isDarkMode ? '#16181c' : 'white',
+          border: isDarkMode ? '1px solid #2f3336' : 'none'
+        }}
+      >
+        {/* Community Header */}
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            saveScrollPosition();
+            onViewCommunity && onViewCommunity(instructor);
+          }}
+          style={{
+            background: isDarkMode
+              ? 'linear-gradient(135deg, #1e3a4c 0%, #1a2634 100%)'
+              : 'linear-gradient(135deg, #e8f4fc 0%, #f0f8ff 100%)',
+            padding: `${padding}px 16px`,
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: s(12),
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e1e8ed',
+            cursor: 'pointer',
+            transition: 'background 0.15s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = isDarkMode
+              ? 'linear-gradient(135deg, #254a5e 0%, #1f2f3f 100%)'
+              : 'linear-gradient(135deg, #d4ebf7 0%, #e4f1fc 100%)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = isDarkMode
+              ? 'linear-gradient(135deg, #1e3a4c 0%, #1a2634 100%)'
+              : 'linear-gradient(135deg, #e8f4fc 0%, #f0f8ff 100%)';
+          }}
+        >
+          {/* Community Icon */}
+          <div style={{
+            width: iconSize,
+            height: iconSize,
+            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontWeight: 600,
+            fontSize: s(14),
+            border: '2px solid white',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            flexShrink: 0
+          }}>
+            👥
+          </div>
+
+          {/* Community Info */}
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: s(6) }}>
+            {/* Top Row: Name, Handle, Following */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: s(6), flexWrap: 'wrap' }}>
+              <span
+                style={{
+                  fontWeight: 700,
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                  fontSize: s(15)
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+              >
+                {instructor.communityName || `${instructor.name} Community`}
+              </span>
+              <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: s(14) }}>
+                @{handle}
+              </span>
+              <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
+              {(() => {
+                // Use ALL instructor courses, not just matchingCourses (which is limited/filtered)
+                const allInstructorCourses = instructor.courses || [];
+                const enrolledCourses = allInstructorCourses.filter(c => isCoursePurchased(c.id));
+                const hasEnrolledCourses = enrolledCourses.length > 0;
+
+                // If no enrolled courses, just show simple follow/unfollow link
+                if (!hasEnrolledCourses) {
+                  return (
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleFollowInstructor(instructor.id);
+                      }}
+                      style={{
+                        color: '#1d9bf0',
+                        fontSize: s(15),
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                        transition: 'color 0.15s'
+                      }}
+                    >
+                      {isFollowing ? 'Following' : 'Follow'}
+                    </span>
+                  );
+                }
+
+                // If has enrolled courses, show dropdown
+                return (
+                  <div
+                    className="community-follow-dropdown-wrapper"
+                    style={{ position: 'relative', display: 'inline-block', zIndex: 9999 }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const dropdownId = `compact-${instructor.id}-${course.id}`;
+                        const isOpening = openCommunityFollowDropdown !== dropdownId;
+                        if (isOpening) {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const dropdownHeight = 250;
+                          const viewportHeight = window.innerHeight;
+                          const spaceBelow = viewportHeight - rect.bottom;
+                          const spaceAbove = rect.top;
+                          const positionAbove = spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
+
+                          setDropdownPosition({
+                            top: positionAbove ? rect.top - dropdownHeight - 4 : rect.bottom + 4,
+                            left: rect.left
+                          });
+                        }
+                        setOpenCommunityFollowDropdown(
+                          openCommunityFollowDropdown === dropdownId ? null : dropdownId
+                        );
+                      }}
+                      style={{
+                        color: '#1d9bf0',
+                        fontSize: s(15),
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                        transition: 'color 0.15s'
+                      }}
+                    >
+                      {isFollowing ? 'Following' : 'Follow'}
+                      <span style={{ fontSize: s(10), marginLeft: 4 }}>▼</span>
+                    </span>
+
+                    {/* Dropdown menu - rendered via portal to escape overflow contexts */}
+                    {openCommunityFollowDropdown === `compact-${instructor.id}-${course.id}` && ReactDOM.createPortal(
+                      <div
+                        className="community-follow-dropdown-portal"
+                        style={{
+                          position: 'fixed',
+                          top: dropdownPosition.top,
+                          left: dropdownPosition.left,
+                          background: isDarkMode ? '#16181c' : '#fff',
+                          border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                          borderRadius: 12,
+                          boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.1)',
+                          zIndex: 99999,
+                          minWidth: 220,
+                          padding: '4px 0'
+                        }}>
+                        {(() => {
+                          const followedCoursesCount = enrolledCourses.filter(c => isCourseFollowed(c.id)).length;
+                          const hasAnyFollowed = isFollowing || followedCoursesCount > 0;
+
+                          return (
+                            <>
+                              {/* Community section label */}
+                              <div style={{
+                                padding: '6px 16px 2px',
+                                fontSize: s(11),
+                                fontWeight: 600,
+                                color: isDarkMode ? '#71767b' : '#536471',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Community
+                              </div>
+                              {/* Community name - click to toggle community follow */}
+                              <div
+                                style={{
+                                  padding: '8px 16px',
+                                  cursor: 'pointer',
+                                  fontSize: s(14),
+                                  color: isFollowing ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                                  fontWeight: isFollowing ? 500 : 400,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 8
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleFollowInstructor(instructor.id);
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                              >
+                                <span style={{ width: 16 }}>{isFollowing && '✓'}</span>
+                                <span>{instructor.communityName || instructor.name}</span>
+                              </div>
+
+                              {/* Courses section label */}
+                              <div style={{
+                                padding: '10px 16px 2px',
+                                fontSize: s(11),
+                                fontWeight: 600,
+                                color: isDarkMode ? '#71767b' : '#536471',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                                marginTop: 4
+                              }}>
+                                Courses
+                              </div>
+                              {/* List of enrolled courses */}
+                              {enrolledCourses.map(enrolledCourse => {
+                                const isFollowed = isCourseFollowed(enrolledCourse.id);
+                                return (
+                                  <div
+                                    key={enrolledCourse.id}
+                                    style={{
+                                      padding: '10px 16px',
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 8,
+                                      fontSize: s(14),
+                                      color: isFollowed ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                                      fontWeight: isFollowed ? 500 : 400
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleFollowCourse(enrolledCourse.id);
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                  >
+                                    <span style={{ width: 16, flexShrink: 0 }}>{isFollowed && '✓'}</span>
+                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{enrolledCourse.title}</span>
+                                  </div>
+                                );
+                              })}
+
+                              {/* Unfollow all - only show if something is followed */}
+                              {hasAnyFollowed && (
+                                <>
+                                  <div style={{ borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4', margin: '4px 0' }} />
+                                  <div
+                                    style={{
+                                      padding: '10px 16px',
+                                      cursor: 'pointer',
+                                      fontSize: s(13),
+                                      color: '#f4212e',
+                                      fontWeight: 500
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      // Unfollow all enrolled courses
+                                      enrolledCourses.forEach(enrolledCourse => {
+                                        if (isCourseFollowed(enrolledCourse.id)) {
+                                          handleFollowCourse(enrolledCourse.id);
+                                        }
+                                      });
+                                      // Also unfollow the community
+                                      if (isFollowing) {
+                                        handleFollowInstructor(instructor.id);
+                                      }
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                  >
+                                    Unfollow all
+                                  </div>
+                                </>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>,
+                      document.body
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+            {/* Creator Row */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: s(6),
+              fontSize: s(13),
+              color: isDarkMode ? '#71767b' : '#536471',
+              flexWrap: 'wrap'
+            }}>
+              <span>Created by</span>
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onViewCreatorProfile) {
+                    onViewCreatorProfile(instructor);
+                  }
+                }}
+                style={{ color: '#1d9bf0', fontWeight: 500, cursor: 'pointer' }}
+                onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+              >
+                {instructor.name}
+              </span>
+              <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
+              <span>👥 {(instructor.stats?.studentsTaught || 0).toLocaleString()} followers</span>
+              <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
+              <span style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                maxWidth: s(200)
+              }}>{instructor.title}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Course Content */}
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            saveScrollPosition();
+            onViewCourse && onViewCourse(course);
+          }}
+          style={{
+            padding: `${padding}px 16px`,
+            cursor: 'pointer',
+            transition: 'background 0.15s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = isDarkMode ? '#1c1f23' : '#f8f9fa';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+          }}
+        >
+          {/* Title Row */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: s(4),
+            gap: s(10)
+          }}>
+            <span
+              style={{
+                fontSize: s(17),
+                fontWeight: 600,
+                color: isDarkMode ? '#e7e9ea' : '#0f1419'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+            >
+              {course.title}
+            </span>
+            {isPurchased ? (
+              <span style={{
+                background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                border: isDarkMode ? '2px solid #536471' : '2px solid #cfd9de',
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                padding: `${s(8)}px ${s(16)}px`,
+                borderRadius: s(20),
+                fontSize: s(14),
+                fontWeight: 500,
+                whiteSpace: 'nowrap'
+              }}>
+                Enrolled
+              </span>
+            ) : (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  saveScrollPosition();
+                  if (onViewCourse) {
+                    onViewCourse(course);
+                  }
+                }}
+                style={{
+                  background: '#22c55e',
+                  border: '2px solid #22c55e',
+                  color: 'white',
+                  padding: `${s(8)}px ${s(16)}px`,
+                  borderRadius: s(20),
+                  fontSize: s(14),
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#16a34a'}
+                onMouseLeave={(e) => e.currentTarget.style.background = '#22c55e'}
+              >
+                Enroll {course.price}
+              </button>
+            )}
+          </div>
+
+          {/* Description */}
+          <p style={{
+            color: isDarkMode ? '#8b98a5' : '#536471',
+            fontSize: s(14),
+            lineHeight: 1.3,
+            marginBottom: s(6),
+            margin: 0
+          }}>
+            {course.description}
+          </p>
+
+          {/* Meta Line */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: s(6),
+            flexWrap: 'wrap',
+            color: isDarkMode ? '#71767b' : '#71767b',
+            fontSize: s(13)
+          }}>
+            <span style={{ color: isDarkMode ? '#e7e9ea' : '#1a1a1a', fontWeight: 500 }}>
+              <span style={{ color: '#ffc107' }}>★</span> {course.rating || '4.7'} ({course.students || 142})
+            </span>
+            <span style={{ color: '#ccc' }}>·</span>
+            <span>{course.level || 'Beginner'}</span>
+            <span style={{ color: '#ccc' }}>·</span>
+            <span>{course.sessions?.count || 2} sessions</span>
+            <span style={{ color: '#ccc' }}>·</span>
+            <span>{typeof course.duration === 'string' ? course.duration : (course.sessions?.duration || '3 hrs')}</span>
+            <span style={{ color: '#ccc' }}>·</span>
+            <span style={{ color: course.price === 'Free' ? '#00ba7c' : (isDarkMode ? '#e7e9ea' : '#1a1a1a'), fontWeight: 600 }}>
+              {course.price}
+            </span>
+          </div>
+        </div>
+      </div>
     );
   };
 
@@ -1211,6 +1693,19 @@ const DiscoverView = ({
                 const { instructor, matchingCourses, totalCourses, matchedByName } = result;
                 const isFollowing = isCreatorFollowed(instructor.id);
 
+                // Compact Listing Format - render each course as combined card
+                if (discoverListingFormat === 'compact') {
+                  return (
+                    <React.Fragment key={`compact-group-${instructor.id}`}>
+                      {matchingCourses.map((course) => {
+                        const isPurchased = isCoursePurchased && isCoursePurchased(course.id);
+                        return renderCompactCourseCard(course, instructor, isFollowing, isPurchased);
+                      })}
+                    </React.Fragment>
+                  );
+                }
+
+                // Standard Listing Format - existing layout
                 return (
                   <div
                     key={instructor.id}
