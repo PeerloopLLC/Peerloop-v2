@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apply to Teach - Mockups</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+    h1 { text-align: center; margin-bottom: 40px; color: #333; }
+    h2 { margin: 40px 0 20px; color: #666; font-size: 18px; }
+
+    .mockup-container {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .mockup {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+      width: 420px;
+    }
+
+    .mockup-label {
+      background: #1d9bf0;
+      color: white;
+      padding: 12px 20px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      background: rgba(0,0,0,0.5);
+      padding: 60px 20px;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 380px;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #eff3f4;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-header .close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-header .close:hover {
+      background: #f7f9f9;
+    }
+
+    .modal-header h3 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    /* Course Card in Modal */
+    .course-card {
+      background: #f7f9f9;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .course-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #06b6d4, #0891b2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .course-info h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .course-info .meta {
+      font-size: 13px;
+      color: #536471;
+    }
+
+    .certified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #dcfce7;
+      color: #15803d;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    /* Checklist */
+    .checklist {
+      margin-bottom: 20px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      font-size: 14px;
+      color: #0f1419;
+    }
+
+    .check-icon {
+      width: 20px;
+      height: 20px;
+      background: #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #059669;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #536471;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: #f7f9f9;
+    }
+
+    /* Earnings preview */
+    .earnings-preview {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .earnings-preview .label {
+      font-size: 12px;
+      color: #92400e;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .earnings-preview .amount {
+      font-size: 24px;
+      font-weight: 700;
+      color: #78350f;
+    }
+
+    .earnings-preview .note {
+      font-size: 12px;
+      color: #a16207;
+      margin-top: 4px;
+    }
+
+    /* Application Submitted Box */
+    .submitted-box {
+      background: #dcfce7;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .submitted-box .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .submitted-box .title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #15803d;
+    }
+
+    .notification-note {
+      text-align: center;
+      font-size: 13px;
+      color: #536471;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Apply to Teach Flow</h1>
+
+  <div class="mockup-container">
+    <!-- Step 1: Confirmation Modal -->
+    <div class="mockup">
+      <div class="mockup-label">Step 1: Click "Apply to Teach"</div>
+      <div class="modal-overlay">
+        <div class="modal">
+          <div class="modal-header">
+            <button class="close">&times;</button>
+            <h3>Become a Teacher</h3>
+          </div>
+          <div class="modal-body">
+            <div class="course-card">
+              <div class="course-icon">AI</div>
+              <div class="course-info">
+                <h4>AI Prompting Mastery</h4>
+                <div class="meta">by Guy Rymberg</div>
+                <div class="certified-badge">&#10003; Certified</div>
+              </div>
+            </div>
+
+            <div class="checklist">
+              <div class="check-item">
+                <span class="check-icon">&#10003;</span>
+                <span>You completed this course</span>
+              </div>
+              <div class="check-item">
+                <span class="check-icon">&#10003;</span>
+                <span>You're certified to teach</span>
+              </div>
+              <div class="check-item">
+                <span class="check-icon">&#10003;</span>
+                <span>Earn 70% per session</span>
+              </div>
+            </div>
+
+            <div class="earnings-preview">
+              <div class="label">Potential Earnings</div>
+              <div class="amount">$35/session</div>
+              <div class="note">Based on $50 session price</div>
+            </div>
+
+            <button class="btn btn-primary">Yes, I Want to Teach</button>
+            <button class="btn btn-secondary">Not Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Application Submitted -->
+    <div class="mockup">
+      <div class="mockup-label">Step 2: After clicking "Yes, I Want to Teach"</div>
+      <div class="modal-overlay">
+        <div class="modal">
+          <div class="modal-header">
+            <button class="close">&times;</button>
+            <h3></h3>
+          </div>
+          <div class="modal-body">
+            <div class="submitted-box">
+              <div class="icon">&#10003;</div>
+              <div class="title">Application Submitted</div>
+            </div>
+
+            <div class="course-card">
+              <div class="course-icon">AI</div>
+              <div class="course-info">
+                <h4>AI Prompting Mastery</h4>
+                <div class="meta">by Guy Rymberg</div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary">Go To Workspace</button>
+            <p class="notification-note">Look for notifications for approval</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="text-align: center; margin-top: 60px;">Button State Change</h2>
+
+  <div class="mockup-container">
+    <!-- Before/After Button -->
+    <div class="mockup">
+      <div class="mockup-label">Button Changes After Applying</div>
+      <div style="padding: 30px; background: #f0f4f8;">
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px; text-align: center;">Before:</p>
+        <div style="background: white; border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="course-icon" style="width: 40px; height: 40px; font-size: 12px;">AI</div>
+            <div>
+              <div style="font-weight: 600; font-size: 14px;">AI Prompting Mastery</div>
+              <div style="font-size: 12px; color: #536471;">&#10003; Completed Jan 28</div>
+            </div>
+          </div>
+          <button style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 13px; cursor: pointer;">
+            Apply to Teach
+          </button>
+        </div>
+
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px; text-align: center;">After (Pending Approval):</p>
+        <div style="background: white; border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="course-icon" style="width: 40px; height: 40px; font-size: 12px;">AI</div>
+            <div>
+              <div style="font-weight: 600; font-size: 14px;">AI Prompting Mastery</div>
+              <div style="font-size: 12px; color: #536471;">&#10003; Completed Jan 28</div>
+            </div>
+          </div>
+          <button style="background: #fef3c7; color: #92400e; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 13px; cursor: pointer;">
+            Pending Approval
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

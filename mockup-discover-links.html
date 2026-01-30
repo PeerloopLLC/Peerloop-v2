@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover - Link Style Mockups</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+
+    h2 {
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+    }
+
+    .demo-note {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    /* Community Card */
+    .community-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 700px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 16px;
+    }
+
+    .community-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .community-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .community-info {
+      flex: 1;
+    }
+
+    .community-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .community-handle {
+      font-size: 13px;
+      color: #71767b;
+    }
+
+    .community-creator {
+      font-size: 13px;
+      color: #536471;
+      margin-top: 2px;
+    }
+
+    .community-stats {
+      font-size: 13px;
+      color: #536471;
+      margin-top: 4px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .community-desc {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+
+    /* Current Button Style */
+    .follow-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 2px solid #cfd9de;
+      background: #f7f9f9;
+      color: #0f1419;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: all 0.2s ease;
+    }
+
+    .follow-btn.following {
+      border-color: #1d9bf0;
+      background: rgba(29, 155, 240, 0.1);
+      color: #1d9bf0;
+      box-shadow: 0 2px 8px rgba(29,155,240,0.4);
+    }
+
+    /* Link Style Options */
+    .follow-link {
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    /* Option A: Simple underline link */
+    .link-style-a {
+      color: #536471;
+      text-decoration: underline;
+    }
+    .link-style-a:hover {
+      color: #1d9bf0;
+    }
+    .link-style-a.following {
+      color: #1d9bf0;
+      font-weight: 500;
+    }
+
+    /* Option B: No underline, color change */
+    .link-style-b {
+      color: #71767b;
+      text-decoration: none;
+    }
+    .link-style-b:hover {
+      color: #1d9bf0;
+      text-decoration: underline;
+    }
+    .link-style-b.following {
+      color: #1d9bf0;
+      font-weight: 500;
+    }
+
+    /* Option C: With icon prefix */
+    .link-style-c {
+      color: #536471;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .link-style-c:hover {
+      color: #1d9bf0;
+    }
+    .link-style-c.following {
+      color: #1d9bf0;
+    }
+    .link-style-c .icon {
+      font-size: 12px;
+    }
+
+    /* Option D: Inline with stats */
+    .link-style-d {
+      color: #1d9bf0;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .link-style-d:hover {
+      text-decoration: underline;
+    }
+
+    /* Course Card */
+    .course-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      max-width: 500px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 12px;
+    }
+
+    .course-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .course-info {
+      flex: 1;
+    }
+
+    .course-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .course-desc {
+      font-size: 13px;
+      color: #536471;
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .course-meta {
+      font-size: 13px;
+      color: #71767b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .course-meta .star {
+      color: #f59e0b;
+    }
+
+    .course-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .enroll-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: #10b981;
+      color: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    /* Comparison row */
+    .compare-row {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .compare-item {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .compare-label {
+      font-size: 12px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Current Design (Button Style)</h2>
+  <p class="demo-note">This is how Following Community buttons look now</p>
+
+  <div class="community-card">
+    <div class="community-header">
+      <div class="community-icon">👥</div>
+      <div class="community-info">
+        <div class="community-name">AI Pioneers Hub</div>
+        <div class="community-handle">@aipioneershub</div>
+        <div class="community-creator">Created by Jane Doe</div>
+        <div class="community-stats">
+          <span>👥 19,928 followers</span>
+          <span>•</span>
+          <span>Leading AI Strategist at TechCorp</span>
+        </div>
+      </div>
+      <button class="follow-btn following">Following Community</button>
+    </div>
+    <div class="community-desc">Leading AI strategist with 10+ years experience in product management and AI implementation.</div>
+  </div>
+
+  <div class="community-card">
+    <div class="community-header">
+      <div class="community-icon">👥</div>
+      <div class="community-info">
+        <div class="community-name">Data Science Den</div>
+        <div class="community-handle">@datascienceden</div>
+        <div class="community-creator">Created by Prof. Maria Rodriguez</div>
+        <div class="community-stats">
+          <span>👥 2,450 followers</span>
+          <span>•</span>
+          <span>Data Science & Analytics Specialist</span>
+        </div>
+      </div>
+      <button class="follow-btn">Follow Community</button>
+    </div>
+    <div class="community-desc">Expert in data science, statistical analysis, and business intelligence.</div>
+  </div>
+
+  <div class="section"></div>
+
+  <!-- OPTION A -->
+  <h2>Option A: Simple Underline Links</h2>
+  <p class="demo-note">Traditional link style - underlined, changes color on hover</p>
+
+  <div class="community-card">
+    <div class="community-header">
+      <div class="community-icon">👥</div>
+      <div class="community-info">
+        <div class="community-name">AI Pioneers Hub</div>
+        <div class="community-handle">@aipioneershub</div>
+        <div class="community-creator">Created by Jane Doe</div>
+        <div class="community-stats">
+          <span>👥 19,928 followers</span>
+          <span>•</span>
+          <span>Leading AI Strategist at TechCorp</span>
+        </div>
+      </div>
+      <a class="follow-link link-style-a following" href="#">Following</a>
+    </div>
+    <div class="community-desc">Leading AI strategist with 10+ years experience in product management and AI implementation.</div>
+  </div>
+
+  <div class="community-card">
+    <div class="community-header">
+      <div class="community-icon">👥</div>
+      <div class="community-info">
+        <div class="community-name">Data Science Den</div>
+        <div class="community-handle">@datascienceden</div>
+        <div class="community-creator">Created by Prof. Maria Rodriguez</div>
+        <div class="community-stats">
+          <span>👥 2,450 followers</span>
+          <span>•</span>
+          <span>Data Science & Analytics Specialist</span>
+        </div>
+      </div>
+      <a class="follow-link link-style-a" href="#">Follow</a>
+    </div>
+    <div class="community-desc">Expert in data science, statistical analysis, and business intelligence.</div>
+  </div>
+
+  <div class="section"></div>
+
+  <!-- OPTION B -->
+  <h2>Option B: Subtle Links (No Underline)</h2>
+  <p class="demo-note">Cleaner look - underline appears on hover only</p>
+
+  <div class="community-card">
+    <div class="community-header">
+      <div class="community-icon">👥</div>
+      <div class="community-info">
+        <div class="community-name">AI Pioneers Hub</div>
+        <div class="community-handle">@aipioneershub</div>
+        <div class="community-creator">Created by Jane Doe</div>
+        <div class="community-stats">
+          <span>👥 19,928 followers</span>
+          <span>•</span>
+          <span>Leading AI Strategist at TechCorp</span>
+        </div>
+      </div>
+      <a class="follow-link link-style-b following" href="#">Following</a>
+    </div>
+    <div class="community-desc">Leading AI strategist with 10+ years experience in product management and AI implementation.</div>
+  </div>
+
+  <div class="community-card">
+    <div class="community-header">
+      <div class="community-icon">👥</div>
+      <div class="community-info">
+        <div class="community-name">Data Science Den</div>
+        <div class="community-handle">@datascienceden</div>
+        <div class="community-creator">Created by Prof. Maria Rodriguez</div>
+        <div class="community-stats">
+          <span>👥 2,450 followers</span>
+          <span>•</span>
+          <span>Data Science & Analytics Specialist</span>
+        </div>
+      </div>
+      <a class="follow-link link-style-b" href="#">Follow</a>
+    </div>
+    <div class="community-desc">Expert in data science, statistical analysis, and business intelligence.</div>
+  </div>
+
+  <div class="section"></div>
+
+  <!-- OPTION C -->
+  <h2>Option C: Links with Icons</h2>
+  <p class="demo-note">Small icon prefix adds visual affordance</p>
+
+  <div class="community-card">
+    <div class="community-header">
+      <div class="community-icon">👥</div>
+      <div class="community-info">
+        <div class="community-name">AI Pioneers Hub</div>
+        <div class="community-handle">@aipioneershub</div>
+        <div class="community-creator">Created by Jane Doe</div>
+        <div class="community-stats">
+          <span>👥 19,928 followers</span>
+          <span>•</span>
+          <span>Leading AI Strategist at TechCorp</span>
+        </div>
+      </div>
+      <a class="follow-link link-style-c following" href="#"><span class="icon">✓</span> Following</a>
+    </div>
+    <div class="community-desc">Leading AI strategist with 10+ years experience in product management and AI implementation.</div>
+  </div>
+
+  <div class="community-card">
+    <div class="community-header">
+      <div class="community-icon">👥</div>
+      <div class="community-info">
+        <div class="community-name">Data Science Den</div>
+        <div class="community-handle">@datascienceden</div>
+        <div class="community-creator">Created by Prof. Maria Rodriguez</div>
+        <div class="community-stats">
+          <span>👥 2,450 followers</span>
+          <span>•</span>
+          <span>Data Science & Analytics Specialist</span>
+        </div>
+      </div>
+      <a class="follow-link link-style-c" href="#"><span class="icon">+</span> Follow</a>
+    </div>
+    <div class="community-desc">Expert in data science, statistical analysis, and business intelligence.</div>
+  </div>
+
+  <div class="section"></div>
+
+  <!-- OPTION D -->
+  <h2>Option D: Inline with Stats</h2>
+  <p class="demo-note">Follow link integrated into the stats line</p>
+
+  <div class="community-card">
+    <div class="community-header">
+      <div class="community-icon">👥</div>
+      <div class="community-info">
+        <div class="community-name">AI Pioneers Hub</div>
+        <div class="community-handle">@aipioneershub</div>
+        <div class="community-creator">Created by Jane Doe</div>
+        <div class="community-stats">
+          <span>👥 19,928 followers</span>
+          <span>•</span>
+          <a class="follow-link link-style-d" href="#">Following ✓</a>
+        </div>
+      </div>
+    </div>
+    <div class="community-desc">Leading AI strategist with 10+ years experience in product management and AI implementation.</div>
+  </div>
+
+  <div class="community-card">
+    <div class="community-header">
+      <div class="community-icon">👥</div>
+      <div class="community-info">
+        <div class="community-name">Data Science Den</div>
+        <div class="community-handle">@datascienceden</div>
+        <div class="community-creator">Created by Prof. Maria Rodriguez</div>
+        <div class="community-stats">
+          <span>👥 2,450 followers</span>
+          <span>•</span>
+          <a class="follow-link link-style-d" href="#">+ Follow</a>
+        </div>
+      </div>
+    </div>
+    <div class="community-desc">Expert in data science, statistical analysis, and business intelligence.</div>
+  </div>
+
+  <div class="section"></div>
+
+  <!-- Course cards comparison -->
+  <h2>Course Cards - Current vs Link Style</h2>
+  <p class="demo-note">How course follow would look as a link</p>
+
+  <div class="compare-row">
+    <div class="compare-item">
+      <div class="compare-label">Current (Button)</div>
+      <div class="course-card">
+        <div class="course-icon">AI</div>
+        <div class="course-info">
+          <div class="course-title">AI Prompting Mastery</div>
+          <div class="course-desc">Learn to write effective AI prompts for business use.</div>
+          <div class="course-meta">
+            <span class="star">★</span> 4.9 · 127 students · 4-6 weeks
+          </div>
+        </div>
+        <div class="course-actions">
+          <button class="follow-btn following">Following Course</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-item">
+      <div class="compare-label">Link Style (Option B)</div>
+      <div class="course-card">
+        <div class="course-icon">AI</div>
+        <div class="course-info">
+          <div class="course-title">AI Prompting Mastery</div>
+          <div class="course-desc">Learn to write effective AI prompts for business use.</div>
+          <div class="course-meta">
+            <span class="star">★</span> 4.9 · 127 students · 4-6 weeks · <a class="follow-link link-style-b following" href="#">Following</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="compare-row" style="margin-top: 20px;">
+    <div class="compare-item">
+      <div class="compare-label">Current (Button)</div>
+      <div class="course-card">
+        <div class="course-icon">DS</div>
+        <div class="course-info">
+          <div class="course-title">Data Science Fundamentals</div>
+          <div class="course-desc">Learn the core concepts of data science and statistical analysis.</div>
+          <div class="course-meta">
+            <span class="star">★</span> 4.6 · 1,800 students · 8 weeks
+          </div>
+        </div>
+        <div class="course-actions">
+          <button class="enroll-btn">Enroll $299</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-item">
+      <div class="compare-label">Link Style (Option C)</div>
+      <div class="course-card">
+        <div class="course-icon">DS</div>
+        <div class="course-info">
+          <div class="course-title">Data Science Fundamentals</div>
+          <div class="course-desc">Learn the core concepts of data science and statistical analysis.</div>
+          <div class="course-meta">
+            <span class="star">★</span> 4.6 · 1,800 students · 8 weeks · <a class="follow-link link-style-c" href="#"><span class="icon">+</span> Follow</a>
+          </div>
+        </div>
+        <div class="course-actions">
+          <button class="enroll-btn">Enroll $299</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
