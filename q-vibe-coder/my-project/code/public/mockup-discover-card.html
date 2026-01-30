@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Card Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 40px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 600px;
+        }
+
+        .course-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: white;
+        }
+
+        /* Community Header */
+        .community-header {
+            background: linear-gradient(135deg, #e8f4fc 0%, #f0f8ff 100%);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .community-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .community-icon-placeholder {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .community-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .community-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 14px;
+        }
+
+        .community-followers {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .community-follow-btn {
+            color: #1d9bf0;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .community-follow-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Course Content */
+        .course-content {
+            padding: 14px 16px;
+        }
+
+        .course-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .course-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .enroll-btn {
+            background: #1d9bf0;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .enroll-btn:hover {
+            background: #1a8cd8;
+        }
+
+        .course-description {
+            color: #536471;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .course-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            color: #71767b;
+            font-size: 13px;
+        }
+
+        .course-meta .rating {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .course-meta .star {
+            color: #ffc107;
+        }
+
+        .course-meta .dot {
+            color: #ccc;
+        }
+
+        .course-meta .price {
+            color: #00ba7c;
+            font-weight: 600;
+        }
+
+        .course-meta .price.paid {
+            color: #1a1a1a;
+        }
+
+        /* Dark mode version */
+        .dark {
+            background: #000;
+        }
+
+        .dark .course-card {
+            background: #16181c;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .dark .community-header {
+            background: linear-gradient(135deg, #1e3a4c 0%, #1a2634 100%);
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .dark .community-name {
+            color: #e7e9ea;
+        }
+
+        .dark .community-followers {
+            color: #71767b;
+        }
+
+        .dark .course-title {
+            color: #e7e9ea;
+        }
+
+        .dark .course-description {
+            color: #8b98a5;
+        }
+
+        .dark .course-meta {
+            color: #71767b;
+        }
+
+        .dark .course-meta .rating {
+            color: #e7e9ea;
+        }
+    </style>
+</head>
+<body>
+    <h2>Light Mode</h2>
+    <div class="cards-container">
+        <!-- Card 1 -->
+        <div class="course-card">
+            <div class="community-header">
+                <div class="community-icon-placeholder">PM</div>
+                <div class="community-info">
+                    <span class="community-name">Prompt Masters</span>
+                    <span class="community-followers">· 527 followers</span>
+                </div>
+                <span class="community-follow-btn">Following ▼</span>
+            </div>
+            <div class="course-content">
+                <div class="course-title-row">
+                    <span class="course-title">AI Tools Overview</span>
+                    <button class="enroll-btn">Enroll</button>
+                </div>
+                <p class="course-description">Navigate the world of AI tools with confidence. Learn to evaluate and choose the right tools for your needs.</p>
+                <div class="course-meta">
+                    <span class="rating"><span class="star">★</span> 4.8 (142)</span>
+                    <span class="dot">·</span>
+                    <span>Beginner</span>
+                    <span class="dot">·</span>
+                    <span>2 sessions</span>
+                    <span class="dot">·</span>
+                    <span>3 hrs</span>
+                    <span class="dot">·</span>
+                    <span class="price">Free</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="course-card">
+            <div class="community-header">
+                <div class="community-icon-placeholder" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">PL</div>
+                <div class="community-info">
+                    <span class="community-name">The Physics Lab</span>
+                    <span class="community-followers">· 1,730 followers</span>
+                </div>
+                <span class="community-follow-btn">Follow</span>
+            </div>
+            <div class="course-content">
+                <div class="course-title-row">
+                    <span class="course-title">Quantum Mechanics Fundamentals</span>
+                    <button class="enroll-btn">Enroll</button>
+                </div>
+                <p class="course-description">Explore the fascinating world of quantum physics from the ground up. Build intuition for wave-particle duality and uncertainty.</p>
+                <div class="course-meta">
+                    <span class="rating"><span class="star">★</span> 4.9 (89)</span>
+                    <span class="dot">·</span>
+                    <span>Intermediate</span>
+                    <span class="dot">·</span>
+                    <span>4 sessions</span>
+                    <span class="dot">·</span>
+                    <span>6 hrs</span>
+                    <span class="dot">·</span>
+                    <span class="price paid">$49</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="course-card">
+            <div class="community-header">
+                <div class="community-icon-placeholder" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">VC</div>
+                <div class="community-info">
+                    <span class="community-name">Vibe Coders</span>
+                    <span class="community-followers">· 892 followers</span>
+                </div>
+                <span class="community-follow-btn">Following ▼</span>
+            </div>
+            <div class="course-content">
+                <div class="course-title-row">
+                    <span class="course-title">Intro to Claude Code</span>
+                    <button class="enroll-btn">Enroll</button>
+                </div>
+                <p class="course-description">Harness AI-assisted development with Claude's terminal tool. Build real applications through natural conversation with AI.</p>
+                <div class="course-meta">
+                    <span class="rating"><span class="star">★</span> 4.7 (203)</span>
+                    <span class="dot">·</span>
+                    <span>Beginner</span>
+                    <span class="dot">·</span>
+                    <span>3 sessions</span>
+                    <span class="dot">·</span>
+                    <span>4.5 hrs</span>
+                    <span class="dot">·</span>
+                    <span class="price">Free</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 60px;">Dark Mode</h2>
+    <div class="cards-container dark">
+        <!-- Dark Card 1 -->
+        <div class="course-card">
+            <div class="community-header">
+                <div class="community-icon-placeholder">PM</div>
+                <div class="community-info">
+                    <span class="community-name">Prompt Masters</span>
+                    <span class="community-followers">· 527 followers</span>
+                </div>
+                <span class="community-follow-btn">Following ▼</span>
+            </div>
+            <div class="course-content">
+                <div class="course-title-row">
+                    <span class="course-title">AI Tools Overview</span>
+                    <button class="enroll-btn">Enroll</button>
+                </div>
+                <p class="course-description">Navigate the world of AI tools with confidence. Learn to evaluate and choose the right tools for your needs.</p>
+                <div class="course-meta">
+                    <span class="rating"><span class="star">★</span> 4.8 (142)</span>
+                    <span class="dot">·</span>
+                    <span>Beginner</span>
+                    <span class="dot">·</span>
+                    <span>2 sessions</span>
+                    <span class="dot">·</span>
+                    <span>3 hrs</span>
+                    <span class="dot">·</span>
+                    <span class="price">Free</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dark Card 2 -->
+        <div class="course-card">
+            <div class="community-header">
+                <div class="community-icon-placeholder" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">PL</div>
+                <div class="community-info">
+                    <span class="community-name">The Physics Lab</span>
+                    <span class="community-followers">· 1,730 followers</span>
+                </div>
+                <span class="community-follow-btn">Follow</span>
+            </div>
+            <div class="course-content">
+                <div class="course-title-row">
+                    <span class="course-title">Quantum Mechanics Fundamentals</span>
+                    <button class="enroll-btn">Enroll</button>
+                </div>
+                <p class="course-description">Explore the fascinating world of quantum physics from the ground up. Build intuition for wave-particle duality and uncertainty.</p>
+                <div class="course-meta">
+                    <span class="rating"><span class="star">★</span> 4.9 (89)</span>
+                    <span class="dot">·</span>
+                    <span>Intermediate</span>
+                    <span class="dot">·</span>
+                    <span>4 sessions</span>
+                    <span class="dot">·</span>
+                    <span>6 hrs</span>
+                    <span class="dot">·</span>
+                    <span class="price paid">$49</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

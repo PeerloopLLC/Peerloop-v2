@@ -388,7 +388,7 @@ export const coursesDatabase = [
   {
     id: 1,
     title: "AI for Product Managers",
-    description: "Master the skills to lead AI-driven products. Learn to evaluate AI technologies, build AI roadmaps, and make data-driven decisions. This comprehensive course covers everything from machine learning fundamentals to advanced AI strategy. You will learn how to identify opportunities where AI can add genuine value, communicate effectively with data science teams, and make informed decisions about AI investments. The curriculum includes real-world case studies and hands-on projects.",
+    description: "Master skills to lead AI-driven products and build roadmaps. Learn to evaluate AI technologies and make data-driven decisions.",
     duration: "6 weeks",
     level: "Intermediate",
     rating: 4.8,
@@ -453,7 +453,7 @@ export const coursesDatabase = [
   {
     id: 2,
     title: "Node.js Backend Development",
-    description: "Learn to build robust backend services with Node.js, Express, and MongoDB. Master REST APIs and authentication systems.",
+    description: "Build robust backend services with Node.js, Express, and MongoDB. Master REST APIs and authentication systems.",
     duration: "6 weeks",
     level: "Intermediate",
     rating: 4.7,
@@ -553,7 +553,7 @@ export const coursesDatabase = [
   {
     id: 4,
     title: "Deep Learning Fundamentals",
-    description: "Master the fundamentals of deep learning, neural networks, and modern AI architectures. Build and deploy real-world AI applications.",
+    description: "Master neural networks and modern AI architectures from scratch. Build and deploy real-world deep learning applications.",
     duration: "10 weeks",
     level: "Intermediate",
     rating: 4.9,
@@ -603,7 +603,7 @@ export const coursesDatabase = [
   {
     id: 5,
     title: "Computer Vision with Python",
-    description: "Learn computer vision techniques using OpenCV, TensorFlow, and PyTorch. Build image recognition and object detection systems.",
+    description: "Learn computer vision using OpenCV, TensorFlow, and PyTorch. Build image recognition and object detection systems.",
     duration: "6 weeks",
     level: "Advanced",
     rating: 4.7,
@@ -653,7 +653,7 @@ export const coursesDatabase = [
   {
     id: 6,
     title: "Natural Language Processing",
-    description: "Explore NLP techniques for text analysis, sentiment analysis, and language modeling. Build chatbots and language processing systems.",
+    description: "Explore NLP techniques for text analysis and language modeling. Build chatbots and language processing systems.",
     duration: "8 weeks",
     level: "Advanced",
     rating: 4.8,
@@ -703,7 +703,7 @@ export const coursesDatabase = [
   {
     id: 7,
     title: "Data Science Fundamentals",
-    description: "Learn the core concepts of data science, statistical analysis, and data visualization. Master Python for data analysis.",
+    description: "Learn data science, statistical analysis, and visualization. Master Python with Pandas, NumPy, and Matplotlib.",
     duration: "8 weeks",
     level: "Beginner",
     rating: 4.6,
@@ -753,7 +753,7 @@ export const coursesDatabase = [
   {
     id: 8,
     title: "Business Intelligence & Analytics",
-    description: "Transform raw data into actionable insights. Learn to create dashboards and reports for business decision-making.",
+    description: "Transform raw data into actionable business insights. Create dashboards and reports with Tableau and Power BI.",
     duration: "6 weeks",
     level: "Intermediate",
     rating: 4.5,
@@ -803,7 +803,7 @@ export const coursesDatabase = [
   {
     id: 9,
     title: "Full-Stack Web Development",
-    description: "Build complete web applications from frontend to backend. Learn modern development practices and deployment strategies.",
+    description: "Build complete web applications from frontend to backend. Learn React, Node.js, and modern deployment strategies.",
     duration: "12 weeks",
     level: "Intermediate",
     rating: 4.7,
@@ -853,7 +853,7 @@ export const coursesDatabase = [
   {
     id: 10,
     title: "DevOps & CI/CD Mastery",
-    description: "Master DevOps practices, containerization, and continuous integration/deployment. Build efficient development pipelines.",
+    description: "Master containerization with Docker and Kubernetes. Build efficient CI/CD pipelines with GitHub Actions.",
     duration: "8 weeks",
     level: "Advanced",
     rating: 4.8,
@@ -953,7 +953,7 @@ export const coursesDatabase = [
   {
     id: 12,
     title: "AI for Robotics Coding Lab",
-    description: "Hands-on coding with AI algorithms for robotics, including path planning and control.",
+    description: "Hands-on coding with AI algorithms for robotics applications. Learn path planning, control systems, and reinforcement learning.",
     duration: "6 weeks",
     level: "Intermediate",
     rating: 4.9,
@@ -989,7 +989,7 @@ export const coursesDatabase = [
   {
     id: 13,
     title: "AI for Medical Diagnostics Coding",
-    description: "Develop AI models for medical image analysis and diagnostics using Python.",
+    description: "Develop AI models for medical image analysis and diagnostics. Apply deep learning to healthcare data using Python.",
     duration: "8 weeks",
     level: "Advanced",
     rating: 4.8,
@@ -1025,7 +1025,7 @@ export const coursesDatabase = [
   {
     id: 14,
     title: "AI Coding Bootcamp: Python Projects",
-    description: "Project-based course for learning AI coding with Python, including real-world ML projects.",
+    description: "Project-based course for learning AI coding with Python. Complete real-world machine learning projects from scratch.",
     duration: "5 weeks",
     level: "Beginner",
     rating: 4.7,
@@ -1061,7 +1061,7 @@ export const coursesDatabase = [
   {
     id: 15,
     title: "AI Prompting Mastery",
-    description: "Learn to write effective AI prompts for business use. Master the art of communicating with AI to boost your productivity. This comprehensive course teaches you the fundamentals and advanced techniques of prompt engineering.",
+    description: "Write effective AI prompts for business productivity. Master prompt engineering and build your own prompt library.",
     duration: "4-6 weeks",
     level: "Intermediate",
     rating: 4.9,
@@ -1164,7 +1164,7 @@ export const coursesDatabase = [
   {
     id: 16,
     title: "AI for Beginners",
-    description: "Understand the fundamentals of artificial intelligence without any coding required. Perfect for professionals who want to understand AI concepts and their business applications.",
+    description: "Understand AI fundamentals without any coding required. Perfect for professionals wanting to leverage AI in business.",
     duration: "4 weeks",
     level: "Beginner",
     rating: 4.9,
@@ -1203,7 +1203,7 @@ export const coursesDatabase = [
   {
     id: 17,
     title: "Machine Learning Essentials",
-    description: "Learn the core concepts of ML algorithms and when to use them. This course bridges the gap between theory and practice for aspiring data scientists.",
+    description: "Learn core ML algorithms and when to use each one. Bridge the gap between theory and practical data science.",
     duration: "8 weeks",
     level: "Intermediate",
     rating: 4.8,
@@ -1242,7 +1242,7 @@ export const coursesDatabase = [
   {
     id: 18,
     title: "Introduction to GitHub",
-    description: "Master version control, collaboration, and GitHub workflows. Essential skills for any developer or team working on software projects.",
+    description: "Master version control, collaboration, and GitHub workflows. Essential skills for any developer or team working on code.",
     duration: "3 weeks",
     level: "Beginner",
     rating: 4.8,
@@ -1320,7 +1320,7 @@ export const coursesDatabase = [
   {
     id: 20,
     title: "N8N Workflow Automation",
-    description: "Build powerful automations connecting your favorite apps. Learn to create complex workflows without writing code using N8N.",
+    description: "Build powerful automations connecting your favorite apps. Create complex workflows without writing any code.",
     duration: "6 weeks",
     level: "Intermediate",
     rating: 4.85,
@@ -1359,7 +1359,7 @@ export const coursesDatabase = [
   {
     id: 21,
     title: "No-Code AI Integration",
-    description: "Connect AI tools like ChatGPT to your workflows. Learn to leverage AI capabilities without programming knowledge.",
+    description: "Connect ChatGPT and AI tools to your business workflows. Leverage AI capabilities without programming knowledge.",
     duration: "4 weeks",
     level: "Intermediate",
     rating: 4.9,
@@ -1398,7 +1398,7 @@ export const coursesDatabase = [
   {
     id: 22,
     title: "AI Tools Overview",
-    description: "Navigate the overwhelming world of AI tools with confidence. This practical course cuts through the noise and helps you understand what AI tools exist, what they're actually good for, and how to choose the right ones for your specific needs - without getting lost in the hype. The AI landscape is exploding with new tools every week. Instead of drowning you in more information, this course gives you a framework for understanding and evaluating AI tools.",
+    description: "Navigate the world of AI tools with confidence. Learn to evaluate and choose the right tools for your needs.",
     duration: "3 hours",
     level: "Beginner",
     rating: 4.8,
@@ -1459,7 +1459,7 @@ export const coursesDatabase = [
   {
     id: 23,
     title: "Intro to Claude Code",
-    description: "Learn to harness the power of AI-assisted development with Claude Code - Anthropic's revolutionary terminal-based coding assistant. This hands-on course transforms complete beginners into confident AI-powered builders, without requiring any prior coding experience. Claude Code isn't just another coding tool - it's your AI partner that works directly in your terminal, understanding your projects deeply and helping you build real applications through natural conversation.",
+    description: "Harness AI-assisted development with Claude's terminal tool. Build real applications through natural conversation with AI.",
     duration: "3 hours",
     level: "Beginner",
     rating: 4.9,
@@ -1516,7 +1516,7 @@ export const coursesDatabase = [
   {
     id: 24,
     title: "Intro to n8n",
-    description: "Learn to automate your workflows and connect your favorite apps without writing a single line of code. This hands-on course teaches you n8n - a powerful, visual workflow automation platform that helps you build automations like a developer, without being one. Stop doing repetitive tasks manually. Whether it's moving data between apps, sending notifications, organizing information, or managing responses, n8n lets you automate it all through a simple drag-and-drop interface.",
+    description: "Automate workflows and connect apps without writing code. Build automations through a simple drag-and-drop interface.",
     duration: "3 hours",
     level: "Beginner",
     rating: 4.85,
@@ -1577,7 +1577,7 @@ export const coursesDatabase = [
   {
     id: 25,
     title: "Vibe Coding 101",
-    description: "Learn to build and deploy real websites using AI as your development partner. This hands-on course takes you from project idea to production deployment, teaching you the structured methodology that turns vibe coding into a reliable, repeatable skill. Vibe coding isn't about letting AI do everything blindly - it's about directing AI strategically through a proven process. You'll learn the 6-phase methodology: Vision, Constraints, Architecture, Building, Testing, and Deployment.",
+    description: "Build and deploy real websites using AI as your partner. Master the 6-phase methodology from idea to production.",
     duration: "3 hours",
     level: "Intermediate",
     rating: 4.9,

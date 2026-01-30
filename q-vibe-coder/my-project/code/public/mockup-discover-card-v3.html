@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Card Mockup v3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 40px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #856404;
+            max-width: 600px;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 600px;
+        }
+
+        .course-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: white;
+        }
+
+        /* Community Header - Clickable */
+        .community-header {
+            background: linear-gradient(135deg, #e8f4fc 0%, #f0f8ff 100%);
+            padding: 10px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            border-bottom: 1px solid #e1e8ed;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .community-header:hover {
+            background: linear-gradient(135deg, #d4ebf7 0%, #e4f1fc 100%);
+        }
+
+        .community-icon-placeholder {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .community-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .community-top-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* X.com style link for community name */
+        .community-name {
+            font-weight: 700;
+            color: #0f1419;
+            font-size: 15px;
+            transition: all 0.15s ease;
+        }
+
+        .community-header:hover .community-name {
+            text-decoration: underline;
+        }
+
+        .community-handle {
+            color: #536471;
+            font-size: 14px;
+        }
+
+        .dot {
+            color: #536471;
+        }
+
+        /* Follow link - matches app exactly */
+        .follow-link {
+            color: #1d9bf0;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.15s;
+        }
+
+        .follow-link:hover {
+            color: #1a8cd8;
+        }
+
+        .follow-link .dropdown-arrow {
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        .community-creator-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #536471;
+            flex-wrap: wrap;
+        }
+
+        .creator-name {
+            color: #1d9bf0;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .creator-name:hover {
+            text-decoration: underline;
+        }
+
+        .creator-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 200px;
+        }
+
+        /* Course Content - Clickable */
+        .course-content {
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .course-content:hover {
+            background: #f8f9fa;
+        }
+
+        .course-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 12px;
+        }
+
+        /* X.com style link for course title */
+        .course-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1d9bf0;
+            transition: all 0.15s ease;
+        }
+
+        .course-content:hover .course-title {
+            text-decoration: underline;
+        }
+
+        /* Enroll button - exact app style from DiscoverView.js */
+        .enroll-btn {
+            background: #22c55e;
+            border: 2px solid #22c55e;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .enroll-btn:hover {
+            background: #16a34a;
+        }
+
+        .course-description {
+            color: #536471;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .course-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            color: #71767b;
+            font-size: 13px;
+        }
+
+        .course-meta .rating {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .course-meta .star {
+            color: #ffc107;
+        }
+
+        .course-meta .meta-dot {
+            color: #ccc;
+        }
+
+        .course-meta .price {
+            color: #00ba7c;
+            font-weight: 600;
+        }
+
+        .course-meta .price.paid {
+            color: #1a1a1a;
+        }
+
+        /* Dark mode version */
+        .dark {
+            background: #000;
+        }
+
+        .dark .course-card {
+            background: #16181c;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .dark .community-header {
+            background: linear-gradient(135deg, #1e3a4c 0%, #1a2634 100%);
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .dark .community-header:hover {
+            background: linear-gradient(135deg, #254a5e 0%, #1f2f3f 100%);
+        }
+
+        .dark .community-name {
+            color: #e7e9ea;
+        }
+
+        .dark .community-handle,
+        .dark .dot,
+        .dark .community-creator-row {
+            color: #71767b;
+        }
+
+        .dark .course-content:hover {
+            background: #1c1f23;
+        }
+
+        .dark .course-description {
+            color: #8b98a5;
+        }
+
+        .dark .course-meta {
+            color: #71767b;
+        }
+
+        .dark .course-meta .rating {
+            color: #e7e9ea;
+        }
+    </style>
+</head>
+<body>
+    <h2>Light Mode</h2>
+
+    <div class="note">
+        <strong>Layout:</strong><br>
+        • Line 1: Community Name @handle · Following ▼<br>
+        • Line 2: Created by Name · followers · creator title
+    </div>
+
+    <div class="cards-container">
+        <!-- Card 1 - Following state -->
+        <div class="course-card">
+            <div class="community-header" onclick="alert('Navigate to: Prompt Masters community')">
+                <div class="community-icon-placeholder">PM</div>
+                <div class="community-info">
+                    <div class="community-top-row">
+                        <span class="community-name">Prompt Masters</span>
+                        <span class="community-handle">@promptmasters</span>
+                        <span class="dot">·</span>
+                        <span class="follow-link" onclick="event.stopPropagation();">Following<span class="dropdown-arrow">▼</span></span>
+                    </div>
+                    <div class="community-creator-row">
+                        <span>Created by</span>
+                        <span class="creator-name" onclick="event.stopPropagation(); alert('View profile: Alex Sanders');">Alex Sanders</span>
+                        <span class="dot">·</span>
+                        <span>👥 527 followers</span>
+                        <span class="dot">·</span>
+                        <span class="creator-title">Leading AI strategist at TechCorp</span>
+                    </div>
+                </div>
+            </div>
+            <div class="course-content" onclick="alert('Navigate to: AI Tools Overview course detail')">
+                <div class="course-title-row">
+                    <span class="course-title">AI Tools Overview</span>
+                    <button class="enroll-btn" onclick="event.stopPropagation(); alert('Enroll in AI Tools Overview');">Enroll Free</button>
+                </div>
+                <p class="course-description">Navigate the world of AI tools with confidence. Learn to evaluate and choose the right tools for your needs.</p>
+                <div class="course-meta">
+                    <span class="rating"><span class="star">★</span> 4.8 (142)</span>
+                    <span class="meta-dot">·</span>
+                    <span>Beginner</span>
+                    <span class="meta-dot">·</span>
+                    <span>2 sessions</span>
+                    <span class="meta-dot">·</span>
+                    <span>3 hrs</span>
+                    <span class="meta-dot">·</span>
+                    <span class="price">Free</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 - Not following state -->
+        <div class="course-card">
+            <div class="community-header" onclick="alert('Navigate to: The Physics Lab community')">
+                <div class="community-icon-placeholder" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">PL</div>
+                <div class="community-info">
+                    <div class="community-top-row">
+                        <span class="community-name">The Physics Lab</span>
+                        <span class="community-handle">@thephysicslab</span>
+                        <span class="dot">·</span>
+                        <span class="follow-link" onclick="event.stopPropagation();">Follow</span>
+                    </div>
+                    <div class="community-creator-row">
+                        <span>Created by</span>
+                        <span class="creator-name" onclick="event.stopPropagation(); alert('View profile: Albert Einstein');">Albert Einstein</span>
+                        <span class="dot">·</span>
+                        <span>👥 1,730 followers</span>
+                        <span class="dot">·</span>
+                        <span class="creator-title">Theoretical Physicist & Nobel Laureate</span>
+                    </div>
+                </div>
+            </div>
+            <div class="course-content" onclick="alert('Navigate to: Quantum Mechanics Fundamentals course detail')">
+                <div class="course-title-row">
+                    <span class="course-title">Quantum Mechanics Fundamentals</span>
+                    <button class="enroll-btn" onclick="event.stopPropagation(); alert('Enroll in Quantum Mechanics Fundamentals');">Enroll $49</button>
+                </div>
+                <p class="course-description">Explore the fascinating world of quantum physics from the ground up. Build intuition for wave-particle duality and uncertainty.</p>
+                <div class="course-meta">
+                    <span class="rating"><span class="star">★</span> 4.9 (89)</span>
+                    <span class="meta-dot">·</span>
+                    <span>Intermediate</span>
+                    <span class="meta-dot">·</span>
+                    <span>4 sessions</span>
+                    <span class="meta-dot">·</span>
+                    <span>6 hrs</span>
+                    <span class="meta-dot">·</span>
+                    <span class="price paid">$49</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="course-card">
+            <div class="community-header" onclick="alert('Navigate to: Vibe Coders community')">
+                <div class="community-icon-placeholder" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">VC</div>
+                <div class="community-info">
+                    <div class="community-top-row">
+                        <span class="community-name">Vibe Coders</span>
+                        <span class="community-handle">@vibecoders</span>
+                        <span class="dot">·</span>
+                        <span class="follow-link" onclick="event.stopPropagation();">Following<span class="dropdown-arrow">▼</span></span>
+                    </div>
+                    <div class="community-creator-row">
+                        <span>Created by</span>
+                        <span class="creator-name" onclick="event.stopPropagation(); alert('View profile: Jane Doe');">Jane Doe</span>
+                        <span class="dot">·</span>
+                        <span>👥 892 followers</span>
+                        <span class="dot">·</span>
+                        <span class="creator-title">Leading AI strategist at TechCorp</span>
+                    </div>
+                </div>
+            </div>
+            <div class="course-content" onclick="alert('Navigate to: Intro to Claude Code course detail')">
+                <div class="course-title-row">
+                    <span class="course-title">Intro to Claude Code</span>
+                    <button class="enroll-btn" onclick="event.stopPropagation(); alert('Enroll in Intro to Claude Code');">Enroll Free</button>
+                </div>
+                <p class="course-description">Harness AI-assisted development with Claude's terminal tool. Build real applications through natural conversation with AI.</p>
+                <div class="course-meta">
+                    <span class="rating"><span class="star">★</span> 4.7 (203)</span>
+                    <span class="meta-dot">·</span>
+                    <span>Beginner</span>
+                    <span class="meta-dot">·</span>
+                    <span>3 sessions</span>
+                    <span class="meta-dot">·</span>
+                    <span>4.5 hrs</span>
+                    <span class="meta-dot">·</span>
+                    <span class="price">Free</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 60px;">Dark Mode</h2>
+    <div class="cards-container dark">
+        <!-- Dark Card 1 -->
+        <div class="course-card">
+            <div class="community-header" onclick="alert('Navigate to: Prompt Masters community')">
+                <div class="community-icon-placeholder">PM</div>
+                <div class="community-info">
+                    <div class="community-top-row">
+                        <span class="community-name">Prompt Masters</span>
+                        <span class="community-handle">@promptmasters</span>
+                        <span class="dot">·</span>
+                        <span class="follow-link" onclick="event.stopPropagation();">Following<span class="dropdown-arrow">▼</span></span>
+                    </div>
+                    <div class="community-creator-row">
+                        <span>Created by</span>
+                        <span class="creator-name" onclick="event.stopPropagation();">Alex Sanders</span>
+                        <span class="dot">·</span>
+                        <span>👥 527 followers</span>
+                        <span class="dot">·</span>
+                        <span class="creator-title">Leading AI strategist at TechCorp</span>
+                    </div>
+                </div>
+            </div>
+            <div class="course-content" onclick="alert('Navigate to: AI Tools Overview course detail')">
+                <div class="course-title-row">
+                    <span class="course-title">AI Tools Overview</span>
+                    <button class="enroll-btn" onclick="event.stopPropagation();">Enroll Free</button>
+                </div>
+                <p class="course-description">Navigate the world of AI tools with confidence. Learn to evaluate and choose the right tools for your needs.</p>
+                <div class="course-meta">
+                    <span class="rating"><span class="star">★</span> 4.8 (142)</span>
+                    <span class="meta-dot">·</span>
+                    <span>Beginner</span>
+                    <span class="meta-dot">·</span>
+                    <span>2 sessions</span>
+                    <span class="meta-dot">·</span>
+                    <span>3 hrs</span>
+                    <span class="meta-dot">·</span>
+                    <span class="price">Free</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dark Card 2 -->
+        <div class="course-card">
+            <div class="community-header" onclick="alert('Navigate to: The Physics Lab community')">
+                <div class="community-icon-placeholder" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">PL</div>
+                <div class="community-info">
+                    <div class="community-top-row">
+                        <span class="community-name">The Physics Lab</span>
+                        <span class="community-handle">@thephysicslab</span>
+                        <span class="dot">·</span>
+                        <span class="follow-link" onclick="event.stopPropagation();">Follow</span>
+                    </div>
+                    <div class="community-creator-row">
+                        <span>Created by</span>
+                        <span class="creator-name" onclick="event.stopPropagation();">Albert Einstein</span>
+                        <span class="dot">·</span>
+                        <span>👥 1,730 followers</span>
+                        <span class="dot">·</span>
+                        <span class="creator-title">Theoretical Physicist & Nobel Laureate</span>
+                    </div>
+                </div>
+            </div>
+            <div class="course-content" onclick="alert('Navigate to: Quantum Mechanics Fundamentals course detail')">
+                <div class="course-title-row">
+                    <span class="course-title">Quantum Mechanics Fundamentals</span>
+                    <button class="enroll-btn" onclick="event.stopPropagation();">Enroll $49</button>
+                </div>
+                <p class="course-description">Explore the fascinating world of quantum physics from the ground up. Build intuition for wave-particle duality and uncertainty.</p>
+                <div class="course-meta">
+                    <span class="rating"><span class="star">★</span> 4.9 (89)</span>
+                    <span class="meta-dot">·</span>
+                    <span>Intermediate</span>
+                    <span class="meta-dot">·</span>
+                    <span>4 sessions</span>
+                    <span class="meta-dot">·</span>
+                    <span>6 hrs</span>
+                    <span class="meta-dot">·</span>
+                    <span class="price paid">$49</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

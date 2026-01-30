@@ -1514,43 +1514,44 @@ const DiscoverView = ({
                               );
                             })()}
                           </div>
-                          {/* Creator Row */}
+                          {/* Creator + Meta Row (combined) */}
                           <div style={{
                             fontSize: 13,
                             color: isDarkMode ? '#71767b' : '#536471',
-                            marginTop: 2
-                          }}>
-                            Created by{' '}
-                            <span
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (onViewCreatorProfile) {
-                                  onViewCreatorProfile(instructor);
-                                }
-                              }}
-                              style={{
-                                color: '#1d9bf0',
-                                fontWeight: 500,
-                                cursor: 'pointer'
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
-                            >
-                              {instructor.name}
-                            </span>
-                          </div>
-                          {/* Meta Row */}
-                          <div style={{
-                            fontSize: 14,
-                            color: isDarkMode ? '#a0a0a0' : '#6b7280',
                             marginTop: 2,
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 4
+                            gap: 6,
+                            flexWrap: 'wrap'
                           }}>
+                            <span>Created by{' '}
+                              <span
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (onViewCreatorProfile) {
+                                    onViewCreatorProfile(instructor);
+                                  }
+                                }}
+                                style={{
+                                  color: '#1d9bf0',
+                                  fontWeight: 500,
+                                  cursor: 'pointer'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                                onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                              >
+                                {instructor.name}
+                              </span>
+                            </span>
+                            <span>·</span>
                             <span>👥 {(instructor.stats?.studentsTaught || 0).toLocaleString()} followers</span>
-                            <span>•</span>
-                            <span>{instructor.title}</span>
+                            <span>·</span>
+                            <span style={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              maxWidth: 200
+                            }}>{instructor.title}</span>
                           </div>
                         </div>
 
