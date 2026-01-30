@@ -307,7 +307,8 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {[
               { value: 'standard', label: 'Standard Listing', description: 'Community header and course cards shown separately' },
-              { value: 'compact', label: 'Compact Listing', description: 'Combined community + course in single card' }
+              { value: 'compact', label: 'Compact Listing', description: 'Combined community + course in single card' },
+              { value: 'thirdtry', label: 'Third Try', description: 'Card-based layout with gradient headers and timeline' }
             ].map(option => (
               <label
                 key={option.value}

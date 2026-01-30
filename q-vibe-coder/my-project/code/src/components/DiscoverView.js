@@ -605,17 +605,19 @@ const DiscoverView = ({
                 style={{
                   fontWeight: 700,
                   color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                  fontSize: s(15)
+                  fontSize: s(15),
+                  textDecoration: 'underline',
+                  transition: 'color 0.15s'
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#1d9bf0'}
+                onMouseLeave={(e) => e.currentTarget.style.color = isDarkMode ? '#e7e9ea' : '#0f1419'}
               >
                 {instructor.communityName || `${instructor.name} Community`}
               </span>
-              <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: s(14) }}>
+              <span style={{ color: isDarkMode ? '#71767b' : '#374151', fontSize: s(14) }}>
                 @{handle}
               </span>
-              <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
+              <span style={{ color: isDarkMode ? '#71767b' : '#374151' }}>·</span>
               {(() => {
                 // Use ALL instructor courses, not just matchingCourses (which is limited/filtered)
                 const allInstructorCourses = instructor.courses || [];
@@ -713,7 +715,7 @@ const DiscoverView = ({
                                 padding: '6px 16px 2px',
                                 fontSize: s(11),
                                 fontWeight: 600,
-                                color: isDarkMode ? '#71767b' : '#536471',
+                                color: isDarkMode ? '#71767b' : '#374151',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.5px'
                               }}>
@@ -747,7 +749,7 @@ const DiscoverView = ({
                                 padding: '10px 16px 2px',
                                 fontSize: s(11),
                                 fontWeight: 600,
-                                color: isDarkMode ? '#71767b' : '#536471',
+                                color: isDarkMode ? '#71767b' : '#374151',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.5px',
                                 borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
@@ -832,7 +834,7 @@ const DiscoverView = ({
               alignItems: 'center',
               gap: s(6),
               fontSize: s(13),
-              color: isDarkMode ? '#71767b' : '#536471',
+              color: isDarkMode ? '#71767b' : '#374151',
               flexWrap: 'wrap'
             }}>
               <span>Created by</span>
@@ -849,9 +851,9 @@ const DiscoverView = ({
               >
                 {instructor.name}
               </span>
-              <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
+              <span style={{ color: isDarkMode ? '#71767b' : '#374151' }}>·</span>
               <span>👥 {(instructor.stats?.studentsTaught || 0).toLocaleString()} followers</span>
-              <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
+              <span style={{ color: isDarkMode ? '#71767b' : '#374151' }}>·</span>
               <span style={{
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -893,17 +895,19 @@ const DiscoverView = ({
               style={{
                 fontSize: s(17),
                 fontWeight: 600,
-                color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                textDecoration: 'underline',
+                transition: 'color 0.15s'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#1d9bf0'}
+              onMouseLeave={(e) => e.currentTarget.style.color = isDarkMode ? '#e7e9ea' : '#0f1419'}
             >
               {course.title}
             </span>
             {isPurchased ? (
               <span style={{
                 background: isDarkMode ? '#2f3336' : '#f7f9f9',
-                border: isDarkMode ? '2px solid #536471' : '2px solid #cfd9de',
+                border: isDarkMode ? '2px solid #374151' : '2px solid #cfd9de',
                 color: isDarkMode ? '#e7e9ea' : '#0f1419',
                 padding: `${s(8)}px ${s(16)}px`,
                 borderRadius: s(20),
@@ -944,7 +948,7 @@ const DiscoverView = ({
 
           {/* Description */}
           <p style={{
-            color: isDarkMode ? '#8b98a5' : '#536471',
+            color: isDarkMode ? '#8b98a5' : '#374151',
             fontSize: s(14),
             lineHeight: 1.3,
             marginBottom: s(6),
@@ -1128,7 +1132,7 @@ const DiscoverView = ({
               </h2>
               <p style={{
                 fontSize: 15,
-                color: isDarkMode ? '#71767b' : '#536471',
+                color: isDarkMode ? '#71767b' : '#374151',
                 margin: '0 0 24px 0',
                 textAlign: 'center'
               }}>
@@ -1181,7 +1185,7 @@ const DiscoverView = ({
                   borderRadius: 9999,
                   border: 'none',
                   background: selectedInterests.length >= 3 ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#cfd9de'),
-                  color: selectedInterests.length >= 3 ? '#fff' : (isDarkMode ? '#71767b' : '#536471'),
+                  color: selectedInterests.length >= 3 ? '#fff' : (isDarkMode ? '#71767b' : '#374151'),
                   fontSize: 15,
                   fontWeight: 600,
                   cursor: selectedInterests.length >= 3 ? 'pointer' : 'default',
@@ -1241,7 +1245,7 @@ const DiscoverView = ({
               </h2>
               <p style={{
                 fontSize: 14,
-                color: isDarkMode ? '#71767b' : '#536471',
+                color: isDarkMode ? '#71767b' : '#374151',
                 margin: '0 0 20px 0',
                 textAlign: 'center'
               }}>
@@ -1315,14 +1319,14 @@ const DiscoverView = ({
                         </div>
                         <div style={{
                           fontSize: 13,
-                          color: isDarkMode ? '#71767b' : '#536471',
+                          color: isDarkMode ? '#71767b' : '#374151',
                           marginBottom: 4
                         }}>
                           by {community.author}
                         </div>
                         <div style={{
                           fontSize: 13,
-                          color: isDarkMode ? '#71767b' : '#536471',
+                          color: isDarkMode ? '#71767b' : '#374151',
                           lineHeight: 1.4
                         }}>
                           {community.description}
@@ -1334,7 +1338,7 @@ const DiscoverView = ({
                         width: 22,
                         height: 22,
                         borderRadius: 4,
-                        border: `2px solid ${isSelected ? '#1d9bf0' : (isDarkMode ? '#536471' : '#cfd9de')}`,
+                        border: `2px solid ${isSelected ? '#1d9bf0' : (isDarkMode ? '#374151' : '#cfd9de')}`,
                         background: isSelected ? '#1d9bf0' : 'transparent',
                         display: 'flex',
                         alignItems: 'center',
@@ -1418,7 +1422,7 @@ const DiscoverView = ({
                 left: isHeaderCollapsed ? 12 : 16,
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: isDarkMode ? '#71717a' : '#9ca3af',
+                color: isDarkMode ? '#71717a' : '#6b7280',
                 fontSize: isHeaderCollapsed ? 16 : 18,
                 transition: 'all 0.3s ease-out'
               }} />
@@ -1472,7 +1476,7 @@ const DiscoverView = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#536471',
+                  color: '#374151',
                   flexShrink: 0
                 }}
               >
@@ -1561,7 +1565,7 @@ const DiscoverView = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#536471',
+                  color: '#374151',
                   flexShrink: 0
                 }}
               >
@@ -1645,7 +1649,7 @@ const DiscoverView = ({
                 <h1 style={{ fontSize: 28, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: 0 }}>
                   Welcome to PeerLoop
                 </h1>
-                <p style={{ fontSize: 17, color: isDarkMode ? '#71767b' : '#536471', margin: 0, fontWeight: 500 }}>
+                <p style={{ fontSize: 17, color: isDarkMode ? '#71767b' : '#374151', margin: 0, fontWeight: 500 }}>
                   A peer-to-peer knowledge sharing community
                 </p>
                 <p style={{ fontSize: 16, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '6px 0 0 0', lineHeight: 1.6 }}>
@@ -1684,7 +1688,7 @@ const DiscoverView = ({
               <div style={{
                 padding: 48,
                 textAlign: 'center',
-                color: isDarkMode ? '#71717a' : '#9ca3af'
+                color: isDarkMode ? '#71717a' : '#6b7280'
               }}>
                 No communities or courses found matching "{searchQuery}"
               </div>
@@ -1702,6 +1706,394 @@ const DiscoverView = ({
                         return renderCompactCourseCard(course, instructor, isFollowing, isPurchased);
                       })}
                     </React.Fragment>
+                  );
+                }
+
+                // Third Try Listing Format - card-based with gradient headers and timeline (compact)
+                if (discoverListingFormat === 'thirdtry') {
+                  const handle = (instructor.communityName || instructor.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '');
+
+                  // Color gradients for course icons
+                  const courseGradients = [
+                    { bg: 'linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%)', color: '#1e40af' },
+                    { bg: 'linear-gradient(135deg, #5eead4 0%, #2dd4bf 100%)', color: '#0f766e' },
+                    { bg: 'linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%)', color: '#5b21b6' },
+                    { bg: 'linear-gradient(135deg, #fda4af 0%, #fb7185 100%)', color: '#be123c' },
+                    { bg: 'linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%)', color: '#b45309' }
+                  ];
+
+                  return (
+                    <div
+                      key={instructor.id}
+                      style={{
+                        background: isDarkMode ? '#1e293b' : '#ffffff',
+                        borderRadius: 12,
+                        border: isDarkMode ? '1px solid #334155' : '1px solid #e2e8f0',
+                        boxShadow: isDarkMode ? 'none' : '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)',
+                        marginBottom: 12,
+                        overflow: 'hidden',
+                        transition: 'box-shadow 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isDarkMode) e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04)';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isDarkMode) e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)';
+                      }}
+                    >
+                      {/* Community Header */}
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          saveScrollPosition();
+                          onViewCommunity && onViewCommunity(instructor);
+                        }}
+                        style={{
+                          background: isDarkMode
+                            ? 'linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%)'
+                            : 'linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)',
+                          padding: '10px 16px',
+                          borderBottom: isDarkMode ? '1px solid #334155' : '1px solid #e2e8f0',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s ease, filter 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = isDarkMode
+                            ? 'linear-gradient(135deg, #2d4a6f 0%, #2d3a4b 100%)'
+                            : 'linear-gradient(135deg, #bae6fd 0%, #e0f2fe 100%)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = isDarkMode
+                            ? 'linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%)'
+                            : 'linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)';
+                        }}
+                      >
+                        {/* Header Top Row */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                          {/* Community Avatar */}
+                          <div style={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                            fontSize: 18
+                          }}>
+                            👥
+                          </div>
+
+                          {/* Community Info */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            {/* Name Row */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 1, flexWrap: 'wrap' }}>
+                              <span
+                                style={{
+                                  fontSize: 16,
+                                  fontWeight: 700,
+                                  color: isDarkMode ? '#f1f5f9' : '#1e293b',
+                                  cursor: 'pointer',
+                                  transition: 'color 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.color = '#0ea5e9'}
+                                onMouseLeave={(e) => e.currentTarget.style.color = isDarkMode ? '#f1f5f9' : '#1e293b'}
+                              >
+                                {instructor.communityName || `${instructor.name} Community`}
+                              </span>
+                              <span style={{ fontSize: 13, color: isDarkMode ? '#64748b' : '#94a3b8' }}>
+                                @{handle}
+                              </span>
+                              <span
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleFollowInstructor(instructor.id);
+                                }}
+                                style={{
+                                  fontSize: 13,
+                                  fontWeight: 600,
+                                  color: '#0ea5e9',
+                                  cursor: 'pointer',
+                                  transition: 'color 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.color = '#0284c7'}
+                                onMouseLeave={(e) => e.currentTarget.style.color = '#0ea5e9'}
+                              >
+                                {isFollowing ? 'Following' : 'Follow'}
+                              </span>
+                            </div>
+
+                            {/* Meta Row */}
+                            <div style={{
+                              fontSize: 13,
+                              color: isDarkMode ? '#94a3b8' : '#64748b',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              flexWrap: 'wrap'
+                            }}>
+                              <span>Created by{' '}
+                                <span
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onViewCreatorProfile && onViewCreatorProfile(instructor);
+                                  }}
+                                  style={{ color: '#0ea5e9', cursor: 'pointer' }}
+                                  onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                                  onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                                >
+                                  {instructor.name}
+                                </span>
+                              </span>
+                              <span style={{
+                                width: 3,
+                                height: 3,
+                                borderRadius: '50%',
+                                background: isDarkMode ? '#64748b' : '#94a3b8'
+                              }} />
+                              <span>👥 {(instructor.stats?.studentsTaught || 0).toLocaleString()} followers</span>
+                              <span style={{
+                                width: 3,
+                                height: 3,
+                                borderRadius: '50%',
+                                background: isDarkMode ? '#64748b' : '#94a3b8'
+                              }} />
+                              <span style={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                maxWidth: 180
+                              }}>{instructor.title}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Community Description - 2 lines max */}
+                        <div style={{
+                          fontSize: 14,
+                          color: isDarkMode ? '#94a3b8' : '#64748b',
+                          lineHeight: 1.4,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }}>
+                          {instructor.bio || `${instructor.name} is an expert educator sharing knowledge through engaging courses. Join the community to learn from industry professionals and connect with fellow learners.`}
+                        </div>
+                      </div>
+
+                      {/* Course List with Timeline */}
+                      <div style={{ padding: '2px 0 6px', position: 'relative' }}>
+                        {/* Timeline Line */}
+                        {matchingCourses.length > 1 && (
+                          <div style={{
+                            position: 'absolute',
+                            left: 26,
+                            top: 18,
+                            bottom: 20,
+                            width: 2,
+                            background: isDarkMode ? '#334155' : '#e2e8f0'
+                          }} />
+                        )}
+
+                        {matchingCourses.map((course, index) => {
+                          const isPurchased = isCoursePurchased && isCoursePurchased(course.id);
+                          const gradient = courseGradients[index % courseGradients.length];
+                          const abbrev = (course.title || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+                          return (
+                            <div
+                              key={course.id}
+                              style={{ position: 'relative', paddingLeft: 4 }}
+                            >
+                              {/* Timeline Dot */}
+                              <div style={{
+                                position: 'absolute',
+                                left: 21,
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                width: 8,
+                                height: 8,
+                                borderRadius: '50%',
+                                background: isDarkMode ? '#475569' : '#cbd5e1',
+                                border: '2px solid ' + (isDarkMode ? '#1e293b' : 'white'),
+                                zIndex: 1
+                              }} />
+
+                              {/* Course Card */}
+                              <div
+                                onClick={() => {
+                                  saveScrollPosition();
+                                  onViewCourse && onViewCourse(course);
+                                }}
+                                style={{
+                                  padding: '10px 12px',
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  gap: 10,
+                                  transition: 'background 0.15s ease, border-color 0.15s ease',
+                                  cursor: 'pointer',
+                                  background: isDarkMode ? '#1e293b' : '#ffffff',
+                                  borderRadius: 8,
+                                  margin: '4px 10px',
+                                  border: isDarkMode ? '1px solid #334155' : '1px solid #e2e8f0'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = isDarkMode ? '#3b4a5a' : '#f1f5f9';
+                                  e.currentTarget.style.borderColor = isDarkMode ? '#64748b' : '#94a3b8';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = isDarkMode ? '#1e293b' : '#ffffff';
+                                  e.currentTarget.style.borderColor = isDarkMode ? '#334155' : '#e2e8f0';
+                                }}
+                              >
+                                {/* Course Icon */}
+                                <div style={{
+                                  width: 42,
+                                  height: 42,
+                                  borderRadius: 10,
+                                  background: gradient.bg,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  flexShrink: 0,
+                                  fontSize: 13,
+                                  fontWeight: 700,
+                                  color: gradient.color
+                                }}>
+                                  {abbrev}
+                                </div>
+
+                                {/* Course Content */}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  {/* Course Title */}
+                                  <div
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: 600,
+                                      color: isDarkMode ? '#f1f5f9' : '#1e293b',
+                                      marginBottom: 2,
+                                      lineHeight: 1.25,
+                                      textDecoration: 'underline',
+                                      textDecorationColor: 'transparent',
+                                      transition: 'text-decoration-color 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.textDecorationColor = isDarkMode ? '#f1f5f9' : '#1e293b'}
+                                    onMouseLeave={(e) => e.currentTarget.style.textDecorationColor = 'transparent'}
+                                  >
+                                    {course.title}
+                                  </div>
+
+                                  {/* Course Description - 2 lines */}
+                                  <div style={{
+                                    fontSize: 14,
+                                    color: isDarkMode ? '#94a3b8' : '#64748b',
+                                    marginBottom: 3,
+                                    lineHeight: 1.35,
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
+                                  }}>
+                                    {course.description || `Learn essential skills and techniques in this comprehensive course. Master practical applications through hands-on projects and expert guidance.`}
+                                  </div>
+
+                                  {/* Course Meta */}
+                                  <div style={{
+                                    fontSize: 13,
+                                    color: isDarkMode ? '#64748b' : '#94a3b8',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    flexWrap: 'wrap'
+                                  }}>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                      <span style={{ color: '#fbbf24' }}>★</span> {course.rating || '4.7'}
+                                    </span>
+                                    <span>{(course.students || 980).toLocaleString()} students</span>
+                                    <span>{typeof course.duration === 'string' ? course.duration : '6 weeks'}</span>
+                                  </div>
+                                </div>
+
+                                {/* Enroll Button */}
+                                {isPurchased ? (
+                                  <span style={{
+                                    background: isDarkMode ? '#334155' : '#f1f5f9',
+                                    border: isDarkMode ? '2px solid #475569' : '2px solid #e2e8f0',
+                                    color: isDarkMode ? '#f1f5f9' : '#1e293b',
+                                    padding: '7px 14px',
+                                    borderRadius: 16,
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    whiteSpace: 'nowrap',
+                                    flexShrink: 0,
+                                    alignSelf: 'center'
+                                  }}>
+                                    Enrolled
+                                  </span>
+                                ) : (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onViewCourse && onViewCourse(course);
+                                    }}
+                                    style={{
+                                      background: '#22c55e',
+                                      color: 'white',
+                                      fontSize: 13,
+                                      fontWeight: 600,
+                                      padding: '7px 14px',
+                                      borderRadius: 16,
+                                      border: 'none',
+                                      whiteSpace: 'nowrap',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s ease',
+                                      flexShrink: 0,
+                                      alignSelf: 'center'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.background = '#16a34a';
+                                      e.currentTarget.style.transform = 'translateY(-1px)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.background = '#22c55e';
+                                      e.currentTarget.style.transform = 'translateY(0)';
+                                    }}
+                                  >
+                                    Enroll {course.price}
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {/* View All Link */}
+                        {totalCourses > matchingCourses.length && (
+                          <div style={{ padding: '4px 12px 8px', textAlign: 'center' }}>
+                            <span
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                saveScrollPosition();
+                                onViewCommunity && onViewCommunity(instructor);
+                              }}
+                              style={{
+                                fontSize: 14,
+                                fontWeight: 600,
+                                color: '#0ea5e9',
+                                cursor: 'pointer',
+                                transition: 'color 0.2s'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.color = '#0284c7'}
+                              onMouseLeave={(e) => e.currentTarget.style.color = '#0ea5e9'}
+                            >
+                              View all {totalCourses} courses →
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   );
                 }
 
@@ -1781,20 +2173,22 @@ const DiscoverView = ({
                                 fontSize: 15,
                                 fontWeight: 700,
                                 color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                borderBottom: isDarkMode ? '1px solid #e7e9ea' : '1px solid #0f1419',
+                                transition: 'color 0.15s'
                               }}
-                              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                              onMouseEnter={(e) => e.currentTarget.style.color = '#1d9bf0'}
+                              onMouseLeave={(e) => e.currentTarget.style.color = isDarkMode ? '#e7e9ea' : '#0f1419'}
                             >
                               {highlightMatch(instructor.communityName || `${instructor.name} Community`, searchQuery)}
                             </span>
                             <span style={{
                               fontSize: 15,
-                              color: isDarkMode ? '#71767b' : '#536471'
+                              color: isDarkMode ? '#71767b' : '#374151'
                             }}>
                               @{(instructor.communityName || instructor.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '')}
                             </span>
-                            <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
+                            <span style={{ color: isDarkMode ? '#71767b' : '#374151' }}>·</span>
                             {(() => {
                               // Use ALL instructor courses, not just matchingCourses (which is limited/filtered)
                               const allInstructorCourses = instructor.courses || [];
@@ -1896,7 +2290,7 @@ const DiscoverView = ({
                                               padding: '6px 16px 2px',
                                               fontSize: 11,
                                               fontWeight: 600,
-                                              color: isDarkMode ? '#71767b' : '#536471',
+                                              color: isDarkMode ? '#71767b' : '#374151',
                                               textTransform: 'uppercase',
                                               letterSpacing: '0.5px'
                                             }}>
@@ -1930,7 +2324,7 @@ const DiscoverView = ({
                                               padding: '10px 16px 2px',
                                               fontSize: 11,
                                               fontWeight: 600,
-                                              color: isDarkMode ? '#71767b' : '#536471',
+                                              color: isDarkMode ? '#71767b' : '#374151',
                                               textTransform: 'uppercase',
                                               letterSpacing: '0.5px',
                                               borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
@@ -2012,8 +2406,8 @@ const DiscoverView = ({
                           {/* Creator + Meta Row (combined) */}
                           <div style={{
                             fontSize: 13,
-                            color: isDarkMode ? '#71767b' : '#536471',
-                            marginTop: 2,
+                            color: isDarkMode ? '#71767b' : '#374151',
+                            marginTop: 0,
                             display: 'flex',
                             alignItems: 'center',
                             gap: 6,
@@ -2169,22 +2563,26 @@ const DiscoverView = ({
                                     fontSize: 15,
                                     fontWeight: 600,
                                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                                    marginBottom: 4,
+                                    marginBottom: 2,
                                     display: 'flex',
                                     alignItems: 'center',
                                     flexWrap: 'wrap',
                                     gap: 6
                                   }}>
                                     <span
-                                      style={{ cursor: 'pointer' }}
-                                      onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                                      onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                                      style={{
+                                        cursor: 'pointer',
+                                        borderBottom: isDarkMode ? '1px solid #e7e9ea' : '1px solid #0f1419',
+                                        transition: 'color 0.15s'
+                                      }}
+                                      onMouseEnter={(e) => e.currentTarget.style.color = '#1d9bf0'}
+                                      onMouseLeave={(e) => e.currentTarget.style.color = isDarkMode ? '#e7e9ea' : '#0f1419'}
                                     >
                                       {highlightMatch(course.title, searchQuery)}
                                     </span>
                                     {isPurchased && (
                                       <>
-                                        <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontWeight: 400 }}>·</span>
+                                        <span style={{ color: isDarkMode ? '#71767b' : '#374151', fontWeight: 400 }}>·</span>
                                         <span
                                           onClick={(e) => {
                                             e.stopPropagation();
@@ -2210,7 +2608,7 @@ const DiscoverView = ({
                                   {/* Course Description */}
                                   <div style={{
                                     fontSize: 14,
-                                    color: isDarkMode ? '#a0a0a0' : '#536471',
+                                    color: isDarkMode ? '#a0a0a0' : '#374151',
                                     lineHeight: 1.4,
                                     marginBottom: 6
                                   }}>
@@ -2237,7 +2635,7 @@ const DiscoverView = ({
                                       top: 12,
                                       right: 12,
                                       background: isDarkMode ? '#2f3336' : '#f7f9f9',
-                                      border: isDarkMode ? '2px solid #536471' : '2px solid #cfd9de',
+                                      border: isDarkMode ? '2px solid #374151' : '2px solid #cfd9de',
                                       color: isDarkMode ? '#e7e9ea' : '#0f1419',
                                       padding: '8px 16px',
                                       borderRadius: 20,
@@ -2318,7 +2716,7 @@ const DiscoverView = ({
                       <div style={{
                         padding: '12px 16px',
                         background: isDarkMode ? '#1d1f23' : '#fafbfc',
-                        color: isDarkMode ? '#71717a' : '#9ca3af',
+                        color: isDarkMode ? '#71717a' : '#6b7280',
                         fontSize: 13,
                         fontStyle: 'italic'
                       }}>
@@ -2395,7 +2793,7 @@ const DiscoverView = ({
                 </div>
                 <div style={{
                   fontSize: 12,
-                  color: isDarkMode ? '#71767b' : '#536471',
+                  color: isDarkMode ? '#71767b' : '#374151',
                   marginBottom: 8
                 }}>
                   1,250 students enrolled
