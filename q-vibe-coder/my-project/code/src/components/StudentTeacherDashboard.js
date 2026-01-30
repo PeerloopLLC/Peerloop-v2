@@ -91,8 +91,10 @@ const StudentTeacherDashboard = ({
   // Handle certify submission - now passes sessionNumber
   const handleCertifySubmit = () => {
     if (selectedStudent && onCertifyStudent) {
+      // Use the actual studentId if available, otherwise fall back to id
+      const actualStudentId = selectedStudent.studentId || selectedStudent.id;
       onCertifyStudent(
-        selectedStudent.id,           // enrollmentId (userId-courseId)
+        actualStudentId,              // actual userId like "demo_sarah"
         selectedStudent.name,         // studentName
         selectedStudent.courseName,   // courseName
         selectedStudent.courseId,     // courseId
@@ -518,10 +520,16 @@ const StudentTeacherDashboard = ({
 
     // First, add all active students and their courses
     (stTeacherStats?.activeStudents || []).forEach(student => {
+      // Extract actual studentId from enrollment ID (format: "demo_sarah-15")
+      const enrollmentId = student.id || '';
+      const lastDash = enrollmentId.lastIndexOf('-');
+      const actualStudentId = lastDash > 0 ? enrollmentId.substring(0, lastDash) : enrollmentId;
+
       if (!studentMap[student.name]) {
         studentMap[student.name] = {
           name: student.name,
           initials: student.name.split(' ').map(n => n[0]).join(''),
+          studentId: actualStudentId, // Store actual user ID like "demo_sarah"
           courses: {}
         };
       }
@@ -549,8 +557,12 @@ const StudentTeacherDashboard = ({
           studentMap[studentName] = {
             name: studentName,
             initials: studentName.split(' ').map(n => n[0]).join(''),
+            studentId: session.studentId || studentName, // Use actual studentId from session
             courses: {}
           };
+        } else if (session.studentId && !studentMap[studentName].studentId) {
+          // Update studentId if we have it from session but not from activeStudents
+          studentMap[studentName].studentId = session.studentId;
         }
         if (!studentMap[studentName].courses[session.courseId]) {
           studentMap[studentName].courses[session.courseId] = createCourseEntry(session.courseId, session.courseName);
@@ -573,8 +585,12 @@ const StudentTeacherDashboard = ({
           studentMap[studentName] = {
             name: studentName,
             initials: studentName.split(' ').map(n => n[0]).join(''),
+            studentId: session.studentId || studentName, // Use actual studentId from session
             courses: {}
           };
+        } else if (session.studentId && !studentMap[studentName].studentId) {
+          // Update studentId if we have it from session but not already set
+          studentMap[studentName].studentId = session.studentId;
         }
         if (!studentMap[studentName].courses[session.courseId]) {
           studentMap[studentName].courses[session.courseId] = createCourseEntry(session.courseId, session.courseName);
@@ -997,10 +1013,11 @@ const StudentTeacherDashboard = ({
                             )}
                             <button
                               onClick={() => handleOpenCertify({
-                                id: `${student.name}-${course.courseId}-session1`,
+                                id: `${student.studentId}-${course.courseId}`,
                                 name: student.name,
                                 courseName: course.courseName,
                                 courseId: course.courseId,
+                                studentId: student.studentId, // Pass actual userId like "demo_sarah"
                                 sessionNumber: 1
                               })}
                               style={{
@@ -1093,10 +1110,11 @@ const StudentTeacherDashboard = ({
                             )}
                             <button
                               onClick={() => handleOpenCertify({
-                                id: `${student.name}-${course.courseId}-session2`,
+                                id: `${student.studentId}-${course.courseId}`,
                                 name: student.name,
                                 courseName: course.courseName,
                                 courseId: course.courseId,
+                                studentId: student.studentId, // Pass actual userId like "demo_sarah"
                                 sessionNumber: 2
                               })}
                               style={{
