@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { FaCheck, FaLock, FaCalendar } from 'react-icons/fa';
 
 /**
@@ -12,6 +13,7 @@ import { FaCheck, FaLock, FaCalendar } from 'react-icons/fa';
  */
 const SessionTimelineCards = ({
   course,
+  userStatus = null,  // New unified status hook (optional during migration)
   scheduledSessions = [],
   sessionCompletion = {},
   onScheduleSession,
@@ -19,6 +21,23 @@ const SessionTimelineCards = ({
   onRescheduleSession,
   isDarkMode
 }) => {
+  // Reschedule dropdown state
+  const [openRescheduleDropdown, setOpenRescheduleDropdown] = useState(null);
+  const [rescheduleDropdownPosition, setRescheduleDropdownPosition] = useState({ top: 0, left: 0 });
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (openRescheduleDropdown &&
+          !event.target.closest('.reschedule-dropdown-wrapper') &&
+          !event.target.closest('.reschedule-dropdown-menu')) {
+        setOpenRescheduleDropdown(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openRescheduleDropdown]);
+
   // Get session list from course - default to 2 sessions if not defined
   const sessionList = course?.sessions?.list || [
     { number: 1, title: 'Session 1', duration: '90 min', modules: [] },
@@ -247,21 +266,102 @@ const SessionTimelineCards = ({
                     >
                       Join
                     </button>
-                    <button
-                      onClick={() => onRescheduleSession && onRescheduleSession(scheduledSession)}
-                      style={{
-                        background: 'transparent',
-                        color: isDarkMode ? '#71767b' : '#536471',
-                        border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-                        padding: '6px 14px',
-                        borderRadius: 16,
-                        fontSize: 13,
-                        fontWeight: 500,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Reschedule
-                    </button>
+                    <div className="reschedule-dropdown-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+                      <button
+                        onClick={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setRescheduleDropdownPosition({
+                            top: rect.bottom + window.scrollY + 4,
+                            left: rect.left + window.scrollX
+                          });
+                          setOpenRescheduleDropdown(openRescheduleDropdown === scheduledSession.id ? null : scheduledSession.id);
+                        }}
+                        style={{
+                          background: 'transparent',
+                          color: isDarkMode ? '#71767b' : '#536471',
+                          border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                          padding: '6px 14px',
+                          borderRadius: 16,
+                          fontSize: 13,
+                          fontWeight: 500,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Reschedule
+                      </button>
+                      {openRescheduleDropdown === scheduledSession.id && ReactDOM.createPortal(
+                        <div
+                          className="reschedule-dropdown-menu"
+                          style={{
+                            position: 'absolute',
+                            top: rescheduleDropdownPosition.top,
+                            left: rescheduleDropdownPosition.left,
+                            background: isDarkMode ? '#16181c' : '#fff',
+                            border: `1px solid ${isDarkMode ? '#2f3336' : '#e1e8ed'}`,
+                            borderRadius: 12,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            zIndex: 99999,
+                            minWidth: 220,
+                            overflow: 'hidden'
+                          }}
+                        >
+                          <div style={{ padding: '12px 16px', borderBottom: `1px solid ${isDarkMode ? '#2f3336' : '#e1e8ed'}` }}>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                              Reschedule Options
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setOpenRescheduleDropdown(null);
+                              onRescheduleSession && onRescheduleSession({ ...scheduledSession, rescheduleMode: 'teacher' });
+                            }}
+                            style={{
+                              display: 'block',
+                              width: '100%',
+                              padding: '12px 16px',
+                              background: 'none',
+                              border: 'none',
+                              textAlign: 'left',
+                              cursor: 'pointer',
+                              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                              fontSize: 14
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                          >
+                            <div style={{ fontWeight: 600, marginBottom: 2 }}>Choose teacher first</div>
+                            <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }}>
+                              Pick a teacher, then see their availability
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setOpenRescheduleDropdown(null);
+                              onRescheduleSession && onRescheduleSession({ ...scheduledSession, rescheduleMode: 'time' });
+                            }}
+                            style={{
+                              display: 'block',
+                              width: '100%',
+                              padding: '12px 16px',
+                              background: 'none',
+                              border: 'none',
+                              textAlign: 'left',
+                              cursor: 'pointer',
+                              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                              fontSize: 14
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                          >
+                            <div style={{ fontWeight: 600, marginBottom: 2 }}>Choose your schedule</div>
+                            <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }}>
+                              Pick a time, then see available teachers
+                            </div>
+                          </button>
+                        </div>,
+                        document.body
+                      )}
+                    </div>
                   </>
                 )}
 

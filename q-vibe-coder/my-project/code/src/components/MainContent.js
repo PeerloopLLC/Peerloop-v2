@@ -33,6 +33,7 @@ import RescheduleModal from './RescheduleModal';
 import Notifications from './Notifications';
 import AboutView from './AboutView';
 import DiscoverView from './DiscoverView';
+import { useUserStatus } from '../hooks/useUserStatus';
 import { getAllInstructors, getInstructorWithCourses, getCourseById, getAllCourses, getInstructorById, getIndexedCourses, getIndexedInstructors } from '../data/database';
 import { communityUsers } from '../data/users';
 import { UserPropType } from './PropTypes';
@@ -431,6 +432,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // Signup completed state - shared between Community and DiscoverView
   // This ensures the welcome card disappears in both views after completing signup
   const [signupCompleted, setSignupCompleted] = useState(false);
+
+  // ========== UNIFIED USER STATUS (new consolidated state) ==========
+  // This hook consolidates followedCommunities, purchasedCourses, scheduledSessions, and sessionCompletion
+  // into ONE localStorage key: userStatus_${userId}
+  // During migration, we pass BOTH userStatus AND legacy props to components
+  const userStatus = useUserStatus(currentUser?.id);
 
   // Purchased courses - courses the user has bought (enables course-level follow/unfollow)
   const [purchasedCourses, setPurchasedCourses] = useState(() => {
@@ -1599,6 +1606,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         onMenuChange={onMenuChange}
         indexedCourses={indexedCourses}
         indexedInstructors={indexedInstructors}
+        userStatus={userStatus}
         followedCommunities={followedCommunities}
         setFollowedCommunities={setFollowedCommunities}
         isCoursePurchased={isCoursePurchased}
@@ -1703,6 +1711,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         isFollowingLoading={isFollowingLoading}
         indexedCourses={indexedCourses}
         indexedInstructors={indexedInstructors}
+        userStatus={userStatus}
         followedCommunities={followedCommunities}
         setFollowedCommunities={setFollowedCommunities}
         purchasedCourses={purchasedCourses}
@@ -2141,6 +2150,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             course={viewingCourseFromCommunity}
             onBack={handleBackFromCourse}
             isDarkMode={isDarkMode}
+            userStatus={userStatus}
             followedCommunities={followedCommunities}
             setFollowedCommunities={setFollowedCommunities}
             onViewInstructor={(instructorId) => {
@@ -2157,7 +2167,21 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             onMenuChange={onMenuChange}
             scheduledSessions={scheduledSessions}
             sessionCompletion={sessionCompletion}
-            onRescheduleSession={(session) => setRescheduleModalSession(session)}
+            onRescheduleSession={(session) => {
+              // Check reschedule mode - 'teacher' means show teacher list first
+              if (session.rescheduleMode === 'teacher') {
+                // Show FindTeacherView for browsing teachers
+                const course = getCourseById(session.courseId);
+                if (course) {
+                  setEnrollingCourse(course);
+                  setRescheduleModalSession(session); // Store session for later use
+                  setShowFindTeacher(true);
+                }
+              } else {
+                // Default: show calendar/time picker (time-first flow)
+                setRescheduleModalSession(session);
+              }
+            }}
             onBrowseStudentTeachers={(course, sessionNumber) => {
               const targetCourse = course || viewingCourseFromCommunity;
               setEnrollingCourse(targetCourse);
@@ -2290,6 +2314,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             course={enrollingCourse}
             instructor={getInstructorById(enrollingCourse.instructorId)}
             isDarkMode={isDarkMode}
+            userStatus={userStatus}
             onClose={() => {
               setShowEnrollOptions(false);
               setEnrollingCourse(null);
@@ -2336,6 +2361,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             course={enrollingCourse}
             instructor={getInstructorById(enrollingCourse.instructorId)}
             isDarkMode={isDarkMode}
+            userStatus={userStatus}
             onClose={() => {
               setShowPurchaseModal(false);
               setEnrollingCourse(null);
@@ -2614,6 +2640,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           course={viewingCourseFromCommunity}
           onBack={handleBackFromCourse}
           isDarkMode={isDarkMode}
+          userStatus={userStatus}
           followedCommunities={followedCommunities}
           setFollowedCommunities={setFollowedCommunities}
           onViewInstructor={(instructorId) => {
@@ -2776,11 +2803,48 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Show My Courses when My Courses is active
   if (activeMenu === 'My Courses') {
+    // Show FindTeacherView full-screen when browsing teachers for reschedule
+    if (showFindTeacher && enrollingCourse) {
+      return (
+        <div style={{
+          height: 'calc(100vh - 60px)',
+          overflowY: 'auto',
+          overflowX: 'hidden'
+        }}>
+          <FindTeacherView
+            course={enrollingCourse}
+            isDarkMode={isDarkMode}
+            onClose={() => {
+              setShowFindTeacher(false);
+              setEnrollingCourse(null);
+              setRescheduleModalSession(null);
+            }}
+            onSelectTeacher={(teacher) => {
+              setPreSelectedTeacher(teacher);
+              setShowFindTeacher(false);
+              // Show the enrollment flow with the selected teacher
+              setShowEnrollmentFlow(true);
+            }}
+            onViewTeacherProfile={(teacherUsername) => {
+              // Store current state before navigating
+              setPreviousBrowseContext({
+                type: 'my-courses',
+                showFindTeacher: true,
+                enrollingCourse: enrollingCourse
+              });
+              setViewingUserProfile(teacherUsername);
+            }}
+          />
+        </div>
+      );
+    }
+
     return (<>
       <MyCoursesView
         isDarkMode={isDarkMode}
         currentUser={currentUser}
         onMenuChange={onMenuChange}
+        userStatus={userStatus}
         purchasedCourses={purchasedCourses}
         indexedCourses={indexedCourses}
         onViewCourse={(courseId) => {
@@ -2824,14 +2888,28 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         scheduledSessions={scheduledSessions}
         addScheduledSession={addScheduledSession}
         cancelScheduledSession={cancelScheduledSession}
-        onRescheduleSession={(session) => setRescheduleModalSession(session)}
+        onRescheduleSession={(session) => {
+          // Check reschedule mode - 'teacher' means show teacher list first
+          if (session.rescheduleMode === 'teacher') {
+            // Show FindTeacherView for browsing teachers
+            const course = getCourseById(session.courseId);
+            if (course) {
+              setEnrollingCourse(course);
+              setRescheduleModalSession(session); // Store session for later use
+              setShowFindTeacher(true);
+            }
+          } else {
+            // Default: show calendar/time picker (time-first flow)
+            setRescheduleModalSession(session);
+          }
+        }}
         onScheduleSession={(course) => {
           // Open enrollment flow for scheduling a session
           setEnrollingCourse(course);
           setShowEnrollmentFlow(true);
         }}
       />
-      {rescheduleModalSession && (
+      {rescheduleModalSession && !showFindTeacher && (
         <RescheduleModal
           session={rescheduleModalSession}
           isDarkMode={isDarkMode}
@@ -3032,6 +3110,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     return (
       <div className="main-content">
         <Community
+          userStatus={userStatus}
           followedCommunities={followedCommunities}
           setFollowedCommunities={setFollowedCommunities}
           isDarkMode={isDarkMode}

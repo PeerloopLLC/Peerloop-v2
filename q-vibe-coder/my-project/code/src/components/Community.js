@@ -305,7 +305,7 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
   );
 };
 
-const Community = ({ followedCommunities = [], setFollowedCommunities = null, isDarkMode = false, currentUser = null, onMenuChange = null, onViewUserProfile = null, onViewMemberProfile = null, onViewCourse = null, onViewCreatorProfile = null, signupCompleted = false, setSignupCompleted = null, commonsActiveFeed = 'main', setCommonsActiveFeed = null }) => {
+const Community = ({ userStatus = null, followedCommunities = [], setFollowedCommunities = null, isDarkMode = false, currentUser = null, onMenuChange = null, onViewUserProfile = null, onViewMemberProfile = null, onViewCourse = null, onViewCreatorProfile = null, signupCompleted = false, setSignupCompleted = null, commonsActiveFeed = 'main', setCommonsActiveFeed = null }) => {
   const [selectedCommunity, setSelectedCommunity] = useState(null);
   const [activeTab, setActiveTab] = useState('Home'); // 'Home' or community id
   const [isFollowingLoading, setIsFollowingLoading] = useState(false);
@@ -2257,6 +2257,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   }}>
                     <button
                       onClick={() => setCommonsActiveFeed('main')}
+                      className={`course-pill ${commonsActiveFeed === 'main' ? 'course-pill-selected' : ''}`}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -2264,13 +2265,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         padding: '8px 16px',
                         borderRadius: 20,
                         border: commonsActiveFeed === 'main'
-                          ? '2px solid #10b981'
+                          ? '2px solid #1d9bf0'
                           : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                         background: commonsActiveFeed === 'main'
-                          ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+                          ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
                           : (isDarkMode ? '#2f3336' : '#f7f9f9'),
                         color: commonsActiveFeed === 'main'
-                          ? '#10b981'
+                          ? '#1d9bf0'
                           : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                         fontSize: 14,
                         fontWeight: 600,
@@ -2282,6 +2283,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     </button>
                     <button
                       onClick={() => setCommonsActiveFeed('Member Search')}
+                      className={`course-pill ${commonsActiveFeed === 'Member Search' ? 'course-pill-selected' : ''}`}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -2289,13 +2291,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                         padding: '8px 16px',
                         borderRadius: 20,
                         border: commonsActiveFeed === 'Member Search'
-                          ? '2px solid #10b981'
+                          ? '2px solid #1d9bf0'
                           : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                         background: commonsActiveFeed === 'Member Search'
-                          ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+                          ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
                           : (isDarkMode ? '#2f3336' : '#f7f9f9'),
                         color: commonsActiveFeed === 'Member Search'
-                          ? '#10b981'
+                          ? '#1d9bf0'
                           : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                         fontSize: 14,
                         fontWeight: 600,
@@ -2740,6 +2742,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
               }}>
                 <button
                   onClick={() => setCommonsActiveFeed('main')}
+                  className={`course-pill ${commonsActiveFeed === 'main' ? 'course-pill-selected' : ''}`}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -2747,13 +2750,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                     padding: isProfileCollapsed ? '6px 12px' : '8px 16px',
                     borderRadius: isProfileCollapsed ? 16 : 20,
                     border: commonsActiveFeed === 'main'
-                      ? '2px solid #10b981'
+                      ? '2px solid #1d9bf0'
                       : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                     background: commonsActiveFeed === 'main'
-                      ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+                      ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
                       : (isDarkMode ? '#2f3336' : '#f7f9f9'),
                     color: commonsActiveFeed === 'main'
-                      ? '#10b981'
+                      ? '#1d9bf0'
                       : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                     fontSize: isProfileCollapsed ? 13 : 14,
                     fontWeight: 600,
@@ -2769,6 +2772,7 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                   <button
                     key={num}
                     onClick={() => setCommonsActiveFeed(num)}
+                    className={`course-pill ${commonsActiveFeed === num ? 'course-pill-selected' : ''}`}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -2776,13 +2780,13 @@ const Community = ({ followedCommunities = [], setFollowedCommunities = null, is
                       padding: isProfileCollapsed ? '6px 12px' : '8px 16px',
                       borderRadius: isProfileCollapsed ? 16 : 20,
                       border: commonsActiveFeed === num
-                        ? '2px solid #10b981'
+                        ? '2px solid #1d9bf0'
                         : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                       background: commonsActiveFeed === num
-                        ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+                        ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
                         : (isDarkMode ? '#2f3336' : '#f7f9f9'),
                       color: commonsActiveFeed === num
-                        ? '#10b981'
+                        ? '#1d9bf0'
                         : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                       fontSize: isProfileCollapsed ? 13 : 14,
                       fontWeight: 600,

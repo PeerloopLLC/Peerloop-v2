@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { FaStar, FaUsers, FaClock, FaPlay, FaBook, FaCertificate, FaChalkboardTeacher, FaCheck, FaPlus, FaInfinity, FaGraduationCap, FaHeart, FaComment, FaRetweet, FaShare, FaImage, FaLink, FaPaperclip, FaVideo, FaFileAlt, FaDownload, FaExclamationTriangle, FaChevronDown, FaChevronRight, FaCalendar } from 'react-icons/fa';
 import { getInstructorById } from '../data/database';
 import SessionTimelineCards from './SessionTimelineCards';
@@ -422,7 +423,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
  * Shows detailed view of a course with tabs and two-column layout
  * Merged design: combines marketing view (pre-enrollment) with learning dashboard (post-enrollment)
  */
-const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange, scheduledSessions = [], sessionCompletion = {}, onBrowseStudentTeachers, onRescheduleSession }) => {
+const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange, scheduledSessions = [], sessionCompletion = {}, onBrowseStudentTeachers, onRescheduleSession }) => {
   // Check if this specific course is being followed (within creator's followedCourseIds)
   const [isFollowing, setIsFollowing] = useState(() => {
     if (!course) return false;
@@ -438,6 +439,24 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
   const [bbbJoinUrl, setBbbJoinUrl] = useState(null);
   const [showHelpPanel, setShowHelpPanel] = useState(false);
   const [expandedFileSessions, setExpandedFileSessions] = useState({ 1: true }); // Session 1 expanded by default
+
+  // Apply to Teach modal state
+  const [applyToTeachModal, setApplyToTeachModal] = useState(false);
+  const [applyToTeachStep, setApplyToTeachStep] = useState('confirm'); // 'confirm' or 'submitted'
+  const [teachingApplications, setTeachingApplications] = useState(() => {
+    const saved = localStorage.getItem('teachingApplications');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // Save teaching applications to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('teachingApplications', JSON.stringify(teachingApplications));
+  }, [teachingApplications]);
+
+  // Get teaching application status for this course
+  const getTeachingStatus = () => {
+    return teachingApplications[course?.id] || null; // null, 'pending', or 'approved'
+  };
 
   // Check if student is certified (all sessions completed)
   const courseCompletion = sessionCompletion[course?.id] || {};
@@ -696,6 +715,380 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
     setIsFollowing(!isFollowing);
   };
 
+  // Handle Apply to Teach button click
+  const handleApplyToTeachClick = () => {
+    const status = getTeachingStatus();
+    if (!status) {
+      setApplyToTeachModal(true);
+      setApplyToTeachStep('confirm');
+    }
+  };
+
+  // Handle submitting application
+  const handleSubmitApplication = () => {
+    if (course) {
+      setTeachingApplications(prev => ({
+        ...prev,
+        [course.id]: 'pending'
+      }));
+      setApplyToTeachStep('submitted');
+    }
+  };
+
+  // Close modal
+  const closeApplyToTeachModal = () => {
+    setApplyToTeachModal(false);
+    setApplyToTeachStep('confirm');
+  };
+
+  // Course abbreviation helper
+  const getCourseAbbreviation = (title) => {
+    if (!title) return '??';
+    const mappings = {
+      'ai': 'AI', 'machine learning': 'ML', 'deep learning': 'DL', 'data science': 'DS',
+      'prompt': 'PM', 'python': 'PY', 'robotics': 'RB'
+    };
+    const lowerTitle = title.toLowerCase();
+    for (const [key, abbr] of Object.entries(mappings)) {
+      if (lowerTitle.includes(key)) return abbr;
+    }
+    const words = title.split(/[\s\-:]+/).filter(w => w.length > 2);
+    if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+    return title.substring(0, 2).toUpperCase();
+  };
+
+  // Render Apply to Teach Modal
+  const renderApplyToTeachModal = () => {
+    if (!applyToTeachModal) return null;
+
+    return ReactDOM.createPortal(
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100000
+        }}
+        onClick={closeApplyToTeachModal}
+      >
+        <div
+          style={{
+            background: isDarkMode ? '#16181c' : '#fff',
+            borderRadius: 16,
+            width: '100%',
+            maxWidth: 380,
+            overflow: 'hidden',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Modal Header */}
+          <div style={{
+            padding: 20,
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12
+          }}>
+            <button
+              onClick={closeApplyToTeachModal}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                border: 'none',
+                background: 'transparent',
+                fontSize: 20,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: isDarkMode ? '#e7e9ea' : '#0f1419'
+              }}
+            >
+              ×
+            </button>
+            <h3 style={{
+              fontSize: 20,
+              fontWeight: 700,
+              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+              margin: 0
+            }}>
+              {applyToTeachStep === 'confirm' ? 'Become a Teacher' : ''}
+            </h3>
+          </div>
+
+          {/* Modal Body */}
+          <div style={{ padding: 20 }}>
+            {applyToTeachStep === 'confirm' ? (
+              <>
+                {/* Course Card */}
+                <div style={{
+                  background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                  borderRadius: 12,
+                  padding: 16,
+                  display: 'flex',
+                  gap: 12,
+                  marginBottom: 20
+                }}>
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                    borderRadius: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    flexShrink: 0
+                  }}>
+                    {getCourseAbbreviation(course?.name || course?.title)}
+                  </div>
+                  <div>
+                    <div style={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                      marginBottom: 4
+                    }}>
+                      {course?.name || course?.title}
+                    </div>
+                    <div style={{
+                      fontSize: 13,
+                      color: isDarkMode ? '#71767b' : '#536471'
+                    }}>
+                      by {instructor?.name || 'Unknown'}
+                    </div>
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      background: '#dcfce7',
+                      color: '#15803d',
+                      padding: '4px 10px',
+                      borderRadius: 20,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      marginTop: 8
+                    }}>
+                      ✓ Certified
+                    </div>
+                  </div>
+                </div>
+
+                {/* Checklist */}
+                <div style={{ marginBottom: 20 }}>
+                  {[
+                    'You completed this course',
+                    "You're certified to teach",
+                    'Earn 70% per session'
+                  ].map((item, idx) => (
+                    <div key={idx} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: '10px 0',
+                      fontSize: 14,
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                    }}>
+                      <span style={{
+                        width: 20,
+                        height: 20,
+                        background: '#10b981',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: 12
+                      }}>
+                        ✓
+                      </span>
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Earnings Preview */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #fef3c7, #fde68a)',
+                  borderRadius: 12,
+                  padding: 16,
+                  marginBottom: 20,
+                  textAlign: 'center'
+                }}>
+                  <div style={{
+                    fontSize: 12,
+                    color: '#92400e',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    marginBottom: 4
+                  }}>
+                    Potential Earnings
+                  </div>
+                  <div style={{
+                    fontSize: 24,
+                    fontWeight: 700,
+                    color: '#78350f'
+                  }}>
+                    $35/session
+                  </div>
+                  <div style={{
+                    fontSize: 12,
+                    color: '#a16207',
+                    marginTop: 4
+                  }}>
+                    Based on $50 session price
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <button
+                  onClick={handleSubmitApplication}
+                  style={{
+                    width: '100%',
+                    padding: '14px 20px',
+                    borderRadius: 25,
+                    fontSize: 15,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    border: 'none',
+                    background: '#10b981',
+                    color: '#fff'
+                  }}
+                >
+                  Yes, I Want to Teach
+                </button>
+                <button
+                  onClick={closeApplyToTeachModal}
+                  style={{
+                    width: '100%',
+                    padding: '14px 20px',
+                    borderRadius: 25,
+                    fontSize: 15,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    border: 'none',
+                    background: 'transparent',
+                    color: isDarkMode ? '#71767b' : '#536471',
+                    marginTop: 10
+                  }}
+                >
+                  Not Now
+                </button>
+              </>
+            ) : (
+              /* Step 2: Application Submitted */
+              <>
+                {/* Green Submitted Box */}
+                <div style={{
+                  background: '#dcfce7',
+                  borderRadius: 12,
+                  padding: 20,
+                  marginBottom: 20,
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
+                  <div style={{
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: '#15803d'
+                  }}>
+                    Application Submitted
+                  </div>
+                </div>
+
+                {/* Course Card */}
+                <div style={{
+                  background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                  borderRadius: 12,
+                  padding: 16,
+                  display: 'flex',
+                  gap: 12,
+                  marginBottom: 20
+                }}>
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                    borderRadius: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    flexShrink: 0
+                  }}>
+                    {getCourseAbbreviation(course?.name || course?.title)}
+                  </div>
+                  <div>
+                    <div style={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                      marginBottom: 4
+                    }}>
+                      {course?.name || course?.title}
+                    </div>
+                    <div style={{
+                      fontSize: 13,
+                      color: isDarkMode ? '#71767b' : '#536471'
+                    }}>
+                      by {instructor?.name || 'Unknown'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Go To Workspace Button */}
+                <button
+                  onClick={() => {
+                    closeApplyToTeachModal();
+                    onMenuChange && onMenuChange('Home');
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '14px 20px',
+                    borderRadius: 25,
+                    fontSize: 15,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    border: 'none',
+                    background: '#10b981',
+                    color: '#fff'
+                  }}
+                >
+                  Go To Workspace
+                </button>
+
+                {/* Notification Note */}
+                <p style={{
+                  textAlign: 'center',
+                  fontSize: 13,
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  marginTop: 12,
+                  marginBottom: 0
+                }}>
+                  Look for notifications for approval
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  };
+
   // Different tabs for enrolled vs non-enrolled users
   // Note: Session Files tab removed - files are now integrated into Curriculum
   const tabs = isCoursePurchased ? [
@@ -862,36 +1255,51 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
               </button>
             )}
             {/* Apply to Teach button - shown when student is certified */}
-            {isCertified && (
-              <button
-                onClick={() => {
-                  // TODO: Implement apply to teach flow
-                  alert('Apply to Teach feature coming soon! You will be able to teach: ' + course.name);
-                }}
-                style={{
-                  background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-                  color: '#fff',
+            {isCertified && (() => {
+              const teachStatus = getTeachingStatus();
+              let buttonText = 'Apply to Teach';
+              let buttonStyle = {
+                background: '#10b981',
+                border: 'none',
+                color: '#fff',
+                cursor: 'pointer'
+              };
+
+              if (teachStatus === 'pending') {
+                buttonText = 'Pending Approval';
+                buttonStyle = {
+                  background: '#fef3c7',
                   border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: 20,
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.02)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                Apply to Teach
-              </button>
-            )}
+                  color: '#92400e',
+                  cursor: 'default'
+                };
+              } else if (teachStatus === 'approved') {
+                buttonText = 'Approved';
+                buttonStyle = {
+                  background: '#fff',
+                  border: '2px solid #10b981',
+                  color: '#10b981',
+                  cursor: 'default'
+                };
+              }
+
+              return (
+                <button
+                  onClick={handleApplyToTeachClick}
+                  style={{
+                    ...buttonStyle,
+                    padding: '10px 20px',
+                    borderRadius: 20,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {buttonText}
+                </button>
+              );
+            })()}
           </div>
         </div>
 
@@ -2564,6 +2972,9 @@ const CourseDetailView = ({ course, onBack, isDarkMode, followedCommunities = []
 
         </div>
       )}
+
+      {/* Apply to Teach Modal */}
+      {renderApplyToTeachModal()}
     </div>
   );
 };

@@ -374,7 +374,13 @@ const FindTeacherView = ({
   // SUMMARY DETAIL LISTING (matches Guy Rymberg Community summary)
   // =====================================================
   return (
-    <div style={{ background: isDarkMode ? '#000' : '#f5f5f5', minHeight: '100vh', width: '100%' }}>
+    <div style={{
+      background: isDarkMode ? '#000' : '#f5f5f5',
+      height: '100%',
+      width: '100%',
+      overflowY: 'auto',
+      overflowX: 'hidden'
+    }}>
       <div style={{ maxWidth: 700, margin: '0 auto', padding: 20 }}>
 
         {/* Back Button */}

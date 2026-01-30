@@ -81,6 +81,11 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
     { id: 'purple', label: 'Purple', color: '#f5f3ff', gradient: 'linear-gradient(135deg, #f5f3ff 0%, #e9d5ff 100%)' },
     { id: 'teal', label: 'Teal', color: '#f0fdfa', gradient: 'linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%)' },
     { id: 'orange', label: 'Orange', color: '#fff7ed', gradient: 'linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%)' },
+    { id: 'grey-light', label: 'Light Grey', color: '#f5f5f5', gradient: 'linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)' },
+    { id: 'grey-medium', label: 'Medium Grey', color: '#e0e0e0', gradient: 'linear-gradient(135deg, #e0e0e0 0%, #c8c8c8 100%)' },
+    { id: 'grey-dark', label: 'Dark Grey', color: '#a0a0a0', gradient: 'linear-gradient(135deg, #a0a0a0 0%, #888888 100%)' },
+    { id: 'slate', label: 'Slate', color: '#e2e8f0', gradient: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)' },
+    { id: 'charcoal', label: 'Charcoal', color: '#6b7280', gradient: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)' },
   ];
 
   // Text darkness color mapping (1=light, 7=pure black)

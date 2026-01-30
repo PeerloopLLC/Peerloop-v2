@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { FaArrowLeft, FaCalendar, FaUser, FaPlay, FaDownload, FaComments, FaCheck, FaLock, FaExclamationTriangle } from 'react-icons/fa';
 import { AiOutlineStar } from 'react-icons/ai';
@@ -22,6 +23,23 @@ const PurchasedCourseDetail = ({
   onRescheduleSession,
   scheduledSessions = []
 }) => {
+  // Reschedule dropdown state
+  const [openRescheduleDropdown, setOpenRescheduleDropdown] = useState(false);
+  const [rescheduleDropdownPosition, setRescheduleDropdownPosition] = useState({ top: 0, left: 0 });
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (openRescheduleDropdown &&
+          !event.target.closest('.reschedule-dropdown-wrapper') &&
+          !event.target.closest('.reschedule-dropdown-menu')) {
+        setOpenRescheduleDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openRescheduleDropdown]);
+
   if (!course) return null;
 
   const instructor = getInstructorById(course.instructorId);
@@ -151,14 +169,91 @@ const PurchasedCourseDetail = ({
               <button className="pcd-btn-secondary">
                 <FaCalendar /> Add to Calendar
               </button>
-              <button
-                className="pcd-btn-secondary"
-                onClick={() => {
-                  if (onRescheduleSession && upcomingSession?._realSession) {
-                    onRescheduleSession(upcomingSession._realSession);
-                  }
-                }}
-              >Reschedule</button>
+              <div className="reschedule-dropdown-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+                <button
+                  className="pcd-btn-secondary"
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setRescheduleDropdownPosition({
+                      top: rect.bottom + window.scrollY + 4,
+                      left: rect.left + window.scrollX
+                    });
+                    setOpenRescheduleDropdown(!openRescheduleDropdown);
+                  }}
+                >Reschedule</button>
+                {openRescheduleDropdown && upcomingSession?._realSession && ReactDOM.createPortal(
+                  <div
+                    className="reschedule-dropdown-menu"
+                    style={{
+                      position: 'absolute',
+                      top: rescheduleDropdownPosition.top,
+                      left: rescheduleDropdownPosition.left,
+                      background: isDarkMode ? '#16181c' : '#fff',
+                      border: `1px solid ${isDarkMode ? '#2f3336' : '#e1e8ed'}`,
+                      borderRadius: 12,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                      zIndex: 99999,
+                      minWidth: 220,
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <div style={{ padding: '12px 16px', borderBottom: `1px solid ${isDarkMode ? '#2f3336' : '#e1e8ed'}` }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                        Reschedule Options
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setOpenRescheduleDropdown(false);
+                        onRescheduleSession && onRescheduleSession({ ...upcomingSession._realSession, rescheduleMode: 'teacher' });
+                      }}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: '12px 16px',
+                        background: 'none',
+                        border: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                        fontSize: 14
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                    >
+                      <div style={{ fontWeight: 600, marginBottom: 2 }}>Choose teacher first</div>
+                      <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }}>
+                        Pick a teacher, then see their availability
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setOpenRescheduleDropdown(false);
+                        onRescheduleSession && onRescheduleSession({ ...upcomingSession._realSession, rescheduleMode: 'time' });
+                      }}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: '12px 16px',
+                        background: 'none',
+                        border: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                        fontSize: 14
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                    >
+                      <div style={{ fontWeight: 600, marginBottom: 2 }}>Choose your schedule</div>
+                      <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }}>
+                        Pick a time, then see available teachers
+                      </div>
+                    </button>
+                  </div>,
+                  document.body
+                )}
+              </div>
             </div>
           </div>
         )}

@@ -4,12 +4,44 @@ import {
   FaArrowUp,
   FaArrowRight,
   FaChevronLeft,
-  FaChevronRight
+  FaChevronRight,
+  FaUpload,
+  FaTrash,
+  FaFilePdf,
+  FaFileAlt
 } from 'react-icons/fa';
+import { createClient } from '@supabase/supabase-js';
+import { getCoursesByInstructorId } from '../data/database';
+
+// Initialize Supabase client for file uploads
+const supabase = createClient(
+  'https://vnleonyfgwkfpvprpbqa.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZubGVvbnlmZ3drZnB2cHJwYnFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc3NjE3MTgsImV4cCI6MjA1MzMzNzcxOH0.EpGqE5BsKXVlZNMVdCdJ_Ey80yz9hNXTm0EzNqsLzPI'
+);
 
 const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange = null }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [expandedCertRequest, setExpandedCertRequest] = useState(0); // First one expanded by default
+
+  // File management state
+  const [sessionFiles, setSessionFiles] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+  const [uploadSuccess, setUploadSuccess] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // Load creator's courses and their session files
+  useEffect(() => {
+    if (currentUser) {
+      // Get creator's courses (Guy is instructor ID 8, course ID 15)
+      const creatorCourses = getCoursesByInstructorId(8); // Guy's ID
+      if (creatorCourses && creatorCourses.length > 0) {
+        // Load existing session files from the first course
+        const existingFiles = creatorCourses[0]?.sessionFiles || [];
+        setSessionFiles(existingFiles);
+      }
+    }
+  }, [currentUser]);
 
   // Drag scroll state for nav tabs
   const navRef = useRef(null);
@@ -317,6 +349,348 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
   const borderColor = isDarkMode ? '#2f3336' : '#e2e8f0';
   const accentBlue = '#1d9bf0';
   const accentGreen = '#00ba7c';
+  const accentRed = '#f91880';
+
+  // Handle file upload via Edge Function
+  const handleFileUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type (PDFs and common document formats)
+    const allowedTypes = ['application/pdf', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'];
+    if (!allowedTypes.includes(file.type) && !file.name.endsWith('.pdf') && !file.name.endsWith('.ppt') && !file.name.endsWith('.pptx')) {
+      setUploadError('Only PDF and PowerPoint files are supported for BBB presentations');
+      return;
+    }
+
+    // Validate file size (max 30MB for BBB)
+    if (file.size > 30 * 1024 * 1024) {
+      setUploadError('File size must be under 30MB');
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError(null);
+    setUploadSuccess(null);
+
+    try {
+      // Create form data
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('filename', file.name);
+
+      // Upload via edge function
+      const response = await fetch('https://vnleonyfgwkfpvprpbqa.supabase.co/functions/v1/upload-session-file', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Upload failed');
+      }
+
+      // Add to session files state
+      const newFile = {
+        name: result.name,
+        filename: result.filename,
+        url: result.url
+      };
+
+      setSessionFiles(prev => [...prev, newFile]);
+      setUploadSuccess(`"${newFile.name}" uploaded successfully! It will be available in your next BBB session.`);
+
+      // Clear the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadError(`Upload failed: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Handle file deletion
+  const handleDeleteFile = async (fileToDelete) => {
+    try {
+      // Delete from Supabase Storage
+      const { error } = await supabase.storage
+        .from('session-files')
+        .remove([fileToDelete.filename]);
+
+      if (error) {
+        console.error('Delete error:', error);
+        // Continue anyway to remove from UI
+      }
+
+      // Remove from state
+      setSessionFiles(prev => prev.filter(f => f.filename !== fileToDelete.filename));
+      setUploadSuccess(`"${fileToDelete.name}" removed.`);
+    } catch (error) {
+      console.error('Delete error:', error);
+      setUploadError(`Delete failed: ${error.message}`);
+    }
+  };
+
+  // Render Content Tab with File Management
+  const renderContentTab = () => (
+    <div style={{ padding: 24, maxWidth: 1400 }}>
+      {/* Header */}
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{
+          fontSize: 24,
+          fontWeight: 700,
+          color: textPrimary,
+          margin: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8
+        }}>
+          <span style={{ fontSize: 28 }}>📝</span> Course Content
+        </h1>
+        <p style={{
+          fontSize: 15,
+          color: textSecondary,
+          margin: '8px 0 0 0'
+        }}>
+          {dashboardData.courseName}
+        </p>
+      </div>
+
+      {/* Session Files Section */}
+      <div style={{ marginBottom: 32 }}>
+        <h2 style={{
+          fontSize: 14,
+          fontWeight: 600,
+          color: textSecondary,
+          margin: '0 0 16px 0',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6
+        }}>
+          📎 SESSION PRESENTATION FILES
+        </h2>
+        <p style={{
+          fontSize: 14,
+          color: textSecondary,
+          marginBottom: 16
+        }}>
+          These files are automatically loaded into BigBlueButton when students or teachers join a session.
+          Supported formats: PDF, PowerPoint (max 30MB).
+        </p>
+
+        {/* Upload Area */}
+        <div style={{
+          background: bgCard,
+          borderRadius: 12,
+          border: `2px dashed ${borderColor}`,
+          padding: 24,
+          textAlign: 'center',
+          marginBottom: 16
+        }}>
+          {isUploading ? (
+            <div>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>⏳</div>
+              <div style={{ fontSize: 14, color: textSecondary }}>Uploading...</div>
+            </div>
+          ) : (
+            <div>
+              <FaUpload style={{ fontSize: 32, color: accentBlue, marginBottom: 8 }} />
+              <div style={{ fontSize: 14, color: textPrimary, fontWeight: 500, marginBottom: 12 }}>
+                Select a PDF or PowerPoint file
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.ppt,.pptx"
+                onChange={handleFileUpload}
+                style={{
+                  fontSize: 14,
+                  marginBottom: 8
+                }}
+              />
+              <div style={{ fontSize: 13, color: textSecondary, marginTop: 8 }}>
+                Max file size: 30MB
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Success/Error Messages */}
+        {uploadSuccess && (
+          <div style={{
+            padding: '12px 16px',
+            background: isDarkMode ? '#0d2818' : '#d1fae5',
+            borderRadius: 8,
+            marginBottom: 16,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
+          }}>
+            <span style={{ fontSize: 16 }}>✅</span>
+            <span style={{ fontSize: 14, color: accentGreen }}>{uploadSuccess}</span>
+          </div>
+        )}
+        {uploadError && (
+          <div style={{
+            padding: '12px 16px',
+            background: isDarkMode ? '#2d1a1a' : '#fee2e2',
+            borderRadius: 8,
+            marginBottom: 16,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
+          }}>
+            <span style={{ fontSize: 16 }}>❌</span>
+            <span style={{ fontSize: 14, color: accentRed }}>{uploadError}</span>
+          </div>
+        )}
+
+        {/* Files List */}
+        <div style={{
+          background: bgCard,
+          borderRadius: 12,
+          border: `1px solid ${borderColor}`,
+          overflow: 'hidden'
+        }}>
+          {/* Header */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 120px',
+            padding: '12px 20px',
+            borderBottom: `1px solid ${borderColor}`,
+            background: bgSecondary
+          }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary }}>File Name</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Actions</div>
+          </div>
+
+          {/* File Rows */}
+          {sessionFiles.length === 0 ? (
+            <div style={{
+              padding: 24,
+              textAlign: 'center',
+              color: textSecondary,
+              fontSize: 14
+            }}>
+              No presentation files uploaded yet. Upload a PDF or PowerPoint to get started.
+            </div>
+          ) : (
+            sessionFiles.map((file, index) => (
+              <div
+                key={file.filename}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 120px',
+                  padding: '14px 20px',
+                  borderBottom: index < sessionFiles.length - 1 ? `1px solid ${borderColor}` : 'none',
+                  alignItems: 'center'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  {file.filename.endsWith('.pdf') ? (
+                    <FaFilePdf style={{ fontSize: 20, color: '#ef4444', flexShrink: 0 }} />
+                  ) : (
+                    <FaFileAlt style={{ fontSize: 20, color: '#f97316', flexShrink: 0 }} />
+                  )}
+                  <div>
+                    <div style={{ fontSize: 14, color: textPrimary, fontWeight: 500 }}>
+                      {file.name}
+                    </div>
+                    <div style={{ fontSize: 12, color: textSecondary }}>
+                      {file.filename}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                  <a
+                    href={file.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      padding: '6px 12px',
+                      background: 'transparent',
+                      border: `1px solid ${accentBlue}`,
+                      borderRadius: 6,
+                      color: accentBlue,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    View
+                  </a>
+                  <button
+                    onClick={() => handleDeleteFile(file)}
+                    style={{
+                      padding: '6px 10px',
+                      background: 'transparent',
+                      border: `1px solid ${accentRed}`,
+                      borderRadius: 6,
+                      color: accentRed,
+                      fontSize: 12,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <FaTrash style={{ fontSize: 11 }} />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Info Note */}
+        <div style={{
+          marginTop: 16,
+          padding: '12px 16px',
+          background: isDarkMode ? '#1a1f2e' : '#eff6ff',
+          borderRadius: 8,
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 10
+        }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+          <div style={{ fontSize: 13, color: textSecondary, lineHeight: 1.5 }}>
+            <strong style={{ color: textPrimary }}>How it works:</strong> When a student or Student-Teacher joins a BBB session for this course,
+            these files are automatically loaded as presentations. The first file becomes the default presentation.
+            Files are stored securely and won't expire.
+          </div>
+        </div>
+      </div>
+
+      {/* Placeholder for other content sections */}
+      <div style={{ marginBottom: 32 }}>
+        <h2 style={{
+          fontSize: 14,
+          fontWeight: 600,
+          color: textSecondary,
+          margin: '0 0 16px 0',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6
+        }}>
+          📚 COURSE MODULES
+        </h2>
+        <div style={{
+          background: bgCard,
+          borderRadius: 12,
+          border: `1px solid ${borderColor}`,
+          padding: 24,
+          color: textSecondary,
+          textAlign: 'center'
+        }}>
+          Module editor coming soon...
+        </div>
+      </div>
+    </div>
+  );
 
   // Render Overview Tab
   const renderOverviewTab = () => (
@@ -2090,25 +2464,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
           <p style={{ color: textSecondary }}>Sessions calendar coming soon...</p>
         </div>
       )}
-      {activeTab === 'content' && (
-        <div style={{ padding: 24, maxWidth: 1400 }}>
-          <h1 style={{
-            fontSize: 24,
-            fontWeight: 700,
-            color: textPrimary,
-            margin: 0,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8
-          }}>
-            <span style={{ fontSize: 28 }}>📝</span> Course Content Editor
-          </h1>
-          <p style={{ color: textSecondary, marginTop: 8 }}>
-            Edit modules, lessons, and course materials.
-          </p>
-          <p style={{ color: textSecondary }}>Course content editor coming soon...</p>
-        </div>
-      )}
+      {activeTab === 'content' && renderContentTab()}
       {activeTab === 'moderator' && (
         <div style={{ padding: 24, maxWidth: 1400 }}>
           <h1 style={{

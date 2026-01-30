@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { FaBook, FaSearch, FaCheckCircle, FaPlay, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
@@ -326,6 +327,7 @@ const MyCoursesView = ({
   isDarkMode,
   currentUser,
   onMenuChange,
+  userStatus,  // New unified status hook (optional during migration)
   purchasedCourses,
   indexedCourses,
   onViewCourse,
@@ -344,6 +346,55 @@ const MyCoursesView = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState(null); // Selected date for filtering
   const [courseViewTab, setCourseViewTab] = useState('active'); // 'active' or 'completed'
+
+  // Dropdown state for community follow menu
+  const [openCommunityFollowDropdown, setOpenCommunityFollowDropdown] = useState(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+
+  // Reschedule dropdown state
+  const [openRescheduleDropdown, setOpenRescheduleDropdown] = useState(null); // { session, course } or null
+  const [rescheduleDropdownPosition, setRescheduleDropdownPosition] = useState({ top: 0, left: 0 });
+
+  // Apply to Teach dropdown state
+  const [openApplyToTeachDropdown, setOpenApplyToTeachDropdown] = useState(null); // course id or null
+  const [applyToTeachDropdownPosition, setApplyToTeachDropdownPosition] = useState({ top: 0, left: 0 });
+
+  // Apply to Teach modal state (for confirmation after dropdown)
+  const [applyToTeachModal, setApplyToTeachModal] = useState(null); // course object or null
+  const [applyToTeachStep, setApplyToTeachStep] = useState('confirm'); // 'confirm' or 'submitted'
+  const [teachingApplications, setTeachingApplications] = useState(() => {
+    // Load from localStorage
+    const saved = localStorage.getItem('teachingApplications');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // Save teaching applications to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('teachingApplications', JSON.stringify(teachingApplications));
+  }, [teachingApplications]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (openCommunityFollowDropdown &&
+          !event.target.closest('.community-follow-dropdown-wrapper') &&
+          !event.target.closest('.community-follow-dropdown-menu')) {
+        setOpenCommunityFollowDropdown(null);
+      }
+      if (openRescheduleDropdown &&
+          !event.target.closest('.reschedule-dropdown-wrapper') &&
+          !event.target.closest('.reschedule-dropdown-menu')) {
+        setOpenRescheduleDropdown(null);
+      }
+      if (openApplyToTeachDropdown &&
+          !event.target.closest('.apply-to-teach-dropdown-wrapper') &&
+          !event.target.closest('.apply-to-teach-dropdown-menu')) {
+        setOpenApplyToTeachDropdown(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openCommunityFollowDropdown, openRescheduleDropdown, openApplyToTeachDropdown]);
 
   // Calculate scheduled dates from sessions (for calendar dots)
   const scheduledDates = useMemo(() => {
@@ -580,6 +631,384 @@ const MyCoursesView = ({
     );
   };
 
+  // Get teaching application status for a course
+  const getTeachingStatus = (courseId) => {
+    return teachingApplications[courseId] || null; // null, 'pending', or 'approved'
+  };
+
+  // Handle Apply to Teach button click
+  const handleApplyToTeachClick = (course, e) => {
+    e.stopPropagation();
+    const status = getTeachingStatus(course.id);
+    if (!status) {
+      // Not applied yet - open modal
+      setApplyToTeachModal(course);
+      setApplyToTeachStep('confirm');
+    }
+    // If already pending or approved, button is just informational
+  };
+
+  // Handle submitting application
+  const handleSubmitApplication = () => {
+    if (applyToTeachModal) {
+      setTeachingApplications(prev => ({
+        ...prev,
+        [applyToTeachModal.id]: 'pending'
+      }));
+      setApplyToTeachStep('submitted');
+    }
+  };
+
+  // Close modal
+  const closeApplyToTeachModal = () => {
+    setApplyToTeachModal(null);
+    setApplyToTeachStep('confirm');
+  };
+
+  // Get instructor for a course
+  const getInstructorForCourse = (course) => {
+    return getInstructorById(course?.instructorId);
+  };
+
+  // Render Apply to Teach Modal
+  const renderApplyToTeachModal = () => {
+    if (!applyToTeachModal) return null;
+
+    const course = applyToTeachModal;
+    const instructor = getInstructorForCourse(course);
+
+    return ReactDOM.createPortal(
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100000
+        }}
+        onClick={closeApplyToTeachModal}
+      >
+        <div
+          style={{
+            background: isDarkMode ? '#16181c' : '#fff',
+            borderRadius: 16,
+            width: '100%',
+            maxWidth: 380,
+            overflow: 'hidden',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Modal Header */}
+          <div style={{
+            padding: 20,
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12
+          }}>
+            <button
+              onClick={closeApplyToTeachModal}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                border: 'none',
+                background: 'transparent',
+                fontSize: 20,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: isDarkMode ? '#e7e9ea' : '#0f1419'
+              }}
+            >
+              ×
+            </button>
+            <h3 style={{
+              fontSize: 20,
+              fontWeight: 700,
+              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+              margin: 0
+            }}>
+              {applyToTeachStep === 'confirm' ? 'Become a Teacher' : ''}
+            </h3>
+          </div>
+
+          {/* Modal Body */}
+          <div style={{ padding: 20 }}>
+            {applyToTeachStep === 'confirm' ? (
+              <>
+                {/* Course Card */}
+                <div style={{
+                  background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                  borderRadius: 12,
+                  padding: 16,
+                  display: 'flex',
+                  gap: 12,
+                  marginBottom: 20
+                }}>
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    background: course.thumbnailGradient || 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                    borderRadius: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    flexShrink: 0
+                  }}>
+                    {getCourseAbbreviation(course.title)}
+                  </div>
+                  <div>
+                    <div style={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                      marginBottom: 4
+                    }}>
+                      {course.title}
+                    </div>
+                    <div style={{
+                      fontSize: 13,
+                      color: isDarkMode ? '#71767b' : '#536471'
+                    }}>
+                      by {instructor?.name || 'Unknown'}
+                    </div>
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      background: '#dcfce7',
+                      color: '#15803d',
+                      padding: '4px 10px',
+                      borderRadius: 20,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      marginTop: 8
+                    }}>
+                      ✓ Certified
+                    </div>
+                  </div>
+                </div>
+
+                {/* Checklist */}
+                <div style={{ marginBottom: 20 }}>
+                  {[
+                    'You completed this course',
+                    "You're certified to teach",
+                    'Earn 70% per session'
+                  ].map((item, idx) => (
+                    <div key={idx} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: '10px 0',
+                      fontSize: 14,
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                    }}>
+                      <span style={{
+                        width: 20,
+                        height: 20,
+                        background: '#10b981',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: 12
+                      }}>
+                        ✓
+                      </span>
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Earnings Preview */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #fef3c7, #fde68a)',
+                  borderRadius: 12,
+                  padding: 16,
+                  marginBottom: 20,
+                  textAlign: 'center'
+                }}>
+                  <div style={{
+                    fontSize: 12,
+                    color: '#92400e',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    marginBottom: 4
+                  }}>
+                    Potential Earnings
+                  </div>
+                  <div style={{
+                    fontSize: 24,
+                    fontWeight: 700,
+                    color: '#78350f'
+                  }}>
+                    $35/session
+                  </div>
+                  <div style={{
+                    fontSize: 12,
+                    color: '#a16207',
+                    marginTop: 4
+                  }}>
+                    Based on $50 session price
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <button
+                  onClick={handleSubmitApplication}
+                  style={{
+                    width: '100%',
+                    padding: '14px 20px',
+                    borderRadius: 25,
+                    fontSize: 15,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    border: 'none',
+                    background: '#10b981',
+                    color: '#fff',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  Yes, I Want to Teach
+                </button>
+                <button
+                  onClick={closeApplyToTeachModal}
+                  style={{
+                    width: '100%',
+                    padding: '14px 20px',
+                    borderRadius: 25,
+                    fontSize: 15,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    border: 'none',
+                    background: 'transparent',
+                    color: isDarkMode ? '#71767b' : '#536471',
+                    marginTop: 10,
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  Not Now
+                </button>
+              </>
+            ) : (
+              /* Step 2: Application Submitted */
+              <>
+                {/* Green Submitted Box */}
+                <div style={{
+                  background: '#dcfce7',
+                  borderRadius: 12,
+                  padding: 20,
+                  marginBottom: 20,
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
+                  <div style={{
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: '#15803d'
+                  }}>
+                    Application Submitted
+                  </div>
+                </div>
+
+                {/* Course Card */}
+                <div style={{
+                  background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                  borderRadius: 12,
+                  padding: 16,
+                  display: 'flex',
+                  gap: 12,
+                  marginBottom: 20
+                }}>
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    background: course.thumbnailGradient || 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                    borderRadius: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    flexShrink: 0
+                  }}>
+                    {getCourseAbbreviation(course.title)}
+                  </div>
+                  <div>
+                    <div style={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                      marginBottom: 4
+                    }}>
+                      {course.title}
+                    </div>
+                    <div style={{
+                      fontSize: 13,
+                      color: isDarkMode ? '#71767b' : '#536471'
+                    }}>
+                      by {instructor?.name || 'Unknown'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Go To Workspace Button */}
+                <button
+                  onClick={() => {
+                    closeApplyToTeachModal();
+                    // Navigate to workspace/home
+                    onMenuChange && onMenuChange('Home');
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '14px 20px',
+                    borderRadius: 25,
+                    fontSize: 15,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    border: 'none',
+                    background: '#10b981',
+                    color: '#fff',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  Go To Workspace
+                </button>
+
+                {/* Notification Note */}
+                <p style={{
+                  textAlign: 'center',
+                  fontSize: 13,
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  marginTop: 12,
+                  marginBottom: 0
+                }}>
+                  Look for notifications for approval
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  };
+
   // Helper function to render an instructor group with courses
   const renderInstructorGroup = (group, keyPrefix, isCompletedSection = false) => {
     const { instructor, courses } = group;
@@ -659,6 +1088,177 @@ const MyCoursesView = ({
                 }}>
                   @{(instructor?.communityName || instructor?.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
                 </span>
+                <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
+                {/* Following dropdown - inline after @handle */}
+                <div
+                  className="community-follow-dropdown-wrapper"
+                  style={{ position: 'relative', display: 'inline-block', zIndex: 9999 }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const dropdownKey = `mycourses-${instructor?.id}`;
+                      const isOpening = openCommunityFollowDropdown !== dropdownKey;
+                      if (isOpening) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const dropdownHeight = 250;
+                        const viewportHeight = window.innerHeight;
+                        const spaceBelow = viewportHeight - rect.bottom;
+                        const spaceAbove = rect.top;
+                        const positionAbove = spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
+                        setDropdownPosition({
+                          top: positionAbove ? rect.top - dropdownHeight - 4 : rect.bottom + 4,
+                          left: rect.left
+                        });
+                      }
+                      setOpenCommunityFollowDropdown(
+                        openCommunityFollowDropdown === dropdownKey ? null : dropdownKey
+                      );
+                    }}
+                    style={{
+                      color: '#1d9bf0',
+                      fontSize: 15,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      transition: 'color 0.15s'
+                    }}
+                  >
+                    {isFollowing ? 'Following' : 'Follow'}
+                    <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
+                  </span>
+                  {/* Dropdown menu portal */}
+                  {openCommunityFollowDropdown === `mycourses-${instructor?.id}` && ReactDOM.createPortal(
+                    <div className="community-follow-dropdown-portal community-follow-dropdown-menu" style={{
+                      position: 'fixed',
+                      top: dropdownPosition.top,
+                      left: dropdownPosition.left,
+                      background: isDarkMode ? '#16181c' : '#fff',
+                      border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                      borderRadius: 12,
+                      boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.1)',
+                      zIndex: 99999,
+                      minWidth: 220,
+                      padding: '4px 0'
+                    }}>
+                      {(() => {
+                        const followedCoursesCount = courses.filter(c => isCourseFollowed && isCourseFollowed(c.id)).length;
+                        const hasAnyFollowed = isFollowing || followedCoursesCount > 0;
+
+                        return (
+                          <>
+                            {/* Community section */}
+                            <div style={{
+                              padding: '6px 16px 2px',
+                              fontSize: 11,
+                              fontWeight: 600,
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px'
+                            }}>
+                              Community
+                            </div>
+                            <div
+                              style={{
+                                padding: '8px 16px',
+                                cursor: 'pointer',
+                                fontSize: 14,
+                                color: isFollowing ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                                fontWeight: isFollowing ? 500 : 400,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 8
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleFollowInstructor && handleFollowInstructor(instructor?.id);
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
+                              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                            >
+                              <span style={{ width: 16 }}>{isFollowing && '✓'}</span>
+                              <span>{instructor?.communityName || instructor?.name}</span>
+                            </div>
+
+                            {/* Courses section */}
+                            <div style={{
+                              padding: '10px 16px 2px',
+                              fontSize: 11,
+                              fontWeight: 600,
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px',
+                              borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                              marginTop: 4
+                            }}>
+                              Courses
+                            </div>
+                            {courses.map(course => {
+                              const isCourseFollowedState = isCourseFollowed ? isCourseFollowed(course.id) : false;
+                              return (
+                                <div
+                                  key={course.id}
+                                  style={{
+                                    padding: '10px 16px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 8,
+                                    fontSize: 14,
+                                    color: isCourseFollowedState ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                                    fontWeight: isCourseFollowedState ? 500 : 400
+                                  }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleFollowCourse && handleFollowCourse(course.id);
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
+                                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                >
+                                  <span style={{ width: 16, flexShrink: 0 }}>{isCourseFollowedState && '✓'}</span>
+                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.title}</span>
+                                </div>
+                              );
+                            })}
+
+                            {/* Unfollow all */}
+                            {hasAnyFollowed && (
+                              <>
+                                <div style={{ borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4', margin: '4px 0' }} />
+                                <div
+                                  style={{
+                                    padding: '10px 16px',
+                                    cursor: 'pointer',
+                                    fontSize: 13,
+                                    color: '#f4212e',
+                                    fontWeight: 500
+                                  }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    courses.forEach(c => {
+                                      if (isCourseFollowed && isCourseFollowed(c.id)) {
+                                        handleFollowCourse && handleFollowCourse(c.id);
+                                      }
+                                    });
+                                    if (isFollowing) {
+                                      handleFollowInstructor && handleFollowInstructor(instructor?.id);
+                                    }
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
+                                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                >
+                                  Unfollow all
+                                </div>
+                              </>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>,
+                    document.body
+                  )}
+                </div>
               </div>
               <div style={{
                 display: 'flex',
@@ -683,42 +1283,6 @@ const MyCoursesView = ({
                 <span>{instructor?.title || 'Instructor'}</span>
               </div>
             </div>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleFollowInstructor && handleFollowInstructor(instructor?.id);
-              }}
-              style={{
-                background: '#f7f9f9',
-                border: '1px solid #cfd9de',
-                color: '#0f1419',
-                padding: '8px 16px',
-                borderRadius: 20,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                if (isFollowing) {
-                  e.currentTarget.style.borderColor = '#f4212e';
-                  e.currentTarget.style.color = '#f4212e';
-                  e.currentTarget.textContent = 'Unfollow Community';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (isFollowing) {
-                  e.currentTarget.style.borderColor = '#cfd9de';
-                  e.currentTarget.style.color = '#0f1419';
-                  e.currentTarget.textContent = 'Following Community';
-                }
-              }}
-            >
-              {isFollowing ? 'Following Community' : 'Follow Community'}
-            </button>
           </div>
 
           {instructor?.bio && (
@@ -864,12 +1428,37 @@ const MyCoursesView = ({
                     <div style={{
                       fontSize: 15,
                       fontWeight: 600,
-                      color: '#1d9bf0',
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 8
+                      flexWrap: 'wrap',
+                      gap: 6
                     }}>
-                      {highlightMatch(course.title, searchQuery)}
+                      <span
+                        style={{ color: '#1d9bf0', cursor: 'pointer' }}
+                        onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                        onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                      >
+                        {highlightMatch(course.title, searchQuery)}
+                      </span>
+                      <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontWeight: 400 }}>·</span>
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleFollowCourse && handleFollowCourse(course.id);
+                        }}
+                        style={{
+                          color: '#1d9bf0',
+                          fontSize: 15,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          transition: 'color 0.15s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                        onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                      >
+                        {isFollowed ? 'Following' : 'Follow'}
+                      </span>
                     </div>
                     <div style={{
                       fontSize: 14,
@@ -989,68 +1578,246 @@ const MyCoursesView = ({
                         );
                       }
                       return (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onRescheduleSession && onRescheduleSession(scheduledSession);
-                          }}
-                          style={{
-                            background: isDarkMode ? '#2f3336' : '#eff3f4',
-                            border: 'none',
-                            color: isDarkMode ? '#71767b' : '#536471',
-                            padding: '6px 16px',
-                            borderRadius: 20,
-                            fontSize: 14,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          Reschedule
-                        </button>
+                        <div className="reschedule-dropdown-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              setRescheduleDropdownPosition({
+                                top: rect.bottom + window.scrollY + 4,
+                                left: rect.left + window.scrollX
+                              });
+                              setOpenRescheduleDropdown(
+                                openRescheduleDropdown?.session?.id === scheduledSession.id
+                                  ? null
+                                  : { session: scheduledSession, course }
+                              );
+                            }}
+                            style={{
+                              color: '#1d9bf0',
+                              fontSize: 15,
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              textDecoration: 'underline',
+                              transition: 'color 0.15s'
+                            }}
+                          >
+                            Reschedule
+                            <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
+                          </span>
+                          {openRescheduleDropdown?.session?.id === scheduledSession.id && ReactDOM.createPortal(
+                            <div
+                              className="reschedule-dropdown-menu"
+                              style={{
+                                position: 'absolute',
+                                top: rescheduleDropdownPosition.top,
+                                left: rescheduleDropdownPosition.left,
+                                background: isDarkMode ? '#000' : '#fff',
+                                border: `1px solid ${isDarkMode ? '#2f3336' : '#e2e8f0'}`,
+                                borderRadius: 16,
+                                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                                zIndex: 99999,
+                                minWidth: 320,
+                                overflow: 'hidden'
+                              }}
+                            >
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const session = openRescheduleDropdown.session;
+                                  setOpenRescheduleDropdown(null);
+                                  onRescheduleSession && onRescheduleSession({ ...session, rescheduleMode: 'teacher' });
+                                }}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  width: '100%',
+                                  padding: '16px 24px',
+                                  background: 'none',
+                                  border: 'none',
+                                  textAlign: 'left',
+                                  cursor: 'pointer',
+                                  transition: 'background 0.15s ease'
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                              >
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Choose Your Teacher</div>
+                                  <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', lineHeight: 1.4 }}>
+                                    Browse student teachers. See availability and book sessions.
+                                  </div>
+                                </div>
+                                <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 20, marginLeft: 12 }}>›</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const session = openRescheduleDropdown.session;
+                                  setOpenRescheduleDropdown(null);
+                                  onRescheduleSession && onRescheduleSession({ ...session, rescheduleMode: 'time' });
+                                }}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  width: '100%',
+                                  padding: '16px 24px',
+                                  background: 'none',
+                                  border: 'none',
+                                  borderTop: `1px solid ${isDarkMode ? '#2f3336' : '#e2e8f0'}`,
+                                  textAlign: 'left',
+                                  cursor: 'pointer',
+                                  transition: 'background 0.15s ease'
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                              >
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Choose Your Schedule</div>
+                                  <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', lineHeight: 1.4 }}>
+                                    Pick dates that work for you. See who's available.
+                                  </div>
+                                </div>
+                                <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 20, marginLeft: 12 }}>›</span>
+                              </button>
+                            </div>,
+                            document.body
+                          )}
+                        </div>
                       );
                     })()}
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (isCompletedSection) {
-                          // View Certificate action
-                          onViewCourse && onViewCourse(course.id);
-                        } else {
-                          handleFollowCourse && handleFollowCourse(course.id);
+                    {isCompletedSection && (
+                      // Apply to Teach button/dropdown with status
+                      (() => {
+                        const teachStatus = getTeachingStatus(course.id);
+
+                        // Already pending or approved - show status button (no dropdown)
+                        if (teachStatus === 'pending') {
+                          return (
+                            <button
+                              style={{
+                                background: '#fef3c7',
+                                border: 'none',
+                                color: '#92400e',
+                                cursor: 'default',
+                                padding: '6px 16px',
+                                borderRadius: 20,
+                                fontSize: 14,
+                                fontWeight: 600,
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              Pending Approval
+                            </button>
+                          );
                         }
-                      }}
-                      style={{
-                        background: isCompletedSection ? '#10b981' : 'white',
-                        border: isCompletedSection ? 'none' : '1px solid #cfd9de',
-                        color: isCompletedSection ? '#fff' : '#0f1419',
-                        padding: '6px 16px',
-                        borderRadius: 20,
-                        fontSize: 14,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        whiteSpace: 'nowrap',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isCompletedSection && isFollowed) {
-                          e.currentTarget.style.borderColor = '#f4212e';
-                          e.currentTarget.style.color = '#f4212e';
-                          e.currentTarget.textContent = 'Unfollow Course';
+
+                        if (teachStatus === 'approved') {
+                          return (
+                            <button
+                              style={{
+                                background: '#fff',
+                                border: '2px solid #10b981',
+                                color: '#10b981',
+                                cursor: 'default',
+                                padding: '6px 16px',
+                                borderRadius: 20,
+                                fontSize: 14,
+                                fontWeight: 600,
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              Approved
+                            </button>
+                          );
                         }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isCompletedSection && isFollowed) {
-                          e.currentTarget.style.borderColor = '#cfd9de';
-                          e.currentTarget.style.color = '#0f1419';
-                          e.currentTarget.textContent = 'Following Course';
-                        }
-                      }}
-                    >
-                      {isCompletedSection ? 'View Certificate' : (isFollowed ? 'Following Course' : 'Follow Course')}
-                    </button>
+
+                        // Not applied yet - show dropdown button
+                        return (
+                          <div className="apply-to-teach-dropdown-wrapper" style={{ position: 'relative' }}>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                setApplyToTeachDropdownPosition({
+                                  top: rect.bottom + window.scrollY + 4,
+                                  left: rect.left + window.scrollX
+                                });
+                                setOpenApplyToTeachDropdown(
+                                  openApplyToTeachDropdown === course.id ? null : course.id
+                                );
+                              }}
+                              style={{
+                                background: '#10b981',
+                                border: 'none',
+                                color: '#fff',
+                                cursor: 'pointer',
+                                padding: '6px 16px',
+                                borderRadius: 20,
+                                fontSize: 14,
+                                fontWeight: 600,
+                                whiteSpace: 'nowrap',
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              Apply to Teach
+                            </button>
+                            {openApplyToTeachDropdown === course.id && ReactDOM.createPortal(
+                              <div
+                                className="apply-to-teach-dropdown-menu"
+                                style={{
+                                  position: 'absolute',
+                                  top: applyToTeachDropdownPosition.top,
+                                  left: applyToTeachDropdownPosition.left,
+                                  background: isDarkMode ? '#16181c' : '#fff',
+                                  border: `1px solid ${isDarkMode ? '#2f3336' : '#e1e8ed'}`,
+                                  borderRadius: 12,
+                                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                  zIndex: 99999,
+                                  minWidth: 280,
+                                  overflow: 'hidden'
+                                }}
+                              >
+                                <div style={{ padding: '12px 16px', borderBottom: `1px solid ${isDarkMode ? '#2f3336' : '#e1e8ed'}` }}>
+                                  <div style={{ fontSize: 14, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                                    Apply to Teach
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenApplyToTeachDropdown(null);
+                                    handleApplyToTeachClick(course, e);
+                                  }}
+                                  style={{
+                                    display: 'block',
+                                    width: '100%',
+                                    padding: '12px 16px',
+                                    background: 'none',
+                                    border: 'none',
+                                    textAlign: 'left',
+                                    cursor: 'pointer',
+                                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                    fontSize: 14
+                                  }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                                >
+                                  <div style={{ fontWeight: 600, marginBottom: 2 }}>Send request to become a student teacher</div>
+                                  <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }}>
+                                    Apply to help others learn this course
+                                  </div>
+                                </button>
+                              </div>,
+                              document.body
+                            )}
+                          </div>
+                        );
+                      })()
+                    )}
                   </div>
                 </div>
               </div>
@@ -1170,106 +1937,70 @@ const MyCoursesView = ({
             onSelectDate={setSelectedDate}
           />
 
-          {/* Active/Completed Tabs */}
+          {/* Active/Completed Tabs - Pill Style (matching Community.js pills) */}
           <div style={{
-            display: 'flex',
-            gap: 12,
-            padding: '16px 20px',
+            padding: '12px 20px',
             borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
             background: isDarkMode ? '#000' : '#fff'
           }}>
-            <button
-              onClick={() => setCourseViewTab('active')}
-              style={{
-                flex: 1,
-                padding: '12px 16px',
-                background: courseViewTab === 'active'
-                  ? (isDarkMode ? '#1a1a1a' : '#f9fafb')
-                  : 'transparent',
-                border: 'none',
-                borderRadius: 8,
-                cursor: 'pointer',
-                position: 'relative',
-                transition: 'all 0.2s'
-              }}
-            >
-              <span style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color: courseViewTab === 'active'
-                  ? (isDarkMode ? '#e7e9ea' : '#0f1419')
-                  : (isDarkMode ? '#71767b' : '#536471')
-              }}>
-                Active Courses
-              </span>
-              <span style={{
-                marginLeft: 6,
-                fontSize: 13,
-                color: courseViewTab === 'active'
-                  ? (isDarkMode ? '#a1a1aa' : '#6b7280')
-                  : (isDarkMode ? '#71767b' : '#9ca3af')
-              }}>
-                ({activeCoursesCount})
-              </span>
-              {courseViewTab === 'active' && (
-                <div style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: '60%',
-                  height: 3,
-                  background: '#c6f432',
-                  borderRadius: '3px 3px 0 0'
-                }} />
-              )}
-            </button>
-            <button
-              onClick={() => setCourseViewTab('completed')}
-              style={{
-                flex: 1,
-                padding: '12px 16px',
-                background: courseViewTab === 'completed'
-                  ? (isDarkMode ? '#1a1a1a' : '#f9fafb')
-                  : 'transparent',
-                border: 'none',
-                borderRadius: 8,
-                cursor: 'pointer',
-                position: 'relative',
-                transition: 'all 0.2s'
-              }}
-            >
-              <span style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color: courseViewTab === 'completed'
-                  ? (isDarkMode ? '#e7e9ea' : '#0f1419')
-                  : (isDarkMode ? '#71767b' : '#536471')
-              }}>
-                Completed Courses
-              </span>
-              <span style={{
-                marginLeft: 6,
-                fontSize: 13,
-                color: courseViewTab === 'completed'
-                  ? (isDarkMode ? '#a1a1aa' : '#6b7280')
-                  : (isDarkMode ? '#71767b' : '#9ca3af')
-              }}>
-                ({completedCoursesCount})
-              </span>
-              {courseViewTab === 'completed' && (
-                <div style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: '60%',
-                  height: 3,
-                  background: '#c6f432',
-                  borderRadius: '3px 3px 0 0'
-                }} />
-              )}
-            </button>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              <button
+                onClick={() => setCourseViewTab('active')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '8px 16px',
+                  borderRadius: 20,
+                  border: courseViewTab === 'active'
+                    ? '2px solid #1d9bf0'
+                    : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                  background: courseViewTab === 'active'
+                    ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                    : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                  color: courseViewTab === 'active'
+                    ? '#1d9bf0'
+                    : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Active Courses ({activeCoursesCount})
+              </button>
+              <button
+                onClick={() => setCourseViewTab('completed')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '8px 16px',
+                  borderRadius: 20,
+                  border: courseViewTab === 'completed'
+                    ? '2px solid #1d9bf0'
+                    : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                  background: courseViewTab === 'completed'
+                    ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                    : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                  color: courseViewTab === 'completed'
+                    ? '#1d9bf0'
+                    : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Completed Courses ({completedCoursesCount})
+              </button>
+            </div>
           </div>
 
           {/* Sessions for Selected Date - Grouped by Instructor */}
@@ -1398,41 +2129,177 @@ const MyCoursesView = ({
                           </div>
                         </div>
 
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleFollowInstructor && handleFollowInstructor(instructor?.id);
-                          }}
-                          style={{
-                            background: '#f7f9f9',
-                            border: '1px solid #cfd9de',
-                            color: '#0f1419',
-                            padding: '8px 16px',
-                            borderRadius: 20,
-                            fontSize: 14,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                            flexShrink: 0,
-                            transition: 'all 0.2s'
-                          }}
-                          onMouseEnter={(e) => {
-                            if (isFollowing) {
-                              e.currentTarget.style.borderColor = '#f4212e';
-                              e.currentTarget.style.color = '#f4212e';
-                              e.currentTarget.textContent = 'Unfollow Community';
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (isFollowing) {
-                              e.currentTarget.style.borderColor = '#cfd9de';
-                              e.currentTarget.style.color = '#0f1419';
-                              e.currentTarget.textContent = 'Following Community';
-                            }
-                          }}
+                        {/* Follow dropdown - shows community and enrolled courses */}
+                        <div
+                          className="community-follow-dropdown-wrapper"
+                          style={{ position: 'relative', display: 'inline-block', zIndex: 9999 }}
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          {isFollowing ? 'Following Community' : 'Follow Community'}
-                        </button>
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const dropdownKey = `scheduled-${instructor?.id}`;
+                              const isOpening = openCommunityFollowDropdown !== dropdownKey;
+                              if (isOpening) {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                const dropdownHeight = 250;
+                                const viewportHeight = window.innerHeight;
+                                const spaceBelow = viewportHeight - rect.bottom;
+                                const spaceAbove = rect.top;
+                                const positionAbove = spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
+                                setDropdownPosition({
+                                  top: positionAbove ? rect.top - dropdownHeight - 4 : rect.bottom + 4,
+                                  left: rect.left
+                                });
+                              }
+                              setOpenCommunityFollowDropdown(
+                                openCommunityFollowDropdown === dropdownKey ? null : dropdownKey
+                              );
+                            }}
+                            style={{
+                              color: '#1d9bf0',
+                              fontSize: 15,
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              textDecoration: 'underline',
+                              transition: 'color 0.15s'
+                            }}
+                          >
+                            {isFollowing ? 'Following' : 'Follow'}
+                            <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
+                          </span>
+
+                          {/* Dropdown menu */}
+                          {openCommunityFollowDropdown === `scheduled-${instructor?.id}` && ReactDOM.createPortal(
+                            <div className="community-follow-dropdown-menu" style={{
+                              position: 'fixed',
+                              top: dropdownPosition.top,
+                              left: dropdownPosition.left,
+                              background: isDarkMode ? '#16181c' : '#fff',
+                              border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                              borderRadius: 12,
+                              boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.1)',
+                              zIndex: 99999,
+                              minWidth: 220,
+                              padding: '4px 0'
+                            }}>
+                              {(() => {
+                                const followedCoursesCount = courses.filter(c => isCourseFollowed && isCourseFollowed(c.id)).length;
+                                const hasAnyFollowed = isFollowing || followedCoursesCount > 0;
+
+                                return (
+                                  <>
+                                    {/* Community section */}
+                                    <div style={{
+                                      padding: '6px 16px 2px',
+                                      fontSize: 11,
+                                      fontWeight: 600,
+                                      color: isDarkMode ? '#71767b' : '#536471',
+                                      textTransform: 'uppercase',
+                                      letterSpacing: '0.5px'
+                                    }}>
+                                      Community
+                                    </div>
+                                    <div
+                                      style={{
+                                        padding: '8px 16px',
+                                        cursor: 'pointer',
+                                        fontSize: 14,
+                                        color: isFollowing ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                                        fontWeight: isFollowing ? 500 : 400,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 8
+                                      }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleFollowInstructor && handleFollowInstructor(instructor?.id);
+                                      }}
+                                      onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
+                                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                    >
+                                      <span style={{ width: 16 }}>{isFollowing && '✓'}</span>
+                                      <span>{instructor?.communityName || instructor?.name}</span>
+                                    </div>
+
+                                    {/* Courses section */}
+                                    <div style={{
+                                      padding: '10px 16px 2px',
+                                      fontSize: 11,
+                                      fontWeight: 600,
+                                      color: isDarkMode ? '#71767b' : '#536471',
+                                      textTransform: 'uppercase',
+                                      letterSpacing: '0.5px',
+                                      borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                                      marginTop: 4
+                                    }}>
+                                      Courses
+                                    </div>
+                                    {courses.map(course => {
+                                      const isFollowed = isCourseFollowed ? isCourseFollowed(course.id) : false;
+                                      return (
+                                        <div
+                                          key={course.id}
+                                          style={{
+                                            padding: '10px 16px',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 8,
+                                            fontSize: 14,
+                                            color: isFollowed ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                                            fontWeight: isFollowed ? 500 : 400
+                                          }}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleFollowCourse && handleFollowCourse(course.id);
+                                          }}
+                                          onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
+                                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                        >
+                                          <span style={{ width: 16, flexShrink: 0 }}>{isFollowed && '✓'}</span>
+                                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.title}</span>
+                                        </div>
+                                      );
+                                    })}
+
+                                    {/* Unfollow all */}
+                                    {hasAnyFollowed && (
+                                      <>
+                                        <div style={{ borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4', margin: '4px 0' }} />
+                                        <div
+                                          style={{
+                                            padding: '10px 16px',
+                                            cursor: 'pointer',
+                                            fontSize: 13,
+                                            color: '#f4212e',
+                                            fontWeight: 500
+                                          }}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            courses.forEach(course => {
+                                              if (isCourseFollowed && isCourseFollowed(course.id)) {
+                                                handleFollowCourse && handleFollowCourse(course.id);
+                                              }
+                                            });
+                                            if (isFollowing) {
+                                              handleFollowInstructor && handleFollowInstructor(instructor?.id);
+                                            }
+                                          }}
+                                          onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
+                                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                        >
+                                          Unfollow all
+                                        </div>
+                                      </>
+                                    )}
+                                  </>
+                                );
+                              })()}
+                            </div>,
+                            document.body
+                          )}
+                        </div>
                       </div>
 
                       {instructor?.bio && (
@@ -1551,9 +2418,33 @@ const MyCoursesView = ({
                                 <div style={{
                                   fontSize: 15,
                                   fontWeight: 600,
-                                  color: '#1d9bf0'
+                                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  flexWrap: 'wrap',
+                                  gap: 6
                                 }}>
-                                  {course.title}
+                                  <span style={{ color: '#1d9bf0', cursor: 'pointer' }}>
+                                    {course.title}
+                                  </span>
+                                  <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontWeight: 400 }}>·</span>
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleFollowCourse && handleFollowCourse(course.id);
+                                    }}
+                                    style={{
+                                      color: '#1d9bf0',
+                                      fontSize: 15,
+                                      fontWeight: 600,
+                                      cursor: 'pointer',
+                                      transition: 'color 0.15s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                                    onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                                  >
+                                    {isFollowed ? 'Following' : 'Follow'}
+                                  </span>
                                 </div>
                                 <div style={{
                                   fontSize: 14,
@@ -1602,66 +2493,120 @@ const MyCoursesView = ({
                                     <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontWeight: 400 }}>
                                       with {course.session.teacherName || course.session.studentTeacherName}
                                     </span>
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        onRescheduleSession && onRescheduleSession(course.session);
-                                      }}
-                                      style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        color: isDarkMode ? '#71767b' : '#6b7280',
-                                        fontSize: 11,
-                                        cursor: 'pointer',
-                                        padding: '2px 6px',
-                                        textDecoration: 'underline',
-                                        fontWeight: 400
-                                      }}
-                                      onMouseEnter={(e) => { e.currentTarget.style.color = '#1d9bf0'; }}
-                                      onMouseLeave={(e) => { e.currentTarget.style.color = isDarkMode ? '#71767b' : '#6b7280'; }}
-                                    >
-                                      Reschedule
-                                    </button>
+                                    <div className="reschedule-dropdown-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          const rect = e.currentTarget.getBoundingClientRect();
+                                          setRescheduleDropdownPosition({
+                                            top: rect.bottom + window.scrollY + 4,
+                                            left: rect.left + window.scrollX
+                                          });
+                                          setOpenRescheduleDropdown(
+                                            openRescheduleDropdown?.session?.id === course.session.id
+                                              ? null
+                                              : { session: course.session, course }
+                                          );
+                                        }}
+                                        style={{
+                                          background: 'none',
+                                          border: 'none',
+                                          color: isDarkMode ? '#71767b' : '#6b7280',
+                                          fontSize: 11,
+                                          cursor: 'pointer',
+                                          padding: '2px 6px',
+                                          textDecoration: 'underline',
+                                          fontWeight: 400
+                                        }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.color = '#1d9bf0'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.color = isDarkMode ? '#71767b' : '#6b7280'; }}
+                                      >
+                                        Reschedule
+                                      </button>
+                                      {openRescheduleDropdown?.session?.id === course.session.id && ReactDOM.createPortal(
+                                        <div
+                                          className="reschedule-dropdown-menu"
+                                          style={{
+                                            position: 'absolute',
+                                            top: rescheduleDropdownPosition.top,
+                                            left: rescheduleDropdownPosition.left,
+                                            background: isDarkMode ? '#000' : '#fff',
+                                            border: `1px solid ${isDarkMode ? '#2f3336' : '#e2e8f0'}`,
+                                            borderRadius: 16,
+                                            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                                            zIndex: 99999,
+                                            minWidth: 320,
+                                            overflow: 'hidden'
+                                          }}
+                                        >
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              const session = openRescheduleDropdown.session;
+                                              setOpenRescheduleDropdown(null);
+                                              onRescheduleSession && onRescheduleSession({ ...session, rescheduleMode: 'teacher' });
+                                            }}
+                                            style={{
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'space-between',
+                                              width: '100%',
+                                              padding: '16px 24px',
+                                              background: 'none',
+                                              border: 'none',
+                                              textAlign: 'left',
+                                              cursor: 'pointer',
+                                              transition: 'background 0.15s ease'
+                                            }}
+                                            onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'; }}
+                                            onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                                          >
+                                            <div style={{ flex: 1 }}>
+                                              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Choose Your Teacher</div>
+                                              <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', lineHeight: 1.4 }}>
+                                                Browse student teachers. See availability and book sessions.
+                                              </div>
+                                            </div>
+                                            <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 20, marginLeft: 12 }}>›</span>
+                                          </button>
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              const session = openRescheduleDropdown.session;
+                                              setOpenRescheduleDropdown(null);
+                                              onRescheduleSession && onRescheduleSession({ ...session, rescheduleMode: 'time' });
+                                            }}
+                                            style={{
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'space-between',
+                                              width: '100%',
+                                              padding: '16px 24px',
+                                              background: 'none',
+                                              border: 'none',
+                                              borderTop: `1px solid ${isDarkMode ? '#2f3336' : '#e2e8f0'}`,
+                                              textAlign: 'left',
+                                              cursor: 'pointer',
+                                              transition: 'background 0.15s ease'
+                                            }}
+                                            onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'; }}
+                                            onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                                          >
+                                            <div style={{ flex: 1 }}>
+                                              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Choose Your Schedule</div>
+                                              <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', lineHeight: 1.4 }}>
+                                                Pick dates that work for you. See who's available.
+                                              </div>
+                                            </div>
+                                            <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 20, marginLeft: 12 }}>›</span>
+                                          </button>
+                                        </div>,
+                                        document.body
+                                      )}
+                                    </div>
                                   </div>
                                 )}
                               </div>
-
-                              {/* Follow Button */}
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleFollowCourse && handleFollowCourse(course.id);
-                                }}
-                                style={{
-                                  background: '#f7f9f9',
-                                  border: '1px solid #cfd9de',
-                                  color: '#0f1419',
-                                  padding: '6px 16px',
-                                  borderRadius: 20,
-                                  fontSize: 14,
-                                  fontWeight: 600,
-                                  cursor: 'pointer',
-                                  whiteSpace: 'nowrap',
-                                  flexShrink: 0,
-                                  transition: 'all 0.2s'
-                                }}
-                                onMouseEnter={(e) => {
-                                  if (isFollowed) {
-                                    e.currentTarget.style.borderColor = '#f4212e';
-                                    e.currentTarget.style.color = '#f4212e';
-                                    e.currentTarget.textContent = 'Unfollow Course';
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  if (isFollowed) {
-                                    e.currentTarget.style.borderColor = '#cfd9de';
-                                    e.currentTarget.style.color = '#0f1419';
-                                    e.currentTarget.textContent = 'Following Course';
-                                  }
-                                }}
-                              >
-                                {isFollowed ? 'Following Course' : 'Follow Course'}
-                              </button>
                             </div>
                           </div>
                         );
@@ -1722,6 +2667,9 @@ const MyCoursesView = ({
           </div>
         </div>
       </div>
+
+      {/* Apply to Teach Modal */}
+      {renderApplyToTeachModal()}
     </div>
   );
 };
