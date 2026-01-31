@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { FaBook, FaSearch, FaCheckCircle, FaPlay, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
 import { getInstructorById, iconConfig } from '../data/database';
+import Breadcrumb from './Breadcrumb';
 
 // Course abbreviation helper - matches DiscoverView
 const getCourseAbbreviation = (title) => {
@@ -340,7 +341,8 @@ const MyCoursesView = ({
   addScheduledSession,
   cancelScheduledSession,
   onRescheduleSession,
-  onScheduleSession
+  onScheduleSession,
+  breadcrumbItems = null  // Breadcrumb navigation items
 }) => {
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'inprogress', or 'completed'
   const [searchQuery, setSearchQuery] = useState('');
@@ -1705,6 +1707,8 @@ const MyCoursesView = ({
 
   return (
     <div className="main-content">
+      {/* Breadcrumb Navigation */}
+      {breadcrumbItems && <Breadcrumb items={breadcrumbItems} isDarkMode={isDarkMode} />}
       <div className="three-column-layout browse-layout">
         <div className="center-column">
           {/* Header - Title and Search (scrolls away) */}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaComment, FaRetweet, FaHeart, FaBookmark, FaShare } from 'react-icons/fa';
+import UserHoverCard from './UserHoverCard';
 
 /**
  * PostCard Component
@@ -9,12 +10,20 @@ import { FaComment, FaRetweet, FaHeart, FaBookmark, FaShare } from 'react-icons/
  * @param {boolean} isDarkMode - Dark mode flag
  * @param {Function} onViewUserProfile - Callback when clicking author
  * @param {Function} onViewCourse - Callback when clicking course tag
+ * @param {Function} onFollowUser - Callback when following a user
+ * @param {Function} onMessageUser - Callback when messaging a user
+ * @param {Array} followingUsers - List of user IDs the current user follows
+ * @param {string} currentUserId - Current user's ID
  */
 const PostCard = ({
   post,
   isDarkMode = false,
   onViewUserProfile = null,
-  onViewCourse = null
+  onViewCourse = null,
+  onFollowUser = null,
+  onMessageUser = null,
+  followingUsers = [],
+  currentUserId = null
 }) => {
   const handlePostAuthorClick = () => {
     if (onViewUserProfile) {
@@ -50,15 +59,30 @@ const PostCard = ({
         />
         <div className="post-card-header-info">
           <div className="post-card-name-row">
-            <span
-              className="post-card-author"
-              onClick={handlePostAuthorClick}
-              style={{ cursor: 'pointer' }}
-              onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-              onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+            <UserHoverCard
+              user={{
+                id: post.authorId,
+                name: post.author,
+                handle: post.authorHandle,
+                avatar: post.authorAvatar,
+                bio: post.authorBio
+              }}
+              onFollow={onFollowUser}
+              onMessage={onMessageUser}
+              onViewProfile={() => onViewUserProfile && onViewUserProfile(post.author)}
+              isFollowing={followingUsers.includes(post.authorId)}
+              currentUserId={currentUserId}
             >
-              {post.author}
-            </span>
+              <span
+                className="post-card-author"
+                onClick={handlePostAuthorClick}
+                style={{ cursor: 'pointer' }}
+                onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+              >
+                {post.author}
+              </span>
+            </UserHoverCard>
             <span
               className="post-card-handle"
               onClick={handlePostAuthorClick}

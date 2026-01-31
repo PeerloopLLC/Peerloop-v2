@@ -33,6 +33,7 @@ import RescheduleModal from './RescheduleModal';
 import Notifications from './Notifications';
 import AboutView from './AboutView';
 import DiscoverView from './DiscoverView';
+import Breadcrumb from './Breadcrumb';
 import { useUserStatus } from '../hooks/useUserStatus';
 import { getAllInstructors, getInstructorWithCourses, getCourseById, getAllCourses, getInstructorById, getIndexedCourses, getIndexedInstructors } from '../data/database';
 import { communityUsers } from '../data/users';
@@ -303,6 +304,185 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     setViewingCourseFromCommunity(null);
     onMenuChange(previousPage);
   };
+
+  // Build breadcrumb items based on current navigation state
+  const buildBreadcrumbItems = () => {
+    const items = [];
+
+    // Always start with PeerLoop (home)
+    items.push({
+      label: 'PeerLoop',
+      onClick: () => {
+        setViewingCourseFromCommunity(null);
+        setSelectedInstructor(null);
+        setSelectedCourse(null);
+        setNavigationHistory([]);
+        onMenuChange('My Community'); // Default home view
+      }
+    });
+
+    // Determine breadcrumb based on activeMenu and navigation state
+    if (activeMenu === 'My Community') {
+      // Check if viewing a specific community feed
+      const activeCommunity = followedCommunities.find(c => c.id === commonsActiveFeed);
+      if (activeCommunity && commonsActiveFeed !== 'main') {
+        items.push({
+          label: 'My Feeds',
+          onClick: () => setCommonsActiveFeed('main')
+        });
+        items.push({ label: activeCommunity.name });
+      } else {
+        items.push({ label: 'My Feeds' });
+      }
+    } else if (activeMenu === 'Discover') {
+      items.push({ label: 'Discover' });
+    } else if (activeMenu === 'My Courses') {
+      if (viewingCourseFromCommunity) {
+        items.push({
+          label: 'My Courses',
+          onClick: () => {
+            setViewingCourseFromCommunity(null);
+            onMenuChange('My Courses');
+          }
+        });
+        items.push({ label: viewingCourseFromCommunity.title });
+      } else {
+        items.push({ label: 'My Courses' });
+      }
+    } else if (activeMenu === 'Profile') {
+      items.push({ label: 'Profile' });
+    } else if (activeMenu === 'Browse' || activeMenu === 'Browse_Communities' || activeMenu === 'Browse_Courses' || activeMenu === 'Browse_Reset') {
+      // Determine if we came from Discover or My Feeds
+      const cameFrom = previousBrowseContext?.type;
+
+      if (cameFrom === 'discover') {
+        items.push({
+          label: 'Discover',
+          onClick: () => {
+            setSelectedInstructor(null);
+            setSelectedCourse(null);
+            onMenuChange('Discover');
+          }
+        });
+      } else if (cameFrom === 'feeds') {
+        items.push({
+          label: 'My Feeds',
+          onClick: () => {
+            setSelectedInstructor(null);
+            setSelectedCourse(null);
+            onMenuChange('My Community');
+          }
+        });
+      } else if (cameFrom === 'my-courses') {
+        items.push({
+          label: 'My Courses',
+          onClick: () => {
+            setSelectedInstructor(null);
+            setSelectedCourse(null);
+            onMenuChange('My Courses');
+          }
+        });
+      } else {
+        items.push({
+          label: 'Discover',
+          onClick: () => {
+            setSelectedInstructor(null);
+            setSelectedCourse(null);
+            onMenuChange('Discover');
+          }
+        });
+      }
+
+      // Add community/instructor name if viewing one
+      if (selectedInstructor) {
+        if (selectedCourse) {
+          // Viewing course within community
+          items.push({
+            label: selectedInstructor.name,
+            onClick: () => {
+              setSelectedCourse(null);
+            }
+          });
+          items.push({ label: selectedCourse.title });
+        } else {
+          // Viewing community detail
+          items.push({ label: selectedInstructor.name });
+        }
+      }
+    } else if (activeMenu === 'Settings') {
+      items.push({ label: 'Settings' });
+    } else if (activeMenu === 'Notifications') {
+      items.push({ label: 'Notifications' });
+    } else if (activeMenu === 'Workspace') {
+      items.push({ label: 'Workspace' });
+    } else if (activeMenu === 'About') {
+      items.push({ label: 'About' });
+    }
+
+    // Handle course viewing overlay (takes precedence)
+    if (viewingCourseFromCommunity && activeMenu !== 'My Courses' && activeMenu !== 'Browse' && activeMenu !== 'Browse_Communities') {
+      const previousPage = navigationHistory[navigationHistory.length - 1] || 'Discover';
+      // Reset items for course view context
+      const courseItems = [{
+        label: 'PeerLoop',
+        onClick: () => {
+          setViewingCourseFromCommunity(null);
+          setSelectedInstructor(null);
+          setNavigationHistory([]);
+          onMenuChange('My Community');
+        }
+      }];
+
+      if (previousPage === 'Discover') {
+        courseItems.push({
+          label: 'Discover',
+          onClick: () => {
+            setViewingCourseFromCommunity(null);
+            onMenuChange('Discover');
+          }
+        });
+      } else if (previousPage === 'My Courses') {
+        courseItems.push({
+          label: 'My Courses',
+          onClick: () => {
+            setViewingCourseFromCommunity(null);
+            onMenuChange('My Courses');
+          }
+        });
+      } else if (previousPage === 'My Community') {
+        courseItems.push({
+          label: 'My Feeds',
+          onClick: () => {
+            setViewingCourseFromCommunity(null);
+            onMenuChange('My Community');
+          }
+        });
+      }
+
+      // Get the community name for the course
+      const instructor = getInstructorById(viewingCourseFromCommunity.instructorId);
+      if (instructor) {
+        courseItems.push({
+          label: instructor.name,
+          onClick: () => {
+            setViewingCourseFromCommunity(null);
+            const fullData = getInstructorWithCourses(instructor.id);
+            setSelectedInstructor(fullData || instructor);
+            setSelectedCourse(null);
+            setActiveTopMenu('creators');
+            setPreviousBrowseContext({ type: previousPage === 'Discover' ? 'discover' : previousPage === 'My Courses' ? 'my-courses' : 'feeds' });
+            onMenuChange('Browse_Communities');
+          }
+        });
+      }
+
+      courseItems.push({ label: viewingCourseFromCommunity.title });
+      return courseItems;
+    }
+
+    return items;
+  };
+
   // Helper function to get default follows (empty - users follow communities by purchasing courses or manually)
   const getDefaultFollows = () => {
     // Return empty array - users start with no communities
@@ -1567,6 +1747,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   if (activeMenu === 'Discover' && !viewingCourseFromCommunity) {
     return (
       <DiscoverView
+        breadcrumbItems={buildBreadcrumbItems()}
         isDarkMode={isDarkMode}
         currentUser={currentUser}
         onMenuChange={onMenuChange}
@@ -1649,6 +1830,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   if (activeMenu === 'Browse' || activeMenu === 'Browse_Reset' || activeMenu === 'Browse_Courses' || activeMenu === 'Browse_Communities') {
     return (<>
       <BrowseView
+        breadcrumbItems={buildBreadcrumbItems()}
         isDarkMode={isDarkMode}
         currentUser={currentUser}
         onMenuChange={onMenuChange}
@@ -1870,6 +2052,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     // Consistent header wrapper for course detail views
     const CourseDetailWrapper = ({ children }) => (
       <div className="main-content" style={{ background: isDarkMode ? '#000' : '#f8fafc', minHeight: '100vh' }}>
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb items={buildBreadcrumbItems()} isDarkMode={isDarkMode} />
         {/* Header with Back Button */}
         <div style={{
           padding: '16px 20px',
@@ -2675,6 +2859,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
     return (<>
       <MyCoursesView
+        breadcrumbItems={buildBreadcrumbItems()}
         isDarkMode={isDarkMode}
         currentUser={currentUser}
         onMenuChange={onMenuChange}
@@ -2943,6 +3128,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   if (activeMenu === 'My Community') {
     return (
       <div className="main-content">
+        <Breadcrumb items={buildBreadcrumbItems()} isDarkMode={isDarkMode} />
         <Community
           userStatus={userStatus}
           followedCommunities={followedCommunities}
@@ -2976,6 +3162,25 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             localStorage.setItem('viewingCreatorProfile', 'true');
             onMenuChange('Browse_Communities');
           }}
+          onViewCommunity={(instructor) => {
+            // Navigate to Community Detail page (same as clicking community header on Discover)
+            const instructorId = instructor.instructorId || (typeof instructor.id === 'string' ? instructor.id.replace('creator-', '') : instructor.id);
+            const fullData = getInstructorWithCourses(instructorId);
+            setSelectedInstructor(fullData || instructor);
+            setSelectedCourse(null); // Clear so community view shows, not a specific course
+            setActiveTopMenu('creators');
+            // Format community object for back navigation
+            const communityForBack = {
+              id: `creator-${instructorId}`,
+              name: instructor.name,
+              instructorId: instructorId
+            };
+            setPreviousBrowseContext({ type: 'feeds', community: communityForBack });
+            setNavigationHistory(prev => [...prev, 'My Community']);
+            // Clear creator profile flag so community detail shows
+            localStorage.removeItem('viewingCreatorProfile');
+            onMenuChange('Browse_Communities');
+          }}
         />
       </div>
     );
@@ -2990,6 +3195,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   if (activeMenu === 'Profile') {
     return (
       <div className="main-content">
+        <Breadcrumb items={buildBreadcrumbItems()} isDarkMode={isDarkMode} />
         <Profile
           currentUser={currentUser}
           onSwitchUser={typeof onSwitchUser === 'function' ? onSwitchUser : undefined}

@@ -1,0 +1,212 @@
+.user-hover-card {
+  width: 280px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  animation: hoverCardFadeIn 0.15s ease-out;
+}
+
+.dark-mode .user-hover-card {
+  background: #1e293b;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+@keyframes hoverCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header with avatar and names */
+.hover-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.hover-card-header:hover .hover-card-name {
+  text-decoration: underline;
+}
+
+.hover-card-avatar {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.hover-card-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.hover-card-avatar-initials {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.hover-card-names {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hover-card-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dark-mode .hover-card-name {
+  color: #f1f5f9;
+}
+
+.hover-card-handle {
+  font-size: 14px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dark-mode .hover-card-handle {
+  color: #94a3b8;
+}
+
+/* Bio */
+.hover-card-bio {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.dark-mode .hover-card-bio {
+  color: #cbd5e1;
+}
+
+/* Action buttons */
+.hover-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.hover-card-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.follow-btn {
+  background: #0f172a;
+  color: white;
+}
+
+.follow-btn:hover {
+  background: #1e293b;
+}
+
+.follow-btn.following {
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+
+.follow-btn.following:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.dark-mode .follow-btn {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.dark-mode .follow-btn:hover {
+  background: #e2e8f0;
+}
+
+.dark-mode .follow-btn.following {
+  background: transparent;
+  border: 1px solid #475569;
+  color: #f1f5f9;
+}
+
+.dark-mode .follow-btn.following:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.message-btn {
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+
+.message-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: #94a3b8;
+}
+
+.dark-mode .message-btn {
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.dark-mode .message-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #64748b;
+}
+
+/* Stats */
+.hover-card-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.hover-card-stats strong {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.dark-mode .hover-card-stats {
+  color: #94a3b8;
+}
+
+.dark-mode .hover-card-stats strong {
+  color: #f1f5f9;
+}

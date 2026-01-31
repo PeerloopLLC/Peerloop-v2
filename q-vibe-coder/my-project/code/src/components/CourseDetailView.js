@@ -440,6 +440,66 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
   const [showHelpPanel, setShowHelpPanel] = useState(false);
   const [expandedFileSessions, setExpandedFileSessions] = useState({ 1: true }); // Session 1 expanded by default
 
+  // Collapsible header state
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const headerRef = React.useRef(null);
+  const stickyHeaderRef = React.useRef(null);
+
+  // Scroll detection for collapsible header
+  useEffect(() => {
+    let lastScrollYRef = lastScrollY;
+    let ticking = false;
+
+    const handleScroll = (e) => {
+      const scrollElement = e.target;
+      const currentScrollY = scrollElement.scrollTop || window.scrollY;
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollThreshold = 150;
+          const scrollDelta = currentScrollY - lastScrollYRef;
+
+          // Only trigger state change if scroll delta is significant (reduces jerkiness)
+          if (Math.abs(scrollDelta) > 5) {
+            if (currentScrollY > scrollThreshold) {
+              // Scrolling down past threshold - collapse
+              if (scrollDelta > 0) {
+                setIsHeaderCollapsed(true);
+              }
+              // Scrolling up - expand
+              else if (scrollDelta < 0) {
+                setIsHeaderCollapsed(false);
+              }
+            } else {
+              // Above threshold - always expanded
+              setIsHeaderCollapsed(false);
+            }
+            lastScrollYRef = currentScrollY;
+            setLastScrollY(currentScrollY);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    // Try to find the main-content scrollable container
+    const mainContent = document.querySelector('.main-content');
+
+    if (mainContent) {
+      mainContent.addEventListener('scroll', handleScroll, { passive: true });
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      if (mainContent) {
+        mainContent.removeEventListener('scroll', handleScroll);
+      }
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   // Apply to Teach modal state
   const [applyToTeachModal, setApplyToTeachModal] = useState(false);
   const [applyToTeachStep, setApplyToTeachStep] = useState('confirm'); // 'confirm' or 'submitted'
@@ -1107,40 +1167,118 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
       background: isDarkMode ? '#000' : '#fff',
       minHeight: '100vh'
     }}>
-      {/* Community Mini-Header Card */}
+      {/* Sticky Collapsed Header - Shows when scrolling down */}
       <div
+        ref={stickyHeaderRef}
         style={{
-          margin: '0 24px',
-          marginTop: 16,
-          padding: '10px 16px',
-          background: isDarkMode
-            ? 'linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.08) 100%)'
-            : 'linear-gradient(135deg, rgba(79, 172, 254, 0.12) 0%, rgba(0, 242, 254, 0.06) 100%)',
-          borderRadius: 10,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          border: isDarkMode ? '1px solid rgba(79, 172, 254, 0.2)' : '1px solid rgba(79, 172, 254, 0.15)'
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+          background: isDarkMode ? '#000' : '#fff',
+          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+          padding: isHeaderCollapsed ? '12px 24px' : '0 24px',
+          maxHeight: isHeaderCollapsed ? 60 : 0,
+          opacity: isHeaderCollapsed ? 1 : 0,
+          overflow: 'hidden',
+          transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, padding 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          willChange: 'max-height, opacity'
         }}
       >
-        <span style={{ fontSize: 18 }}>👥</span>
-        <span style={{
-          fontWeight: 600,
-          fontSize: 14,
-          color: isDarkMode ? '#e7e9ea' : '#0f1419',
-          flex: 1
-        }}>
-          {instructor?.communityName || `${instructor?.name} Community`}
-        </span>
+        {/* Collapsed Header Content - Title + Pills */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+          {/* Course Title */}
+          <h2 style={{
+            fontSize: 18,
+            fontWeight: 700,
+            color: isDarkMode ? '#e7e9ea' : '#0f1419',
+            margin: 0,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            flex: 1
+          }}>
+            {course.title}
+          </h2>
+
+          {/* Pill Tabs */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 14px',
+                  borderRadius: 20,
+                  border: activeTab === tab.id
+                    ? '2px solid #1d9bf0'
+                    : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                  background: activeTab === tab.id
+                    ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                    : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                  color: activeTab === tab.id
+                    ? '#1d9bf0'
+                    : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Header Section */}
-      <div style={{
-        padding: '24px 24px 0 24px',
-        borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-        overflow: 'visible',
-        maxWidth: '100%'
-      }}>
+      {/* Collapsible Header Content Wrapper */}
+      <div
+        ref={headerRef}
+        style={{
+          transform: isHeaderCollapsed ? 'translateY(-100%)' : 'translateY(0)',
+          maxHeight: isHeaderCollapsed ? 0 : 'none',
+          opacity: isHeaderCollapsed ? 0 : 1,
+          overflow: 'hidden',
+          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, max-height 0s linear ' + (isHeaderCollapsed ? '0s' : '0.3s'),
+          willChange: 'transform, opacity'
+        }}
+      >
+        {/* Community Mini-Header Card */}
+        <div
+          style={{
+            margin: '0 24px',
+            marginTop: 16,
+            padding: '10px 16px',
+            background: isDarkMode
+              ? 'linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.08) 100%)'
+              : 'linear-gradient(135deg, rgba(79, 172, 254, 0.12) 0%, rgba(0, 242, 254, 0.06) 100%)',
+            borderRadius: 10,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            border: isDarkMode ? '1px solid rgba(79, 172, 254, 0.2)' : '1px solid rgba(79, 172, 254, 0.15)'
+          }}
+        >
+          <span style={{ fontSize: 18 }}>👥</span>
+          <span style={{
+            fontWeight: 600,
+            fontSize: 14,
+            color: isDarkMode ? '#e7e9ea' : '#0f1419',
+            flex: 1
+          }}>
+            {instructor?.communityName || `${instructor?.name} Community`}
+          </span>
+        </div>
+
+        {/* Header Section - Collapsible Part */}
+        <div style={{
+          padding: '24px 24px 0 24px',
+          overflow: 'visible',
+          maxWidth: '100%'
+        }}>
         {/* Title and Actions Row */}
         <div style={{
           display: 'flex',
@@ -1448,47 +1586,53 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
           </div>
         </div>
         )}
-
-        {/* Tabs - Pill Style - Matching My Feeds format */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            paddingBottom: 16,
-            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-          }}
-        >
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`course-pill ${activeTab === tab.id ? 'course-pill-selected' : ''}`}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '8px 16px',
-                borderRadius: 20,
-                border: activeTab === tab.id
-                  ? '2px solid #1d9bf0'
-                  : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                background: activeTab === tab.id
-                  ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                  : (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                color: activeTab === tab.id
-                  ? '#1d9bf0'
-                  : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
         </div>
+      </div>
+      {/* End of Collapsible Header Content Wrapper */}
+
+      {/* Tabs - Pill Style - Always Visible */}
+      <div
+        style={{
+          padding: '16px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+          background: isDarkMode ? '#000' : '#fff',
+          position: isHeaderCollapsed ? 'sticky' : 'relative',
+          top: isHeaderCollapsed ? 56 : 'auto',
+          zIndex: 50
+        }}
+      >
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`course-pill ${activeTab === tab.id ? 'course-pill-selected' : ''}`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 16px',
+              borderRadius: 20,
+              border: activeTab === tab.id
+                ? '2px solid #1d9bf0'
+                : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+              background: activeTab === tab.id
+                ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+              color: activeTab === tab.id
+                ? '#1d9bf0'
+                : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Two Column Layout - Full width for Course Feed */}

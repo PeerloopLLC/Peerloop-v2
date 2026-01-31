@@ -4,6 +4,7 @@ import { FaBook, FaUser, FaSearch, FaFolder, FaPlay, FaFileAlt, FaLink } from 'r
 import { AiOutlineStar, AiOutlineTeam, AiOutlineClockCircle, AiOutlineBarChart } from 'react-icons/ai';
 import CourseDetailView from './CourseDetailView';
 import EnrollmentFlow from './EnrollmentFlow';
+import Breadcrumb from './Breadcrumb';
 import { getInstructorById, getCourseById, getInstructorWithCourses, iconConfig } from '../data/database';
 
 // Generate course abbreviation from title (matching DiscoverView.js)
@@ -79,7 +80,8 @@ const BrowseView = ({
   handleFollowInstructor,
   handleFollowCourse,
   onRestoreCourseView,
-  onEnrollmentComplete
+  onEnrollmentComplete,
+  breadcrumbItems = null  // Breadcrumb navigation items
 }) => {
   // State for profile tabs (courses vs general content)
   const [activeProfileTab, setActiveProfileTab] = useState('courses');
@@ -1808,6 +1810,8 @@ const BrowseView = ({
 
   return (
     <div className="main-content">
+      {/* Breadcrumb Navigation */}
+      {breadcrumbItems && <Breadcrumb items={breadcrumbItems} isDarkMode={isDarkMode} />}
       <div className="three-column-layout browse-layout">
         <div className="center-column">
           {/* Centered Search Bar - Hidden when viewing instructor from Discover */}
@@ -1890,26 +1894,63 @@ const BrowseView = ({
             ) : activeTopMenu === 'courses' ? (
               <div className="courses-section">
                 {selectedCourse ? (
-                  <CourseDetailView
-                    course={getCourseById(selectedCourse.id)}
-                    onBack={() => setSelectedCourse(null)}
-                    isDarkMode={isDarkMode}
-                    followedCommunities={followedCommunities}
-                    setFollowedCommunities={setFollowedCommunities}
-                    isCoursePurchased={isCoursePurchased(selectedCourse.id)}
-                    currentUser={currentUser}
-                    onViewInstructor={(instructorId) => {
-                      const instructor = getInstructorById(instructorId);
-                      if (instructor) {
-                        setSelectedInstructor(instructor);
-                        setActiveTopMenu('creators');
-                      }
-                    }}
-                    onEnroll={(course) => {
-                      setEnrollingCourse(course);
-                      setShowEnrollOptions(true);
-                    }}
-                  />
+                  <>
+                    {/* Back Button Header */}
+                    <div style={{
+                      padding: '16px 20px',
+                      borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb',
+                      background: isDarkMode ? '#0a0a0a' : '#fff'
+                    }}>
+                      <button
+                        onClick={() => setSelectedCourse(null)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          background: isDarkMode ? '#1a1a24' : '#f3f4f6',
+                          border: isDarkMode ? '1px solid #3f3f46' : '1px solid #d1d5db',
+                          borderRadius: 8,
+                          padding: '10px 16px',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          fontSize: 15,
+                          color: isDarkMode ? '#f5f5f7' : '#374151',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = isDarkMode ? '#27272a' : '#e5e7eb';
+                          e.currentTarget.style.borderColor = '#6366f1';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = isDarkMode ? '#1a1a24' : '#f3f4f6';
+                          e.currentTarget.style.borderColor = isDarkMode ? '#3f3f46' : '#d1d5db';
+                        }}
+                      >
+                        <span style={{ fontSize: 18 }}>←</span>
+                        Back to Community
+                      </button>
+                    </div>
+                    <CourseDetailView
+                      course={getCourseById(selectedCourse.id)}
+                      onBack={() => setSelectedCourse(null)}
+                      isDarkMode={isDarkMode}
+                      followedCommunities={followedCommunities}
+                      setFollowedCommunities={setFollowedCommunities}
+                      isCoursePurchased={isCoursePurchased(selectedCourse.id)}
+                      currentUser={currentUser}
+                      onViewInstructor={(instructorId) => {
+                        const instructor = getInstructorById(instructorId);
+                        if (instructor) {
+                          setSelectedInstructor(instructor);
+                          setActiveTopMenu('creators');
+                        }
+                      }}
+                      onEnroll={(course) => {
+                        setEnrollingCourse(course);
+                        setShowEnrollOptions(true);
+                      }}
+                    />
+                  </>
                 ) : (
                   <>
                     <div className="browse-header">
@@ -2239,26 +2280,63 @@ const BrowseView = ({
               <div className="creators-section">
                 {/* If viewing a course from instructor profile, show course detail */}
                 {selectedCourse ? (
-                  <CourseDetailView
-                    course={getCourseById(selectedCourse.id)}
-                    onBack={() => setSelectedCourse(null)}
-                    isDarkMode={isDarkMode}
-                    followedCommunities={followedCommunities}
-                    setFollowedCommunities={setFollowedCommunities}
-                    isCoursePurchased={isCoursePurchased(selectedCourse.id)}
-                    currentUser={currentUser}
-                    onViewInstructor={(instructorId) => {
-                      const instructor = getInstructorById(instructorId);
-                      if (instructor) {
-                        setSelectedCourse(null);
-                        setSelectedInstructor(instructor);
-                      }
-                    }}
-                    onEnroll={(course) => {
-                      setEnrollingCourse(course);
-                      setShowEnrollOptions(true);
-                    }}
-                  />
+                  <>
+                    {/* Back Button Header */}
+                    <div style={{
+                      padding: '16px 20px',
+                      borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb',
+                      background: isDarkMode ? '#0a0a0a' : '#fff'
+                    }}>
+                      <button
+                        onClick={() => setSelectedCourse(null)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          background: isDarkMode ? '#1a1a24' : '#f3f4f6',
+                          border: isDarkMode ? '1px solid #3f3f46' : '1px solid #d1d5db',
+                          borderRadius: 8,
+                          padding: '10px 16px',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          fontSize: 15,
+                          color: isDarkMode ? '#f5f5f7' : '#374151',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = isDarkMode ? '#27272a' : '#e5e7eb';
+                          e.currentTarget.style.borderColor = '#6366f1';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = isDarkMode ? '#1a1a24' : '#f3f4f6';
+                          e.currentTarget.style.borderColor = isDarkMode ? '#3f3f46' : '#d1d5db';
+                        }}
+                      >
+                        <span style={{ fontSize: 18 }}>←</span>
+                        Back to Community
+                      </button>
+                    </div>
+                    <CourseDetailView
+                      course={getCourseById(selectedCourse.id)}
+                      onBack={() => setSelectedCourse(null)}
+                      isDarkMode={isDarkMode}
+                      followedCommunities={followedCommunities}
+                      setFollowedCommunities={setFollowedCommunities}
+                      isCoursePurchased={isCoursePurchased(selectedCourse.id)}
+                      currentUser={currentUser}
+                      onViewInstructor={(instructorId) => {
+                        const instructor = getInstructorById(instructorId);
+                        if (instructor) {
+                          setSelectedCourse(null);
+                          setSelectedInstructor(instructor);
+                        }
+                      }}
+                      onEnroll={(course) => {
+                        setEnrollingCourse(course);
+                        setShowEnrollOptions(true);
+                      }}
+                    />
+                  </>
                 ) : selectedInstructor ? (
                   renderInstructorProfile()
                 ) : (

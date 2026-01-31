@@ -7,6 +7,7 @@ import { createPost, getPosts, likePost } from '../services/posts';
 import { initGetStream } from '../services/getstream';
 import { fakePosts } from '../data/communityPosts';
 import { communityUsers } from '../data/users';
+import UserHoverCard from './UserHoverCard';
 
 /**
  * MemberSearchView - Search for members (creators, student teachers, students)
@@ -305,7 +306,7 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
   );
 };
 
-const Community = ({ userStatus = null, followedCommunities = [], setFollowedCommunities = null, isDarkMode = false, currentUser = null, onMenuChange = null, onViewUserProfile = null, onViewMemberProfile = null, onViewCourse = null, onViewCreatorProfile = null, signupCompleted = false, setSignupCompleted = null, commonsActiveFeed = 'main', setCommonsActiveFeed = null }) => {
+const Community = ({ userStatus = null, followedCommunities = [], setFollowedCommunities = null, isDarkMode = false, currentUser = null, onMenuChange = null, onViewUserProfile = null, onViewMemberProfile = null, onViewCourse = null, onViewCreatorProfile = null, onViewCommunity = null, signupCompleted = false, setSignupCompleted = null, commonsActiveFeed = 'main', setCommonsActiveFeed = null }) => {
   const [selectedCommunity, setSelectedCommunity] = useState(null);
   const [activeTab, setActiveTab] = useState('Home'); // 'Home' or community id
   const [isFollowingLoading, setIsFollowingLoading] = useState(false);
@@ -2438,8 +2439,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (onViewCreatorProfile) {
-                            onViewCreatorProfile(effectiveCreator);
+                          if (onViewCommunity) {
+                            onViewCommunity(effectiveCreator);
                           }
                         }}
                         style={{
@@ -2974,8 +2975,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   {/* View All Courses Button - hidden when collapsed */}
                   <button
                     onClick={() => {
-                      if (onViewCreatorProfile) {
-                        onViewCreatorProfile(effectiveCreator);
+                      if (onViewCommunity) {
+                        onViewCommunity(effectiveCreator);
                       }
                     }}
                     style={{
@@ -3761,16 +3762,30 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           />
                           <div className="post-card-header-info">
                             <div className="post-card-name-row">
-                              <span 
-                                className="post-card-author"
-                                onClick={handlePostAuthorClick}
-                                style={{ cursor: 'pointer' }}
-                                onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                                onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                              <UserHoverCard
+                                user={{
+                                  id: post.authorId,
+                                  name: post.author,
+                                  handle: post.authorHandle,
+                                  avatar: post.authorAvatar,
+                                  bio: post.authorBio
+                                }}
+                                onFollow={(user) => console.log('Follow:', user.name)}
+                                onMessage={(user) => console.log('Message:', user.name)}
+                                onViewProfile={handlePostAuthorClick}
+                                currentUserId={currentUser?.id}
                               >
-                                {post.author}
-                              </span>
-                              <span 
+                                <span
+                                  className="post-card-author"
+                                  onClick={handlePostAuthorClick}
+                                  style={{ cursor: 'pointer' }}
+                                  onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                                  onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                                >
+                                  {post.author}
+                                </span>
+                              </UserHoverCard>
+                              <span
                                 className="post-card-handle"
                                 onClick={handlePostAuthorClick}
                                 style={{ cursor: 'pointer' }}
