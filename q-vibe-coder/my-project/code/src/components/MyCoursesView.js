@@ -342,7 +342,8 @@ const MyCoursesView = ({
   cancelScheduledSession,
   onRescheduleSession,
   onScheduleSession,
-  breadcrumbItems = null  // Breadcrumb navigation items
+  breadcrumbItems = null,  // Breadcrumb navigation items
+  onBack = null  // Back button handler
 }) => {
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'inprogress', or 'completed'
   const [searchQuery, setSearchQuery] = useState('');
@@ -1708,7 +1709,7 @@ const MyCoursesView = ({
   return (
     <div className="main-content">
       {/* Breadcrumb Navigation */}
-      {breadcrumbItems && <Breadcrumb items={breadcrumbItems} isDarkMode={isDarkMode} />}
+      {breadcrumbItems && <Breadcrumb items={breadcrumbItems} onBack={onBack} isDarkMode={isDarkMode} />}
       <div className="three-column-layout browse-layout">
         <div className="center-column">
           {/* Header - Title and Search (scrolls away) */}

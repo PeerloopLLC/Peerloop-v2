@@ -483,6 +483,33 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     return items;
   };
 
+  // Get back handler for breadcrumb - returns null if no back navigation available
+  const getBackHandler = () => {
+    // Show back button when viewing course from anywhere
+    if (viewingCourseFromCommunity) {
+      return handleBackFromCourse;
+    }
+    // Show back button when viewing community/instructor from Discover or elsewhere
+    if (selectedInstructor && (activeMenu === 'Browse' || activeMenu === 'Browse_Communities')) {
+      return () => {
+        setSelectedInstructor(null);
+        setSelectedCourse(null);
+        const prevContext = previousBrowseContext?.type;
+        if (prevContext === 'discover') {
+          onMenuChange('Discover');
+        } else if (prevContext === 'feeds') {
+          onMenuChange('My Community');
+        } else if (prevContext === 'my-courses') {
+          onMenuChange('My Courses');
+        } else {
+          onMenuChange('Discover');
+        }
+      };
+    }
+    // No back button for top-level pages
+    return null;
+  };
+
   // Helper function to get default follows (empty - users follow communities by purchasing courses or manually)
   const getDefaultFollows = () => {
     // Return empty array - users start with no communities
@@ -1748,6 +1775,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     return (
       <DiscoverView
         breadcrumbItems={buildBreadcrumbItems()}
+        onBack={getBackHandler()}
         isDarkMode={isDarkMode}
         currentUser={currentUser}
         onMenuChange={onMenuChange}
@@ -1831,6 +1859,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     return (<>
       <BrowseView
         breadcrumbItems={buildBreadcrumbItems()}
+        onBack={getBackHandler()}
         isDarkMode={isDarkMode}
         currentUser={currentUser}
         onMenuChange={onMenuChange}
@@ -2046,49 +2075,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   if (viewingCourseFromCommunity) {
     // Check if the course is purchased - show PurchasedCourseDetail instead
     const isPurchased = isCoursePurchased(viewingCourseFromCommunity?.id);
-    const previousPage = navigationHistory[navigationHistory.length - 1] || 'Discover';
-    const backLabel = previousPage === 'Discover' ? 'Back to Discover' : previousPage === 'My Courses' ? 'Back to My Courses' : 'Back';
 
     // Consistent header wrapper for course detail views
     const CourseDetailWrapper = ({ children }) => (
       <div className="main-content" style={{ background: isDarkMode ? '#000' : '#f8fafc', minHeight: '100vh' }}>
-        {/* Breadcrumb Navigation */}
-        <Breadcrumb items={buildBreadcrumbItems()} isDarkMode={isDarkMode} />
-        {/* Header with Back Button */}
-        <div style={{
-          padding: '16px 20px',
-          borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb',
-          background: isDarkMode ? '#0a0a0a' : '#fff'
-        }}>
-          <button
-            onClick={handleBackFromCourse}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              background: isDarkMode ? '#1a1a24' : '#f3f4f6',
-              border: isDarkMode ? '1px solid #3f3f46' : '1px solid #d1d5db',
-              borderRadius: 8,
-              padding: '10px 16px',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: 15,
-              color: isDarkMode ? '#f5f5f7' : '#374151',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = isDarkMode ? '#27272a' : '#e5e7eb';
-              e.currentTarget.style.borderColor = '#6366f1';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = isDarkMode ? '#1a1a24' : '#f3f4f6';
-              e.currentTarget.style.borderColor = isDarkMode ? '#3f3f46' : '#d1d5db';
-            }}
-          >
-            <span style={{ fontSize: 18 }}>←</span>
-            {backLabel}
-          </button>
-        </div>
+        {/* Breadcrumb Navigation with Back Button */}
+        <Breadcrumb items={buildBreadcrumbItems()} onBack={getBackHandler()} isDarkMode={isDarkMode} />
         {children}
       </div>
     );
@@ -2860,6 +2852,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     return (<>
       <MyCoursesView
         breadcrumbItems={buildBreadcrumbItems()}
+        onBack={getBackHandler()}
         isDarkMode={isDarkMode}
         currentUser={currentUser}
         onMenuChange={onMenuChange}
@@ -3128,7 +3121,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   if (activeMenu === 'My Community') {
     return (
       <div className="main-content">
-        <Breadcrumb items={buildBreadcrumbItems()} isDarkMode={isDarkMode} />
+        <Breadcrumb items={buildBreadcrumbItems()} onBack={getBackHandler()} isDarkMode={isDarkMode} />
         <Community
           userStatus={userStatus}
           followedCommunities={followedCommunities}
@@ -3195,7 +3188,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   if (activeMenu === 'Profile') {
     return (
       <div className="main-content">
-        <Breadcrumb items={buildBreadcrumbItems()} isDarkMode={isDarkMode} />
+        <Breadcrumb items={buildBreadcrumbItems()} onBack={getBackHandler()} isDarkMode={isDarkMode} />
         <Profile
           currentUser={currentUser}
           onSwitchUser={typeof onSwitchUser === 'function' ? onSwitchUser : undefined}

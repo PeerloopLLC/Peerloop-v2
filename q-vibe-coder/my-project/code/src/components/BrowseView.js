@@ -81,7 +81,8 @@ const BrowseView = ({
   handleFollowCourse,
   onRestoreCourseView,
   onEnrollmentComplete,
-  breadcrumbItems = null  // Breadcrumb navigation items
+  breadcrumbItems = null,  // Breadcrumb navigation items
+  onBack = null  // Back button handler
 }) => {
   // State for profile tabs (courses vs general content)
   const [activeProfileTab, setActiveProfileTab] = useState('courses');
@@ -142,37 +143,6 @@ const BrowseView = ({
 
     return (
       <div style={{ background: isDarkMode ? '#000' : '#fff', minHeight: '100vh' }}>
-        {/* Back Button */}
-        <div style={{
-          padding: '16px',
-          borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb',
-          background: isDarkMode ? '#0a0a0a' : '#fff'
-        }}>
-          <button
-            onClick={() => {
-              localStorage.removeItem('viewingCreatorProfile');
-              setSelectedInstructor(null);
-              setPreviousBrowseContext(null);
-              if (onMenuChange) onMenuChange('Discover');
-            }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              background: isDarkMode ? '#1a1a24' : '#f3f4f6',
-              border: isDarkMode ? '1px solid #3f3f46' : '1px solid #d1d5db',
-              borderRadius: 8,
-              padding: '10px 16px',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: 15,
-              color: isDarkMode ? '#f5f5f7' : '#374151'
-            }}
-          >
-            <span>←</span> Back to Discover
-          </button>
-        </div>
-
         {/* Profile Card - Twitter/X style */}
         <div style={{ maxWidth: 600, margin: '0 auto' }}>
           {/* Banner */}
@@ -514,77 +484,6 @@ const BrowseView = ({
 
     return (
       <div style={{ background: isDarkMode ? '#000' : '#f8fafc', minHeight: '100vh', padding: '0' }}>
-        {/* Back Button - Prominent */}
-        <div style={{
-          padding: '16px',
-          borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb',
-          background: isDarkMode ? '#0a0a0a' : '#fff'
-        }}>
-          <button
-            onClick={() => {
-              setCreatorProfileTab('courses');
-              if (previousBrowseContext?.type === 'discover') {
-                // Navigate back to Discover
-                setSelectedInstructor(null);
-                setPreviousBrowseContext(null);
-                if (onMenuChange) onMenuChange('Discover');
-              } else if (previousBrowseContext?.type === 'feeds') {
-                // Navigate back to Feeds - restore the community they were viewing
-                if (previousBrowseContext.community) {
-                  localStorage.setItem('pendingCommunityCreator', JSON.stringify(previousBrowseContext.community));
-                }
-                setSelectedInstructor(null);
-                setPreviousBrowseContext(null);
-                if (onMenuChange) onMenuChange('My Community');
-              } else if (previousBrowseContext?.type === 'my-courses') {
-                // Navigate back to My Courses
-                setSelectedInstructor(null);
-                setPreviousBrowseContext(null);
-                if (onMenuChange) onMenuChange('My Courses');
-              } else if (previousBrowseContext?.type === 'course' && previousBrowseContext.course) {
-                // Restore the course view in MainContent (PurchasedCourseDetail)
-                setSelectedInstructor(null);
-                setPreviousBrowseContext(null);
-                if (onRestoreCourseView) {
-                  onRestoreCourseView(previousBrowseContext.course);
-                }
-              } else if (previousBrowseContext?.type === 'courseList') {
-                setSelectedInstructor(null);
-                setActiveTopMenu('courses');
-                setPreviousBrowseContext(null);
-              } else {
-                setSelectedInstructor(null);
-                setPreviousBrowseContext(null);
-              }
-            }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              background: isDarkMode ? '#1a1a24' : '#f3f4f6',
-              border: isDarkMode ? '1px solid #3f3f46' : '1px solid #d1d5db',
-              borderRadius: 8,
-              padding: '10px 16px',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: 15,
-              color: isDarkMode ? '#f5f5f7' : '#374151',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = isDarkMode ? '#27272a' : '#e5e7eb';
-              e.currentTarget.style.borderColor = '#6366f1';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = isDarkMode ? '#1a1a24' : '#f3f4f6';
-              e.currentTarget.style.borderColor = isDarkMode ? '#3f3f46' : '#d1d5db';
-            }}
-          >
-            <span style={{ fontSize: 18 }}>←</span>
-            {previousBrowseContext?.type === 'course' ? 'Back to Course' : previousBrowseContext?.type === 'courseList' ? 'Back to Courses' : previousBrowseContext?.type === 'discover' ? 'Back to Discover' : previousBrowseContext?.type === 'feeds' ? 'Back to Feeds' : previousBrowseContext?.type === 'my-courses' ? 'Back to My Courses' : 'Back'}
-          </button>
-        </div>
-
         {/* Creator Header with Action Buttons - Floating Card */}
         <div style={{
           background: isDarkMode ? '#0a0a0a' : getUserBannerGradient(),
@@ -1811,7 +1710,7 @@ const BrowseView = ({
   return (
     <div className="main-content">
       {/* Breadcrumb Navigation */}
-      {breadcrumbItems && <Breadcrumb items={breadcrumbItems} isDarkMode={isDarkMode} />}
+      {breadcrumbItems && <Breadcrumb items={breadcrumbItems} onBack={onBack} isDarkMode={isDarkMode} />}
       <div className="three-column-layout browse-layout">
         <div className="center-column">
           {/* Centered Search Bar - Hidden when viewing instructor from Discover */}

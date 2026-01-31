@@ -31,7 +31,8 @@ const DiscoverView = ({
   onViewCreatorProfile,
   signupCompleted = false,
   setSignupCompleted = null,
-  breadcrumbItems = null  // Breadcrumb navigation items
+  breadcrumbItems = null,  // Breadcrumb navigation items
+  onBack = null  // Back button handler
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
@@ -1031,7 +1032,7 @@ const DiscoverView = ({
   return (
     <div className="main-content">
       {/* Breadcrumb Navigation */}
-      {breadcrumbItems && <Breadcrumb items={breadcrumbItems} isDarkMode={isDarkMode} />}
+      {breadcrumbItems && <Breadcrumb items={breadcrumbItems} onBack={onBack} isDarkMode={isDarkMode} />}
       {/* Welcome Video Popup Modal */}
       {showWelcomeVideo && (
         <div
