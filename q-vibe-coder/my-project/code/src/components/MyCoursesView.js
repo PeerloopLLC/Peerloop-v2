@@ -411,6 +411,22 @@ const MyCoursesView = ({
     return dates;
   }, [scheduledSessions]);
 
+  // Get today's date key in YYYY-MM-DD format
+  const getTodayDateKey = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayDateKey = getTodayDateKey();
+
+  // Get sessions for today
+  const sessionsForToday = useMemo(() => {
+    return scheduledSessions.filter(s => s.date === todayDateKey && s.status === 'scheduled');
+  }, [todayDateKey, scheduledSessions]);
+
   // Get sessions for selected date
   const sessionsForSelectedDate = useMemo(() => {
     if (!selectedDate) return [];
@@ -615,7 +631,7 @@ const MyCoursesView = ({
     myCoursesData.forEach(course => {
       const instructorId = course.instructorId;
       const instructor = getInstructorById(instructorId);
-      const isCompleted = isCourseCompleted(course.id) || course.progress === 100;
+      const isCompleted = isCourseCompleted(course.id);
 
       // Determine which group to add to
       const targetGroups = isCompleted ? completedGroups : activeGroups;
@@ -1033,7 +1049,7 @@ const MyCoursesView = ({
     );
   };
 
-  // Helper function to render an instructor group with courses
+  // Helper function to render an instructor group with courses - COMPACT DESIGN
   const renderInstructorGroup = (group, keyPrefix, isCompletedSection = false) => {
     const { instructor, courses } = group;
     const isFollowing = isCreatorFollowed ? isCreatorFollowed(instructor?.id) : false;
@@ -1042,11 +1058,15 @@ const MyCoursesView = ({
       <div
         key={`${keyPrefix}-${instructor?.id || 'unknown'}`}
         style={{
-          background: isDarkMode ? '#12121a' : '#fff',
-          borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb'
+          background: isDarkMode ? '#16181c' : '#fff',
+          borderRadius: 12,
+          border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+          boxShadow: isDarkMode ? 'none' : '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)',
+          margin: '0 12px 12px 12px',
+          overflow: 'hidden'
         }}
       >
-        {/* Instructor Profile Card */}
+        {/* Compact Community Header */}
         <div
           onClick={() => {
             if (onViewCreatorProfile) {
@@ -1058,62 +1078,69 @@ const MyCoursesView = ({
             }
           }}
           style={{
-            padding: 20,
-            borderRadius: 16,
-            marginBottom: 4,
+            padding: '10px 16px',
             cursor: 'pointer',
             transition: 'all 0.2s',
             background: isDarkMode
               ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
-              : getUserBannerGradient()
+              : 'linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)',
+            borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = isDarkMode
+              ? 'linear-gradient(135deg, #1e2838 0%, #243244 100%)'
+              : 'linear-gradient(135deg, #bae6fd 0%, #e0f2fe 100%)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = isDarkMode
+              ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
+              : 'linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)';
+          }}
         >
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 16,
-            marginBottom: 12
+            gap: 10,
+            marginBottom: 6
           }}>
-            {/* Community Circle Avatar */}
+            {/* 36px Round Blue Gradient Avatar */}
             <div style={{
-              width: 56,
-              height: 56,
+              width: 36,
+              height: 36,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-              border: '3px solid rgba(255,255,255,0.3)',
+              background: 'linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 26,
               flexShrink: 0
             }}>
-              👥
+              <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: '#0c4a6e' }}>
+                <path d="M12 12.75c1.63 0 3.07.39 4.24.9 1.08.48 1.76 1.56 1.76 2.73V18H6v-1.61c0-1.18.68-2.26 1.76-2.73 1.17-.52 2.61-.91 4.24-.91zM4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58A2.01 2.01 0 0 0 0 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29zM20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm4 3.43c0-.81-.48-1.53-1.22-1.85A6.95 6.95 0 0 0 20 14c-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24v-1.57zM12 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/>
+              </svg>
             </div>
 
             <div style={{ flex: 1, minWidth: 0 }}>
+              {/* Row 1: Name + @handle + Following */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: 4
+                gap: 6,
+                marginBottom: 1
               }}>
                 <span style={{
-                  fontSize: 15,
+                  fontSize: 14,
                   fontWeight: 700,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                  color: isDarkMode ? '#e7e9ea' : '#1e293b'
                 }}>
                   {highlightMatch(instructor?.communityName || `${instructor?.name} Community`, searchQuery)}
                 </span>
                 <span style={{
-                  color: isDarkMode ? '#71767b' : '#536471',
-                  fontSize: 15
+                  fontSize: 12,
+                  color: isDarkMode ? '#71767b' : '#94a3b8'
                 }}>
                   @{(instructor?.communityName || instructor?.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
                 </span>
-                <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
-                {/* Following dropdown - inline after @handle */}
+                {/* Following dropdown */}
                 <div
                   className="community-follow-dropdown-wrapper"
                   style={{ position: 'relative', display: 'inline-block', zIndex: 9999 }}
@@ -1142,15 +1169,15 @@ const MyCoursesView = ({
                     }}
                     style={{
                       color: '#1d9bf0',
-                      fontSize: 15,
+                      fontSize: 11,
                       fontWeight: 600,
                       cursor: 'pointer',
-                      textDecoration: 'underline',
                       transition: 'color 0.15s'
                     }}
+                    onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                    onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
                   >
                     {isFollowing ? 'Following' : 'Follow'}
-                    <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
                   </span>
                   {/* Dropdown menu portal */}
                   {openCommunityFollowDropdown === `mycourses-${instructor?.id}` && ReactDOM.createPortal(
@@ -1284,69 +1311,57 @@ const MyCoursesView = ({
                   )}
                 </div>
               </div>
+              {/* Row 2: Meta - Created by • followers • title */}
               <div style={{
+                fontSize: 11,
+                color: isDarkMode ? '#71767b' : '#64748b',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 4,
-                marginTop: 2
+                gap: 4
               }}>
-                <span style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>Created by</span>
-                <span style={{ fontSize: 13, color: '#1d9bf0', fontWeight: 500 }}>{instructor?.name}</span>
-              </div>
-              <div style={{
-                fontSize: 14,
-                color: isDarkMode ? '#a1a1aa' : '#6b7280',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                marginTop: 2
-              }}>
-                <AiOutlineTeam style={{ fontSize: 16 }} />
-                <span>{(instructor?.stats?.studentsTaught || 0).toLocaleString()} followers</span>
-                <span style={{ margin: '0 4px' }}>•</span>
+                <span>Created by</span>
+                <span style={{ color: '#1d9bf0' }}>{instructor?.name}</span>
+                <span style={{
+                  width: 3,
+                  height: 3,
+                  borderRadius: '50%',
+                  background: isDarkMode ? '#71767b' : '#94a3b8',
+                  display: 'inline-block'
+                }} />
+                <span>👥 {(instructor?.stats?.studentsTaught || 0).toLocaleString()} followers</span>
+                <span style={{
+                  width: 3,
+                  height: 3,
+                  borderRadius: '50%',
+                  background: isDarkMode ? '#71767b' : '#94a3b8',
+                  display: 'inline-block'
+                }} />
                 <span>{instructor?.title || 'Instructor'}</span>
               </div>
             </div>
           </div>
-
+          {/* Row 3: Single-line description with ellipsis */}
           {instructor?.bio && (
             <div style={{
-              fontSize: 14,
-              lineHeight: 1.6,
-              color: isDarkMode ? '#a1a1aa' : '#4b5563',
-              paddingLeft: 72,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden'
+              fontSize: 12,
+              lineHeight: 1.4,
+              color: isDarkMode ? '#a1a1aa' : '#64748b',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}>
               {highlightMatch(instructor.bio, searchQuery)}
             </div>
           )}
         </div>
 
-        {/* Courses Section with Connector Lines - Matches Discover */}
-        <div style={{
-          position: 'relative',
-          paddingLeft: 48,
-          paddingRight: 20,
-          paddingBottom: 16,
-          marginLeft: 20
-        }}>
-          {/* Vertical Connector Line */}
-          <div style={{
-            position: 'absolute',
-            left: 28,
-            top: 0,
-            bottom: 24,
-            width: 2,
-            background: isDarkMode ? '#2f3336' : '#d0e8f0'
-          }} />
-
+        {/* Compact Course List - No Timeline Dots */}
+        <div style={{ padding: '8px 12px' }}>
           {courses.map((course, index) => {
-            const isLast = index === courses.length - 1;
-            const courseIsCompleted = isCourseCompleted(course.id) || course.progress === 100;
-            const isFollowed = isCourseFollowed ? isCourseFollowed(course.id) : false;
+            // Get next scheduled session for this course
+            const nextSession = scheduledSessions
+              .filter(s => s.courseId === course.id && s.status === 'scheduled')
+              .sort((a, b) => a.date.localeCompare(b.date))[0];
 
             // Get completion date for completed courses
             const completedSession = scheduledSessions
@@ -1356,494 +1371,278 @@ const MyCoursesView = ({
             return (
               <div
                 key={course.id}
+                onClick={() => onViewCourse && onViewCourse(course.id)}
                 style={{
-                  position: 'relative',
-                  marginBottom: 12
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '10px 12px',
+                  background: isDarkMode ? '#16181c' : '#fff',
+                  borderRadius: 8,
+                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                  marginBottom: index < courses.length - 1 ? 6 : 0,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f8fafc';
+                  e.currentTarget.style.borderColor = isDarkMode ? '#3f4347' : '#cbd5e1';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = isDarkMode ? '#16181c' : '#fff';
+                  e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#e2e8f0';
                 }}
               >
-                {/* Horizontal Connector Line */}
+                {/* 40px Square Blue Gradient Icon */}
                 <div style={{
-                  position: 'absolute',
-                  left: -12,
-                  top: '50%',
-                  width: 10,
-                  height: 2,
-                  background: isDarkMode ? '#2f3336' : '#d0e8f0'
-                }} />
-                {/* Connector Dot */}
-                <div style={{
-                  position: 'absolute',
-                  left: -16,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  background: '#4facfe',
-                  border: '2px solid #fff',
-                  boxShadow: isDarkMode ? '0 0 0 2px #2f3336' : '0 0 0 2px #d0e8f0',
-                  zIndex: 1
-                }} />
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  background: 'linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  position: 'relative'
+                }}>
+                  <span style={{
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: '#0c4a6e'
+                  }}>
+                    {getCourseAbbreviation(course.title)}
+                  </span>
+                  {/* Certified Badge for completed courses */}
+                  {isCompletedSection && (
+                    <div style={{
+                      position: 'absolute',
+                      top: -4,
+                      right: -4,
+                      background: '#10b981',
+                      color: '#fff',
+                      width: 16,
+                      height: 16,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 10
+                    }}>
+                      ✓
+                    </div>
+                  )}
+                </div>
 
-                {/* Course Card */}
-                <div
-                  onClick={() => onViewCourse && onViewCourse(course.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: 12,
-                    padding: 16,
-                    background: isDarkMode ? '#16181c' : '#f7f9f9',
-                    borderRadius: 12,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
-                  }}
-                >
-                  {/* Course Thumbnail */}
+                {/* Course Content - Title + Meta only */}
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: 12,
-                    flexShrink: 0,
-                    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                    position: 'relative',
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: isDarkMode ? '#e7e9ea' : '#1e293b',
+                    marginBottom: 3,
+                    lineHeight: 1.2
+                  }}>
+                    {highlightMatch(course.title, searchQuery)}
+                  </div>
+                  {/* Meta: Next session or completed date */}
+                  <div style={{
+                    fontSize: 12,
+                    color: isDarkMode ? '#71767b' : '#94a3b8',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    gap: 4
                   }}>
-                    {/* Course Letter Badge */}
-                    <span style={{
-                      color: '#fff',
-                      fontSize: 18,
-                      fontWeight: 700,
-                      textShadow: '0 1px 2px rgba(0,0,0,0.3)'
-                    }}>
-                      {getCourseAbbreviation(course.title)}
-                    </span>
-                    {/* Certified Badge for completed courses */}
-                    {isCompletedSection && (
-                      <div style={{
-                        position: 'absolute',
-                        top: 4,
-                        right: 4,
-                        background: '#10b981',
-                        color: '#fff',
-                        padding: '2px 6px',
-                        borderRadius: 4,
-                        fontSize: 9,
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 3
-                      }}>
-                        <FaCheckCircle style={{ fontSize: 8 }} /> CERTIFIED
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Course Info */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{
-                      fontSize: 15,
-                      fontWeight: 600,
-                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                      display: 'flex',
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                      gap: 6
-                    }}>
-                      <span
-                        style={{ color: '#1d9bf0', cursor: 'pointer' }}
-                        onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                        onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
-                      >
-                        {highlightMatch(course.title, searchQuery)}
-                      </span>
-                      <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontWeight: 400 }}>·</span>
-                      <span
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleFollowCourse && handleFollowCourse(course.id);
-                        }}
-                        style={{
-                          color: '#1d9bf0',
-                          fontSize: 15,
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          transition: 'color 0.15s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                        onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
-                      >
-                        {isFollowed ? 'Following' : 'Follow'}
-                      </span>
-                    </div>
-                    <div style={{
-                      fontSize: 14,
-                      color: isDarkMode ? '#71767b' : '#536471',
-                      lineHeight: 1.4,
-                      marginTop: 4,
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden'
-                    }}>
-                      {highlightMatch(course.description, searchQuery)}
-                    </div>
-
-                    {/* Course Stats */}
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      marginTop: 8,
-                      fontSize: 12,
-                      color: isDarkMode ? '#71717a' : '#9ca3af'
-                    }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <AiOutlineStar style={{ color: '#fbbf24' }} /> {course.rating}
-                      </span>
-                      <span>·</span>
-                      <span>{course.students?.toLocaleString()} students</span>
-                      <span>·</span>
-                      <span>{course.duration}</span>
-                    </div>
-
-                    {/* Session Display - different for active vs completed */}
                     {isCompletedSection ? (
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        marginTop: 8,
-                        fontSize: 12,
-                        color: '#10b981'
-                      }}>
-                        <FaCheckCircle />
-                        <span>Completed: {completedSession ? formatDateForDisplay(completedSession.date) : 'Recently'}</span>
-                      </div>
+                      <>
+                        <span style={{ color: '#10b981' }}>✓</span>
+                        <span style={{ color: '#10b981' }}>
+                          Completed: {completedSession ? formatDateForDisplay(completedSession.date) : 'Recently'}
+                        </span>
+                      </>
+                    ) : nextSession ? (
+                      <>
+                        <span style={{ color: '#1d9bf0' }}>📅</span>
+                        <span>Next: {formatDateForDisplay(nextSession.date)} at {nextSession.time}</span>
+                      </>
                     ) : (
-                      (() => {
-                        const nextSession = scheduledSessions
-                          .filter(s => s.courseId === course.id && s.status === 'scheduled')
-                          .sort((a, b) => a.date.localeCompare(b.date))[0];
-
-                        if (nextSession) {
-                          return (
-                            <div style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              marginTop: 8,
-                              fontSize: 12,
-                              color: '#1d9bf0',
-                              flexWrap: 'wrap'
-                            }}>
-                              <span>📅</span>
-                              <span>
-                                Next: {formatDateForDisplay(nextSession.date)} at {nextSession.time}
-                              </span>
-                              <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>
-                                with {nextSession.teacherName || nextSession.studentTeacherName || 'your teacher'}
-                              </span>
-                            </div>
-                          );
-                        }
-                        return (
-                          <div style={{
-                            marginTop: 8,
-                            fontSize: 12,
-                            color: isDarkMode ? '#71767b' : '#9ca3af',
-                            fontStyle: 'italic'
-                          }}>
-                            No scheduled session
-                          </div>
-                        );
-                      })()
-                    )}
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-                    {/* Schedule Now button - only show for active courses without scheduled sessions */}
-                    {!isCompletedSection && (() => {
-                      const scheduledSession = scheduledSessions
-                        .filter(s => s.courseId === course.id && s.status === 'scheduled')
-                        .sort((a, b) => a.date.localeCompare(b.date))[0];
-
-                      if (!scheduledSession) {
-                        return (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onScheduleSession && onScheduleSession(course);
-                            }}
-                            style={{
-                              background: isDarkMode ? '#2f3336' : '#eff3f4',
-                              border: 'none',
-                              color: isDarkMode ? '#71767b' : '#536471',
-                              padding: '6px 16px',
-                              borderRadius: 20,
-                              fontSize: 14,
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            Schedule Now
-                          </button>
-                        );
-                      }
-                      return (
-                        <div className="reschedule-dropdown-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
-                          <span
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const rect = e.currentTarget.getBoundingClientRect();
-                              setRescheduleDropdownPosition({
-                                top: rect.bottom + window.scrollY + 4,
-                                left: rect.left + window.scrollX
-                              });
-                              setOpenRescheduleDropdown(
-                                openRescheduleDropdown?.session?.id === scheduledSession.id
-                                  ? null
-                                  : { session: scheduledSession, course }
-                              );
-                            }}
-                            style={{
-                              color: '#1d9bf0',
-                              fontSize: 15,
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              textDecoration: 'underline',
-                              transition: 'color 0.15s'
-                            }}
-                          >
-                            Reschedule
-                            <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
-                          </span>
-                          {openRescheduleDropdown?.session?.id === scheduledSession.id && ReactDOM.createPortal(
-                            <div
-                              className="reschedule-dropdown-menu"
-                              style={{
-                                position: 'absolute',
-                                top: rescheduleDropdownPosition.top,
-                                left: rescheduleDropdownPosition.left,
-                                background: isDarkMode ? '#000' : '#fff',
-                                border: `1px solid ${isDarkMode ? '#2f3336' : '#e2e8f0'}`,
-                                borderRadius: 16,
-                                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                                zIndex: 99999,
-                                minWidth: 320,
-                                overflow: 'hidden'
-                              }}
-                            >
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  const session = openRescheduleDropdown.session;
-                                  setOpenRescheduleDropdown(null);
-                                  onRescheduleSession && onRescheduleSession({ ...session, rescheduleMode: 'teacher' });
-                                }}
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                  width: '100%',
-                                  padding: '16px 24px',
-                                  background: 'none',
-                                  border: 'none',
-                                  textAlign: 'left',
-                                  cursor: 'pointer',
-                                  transition: 'background 0.15s ease'
-                                }}
-                                onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
-                              >
-                                <div style={{ flex: 1 }}>
-                                  <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Choose Your Teacher</div>
-                                  <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', lineHeight: 1.4 }}>
-                                    Browse student teachers. See availability and book sessions.
-                                  </div>
-                                </div>
-                                <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 20, marginLeft: 12 }}>›</span>
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  const session = openRescheduleDropdown.session;
-                                  setOpenRescheduleDropdown(null);
-                                  onRescheduleSession && onRescheduleSession({ ...session, rescheduleMode: 'time' });
-                                }}
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                  width: '100%',
-                                  padding: '16px 24px',
-                                  background: 'none',
-                                  border: 'none',
-                                  borderTop: `1px solid ${isDarkMode ? '#2f3336' : '#e2e8f0'}`,
-                                  textAlign: 'left',
-                                  cursor: 'pointer',
-                                  transition: 'background 0.15s ease'
-                                }}
-                                onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
-                              >
-                                <div style={{ flex: 1 }}>
-                                  <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Choose Your Schedule</div>
-                                  <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', lineHeight: 1.4 }}>
-                                    Pick dates that work for you. See who's available.
-                                  </div>
-                                </div>
-                                <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 20, marginLeft: 12 }}>›</span>
-                              </button>
-                            </div>,
-                            document.body
-                          )}
-                        </div>
-                      );
-                    })()}
-
-                    {isCompletedSection && (
-                      // Apply to Teach button/dropdown with status
-                      (() => {
-                        const teachStatus = getTeachingStatus(course.id);
-
-                        // Already pending or approved - show status button (no dropdown)
-                        if (teachStatus === 'pending') {
-                          return (
-                            <button
-                              style={{
-                                background: '#fef3c7',
-                                border: 'none',
-                                color: '#92400e',
-                                cursor: 'default',
-                                padding: '6px 16px',
-                                borderRadius: 20,
-                                fontSize: 14,
-                                fontWeight: 600,
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              Pending Approval
-                            </button>
-                          );
-                        }
-
-                        if (teachStatus === 'approved') {
-                          return (
-                            <button
-                              style={{
-                                background: '#fff',
-                                border: '2px solid #10b981',
-                                color: '#10b981',
-                                cursor: 'default',
-                                padding: '6px 16px',
-                                borderRadius: 20,
-                                fontSize: 14,
-                                fontWeight: 600,
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              Approved
-                            </button>
-                          );
-                        }
-
-                        // Not applied yet - show dropdown button
-                        return (
-                          <div className="apply-to-teach-dropdown-wrapper" style={{ position: 'relative' }}>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const rect = e.currentTarget.getBoundingClientRect();
-                                setApplyToTeachDropdownPosition({
-                                  top: rect.bottom + window.scrollY + 4,
-                                  left: rect.left + window.scrollX
-                                });
-                                setOpenApplyToTeachDropdown(
-                                  openApplyToTeachDropdown === course.id ? null : course.id
-                                );
-                              }}
-                              style={{
-                                background: '#10b981',
-                                border: 'none',
-                                color: '#fff',
-                                cursor: 'pointer',
-                                padding: '6px 16px',
-                                borderRadius: 20,
-                                fontSize: 14,
-                                fontWeight: 600,
-                                whiteSpace: 'nowrap',
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              Apply to Teach
-                            </button>
-                            {openApplyToTeachDropdown === course.id && ReactDOM.createPortal(
-                              <div
-                                className="apply-to-teach-dropdown-menu"
-                                style={{
-                                  position: 'absolute',
-                                  top: applyToTeachDropdownPosition.top,
-                                  left: applyToTeachDropdownPosition.left,
-                                  background: isDarkMode ? '#16181c' : '#fff',
-                                  border: `1px solid ${isDarkMode ? '#2f3336' : '#e1e8ed'}`,
-                                  borderRadius: 12,
-                                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                                  zIndex: 99999,
-                                  minWidth: 280,
-                                  overflow: 'hidden'
-                                }}
-                              >
-                                <div style={{ padding: '12px 16px', borderBottom: `1px solid ${isDarkMode ? '#2f3336' : '#e1e8ed'}` }}>
-                                  <div style={{ fontSize: 14, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
-                                    Apply to Teach
-                                  </div>
-                                </div>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setOpenApplyToTeachDropdown(null);
-                                    handleApplyToTeachClick(course, e);
-                                  }}
-                                  style={{
-                                    display: 'block',
-                                    width: '100%',
-                                    padding: '12px 16px',
-                                    background: 'none',
-                                    border: 'none',
-                                    textAlign: 'left',
-                                    cursor: 'pointer',
-                                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                                    fontSize: 14
-                                  }}
-                                  onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9'; }}
-                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
-                                >
-                                  <div style={{ fontWeight: 600, marginBottom: 2 }}>Send request to become a student teacher</div>
-                                  <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }}>
-                                    Apply to help others learn this course
-                                  </div>
-                                </button>
-                              </div>,
-                              document.body
-                            )}
-                          </div>
-                        );
-                      })()
+                      <span style={{ fontStyle: 'italic' }}>No scheduled session</span>
                     )}
                   </div>
                 </div>
+
+                {/* Action Button */}
+                {isCompletedSection ? (
+                  // Apply to Teach for completed courses
+                  (() => {
+                    const teachStatus = getTeachingStatus(course.id);
+
+                    if (teachStatus === 'pending') {
+                      return (
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            background: '#fef3c7',
+                            border: 'none',
+                            color: '#92400e',
+                            cursor: 'default',
+                            padding: '7px 14px',
+                            borderRadius: 16,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          Pending
+                        </button>
+                      );
+                    }
+
+                    if (teachStatus === 'approved') {
+                      return (
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            background: '#dcfce7',
+                            border: 'none',
+                            color: '#15803d',
+                            cursor: 'default',
+                            padding: '7px 14px',
+                            borderRadius: 16,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          Approved
+                        </button>
+                      );
+                    }
+
+                    return (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleApplyToTeachClick(course, e);
+                        }}
+                        style={{
+                          background: '#10b981',
+                          border: 'none',
+                          color: '#fff',
+                          cursor: 'pointer',
+                          padding: '7px 14px',
+                          borderRadius: 16,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          whiteSpace: 'nowrap',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#059669';
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '#10b981';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                      >
+                        Apply to Teach
+                      </button>
+                    );
+                  })()
+                ) : (
+                  // Button for active courses - based on session status
+                  nextSession ? (
+                    // Has scheduled session - show Join (green) + Reschedule
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onViewCourse && onViewCourse(course.id);
+                        }}
+                        style={{
+                          background: '#10b981',
+                          border: 'none',
+                          color: '#fff',
+                          cursor: 'pointer',
+                          padding: '7px 14px',
+                          borderRadius: 16,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          whiteSpace: 'nowrap',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#059669';
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '#10b981';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                      >
+                        Join Session
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onViewCourse && onViewCourse(course.id);
+                        }}
+                        style={{
+                          background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                          border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                          color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                          cursor: 'pointer',
+                          padding: '7px 14px',
+                          borderRadius: 16,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          whiteSpace: 'nowrap',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = isDarkMode ? '#3a3f44' : '#e7e9ea';
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                      >
+                        Reschedule
+                      </button>
+                    </div>
+                  ) : (
+                    // No scheduled session - show Schedule Session button
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onScheduleSession && onScheduleSession(course);
+                      }}
+                      style={{
+                        background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                        border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                        color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                        cursor: 'pointer',
+                        padding: '7px 14px',
+                        borderRadius: 16,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = isDarkMode ? '#3a3f44' : '#e7e9ea';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      Schedule Session
+                    </button>
+                  )
+                )}
               </div>
             );
           })}
@@ -1908,13 +1707,10 @@ const MyCoursesView = ({
     <div className="main-content">
       <div className="three-column-layout browse-layout">
         <div className="center-column">
-          {/* Header - Title and Search */}
+          {/* Header - Title and Search (scrolls away) */}
           <div className="top-menu-section" style={{
             borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
             padding: '0 16px',
-            position: 'sticky',
-            top: 0,
-            zIndex: 100,
             background: isDarkMode ? '#000' : '#fff',
             display: 'flex',
             flexDirection: 'row',
@@ -1953,7 +1749,7 @@ const MyCoursesView = ({
             </div>
           </div>
 
-          {/* Calendar Section */}
+          {/* Calendar Section (scrolls away) */}
           <CourseCalendar
             isDarkMode={isDarkMode}
             scheduledDates={scheduledDates}
@@ -1961,701 +1757,274 @@ const MyCoursesView = ({
             onSelectDate={setSelectedDate}
           />
 
-          {/* Active/Completed Tabs - Pill Style (matching Community.js pills) */}
+          {/* Active/Completed Tabs - STICKY (stays visible) */}
           <div style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
             padding: '12px 20px',
             borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
             background: isDarkMode ? '#000' : '#fff'
           }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8
-            }}>
-              <button
-                onClick={() => setCourseViewTab('active')}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '8px 16px',
-                  borderRadius: 20,
-                  border: courseViewTab === 'active'
-                    ? '2px solid #1d9bf0'
-                    : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                  background: courseViewTab === 'active'
-                    ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                    : (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                  color: courseViewTab === 'active'
-                    ? '#1d9bf0'
-                    : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                Active Courses ({activeCoursesCount})
-              </button>
-              <button
-                onClick={() => setCourseViewTab('completed')}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '8px 16px',
-                  borderRadius: 20,
-                  border: courseViewTab === 'completed'
-                    ? '2px solid #1d9bf0'
-                    : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                  background: courseViewTab === 'completed'
-                    ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                    : (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                  color: courseViewTab === 'completed'
-                    ? '#1d9bf0'
-                    : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                Completed Courses ({completedCoursesCount})
-              </button>
-            </div>
-          </div>
-
-          {/* Sessions for Selected Date - Grouped by Instructor */}
-          {selectedDate && scheduledGroupsByInstructor.length > 0 && (
-            <>
-              {/* Header */}
               <div style={{
-                padding: '12px 20px',
-                background: isDarkMode ? 'rgba(29, 155, 240, 0.08)' : 'rgba(29, 155, 240, 0.05)',
-                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8
               }}>
-                <h3 style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: '#1d9bf0',
-                  margin: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8
-                }}>
-                  📅 Scheduled for {formatDateForDisplay(selectedDate)}
-                </h3>
+                <button
+                  onClick={() => setCourseViewTab('active')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '8px 16px',
+                    borderRadius: 20,
+                    border: courseViewTab === 'active'
+                      ? '2px solid #1d9bf0'
+                      : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                    background: courseViewTab === 'active'
+                      ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                      : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                    color: courseViewTab === 'active'
+                      ? '#1d9bf0'
+                      : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Active Courses ({activeCoursesCount})
+                </button>
+                <button
+                  onClick={() => setCourseViewTab('completed')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '8px 16px',
+                    borderRadius: 20,
+                    border: courseViewTab === 'completed'
+                      ? '2px solid #1d9bf0'
+                      : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                    background: courseViewTab === 'completed'
+                      ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                      : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                    color: courseViewTab === 'completed'
+                      ? '#1d9bf0'
+                      : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Completed Courses ({completedCoursesCount})
+                </button>
               </div>
+            </div>
 
-              {/* Scheduled Courses - Grouped by Instructor */}
-              {scheduledGroupsByInstructor.map((group) => {
-                const { instructor, courses } = group;
-                const isFollowing = isCreatorFollowed ? isCreatorFollowed(instructor?.id) : false;
+          {/* Today's Sessions / Selected Date Sessions - Highlighted Box - Only show on Active tab */}
+          {courseViewTab === 'active' && (() => {
+            // Determine which sessions to show
+            const displayDate = selectedDate || (sessionsForToday.length > 0 ? todayDateKey : null);
+            const displaySessions = selectedDate ? sessionsForSelectedDate : sessionsForToday;
+            const isToday = displayDate === todayDateKey;
 
-                return (
-                  <div
-                    key={`scheduled-${instructor?.id || 'unknown'}`}
-                    style={{
-                      background: isDarkMode ? '#12121a' : '#fff',
-                      borderBottom: isDarkMode ? '1px solid #27272a' : '1px solid #e5e7eb'
-                    }}
-                  >
-                    {/* Instructor Profile Card */}
-                    <div
-                      onClick={() => {
-                        if (onViewCreatorProfile) {
-                          onViewCreatorProfile(instructor);
-                        } else {
-                          localStorage.setItem('pendingBrowseInstructor', JSON.stringify(instructor));
-                          localStorage.setItem('browseActiveTopMenu', 'creators');
-                          onMenuChange && onMenuChange('Browse');
-                        }
-                      }}
-                      style={{
-                        padding: 20,
-                        borderRadius: 16,
-                        marginBottom: 4,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        background: isDarkMode
-                          ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
-                          : getUserBannerGradient()
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
-                      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                    >
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 16,
-                        marginBottom: 12
-                      }}>
-                        {/* Community Circle Avatar */}
-                        <div style={{
-                          width: 56,
-                          height: 56,
-                          borderRadius: '50%',
-                          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                          border: '3px solid rgba(255,255,255,0.3)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 26,
-                          flexShrink: 0
-                        }}>
-                          👥
-                        </div>
+            if (!displayDate || displaySessions.length === 0) return null;
 
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            flexWrap: 'wrap',
-                            gap: 4
-                          }}>
-                            <span style={{
-                              fontSize: 15,
-                              fontWeight: 700,
-                              color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                            }}>
-                              {instructor?.communityName || `${instructor?.name} Community`}
-                            </span>
-                            <span style={{
-                              color: isDarkMode ? '#71767b' : '#536471',
-                              fontSize: 15
-                            }}>
-                              @{(instructor?.communityName || instructor?.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
-                            </span>
-                          </div>
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 4,
-                            marginTop: 2
-                          }}>
-                            <span style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>Created by</span>
-                            <span style={{ fontSize: 13, color: '#1d9bf0', fontWeight: 500 }}>{instructor?.name}</span>
-                          </div>
-                          <div style={{
-                            fontSize: 14,
-                            color: isDarkMode ? '#a1a1aa' : '#6b7280',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 4,
-                            marginTop: 2
-                          }}>
-                            <AiOutlineTeam style={{ fontSize: 16 }} />
-                            <span>{(instructor?.stats?.studentsTaught || 0).toLocaleString()} followers</span>
-                            <span style={{ margin: '0 4px' }}>•</span>
-                            <span>{instructor?.title || 'Instructor'}</span>
-                          </div>
-                        </div>
-
-                        {/* Follow dropdown - shows community and enrolled courses */}
-                        <div
-                          className="community-follow-dropdown-wrapper"
-                          style={{ position: 'relative', display: 'inline-block', zIndex: 9999 }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <span
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const dropdownKey = `scheduled-${instructor?.id}`;
-                              const isOpening = openCommunityFollowDropdown !== dropdownKey;
-                              if (isOpening) {
-                                const rect = e.currentTarget.getBoundingClientRect();
-                                const dropdownHeight = 250;
-                                const viewportHeight = window.innerHeight;
-                                const spaceBelow = viewportHeight - rect.bottom;
-                                const spaceAbove = rect.top;
-                                const positionAbove = spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
-                                setDropdownPosition({
-                                  top: positionAbove ? rect.top - dropdownHeight - 4 : rect.bottom + 4,
-                                  left: rect.left
-                                });
-                              }
-                              setOpenCommunityFollowDropdown(
-                                openCommunityFollowDropdown === dropdownKey ? null : dropdownKey
-                              );
-                            }}
-                            style={{
-                              color: '#1d9bf0',
-                              fontSize: 15,
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              textDecoration: 'underline',
-                              transition: 'color 0.15s'
-                            }}
-                          >
-                            {isFollowing ? 'Following' : 'Follow'}
-                            <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
-                          </span>
-
-                          {/* Dropdown menu */}
-                          {openCommunityFollowDropdown === `scheduled-${instructor?.id}` && ReactDOM.createPortal(
-                            <div className="community-follow-dropdown-menu" style={{
-                              position: 'fixed',
-                              top: dropdownPosition.top,
-                              left: dropdownPosition.left,
-                              background: isDarkMode ? '#16181c' : '#fff',
-                              border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
-                              borderRadius: 12,
-                              boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.1)',
-                              zIndex: 99999,
-                              minWidth: 220,
-                              padding: '4px 0'
-                            }}>
-                              {(() => {
-                                const followedCoursesCount = courses.filter(c => isCourseFollowed && isCourseFollowed(c.id)).length;
-                                const hasAnyFollowed = isFollowing || followedCoursesCount > 0;
-
-                                return (
-                                  <>
-                                    {/* Community section */}
-                                    <div style={{
-                                      padding: '6px 16px 2px',
-                                      fontSize: 11,
-                                      fontWeight: 600,
-                                      color: isDarkMode ? '#71767b' : '#536471',
-                                      textTransform: 'uppercase',
-                                      letterSpacing: '0.5px'
-                                    }}>
-                                      Community
-                                    </div>
-                                    <div
-                                      style={{
-                                        padding: '8px 16px',
-                                        cursor: 'pointer',
-                                        fontSize: 14,
-                                        color: isFollowing ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                                        fontWeight: isFollowing ? 500 : 400,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 8
-                                      }}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleFollowInstructor && handleFollowInstructor(instructor?.id);
-                                      }}
-                                      onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
-                                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                    >
-                                      <span style={{ width: 16 }}>{isFollowing && '✓'}</span>
-                                      <span>{instructor?.communityName || instructor?.name}</span>
-                                    </div>
-
-                                    {/* Courses section */}
-                                    <div style={{
-                                      padding: '10px 16px 2px',
-                                      fontSize: 11,
-                                      fontWeight: 600,
-                                      color: isDarkMode ? '#71767b' : '#536471',
-                                      textTransform: 'uppercase',
-                                      letterSpacing: '0.5px',
-                                      borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                                      marginTop: 4
-                                    }}>
-                                      Courses
-                                    </div>
-                                    {courses.map(course => {
-                                      const isFollowed = isCourseFollowed ? isCourseFollowed(course.id) : false;
-                                      return (
-                                        <div
-                                          key={course.id}
-                                          style={{
-                                            padding: '10px 16px',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 8,
-                                            fontSize: 14,
-                                            color: isFollowed ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                                            fontWeight: isFollowed ? 500 : 400
-                                          }}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleFollowCourse && handleFollowCourse(course.id);
-                                          }}
-                                          onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
-                                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                        >
-                                          <span style={{ width: 16, flexShrink: 0 }}>{isFollowed && '✓'}</span>
-                                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.title}</span>
-                                        </div>
-                                      );
-                                    })}
-
-                                    {/* Unfollow all */}
-                                    {hasAnyFollowed && (
-                                      <>
-                                        <div style={{ borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4', margin: '4px 0' }} />
-                                        <div
-                                          style={{
-                                            padding: '10px 16px',
-                                            cursor: 'pointer',
-                                            fontSize: 13,
-                                            color: '#f4212e',
-                                            fontWeight: 500
-                                          }}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            courses.forEach(course => {
-                                              if (isCourseFollowed && isCourseFollowed(course.id)) {
-                                                handleFollowCourse && handleFollowCourse(course.id);
-                                              }
-                                            });
-                                            if (isFollowing) {
-                                              handleFollowInstructor && handleFollowInstructor(instructor?.id);
-                                            }
-                                          }}
-                                          onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f8fafc'}
-                                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                        >
-                                          Unfollow all
-                                        </div>
-                                      </>
-                                    )}
-                                  </>
-                                );
-                              })()}
-                            </div>,
-                            document.body
-                          )}
-                        </div>
-                      </div>
-
-                      {instructor?.bio && (
-                        <div style={{
-                          fontSize: 14,
-                          lineHeight: 1.6,
-                          color: isDarkMode ? '#a1a1aa' : '#4b5563',
-                          paddingLeft: 72,
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden'
-                        }}>
-                          {instructor.bio}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Courses Section with Connector Lines - Matches Discover */}
+            return (
+              <>
+                {/* Highlighted Sessions Box */}
+                <div style={{
+                  margin: '16px 20px',
+                  background: isDarkMode
+                    ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
+                    : 'linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)',
+                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                  borderRadius: 12,
+                  overflow: 'hidden'
+                }}>
+                  {/* Box Header */}
+                  <div style={{
+                    padding: '12px 16px',
+                    borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #bae6fd',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10
+                  }}>
+                    {/* Clock Icon */}
                     <div style={{
-                      position: 'relative',
-                      paddingLeft: 48,
-                      paddingRight: 20,
-                      paddingBottom: 16,
-                      marginLeft: 20
+                      width: 32,
+                      height: 32,
+                      background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}>
-                      {/* Vertical Connector Line */}
+                      <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: '#fff' }}>
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"/>
+                      </svg>
+                    </div>
+                    <div>
                       <div style={{
-                        position: 'absolute',
-                        left: 28,
-                        top: 0,
-                        bottom: 24,
-                        width: 2,
-                        background: isDarkMode ? '#2f3336' : '#d0e8f0'
-                      }} />
-
-                      {courses.map((course, index) => {
-                        const isLast = index === courses.length - 1;
-                        const isFollowed = isCourseFollowed ? isCourseFollowed(course.id) : false;
-
-                        return (
-                          <div
-                            key={course.id}
-                            style={{
-                              position: 'relative',
-                              marginBottom: 12
-                            }}
-                          >
-                            {/* Horizontal Connector Line */}
-                            <div style={{
-                              position: 'absolute',
-                              left: -12,
-                              top: '50%',
-                              width: 10,
-                              height: 2,
-                              background: isDarkMode ? '#2f3336' : '#d0e8f0'
-                            }} />
-                            {/* Connector Dot */}
-                            <div style={{
-                              position: 'absolute',
-                              left: -16,
-                              top: '50%',
-                              transform: 'translateY(-50%)',
-                              width: 8,
-                              height: 8,
-                              borderRadius: '50%',
-                              background: '#4facfe',
-                              border: '2px solid #fff',
-                              boxShadow: isDarkMode ? '0 0 0 2px #2f3336' : '0 0 0 2px #d0e8f0',
-                              zIndex: 1
-                            }} />
-
-                            {/* Course Card */}
-                            <div
-                              onClick={() => onViewCourse && onViewCourse(course.id)}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'flex-start',
-                                gap: 12,
-                                padding: 16,
-                                background: isDarkMode ? '#16181c' : '#f7f9f9',
-                                borderRadius: 12,
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
-                              }}
-                            >
-                              {/* Course Thumbnail */}
-                              <div style={{
-                                width: 56,
-                                height: 56,
-                                borderRadius: 12,
-                                flexShrink: 0,
-                                background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                              }}>
-                                <span style={{
-                                  color: '#fff',
-                                  fontSize: 18,
-                                  fontWeight: 700,
-                                  textShadow: '0 1px 2px rgba(0,0,0,0.3)'
-                                }}>
-                                  {getCourseAbbreviation(course.title)}
-                                </span>
-                              </div>
-
-                              {/* Course Info */}
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{
-                                  fontSize: 15,
-                                  fontWeight: 600,
-                                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  flexWrap: 'wrap',
-                                  gap: 6
-                                }}>
-                                  <span style={{ color: '#1d9bf0', cursor: 'pointer' }}>
-                                    {course.title}
-                                  </span>
-                                  <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontWeight: 400 }}>·</span>
-                                  <span
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleFollowCourse && handleFollowCourse(course.id);
-                                    }}
-                                    style={{
-                                      color: '#1d9bf0',
-                                      fontSize: 15,
-                                      fontWeight: 600,
-                                      cursor: 'pointer',
-                                      transition: 'color 0.15s'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                                    onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
-                                  >
-                                    {isFollowed ? 'Following' : 'Follow'}
-                                  </span>
-                                </div>
-                                <div style={{
-                                  fontSize: 14,
-                                  color: isDarkMode ? '#71767b' : '#536471',
-                                  lineHeight: 1.4,
-                                  marginTop: 4,
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden'
-                                }}>
-                                  {course.description}
-                                </div>
-
-                                {/* Course Stats */}
-                                <div style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 8,
-                                  marginTop: 8,
-                                  fontSize: 12,
-                                  color: isDarkMode ? '#71717a' : '#9ca3af'
-                                }}>
-                                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                    <AiOutlineStar style={{ color: '#fbbf24' }} /> {course.rating}
-                                  </span>
-                                  <span>·</span>
-                                  <span>{course.students?.toLocaleString()} students</span>
-                                  <span>·</span>
-                                  <span>{course.duration}</span>
-                                </div>
-
-                                {/* Session Time Badge */}
-                                {course.session && (
-                                  <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    marginTop: 8,
-                                    fontSize: 12,
-                                    color: '#1d9bf0',
-                                    fontWeight: 600
-                                  }}>
-                                    <span>🕐</span>
-                                    <span>{course.session.time}</span>
-                                    <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontWeight: 400 }}>
-                                      with {course.session.teacherName || course.session.studentTeacherName}
-                                    </span>
-                                    <div className="reschedule-dropdown-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          const rect = e.currentTarget.getBoundingClientRect();
-                                          setRescheduleDropdownPosition({
-                                            top: rect.bottom + window.scrollY + 4,
-                                            left: rect.left + window.scrollX
-                                          });
-                                          setOpenRescheduleDropdown(
-                                            openRescheduleDropdown?.session?.id === course.session.id
-                                              ? null
-                                              : { session: course.session, course }
-                                          );
-                                        }}
-                                        style={{
-                                          background: 'none',
-                                          border: 'none',
-                                          color: isDarkMode ? '#71767b' : '#6b7280',
-                                          fontSize: 11,
-                                          cursor: 'pointer',
-                                          padding: '2px 6px',
-                                          textDecoration: 'underline',
-                                          fontWeight: 400
-                                        }}
-                                        onMouseEnter={(e) => { e.currentTarget.style.color = '#1d9bf0'; }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.color = isDarkMode ? '#71767b' : '#6b7280'; }}
-                                      >
-                                        Reschedule
-                                      </button>
-                                      {openRescheduleDropdown?.session?.id === course.session.id && ReactDOM.createPortal(
-                                        <div
-                                          className="reschedule-dropdown-menu"
-                                          style={{
-                                            position: 'absolute',
-                                            top: rescheduleDropdownPosition.top,
-                                            left: rescheduleDropdownPosition.left,
-                                            background: isDarkMode ? '#000' : '#fff',
-                                            border: `1px solid ${isDarkMode ? '#2f3336' : '#e2e8f0'}`,
-                                            borderRadius: 16,
-                                            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                                            zIndex: 99999,
-                                            minWidth: 320,
-                                            overflow: 'hidden'
-                                          }}
-                                        >
-                                          <button
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              const session = openRescheduleDropdown.session;
-                                              setOpenRescheduleDropdown(null);
-                                              onRescheduleSession && onRescheduleSession({ ...session, rescheduleMode: 'teacher' });
-                                            }}
-                                            style={{
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              justifyContent: 'space-between',
-                                              width: '100%',
-                                              padding: '16px 24px',
-                                              background: 'none',
-                                              border: 'none',
-                                              textAlign: 'left',
-                                              cursor: 'pointer',
-                                              transition: 'background 0.15s ease'
-                                            }}
-                                            onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'; }}
-                                            onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
-                                          >
-                                            <div style={{ flex: 1 }}>
-                                              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Choose Your Teacher</div>
-                                              <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', lineHeight: 1.4 }}>
-                                                Browse student teachers. See availability and book sessions.
-                                              </div>
-                                            </div>
-                                            <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 20, marginLeft: 12 }}>›</span>
-                                          </button>
-                                          <button
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              const session = openRescheduleDropdown.session;
-                                              setOpenRescheduleDropdown(null);
-                                              onRescheduleSession && onRescheduleSession({ ...session, rescheduleMode: 'time' });
-                                            }}
-                                            style={{
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              justifyContent: 'space-between',
-                                              width: '100%',
-                                              padding: '16px 24px',
-                                              background: 'none',
-                                              border: 'none',
-                                              borderTop: `1px solid ${isDarkMode ? '#2f3336' : '#e2e8f0'}`,
-                                              textAlign: 'left',
-                                              cursor: 'pointer',
-                                              transition: 'background 0.15s ease'
-                                            }}
-                                            onMouseEnter={(e) => { e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'; }}
-                                            onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
-                                          >
-                                            <div style={{ flex: 1 }}>
-                                              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Choose Your Schedule</div>
-                                              <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', lineHeight: 1.4 }}>
-                                                Pick dates that work for you. See who's available.
-                                              </div>
-                                            </div>
-                                            <span style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 20, marginLeft: 12 }}>›</span>
-                                          </button>
-                                        </div>,
-                                        document.body
-                                      )}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                        fontSize: 14,
+                        fontWeight: 700,
+                        color: isDarkMode ? '#93c5fd' : '#1e40af'
+                      }}>
+                        {isToday ? "Today's Sessions" : `Sessions for ${formatDateForDisplay(displayDate)}`}
+                      </div>
+                      <div style={{
+                        fontSize: 11,
+                        color: isDarkMode ? '#60a5fa' : '#3b82f6'
+                      }}>
+                        {isToday ? formatDateForDisplay(displayDate) : `${displaySessions.length} session${displaySessions.length > 1 ? 's' : ''}`}
+                      </div>
                     </div>
                   </div>
-                );
-              })}
 
-              {/* Divider before All Courses */}
-              <div style={{
-                padding: '12px 20px',
-                background: isDarkMode ? '#16181c' : '#f7f9f9',
-                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-              }}>
-                <div style={{
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: isDarkMode ? '#71767b' : '#536471'
-                }}>
-                  All Courses
+                  {/* Session Cards */}
+                  <div style={{ padding: '12px 16px' }}>
+                    {displaySessions.map((session, index) => {
+                      const course = indexedCourses.find(c => c.id === session.courseId);
+                      const instructor = course ? getInstructorById(course.instructorId) : null;
+
+                      return (
+                        <div
+                          key={session.id || `${session.courseId}-${session.date}-${index}`}
+                          onClick={() => onViewCourse && onViewCourse(session.courseId)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 12,
+                            padding: '10px 12px',
+                            background: isDarkMode ? '#1e293b' : '#fff',
+                            borderRadius: 8,
+                            marginBottom: index < displaySessions.length - 1 ? 8 : 0,
+                            border: isDarkMode ? '1px solid #2f3336' : '1px solid #e2e8f0',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f8fafc';
+                            e.currentTarget.style.borderColor = isDarkMode ? '#3f4347' : '#cbd5e1';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = isDarkMode ? '#1e293b' : '#fff';
+                            e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#e2e8f0';
+                          }}
+                        >
+                          {/* Session Time */}
+                          <div style={{
+                            fontSize: 12,
+                            fontWeight: 700,
+                            color: isDarkMode ? '#60a5fa' : '#1d4ed8',
+                            minWidth: 60
+                          }}>
+                            {session.time || '—'}
+                          </div>
+
+                          {/* Session Info */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{
+                              fontSize: 13,
+                              fontWeight: 600,
+                              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}>
+                              {course?.title || 'Unknown Course'}
+                            </div>
+                            <div style={{
+                              fontSize: 11,
+                              color: isDarkMode ? '#71767b' : '#536471'
+                            }}>
+                              {instructor?.communityName || instructor?.name || 'Unknown'}
+                            </div>
+                          </div>
+
+                          {/* Join + Reschedule Buttons */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onViewCourse && onViewCourse(session.courseId);
+                              }}
+                              style={{
+                                background: '#10b981',
+                                color: '#fff',
+                                border: 'none',
+                                padding: '6px 12px',
+                                borderRadius: 14,
+                                fontSize: 11,
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                transition: 'all 0.15s'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.background = '#059669'}
+                              onMouseLeave={(e) => e.currentTarget.style.background = '#10b981'}
+                            >
+                              Join Session
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onViewCourse && onViewCourse(session.courseId);
+                              }}
+                              style={{
+                                background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                                border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
+                                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                cursor: 'pointer',
+                                padding: '6px 12px',
+                                borderRadius: 14,
+                                fontSize: 11,
+                                fontWeight: 600,
+                                whiteSpace: 'nowrap',
+                                transition: 'all 0.15s'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = isDarkMode ? '#3a3f44' : '#e7e9ea';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#f7f9f9';
+                              }}
+                            >
+                              Reschedule
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
+
+                {/* Section Separator */}
+                <div style={{
+                  height: 8,
+                  background: isDarkMode ? '#16181c' : '#f7f9f9',
+                  borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                  borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                }} />
+
+                {/* All My Courses Header */}
+                <div style={{
+                  padding: '16px 20px 8px',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  All My Courses
+                </div>
+              </>
+            );
+          })()}
 
           {/* Course List - Based on Selected Tab */}
           <div>
