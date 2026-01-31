@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { FaStar, FaUsers, FaClock, FaPlay, FaBook, FaCertificate, FaChalkboardTeacher, FaCheck, FaPlus, FaInfinity, FaGraduationCap, FaHeart, FaComment, FaRetweet, FaShare, FaImage, FaLink, FaPaperclip, FaVideo, FaFileAlt, FaDownload, FaExclamationTriangle, FaChevronDown, FaChevronRight, FaCalendar } from 'react-icons/fa';
+import { FaStar, FaUsers, FaClock, FaPlay, FaBook, FaCertificate, FaChalkboardTeacher, FaCheck, FaPlus, FaInfinity, FaGraduationCap, FaHeart, FaComment, FaRetweet, FaShare, FaImage, FaLink, FaPaperclip, FaVideo, FaFileAlt, FaDownload, FaExclamationTriangle, FaChevronDown, FaChevronRight, FaCalendar, FaUpload, FaSpinner } from 'react-icons/fa';
 import { getInstructorById } from '../data/database';
 import SessionTimelineCards from './SessionTimelineCards';
+import { getCourseFiles, uploadCourseFile, addCourseFileLink, deleteCourseFile, formatFileSize } from '../services/courseFiles';
 import './MainContent.css';
 
 /**
@@ -12,11 +13,172 @@ import './MainContent.css';
 const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpandedModules, isCreator = false, currentUser }) => {
   const [expandedSessions, setExpandedSessions] = useState({ 1: true, 2: true });
 
-  // Handle file upload click (placeholder - would open file picker)
+  // File upload modal state
+  const [showAddFileModal, setShowAddFileModal] = useState(false);
+  const [addFileModuleIndex, setAddFileModuleIndex] = useState(null);
+  const [newFileName, setNewFileName] = useState('');
+  const [newFileUrl, setNewFileUrl] = useState('');
+  const [newFileType, setNewFileType] = useState('document');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadMode, setUploadMode] = useState('link'); // 'link' or 'upload'
+  const fileInputRef = useRef(null);
+
+  // Supabase files state
+  const [uploadedFiles, setUploadedFiles] = useState({});
+  const [isLoadingFiles, setIsLoadingFiles] = useState(true);
+
+  // Load files from Supabase on mount
+  useEffect(() => {
+    const loadFiles = async () => {
+      if (!course?.id) return;
+      setIsLoadingFiles(true);
+      try {
+        const { data, error } = await getCourseFiles(course.id);
+        if (error) {
+          console.error('Error loading files:', error);
+        } else {
+          // Group files by module_index
+          const grouped = {};
+          data.forEach(file => {
+            if (!grouped[file.module_index]) {
+              grouped[file.module_index] = [];
+            }
+            grouped[file.module_index].push({
+              id: file.id,
+              name: file.file_name,
+              url: file.file_url,
+              type: file.file_type,
+              size: file.file_size,
+              path: file.file_path,
+              addedBy: file.uploaded_by,
+              addedAt: file.created_at
+            });
+          });
+          setUploadedFiles(grouped);
+        }
+      } catch (err) {
+        console.error('Failed to load files:', err);
+      }
+      setIsLoadingFiles(false);
+    };
+    loadFiles();
+  }, [course?.id]);
+
+  // Handle file upload click - opens modal
   const handleAddFile = (moduleIndex, e) => {
     e.stopPropagation();
-    // TODO: Implement actual file upload
-    alert(`Add file to module ${moduleIndex + 1}`);
+    setAddFileModuleIndex(moduleIndex);
+    setNewFileName('');
+    setNewFileUrl('');
+    setNewFileType('document');
+    setSelectedFile(null);
+    setUploadMode('link');
+    setShowAddFileModal(true);
+  };
+
+  // Handle file input change
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setNewFileName(file.name);
+      // Auto-detect file type
+      if (file.type.startsWith('image/')) {
+        setNewFileType('image');
+      } else if (file.type.startsWith('video/')) {
+        setNewFileType('video');
+      } else {
+        setNewFileType('document');
+      }
+    }
+  };
+
+  // Save new file to Supabase
+  const handleSaveFile = async () => {
+    if (uploadMode === 'upload' && !selectedFile) return;
+    if (uploadMode === 'link' && !newFileName.trim()) return;
+
+    setIsUploading(true);
+
+    try {
+      let result;
+      if (uploadMode === 'upload' && selectedFile) {
+        // Upload actual file
+        result = await uploadCourseFile(
+          selectedFile,
+          course.id,
+          addFileModuleIndex,
+          newFileType,
+          currentUser?.name || 'Creator'
+        );
+      } else {
+        // Add link only
+        result = await addCourseFileLink(
+          newFileName.trim(),
+          newFileUrl.trim() || '',
+          course.id,
+          addFileModuleIndex,
+          newFileType,
+          currentUser?.name || 'Creator'
+        );
+      }
+
+      if (result.error) {
+        alert('Failed to save file: ' + result.error.message);
+      } else {
+        // Add to local state
+        const newFile = {
+          id: result.data.id,
+          name: result.data.file_name,
+          url: result.data.file_url,
+          type: result.data.file_type,
+          size: result.data.file_size,
+          path: result.data.file_path,
+          addedBy: result.data.uploaded_by,
+          addedAt: result.data.created_at
+        };
+        setUploadedFiles(prev => ({
+          ...prev,
+          [addFileModuleIndex]: [...(prev[addFileModuleIndex] || []), newFile]
+        }));
+        setShowAddFileModal(false);
+      }
+    } catch (err) {
+      alert('Upload failed: ' + err.message);
+    }
+
+    setIsUploading(false);
+  };
+
+  // Delete uploaded file from Supabase
+  const handleDeleteUploadedFile = async (moduleIndex, file, e) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this file?')) return;
+
+    try {
+      const { error } = await deleteCourseFile(file.id, file.path);
+      if (error) {
+        alert('Failed to delete: ' + error.message);
+      } else {
+        setUploadedFiles(prev => ({
+          ...prev,
+          [moduleIndex]: (prev[moduleIndex] || []).filter(f => f.id !== file.id)
+        }));
+      }
+    } catch (err) {
+      alert('Delete failed: ' + err.message);
+    }
+  };
+
+  // Get icon for file type
+  const getFileTypeIcon = (type) => {
+    switch (type) {
+      case 'video': return FaVideo;
+      case 'link': return FaLink;
+      case 'image': return FaImage;
+      default: return FaFileAlt;
+    }
   };
 
   // Handle file download click
@@ -80,8 +242,9 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
     const originalIdx = item.originalIndex !== undefined ? item.originalIndex : idx;
     const isExpanded = expandedModules[originalIdx];
     const details = getModuleDetails(originalIdx, title);
-    // Get files for this module (from item.files array)
+    // Get files for this module (from item.files array + uploaded files)
     const moduleFiles = (typeof item === 'object' && item.files) ? item.files : [];
+    const userUploadedFiles = uploadedFiles[originalIdx] || [];
 
     return (
       <div key={originalIdx} style={{
@@ -123,7 +286,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
             </div>
 
             {/* File Links Row - Always visible */}
-            {(moduleFiles.length > 0 || isCreator) && (
+            {(moduleFiles.length > 0 || userUploadedFiles.length > 0 || isCreator) && (
               <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -131,10 +294,10 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                 alignItems: 'center',
                 marginTop: 8
               }}>
-                {/* File Download Buttons */}
+                {/* Existing File Download Buttons */}
                 {moduleFiles.map((file, fileIdx) => (
                   <button
-                    key={fileIdx}
+                    key={`existing-${fileIdx}`}
                     onClick={(e) => handleDownloadFile(file, e)}
                     style={{
                       display: 'inline-flex',
@@ -161,6 +324,63 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                     {file.size && <span style={{ opacity: 0.7, fontSize: 11 }}>{file.size}</span>}
                   </button>
                 ))}
+
+                {/* User Uploaded Files */}
+                {userUploadedFiles.map((file) => {
+                  const FileIcon = getFileTypeIcon(file.type);
+                  return (
+                    <div
+                      key={`uploaded-${file.id}`}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 0,
+                        background: isDarkMode ? '#1d4a1d' : '#d4edda',
+                        borderRadius: 8,
+                        overflow: 'hidden'
+                      }}
+                    >
+                      <button
+                        onClick={(e) => handleDownloadFile(file, e)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          background: 'transparent',
+                          color: isDarkMode ? '#90ee90' : '#155724',
+                          padding: '6px 8px 6px 12px',
+                          fontSize: 13,
+                          fontWeight: 500,
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <FileIcon style={{ fontSize: 11 }} />
+                        {file.name}
+                      </button>
+                      {isCreator && (
+                        <button
+                          onClick={(e) => handleDeleteUploadedFile(originalIdx, file, e)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'transparent',
+                            color: isDarkMode ? '#ff6b6b' : '#dc3545',
+                            padding: '6px 10px',
+                            fontSize: 11,
+                            border: 'none',
+                            borderLeft: isDarkMode ? '1px solid #2d5a2d' : '1px solid #b8dabd',
+                            cursor: 'pointer'
+                          }}
+                          title="Delete file"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
 
                 {/* Add File Button - Creator Only */}
                 {isCreator && (
@@ -223,9 +443,404 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
     );
   };
 
+  // Add File Modal component
+  const AddFileModal = () => {
+    if (!showAddFileModal) return null;
+    const canSave = uploadMode === 'upload' ? selectedFile : newFileName.trim();
+
+    return ReactDOM.createPortal(
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.6)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000
+        }}
+        onClick={() => !isUploading && setShowAddFileModal(false)}
+      >
+        <div
+          style={{
+            background: isDarkMode ? '#16181c' : '#fff',
+            borderRadius: 16,
+            padding: 24,
+            width: 420,
+            maxWidth: '90vw',
+            border: isDarkMode ? '1px solid #2f3336' : '1px solid #e1e8ed'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h3 style={{
+            fontSize: 18,
+            fontWeight: 700,
+            marginBottom: 16,
+            color: isDarkMode ? '#e7e9ea' : '#0f1419'
+          }}>
+            Add File to Module
+          </h3>
+
+          {/* Mode Toggle */}
+          <div style={{
+            display: 'flex',
+            gap: 8,
+            marginBottom: 20,
+            background: isDarkMode ? '#000' : '#eff3f4',
+            padding: 4,
+            borderRadius: 9999
+          }}>
+            <button
+              onClick={() => setUploadMode('upload')}
+              style={{
+                flex: 1,
+                padding: '8px 16px',
+                fontSize: 14,
+                fontWeight: 500,
+                border: 'none',
+                borderRadius: 9999,
+                background: uploadMode === 'upload' ? '#1d9bf0' : 'transparent',
+                color: uploadMode === 'upload' ? '#fff' : (isDarkMode ? '#71767b' : '#536471'),
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6
+              }}
+            >
+              <FaUpload size={12} /> Upload File
+            </button>
+            <button
+              onClick={() => setUploadMode('link')}
+              style={{
+                flex: 1,
+                padding: '8px 16px',
+                fontSize: 14,
+                fontWeight: 500,
+                border: 'none',
+                borderRadius: 9999,
+                background: uploadMode === 'link' ? '#1d9bf0' : 'transparent',
+                color: uploadMode === 'link' ? '#fff' : (isDarkMode ? '#71767b' : '#536471'),
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6
+              }}
+            >
+              <FaLink size={12} /> Add Link
+            </button>
+          </div>
+
+          {/* Upload Mode */}
+          {uploadMode === 'upload' && (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.mp4,.webm"
+              />
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  border: `2px dashed ${isDarkMode ? '#2f3336' : '#cfd9de'}`,
+                  borderRadius: 12,
+                  padding: 24,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  marginBottom: 16,
+                  background: isDarkMode ? '#000' : '#f7f9f9'
+                }}
+              >
+                {selectedFile ? (
+                  <div>
+                    <FaFileAlt size={24} style={{ color: '#1d9bf0', marginBottom: 8 }} />
+                    <div style={{ fontWeight: 500, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                      {selectedFile.name}
+                    </div>
+                    <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471', marginTop: 4 }}>
+                      {formatFileSize(selectedFile.size)} • Click to change
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <FaUpload size={24} style={{ color: isDarkMode ? '#71767b' : '#536471', marginBottom: 8 }} />
+                    <div style={{ fontWeight: 500, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                      Click to select file
+                    </div>
+                    <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471', marginTop: 4 }}>
+                      PDF, DOC, PPT, images, videos (max 50MB)
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Link Mode */}
+          {uploadMode === 'link' && (
+            <>
+              {/* File Name */}
+              <div style={{ marginBottom: 16 }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  marginBottom: 6,
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                }}>
+                  Display Name *
+                </label>
+                <input
+                  type="text"
+                  value={newFileName}
+                  onChange={(e) => setNewFileName(e.target.value)}
+                  placeholder="e.g., Lesson slides, Worksheet"
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    fontSize: 14,
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                    borderRadius: 8,
+                    background: isDarkMode ? '#000' : '#fff',
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* URL */}
+              <div style={{ marginBottom: 16 }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  marginBottom: 6,
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                }}>
+                  URL
+                </label>
+                <input
+                  type="url"
+                  value={newFileUrl}
+                  onChange={(e) => setNewFileUrl(e.target.value)}
+                  placeholder="https://drive.google.com/..."
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    fontSize: 14,
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                    borderRadius: 8,
+                    background: isDarkMode ? '#000' : '#fff',
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+                <div style={{
+                  fontSize: 12,
+                  color: isDarkMode ? '#71767b' : '#536471',
+                  marginTop: 4
+                }}>
+                  Google Drive, Dropbox, YouTube, or any web link
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* File Type (for both modes) */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={{
+              display: 'block',
+              fontSize: 14,
+              fontWeight: 500,
+              marginBottom: 6,
+              color: isDarkMode ? '#e7e9ea' : '#0f1419'
+            }}>
+              File Type
+            </label>
+            <select
+              value={newFileType}
+              onChange={(e) => setNewFileType(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                fontSize: 14,
+                border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                borderRadius: 8,
+                background: isDarkMode ? '#000' : '#fff',
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            >
+              <option value="document">Document</option>
+              <option value="video">Video</option>
+              <option value="link">Link</option>
+              <option value="image">Image</option>
+            </select>
+          </div>
+
+          {/* Buttons */}
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => setShowAddFileModal(false)}
+              disabled={isUploading}
+              style={{
+                padding: '10px 20px',
+                fontSize: 14,
+                fontWeight: 600,
+                border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
+                borderRadius: 9999,
+                background: 'transparent',
+                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                cursor: isUploading ? 'not-allowed' : 'pointer',
+                opacity: isUploading ? 0.5 : 1
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveFile}
+              disabled={!canSave || isUploading}
+              style={{
+                padding: '10px 20px',
+                fontSize: 14,
+                fontWeight: 600,
+                border: 'none',
+                borderRadius: 9999,
+                background: canSave && !isUploading ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#cfd9de'),
+                color: canSave && !isUploading ? '#fff' : (isDarkMode ? '#71767b' : '#9ca3af'),
+                cursor: canSave && !isUploading ? 'pointer' : 'not-allowed',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8
+              }}
+            >
+              {isUploading && <FaSpinner className="spin" size={12} />}
+              {isUploading ? 'Uploading...' : (uploadMode === 'upload' ? 'Upload' : 'Add Link')}
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  };
+
   // If course has sessions, render grouped by session
   if (hasSessions) {
     return (
+      <>
+        <div style={{
+          background: isDarkMode ? '#16181c' : '#f7f9f9',
+          borderRadius: 12,
+          padding: 20,
+          border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+        }}>
+          <h3 style={{
+            fontSize: 18,
+            fontWeight: 700,
+            marginBottom: 20,
+            color: isDarkMode ? '#e7e9ea' : '#0f1419'
+          }}>
+            Course Curriculum
+          </h3>
+
+          {course.sessions.list.map((session, sessionIdx) => {
+            const sessionModules = getModulesBySession(session.number);
+            const isSessionExpanded = expandedSessions[session.number];
+
+            return (
+              <div key={session.number} style={{
+                marginBottom: sessionIdx < course.sessions.list.length - 1 ? 16 : 0
+              }}>
+                {/* Session Header */}
+                <div
+                  onClick={() => toggleSession(session.number)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '14px 16px',
+                    background: isDarkMode ? '#1a1d21' : '#eef2f5',
+                    borderRadius: isSessionExpanded ? '8px 8px 0 0' : 8,
+                    cursor: 'pointer',
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #dce3e8',
+                    borderBottom: isSessionExpanded ? 'none' : (isDarkMode ? '1px solid #2f3336' : '1px solid #dce3e8')
+                  }}
+                >
+                  {/* Session Number Circle */}
+                  <div style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    background: '#1d9bf0',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    flexShrink: 0
+                  }}>
+                    {session.number}
+                  </div>
+
+                  {/* Session Title */}
+                  <div style={{ flex: 1 }}>
+                    <span style={{
+                      fontWeight: 700,
+                      fontSize: 15,
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                    }}>
+                      Session {session.number}: {session.title}
+                    </span>
+                    <div style={{
+                      fontSize: 12,
+                      color: isDarkMode ? '#71767b' : '#536471',
+                      marginTop: 2
+                    }}>
+                      {session.duration} • {sessionModules.length} modules
+                    </div>
+                  </div>
+
+                  {/* Expand/Collapse Icon */}
+                  <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 12 }}>
+                    {isSessionExpanded ? <FaChevronDown /> : <FaChevronRight />}
+                  </div>
+                </div>
+
+                {/* Session Modules */}
+                {isSessionExpanded && (
+                  <div style={{
+                    border: isDarkMode ? '1px solid #2f3336' : '1px solid #dce3e8',
+                    borderTop: 'none',
+                    borderRadius: '0 0 8px 8px',
+                    overflow: 'hidden'
+                  }}>
+                    {sessionModules.map((module, idx) =>
+                      renderModule(module, idx, idx === sessionModules.length - 1)
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {AddFileModal()}
+      </>
+    );
+  }
+
+  // Fallback: Original flat list for courses without sessions
+  return (
+    <>
       <div style={{
         background: isDarkMode ? '#16181c' : '#f7f9f9',
         borderRadius: 12,
@@ -241,180 +856,81 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
           Course Curriculum
         </h3>
 
-        {course.sessions.list.map((session, sessionIdx) => {
-          const sessionModules = getModulesBySession(session.number);
-          const isSessionExpanded = expandedSessions[session.number];
+        {(course.curriculum || []).map((item, idx) => {
+          const title = typeof item === 'object' ? item.title : item;
+          const duration = typeof item === 'object' ? item.duration : '15 min';
+          const isExpanded = expandedModules[idx];
+          const details = getModuleDetails(idx, title);
 
           return (
-            <div key={session.number} style={{
-              marginBottom: sessionIdx < course.sessions.list.length - 1 ? 16 : 0
+            <div key={idx} style={{
+              borderBottom: idx < (course.curriculum?.length || 0) - 1
+                ? (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb')
+                : 'none'
             }}>
-              {/* Session Header */}
+              {/* Module Header - Clickable */}
               <div
-                onClick={() => toggleSession(session.number)}
+                onClick={() => toggleModule(idx)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '14px 16px',
-                  background: isDarkMode ? '#1a1d21' : '#eef2f5',
-                  borderRadius: isSessionExpanded ? '8px 8px 0 0' : 8,
-                  cursor: 'pointer',
-                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #dce3e8',
-                  borderBottom: isSessionExpanded ? 'none' : (isDarkMode ? '1px solid #2f3336' : '1px solid #dce3e8')
+                  padding: '16px 0',
+                  cursor: 'pointer'
                 }}
               >
-                {/* Session Number Circle */}
-                <div style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: '50%',
-                  background: '#1d9bf0',
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  flexShrink: 0
-                }}>
-                  {session.number}
+                {/* Expand/Collapse Icon */}
+                <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 12 }}>
+                  {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
                 </div>
 
-                {/* Session Title */}
+                {/* Module Title */}
                 <div style={{ flex: 1 }}>
                   <span style={{
-                    fontWeight: 700,
+                    fontWeight: 600,
                     fontSize: 15,
                     color: isDarkMode ? '#e7e9ea' : '#0f1419'
                   }}>
-                    Session {session.number}: {session.title}
+                    {title}
                   </span>
-                  <div style={{
-                    fontSize: 12,
-                    color: isDarkMode ? '#71767b' : '#536471',
-                    marginTop: 2
-                  }}>
-                    {session.duration} • {sessionModules.length} modules
-                  </div>
                 </div>
 
-                {/* Expand/Collapse Icon */}
-                <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 12 }}>
-                  {isSessionExpanded ? <FaChevronDown /> : <FaChevronRight />}
-                </div>
+                {/* Duration Badge */}
+                <span style={{
+                  background: isDarkMode ? '#2f3336' : '#e5e7eb',
+                  color: isDarkMode ? '#9ca3af' : '#536471',
+                  padding: '4px 10px',
+                  borderRadius: 12,
+                  fontSize: 12,
+                  fontWeight: 500
+                }}>
+                  {duration}
+                </span>
               </div>
 
-              {/* Session Modules */}
-              {isSessionExpanded && (
+              {/* Expanded Content */}
+              {isExpanded && (
                 <div style={{
-                  border: isDarkMode ? '1px solid #2f3336' : '1px solid #dce3e8',
-                  borderTop: 'none',
-                  borderRadius: '0 0 8px 8px',
-                  overflow: 'hidden'
+                  padding: '0 0 16px 28px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16
                 }}>
-                  {sessionModules.map((module, idx) =>
-                    renderModule(module, idx, idx === sessionModules.length - 1)
-                  )}
+                  <div style={{
+                    fontSize: 14,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    lineHeight: 1.5
+                  }}>
+                    {details.learningObjectives}
+                  </div>
                 </div>
               )}
             </div>
           );
         })}
       </div>
-    );
-  }
-
-  // Fallback: Original flat list for courses without sessions
-  return (
-    <div style={{
-      background: isDarkMode ? '#16181c' : '#f7f9f9',
-      borderRadius: 12,
-      padding: 20,
-      border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
-    }}>
-      <h3 style={{
-        fontSize: 18,
-        fontWeight: 700,
-        marginBottom: 20,
-        color: isDarkMode ? '#e7e9ea' : '#0f1419'
-      }}>
-        Course Curriculum
-      </h3>
-
-      {(course.curriculum || []).map((item, idx) => {
-        const title = typeof item === 'object' ? item.title : item;
-        const duration = typeof item === 'object' ? item.duration : '15 min';
-        const isExpanded = expandedModules[idx];
-        const details = getModuleDetails(idx, title);
-
-        return (
-          <div key={idx} style={{
-            borderBottom: idx < (course.curriculum?.length || 0) - 1
-              ? (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb')
-              : 'none'
-          }}>
-            {/* Module Header - Clickable */}
-            <div
-              onClick={() => toggleModule(idx)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '16px 0',
-                cursor: 'pointer'
-              }}
-            >
-              {/* Expand/Collapse Icon */}
-              <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 12 }}>
-                {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
-              </div>
-
-              {/* Module Title */}
-              <div style={{ flex: 1 }}>
-                <span style={{
-                  fontWeight: 600,
-                  fontSize: 15,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                }}>
-                  {title}
-                </span>
-              </div>
-
-              {/* Duration Badge */}
-              <span style={{
-                background: isDarkMode ? '#2f3336' : '#e5e7eb',
-                color: isDarkMode ? '#9ca3af' : '#536471',
-                padding: '4px 10px',
-                borderRadius: 12,
-                fontSize: 12,
-                fontWeight: 500
-              }}>
-                {duration}
-              </span>
-            </div>
-
-            {/* Expanded Content */}
-            {isExpanded && (
-              <div style={{
-                padding: '0 0 16px 28px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 16
-              }}>
-                <div style={{
-                  fontSize: 14,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                  lineHeight: 1.5
-                }}>
-                  {details.learningObjectives}
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
+      <AddFileModal />
+    </>
   );
 };
 
@@ -1167,85 +1683,8 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
       background: isDarkMode ? '#000' : '#fff',
       minHeight: '100vh'
     }}>
-      {/* Sticky Collapsed Header - Shows when scrolling down */}
-      <div
-        ref={stickyHeaderRef}
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          background: isDarkMode ? '#000' : '#fff',
-          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-          padding: isHeaderCollapsed ? '12px 24px' : '0 24px',
-          maxHeight: isHeaderCollapsed ? 60 : 0,
-          opacity: isHeaderCollapsed ? 1 : 0,
-          overflow: 'hidden',
-          transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, padding 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          willChange: 'max-height, opacity'
-        }}
-      >
-        {/* Collapsed Header Content - Title + Pills */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-          {/* Course Title */}
-          <h2 style={{
-            fontSize: 18,
-            fontWeight: 700,
-            color: isDarkMode ? '#e7e9ea' : '#0f1419',
-            margin: 0,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            flex: 1
-          }}>
-            {course.title}
-          </h2>
-
-          {/* Pill Tabs */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '6px 14px',
-                  borderRadius: 20,
-                  border: activeTab === tab.id
-                    ? '2px solid #1d9bf0'
-                    : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                  background: activeTab === tab.id
-                    ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                    : (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                  color: activeTab === tab.id
-                    ? '#1d9bf0'
-                    : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Collapsible Header Content Wrapper */}
-      <div
-        ref={headerRef}
-        style={{
-          transform: isHeaderCollapsed ? 'translateY(-100%)' : 'translateY(0)',
-          maxHeight: isHeaderCollapsed ? 0 : 'none',
-          opacity: isHeaderCollapsed ? 0 : 1,
-          overflow: 'hidden',
-          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, max-height 0s linear ' + (isHeaderCollapsed ? '0s' : '0.3s'),
-          willChange: 'transform, opacity'
-        }}
-      >
+      {/* Course Header Content - scrolls away */}
+      <div ref={headerRef}>
         {/* Community Mini-Header Card */}
         <div
           style={{
@@ -1273,7 +1712,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
           </span>
         </div>
 
-        {/* Header Section - Collapsible Part */}
+        {/* Header Section - Course Info */}
         <div style={{
           padding: '24px 24px 0 24px',
           overflow: 'visible',
@@ -1588,9 +2027,9 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
         )}
         </div>
       </div>
-      {/* End of Collapsible Header Content Wrapper */}
+      {/* End of Scrollable Content Header */}
 
-      {/* Tabs - Pill Style - Always Visible */}
+      {/* Tabs - Sticky when scrolling (below breadcrumb at ~45px) */}
       <div
         style={{
           padding: '16px 24px',
@@ -1599,9 +2038,9 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
           gap: 8,
           borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
           background: isDarkMode ? '#000' : '#fff',
-          position: isHeaderCollapsed ? 'sticky' : 'relative',
-          top: isHeaderCollapsed ? 56 : 'auto',
-          zIndex: 50
+          position: 'sticky',
+          top: 45,
+          zIndex: 100
         }}
       >
         {tabs.map(tab => (

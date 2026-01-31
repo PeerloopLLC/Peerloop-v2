@@ -485,6 +485,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Get back handler for breadcrumb - returns null if no back navigation available
   const getBackHandler = () => {
+    // When viewing a course from an instructor profile in Browse, go back to instructor first
+    if (selectedCourse && selectedInstructor && (activeMenu === 'Browse' || activeMenu === 'Browse_Communities')) {
+      return () => {
+        setSelectedCourse(null);
+      };
+    }
     // Show back button when viewing course from anywhere
     if (viewingCourseFromCommunity) {
       return handleBackFromCourse;

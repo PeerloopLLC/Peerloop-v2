@@ -27,6 +27,9 @@ const Breadcrumb = ({ items = [], isDarkMode = false, onBack = null }) => {
       gap: '8px',
       fontSize: '14px',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      position: 'sticky',
+      top: 0,
+      zIndex: 200,
     },
     homeIcon: {
       display: 'flex',
