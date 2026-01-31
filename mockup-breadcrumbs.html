@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeerLoop Breadcrumb Wireframes</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .wireframe-container {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .wireframe {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .wireframe-title {
+      background: #1d9bf0;
+      color: white;
+      padding: 12px 20px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .app-layout {
+      display: flex;
+      min-height: 500px;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: 220px;
+      background: #fafafa;
+      border-right: 1px solid #e1e8ed;
+      padding: 16px;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1d9bf0;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-item {
+      padding: 12px 16px;
+      border-radius: 24px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      font-size: 15px;
+      color: #536471;
+    }
+
+    .nav-item.active {
+      background: #e8f5fd;
+      color: #1d9bf0;
+      font-weight: 600;
+    }
+
+    .nav-section {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #536471;
+      font-weight: 600;
+      padding: 8px 16px;
+    }
+
+    .feed-item {
+      padding: 8px 16px;
+      font-size: 14px;
+      color: #0f1419;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feed-icon {
+      width: 24px;
+      height: 24px;
+      background: #1d9bf0;
+      border-radius: 50%;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Breadcrumb Bar */
+    .breadcrumb-bar {
+      background: #f7f9f9;
+      border-bottom: 1px solid #e1e8ed;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .breadcrumb-home {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .breadcrumb-link {
+      color: #1d9bf0;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .breadcrumb-link:hover {
+      text-decoration: underline;
+    }
+
+    .breadcrumb-separator {
+      color: #536471;
+    }
+
+    .breadcrumb-current {
+      color: #0f1419;
+      font-weight: 500;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      padding: 20px;
+      background: white;
+    }
+
+    .content-placeholder {
+      background: #f0f0f0;
+      border-radius: 8px;
+      height: 100px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .community-header {
+      background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .community-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f1419;
+    }
+
+    .community-meta {
+      font-size: 13px;
+      color: #536471;
+      margin-top: 4px;
+    }
+
+    .course-card {
+      background: #fafafa;
+      border: 1px solid #e1e8ed;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .course-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1e40af;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .course-info {
+      flex: 1;
+    }
+
+    .course-title {
+      font-weight: 600;
+      color: #0f1419;
+      margin-bottom: 4px;
+    }
+
+    .course-desc {
+      font-size: 13px;
+      color: #536471;
+    }
+
+    /* Right Sidebar */
+    .right-sidebar {
+      width: 300px;
+      background: #fafafa;
+      border-left: 1px solid #e1e8ed;
+      padding: 16px;
+    }
+
+    .sidebar-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #e1e8ed;
+    }
+
+    .sidebar-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #0f1419;
+    }
+
+    .annotation {
+      background: #fff3cd;
+      border: 2px dashed #ffc107;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 20px 0;
+      font-size: 13px;
+      color: #856404;
+    }
+
+    .annotation strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>PeerLoop Breadcrumb Wireframes</h1>
+
+  <div class="wireframe-container">
+
+    <!-- Screen 1: My Feeds > Community Feed -->
+    <div class="wireframe">
+      <div class="wireframe-title">Screen 1: My Feeds → Prompt Masters Feed</div>
+      <div class="app-layout">
+        <div class="sidebar">
+          <div class="logo">∞ PEERLOOP</div>
+          <div class="nav-item active">My Feeds</div>
+          <div class="nav-item">My Courses</div>
+          <div class="nav-item">Discover</div>
+          <div class="nav-item">Messages</div>
+          <div class="nav-section">My Feeds</div>
+          <div class="feed-item"><div class="feed-icon"></div> The Commons</div>
+          <div class="feed-item" style="background:#e8f5fd;border-radius:8px;"><div class="feed-icon"></div> Prompt Masters</div>
+          <div class="feed-item"><div class="feed-icon"></div> The Physics Lab</div>
+        </div>
+
+        <div class="main-content">
+          <div class="breadcrumb-bar">
+            <div class="breadcrumb-home">🏠</div>
+            <a class="breadcrumb-link">PeerLoop</a>
+            <span class="breadcrumb-separator">\</span>
+            <a class="breadcrumb-link">My Feeds</a>
+            <span class="breadcrumb-separator">\</span>
+            <span class="breadcrumb-current">Prompt Masters</span>
+          </div>
+
+          <div class="content-area">
+            <div class="community-header">
+              <div class="community-name">Prompt Masters</div>
+              <div class="community-meta">Created by Guy Rymberg · 527 Students · 5 Courses</div>
+            </div>
+            <div class="content-placeholder">Feed posts appear here...</div>
+            <div class="content-placeholder">More posts...</div>
+          </div>
+        </div>
+
+        <div class="right-sidebar">
+          <div class="sidebar-card">
+            <div class="sidebar-title">Community Info</div>
+            <div style="font-size:13px;color:#536471;">AI Prompting Specialist...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>Breadcrumb: 🏠 PeerLoop \ My Feeds \ Prompt Masters</strong>
+        Clicking "My Feeds" returns to feeds list. Clicking "PeerLoop" goes to home/default view.
+      </div>
+    </div>
+
+    <!-- Screen 2: Discover Page -->
+    <div class="wireframe">
+      <div class="wireframe-title">Screen 2: Discover Page (Browse Communities)</div>
+      <div class="app-layout">
+        <div class="sidebar">
+          <div class="logo">∞ PEERLOOP</div>
+          <div class="nav-item">My Feeds</div>
+          <div class="nav-item">My Courses</div>
+          <div class="nav-item active">Discover</div>
+          <div class="nav-item">Messages</div>
+        </div>
+
+        <div class="main-content">
+          <div class="breadcrumb-bar">
+            <div class="breadcrumb-home">🏠</div>
+            <a class="breadcrumb-link">PeerLoop</a>
+            <span class="breadcrumb-separator">\</span>
+            <span class="breadcrumb-current">Discover</span>
+          </div>
+
+          <div class="content-area">
+            <div style="margin-bottom:16px;">
+              <input type="text" placeholder="Search communities & courses..." style="width:100%;padding:12px 16px;border:1px solid #e1e8ed;border-radius:24px;font-size:14px;">
+            </div>
+            <div class="community-header">
+              <div class="community-name">AI Pioneers Hub</div>
+              <div class="community-meta">@aipioneershub · 19,928 followers</div>
+            </div>
+            <div class="course-card">
+              <div class="course-icon">AI</div>
+              <div class="course-info">
+                <div class="course-title">AI for Product Managers</div>
+                <div class="course-desc">Master skills to lead AI-driven products...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>Breadcrumb: 🏠 PeerLoop \ Discover</strong>
+        Simple breadcrumb for top-level Discover page.
+      </div>
+    </div>
+
+    <!-- Screen 3: Discover > Community Detail -->
+    <div class="wireframe">
+      <div class="wireframe-title">Screen 3: Discover → Community Detail (AI Pioneers Hub)</div>
+      <div class="app-layout">
+        <div class="sidebar">
+          <div class="logo">∞ PEERLOOP</div>
+          <div class="nav-item">My Feeds</div>
+          <div class="nav-item">My Courses</div>
+          <div class="nav-item active">Discover</div>
+          <div class="nav-item">Messages</div>
+        </div>
+
+        <div class="main-content">
+          <div class="breadcrumb-bar">
+            <div class="breadcrumb-home">🏠</div>
+            <a class="breadcrumb-link">PeerLoop</a>
+            <span class="breadcrumb-separator">\</span>
+            <a class="breadcrumb-link">Discover</a>
+            <span class="breadcrumb-separator">\</span>
+            <span class="breadcrumb-current">AI Pioneers Hub</span>
+          </div>
+
+          <div class="content-area">
+            <div style="margin-bottom:12px;">
+              <a style="color:#536471;font-size:14px;cursor:pointer;">← Back to Discover</a>
+            </div>
+            <div class="community-header">
+              <div class="community-name">AI Pioneers Hub</div>
+              <div class="community-meta">AI Prompting Specialist & Business AI Expert · ⭐ 4.9 · 527 students · 5 courses</div>
+            </div>
+            <div style="display:flex;gap:12px;margin-bottom:16px;">
+              <button style="padding:8px 16px;background:#1d9bf0;color:white;border:none;border-radius:20px;font-weight:600;">Courses</button>
+              <button style="padding:8px 16px;background:#f7f9f9;color:#0f1419;border:1px solid #e1e8ed;border-radius:20px;">Content</button>
+              <button style="padding:8px 16px;background:#f7f9f9;color:#0f1419;border:1px solid #e1e8ed;border-radius:20px;">Calendar</button>
+            </div>
+            <div class="course-card">
+              <div class="course-icon">AI</div>
+              <div class="course-info">
+                <div class="course-title">AI Prompting Mastery</div>
+                <div class="course-desc">Write effective AI prompts for business productivity...</div>
+              </div>
+            </div>
+            <div class="course-card">
+              <div class="course-icon">AI</div>
+              <div class="course-info">
+                <div class="course-title">AI Tools Overview</div>
+                <div class="course-desc">Navigate the world of AI tools with confidence...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>Breadcrumb: 🏠 PeerLoop \ Discover \ AI Pioneers Hub</strong>
+        Clicking "Discover" returns to the Discover browse page. This is the Community Detail page showing all courses.
+      </div>
+    </div>
+
+    <!-- Screen 4: Discover > Community > Course -->
+    <div class="wireframe">
+      <div class="wireframe-title">Screen 4: Discover → Community → Course Detail</div>
+      <div class="app-layout">
+        <div class="sidebar">
+          <div class="logo">∞ PEERLOOP</div>
+          <div class="nav-item">My Feeds</div>
+          <div class="nav-item">My Courses</div>
+          <div class="nav-item active">Discover</div>
+          <div class="nav-item">Messages</div>
+        </div>
+
+        <div class="main-content">
+          <div class="breadcrumb-bar">
+            <div class="breadcrumb-home">🏠</div>
+            <a class="breadcrumb-link">PeerLoop</a>
+            <span class="breadcrumb-separator">\</span>
+            <a class="breadcrumb-link">Discover</a>
+            <span class="breadcrumb-separator">\</span>
+            <a class="breadcrumb-link">AI Pioneers Hub</a>
+            <span class="breadcrumb-separator">\</span>
+            <span class="breadcrumb-current">AI Prompting Mastery</span>
+          </div>
+
+          <div class="content-area">
+            <div style="margin-bottom:12px;">
+              <a style="color:#536471;font-size:14px;cursor:pointer;">← Back to AI Pioneers Hub</a>
+            </div>
+            <div style="background:linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%);border-radius:12px;padding:24px;margin-bottom:16px;">
+              <div style="font-size:24px;font-weight:700;color:#1e40af;">AI Prompting Mastery</div>
+              <div style="color:#1e40af;margin-top:8px;">by Guy Rymberg · 4-6 weeks · ⭐ 4.9</div>
+            </div>
+            <div class="content-placeholder">Course description and modules...</div>
+            <div class="content-placeholder">Curriculum outline...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>Breadcrumb: 🏠 PeerLoop \ Discover \ AI Pioneers Hub \ AI Prompting Mastery</strong>
+        Full navigation path. Each link is clickable to go back to that level.
+      </div>
+    </div>
+
+    <!-- Screen 5: My Courses -->
+    <div class="wireframe">
+      <div class="wireframe-title">Screen 5: My Courses → Course Detail</div>
+      <div class="app-layout">
+        <div class="sidebar">
+          <div class="logo">∞ PEERLOOP</div>
+          <div class="nav-item">My Feeds</div>
+          <div class="nav-item active">My Courses</div>
+          <div class="nav-item">Discover</div>
+          <div class="nav-item">Messages</div>
+        </div>
+
+        <div class="main-content">
+          <div class="breadcrumb-bar">
+            <div class="breadcrumb-home">🏠</div>
+            <a class="breadcrumb-link">PeerLoop</a>
+            <span class="breadcrumb-separator">\</span>
+            <a class="breadcrumb-link">My Courses</a>
+            <span class="breadcrumb-separator">\</span>
+            <span class="breadcrumb-current">AI Prompting Mastery</span>
+          </div>
+
+          <div class="content-area">
+            <div style="margin-bottom:12px;">
+              <a style="color:#536471;font-size:14px;cursor:pointer;">← Back to My Courses</a>
+            </div>
+            <div style="background:linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%);border-radius:12px;padding:24px;margin-bottom:16px;">
+              <div style="font-size:24px;font-weight:700;color:#1e40af;">AI Prompting Mastery</div>
+              <div style="color:#1e40af;margin-top:8px;">Progress: 45% complete</div>
+            </div>
+            <div class="content-placeholder">Continue learning section...</div>
+            <div class="content-placeholder">Recent activity...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>Breadcrumb: 🏠 PeerLoop \ My Courses \ AI Prompting Mastery</strong>
+        When accessing a course from My Courses, breadcrumb shows that path (not Discover path).
+      </div>
+    </div>
+
+    <!-- Screen 6: Profile -->
+    <div class="wireframe">
+      <div class="wireframe-title">Screen 6: Profile Page</div>
+      <div class="app-layout">
+        <div class="sidebar">
+          <div class="logo">∞ PEERLOOP</div>
+          <div class="nav-item">My Feeds</div>
+          <div class="nav-item">My Courses</div>
+          <div class="nav-item">Discover</div>
+          <div class="nav-item">Messages</div>
+          <div class="nav-item active">Profile</div>
+        </div>
+
+        <div class="main-content">
+          <div class="breadcrumb-bar">
+            <div class="breadcrumb-home">🏠</div>
+            <a class="breadcrumb-link">PeerLoop</a>
+            <span class="breadcrumb-separator">\</span>
+            <span class="breadcrumb-current">Profile</span>
+          </div>
+
+          <div class="content-area">
+            <div style="display:flex;gap:16px;align-items:center;margin-bottom:20px;">
+              <div style="width:80px;height:80px;background:#ccc;border-radius:50%;"></div>
+              <div>
+                <div style="font-size:20px;font-weight:700;">Alex Sanders</div>
+                <div style="color:#536471;">@alexsanders · Student & Teacher</div>
+              </div>
+            </div>
+            <div class="content-placeholder">Profile stats and activity...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>Breadcrumb: 🏠 PeerLoop \ Profile</strong>
+        Simple breadcrumb for top-level pages.
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
