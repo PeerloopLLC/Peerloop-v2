@@ -150,6 +150,28 @@ export const getModuleFiles = async (courseId, moduleIndex) => {
 };
 
 /**
+ * Update the load_in_bbb flag for a file
+ * @param {string} fileId - The file record ID
+ * @param {boolean} loadInBbb - Whether to load this file in BBB
+ * @returns {Promise<{data: object, error: object}>}
+ */
+export const updateFileLoadInBbb = async (fileId, loadInBbb) => {
+  try {
+    const { data, error } = await supabase
+      .from('course_files')
+      .update({ load_in_bbb: loadInBbb })
+      .eq('id', fileId)
+      .select()
+      .single();
+
+    return { data, error };
+  } catch (err) {
+    console.error('Update load_in_bbb failed:', err);
+    return { data: null, error: err };
+  }
+};
+
+/**
  * Delete a course file
  * @param {string} fileId - The file record ID
  * @param {string} filePath - The storage path (if uploaded file)

@@ -54,13 +54,23 @@ serve(async (req) => {
     const meetingID = `peerloop-course-${courseId}`;
     const meetingName = `${courseName} - Live Session`;
 
+    // Build welcome message with file links if files are provided
+    let welcomeMessage = `Welcome to ${meetingName}!`;
+    if (sessionFiles && sessionFiles.length > 0 && baseUrl) {
+      const fileLinks = sessionFiles.map((file: { name: string; url: string }) => {
+        const absoluteUrl = file.url.startsWith('http') ? file.url : `${baseUrl}${file.url}`;
+        return `<br/>• <a href="${absoluteUrl}" target="_blank">${file.name}</a>`;
+      }).join('');
+      welcomeMessage += `<br/><br/><b>Session Materials:</b>${fileLinks}`;
+    }
+
     // Create meeting parameters
     const createParams = {
       meetingID,
       name: meetingName,
       attendeePW: "attendee",
       moderatorPW: "moderator",
-      welcome: `Welcome to ${meetingName}!`,
+      welcome: welcomeMessage,
       record: "false",
     };
 
@@ -74,10 +84,15 @@ serve(async (req) => {
 
     if (sessionFiles && sessionFiles.length > 0 && baseUrl) {
       // Build XML for pre-uploading presentations to BBB
-      const documentXml = sessionFiles.map((file: { name: string; url: string }) => {
+      // BBB requires: current="true" for default, downloadable="true" to show in menu
+      const documentXml = sessionFiles.map((file: { name: string; url: string }, index: number) => {
         // Convert relative URL to absolute URL
         const absoluteUrl = file.url.startsWith('http') ? file.url : `${baseUrl}${file.url}`;
-        return `<document url="${absoluteUrl}" filename="${file.name}.pdf"/>`;
+        // First file is current (default), all are downloadable to appear in + menu
+        const currentAttr = index === 0 ? ' current="true"' : '';
+        // Ensure filename has extension
+        const filename = file.name.includes('.') ? file.name : `${file.name}.pdf`;
+        return `<document url="${absoluteUrl}" filename="${filename}" downloadable="true"${currentAttr}/>`;
       }).join('\n        ');
 
       requestBody = `<?xml version="1.0" encoding="UTF-8"?>
@@ -108,6 +123,42 @@ serve(async (req) => {
         JSON.stringify({ error: "Failed to create meeting", details: createText }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // If meeting already existed (duplicate) and we have files, use insertDocument API
+    // This adds presentations to an existing meeting
+    if (createText.includes("duplicateWarning") && sessionFiles && sessionFiles.length > 0 && baseUrl) {
+      console.log("Meeting already exists, using insertDocument API to add presentations");
+
+      const insertParams = { meetingID };
+      const insertQueryString = buildQueryString(insertParams);
+      const insertChecksum = await generateChecksum("insertDocument", insertQueryString);
+      const insertUrl = `${BBB_URL}insertDocument?${insertQueryString}&checksum=${insertChecksum}`;
+
+      // Build XML for insertDocument - same format as create
+      const documentXml = sessionFiles.map((file: { name: string; url: string }, index: number) => {
+        const absoluteUrl = file.url.startsWith('http') ? file.url : `${baseUrl}${file.url}`;
+        const currentAttr = index === 0 ? ' current="true"' : '';
+        const filename = file.name.includes('.') ? file.name : `${file.name}.pdf`;
+        return `<document url="${absoluteUrl}" filename="${filename}" downloadable="true"${currentAttr}/>`;
+      }).join('\n        ');
+
+      const insertBody = `<?xml version="1.0" encoding="UTF-8"?>
+<modules>
+  <module name="presentation">
+    ${documentXml}
+  </module>
+</modules>`;
+
+      console.log("Inserting documents:", insertBody);
+
+      const insertResponse = await fetch(insertUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/xml" },
+        body: insertBody
+      });
+      const insertText = await insertResponse.text();
+      console.log("insertDocument response:", insertText);
     }
 
     // Build join URL

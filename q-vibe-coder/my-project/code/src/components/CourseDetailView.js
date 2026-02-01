@@ -10,7 +10,7 @@ import './MainContent.css';
  * CourseCurriculumSection - Expandable module accordion grouped by sessions
  * Now includes file download links and "+ Add File" button for creators
  */
-const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpandedModules, isCreator = false, currentUser }) => {
+const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpandedModules, isCreator = false, isEnrolled = false, currentUser }) => {
   const [expandedSessions, setExpandedSessions] = useState({ 1: true, 2: true });
 
   // File upload modal state
@@ -235,16 +235,20 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
       .filter(item => item.session === sessionNum || item.sessionNumber === sessionNum);
   };
 
+  // Encode module index: sessionId * 1000 + lessonId (matches CourseBuilder encoding)
+  const encodeModuleIndex = (sessionId, lessonId) => sessionId * 1000 + lessonId;
+
   // Render a single module row
-  const renderModule = (item, idx, isLastInGroup) => {
+  const renderModule = (item, idx, isLastInGroup, sessionNum = 1, lessonIndexInSession = 0) => {
     const title = typeof item === 'object' ? item.title : item;
     const duration = typeof item === 'object' ? item.duration : '15 min';
     const originalIdx = item.originalIndex !== undefined ? item.originalIndex : idx;
     const isExpanded = expandedModules[originalIdx];
     const details = getModuleDetails(originalIdx, title);
-    // Get files for this module (from item.files array + uploaded files)
+    // Get files for this module using encoded index (sessionId * 1000 + lessonId)
+    const encodedIdx = encodeModuleIndex(sessionNum, lessonIndexInSession + 1);
     const moduleFiles = (typeof item === 'object' && item.files) ? item.files : [];
-    const userUploadedFiles = uploadedFiles[originalIdx] || [];
+    const userUploadedFiles = uploadedFiles[encodedIdx] || [];
 
     return (
       <div key={originalIdx} style={{
@@ -285,8 +289,8 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
               {duration}
             </div>
 
-            {/* File Links Row - Always visible */}
-            {(moduleFiles.length > 0 || userUploadedFiles.length > 0 || isCreator) && (
+            {/* File Links Row - Only visible to enrolled users or creator */}
+            {(isCreator || isEnrolled) && (moduleFiles.length > 0 || userUploadedFiles.length > 0 || isCreator) && (
               <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -360,7 +364,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                       </button>
                       {isCreator && (
                         <button
-                          onClick={(e) => handleDeleteUploadedFile(originalIdx, file, e)}
+                          onClick={(e) => handleDeleteUploadedFile(encodedIdx, file, e)}
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
@@ -385,7 +389,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                 {/* Add File Button - Creator Only */}
                 {isCreator && (
                   <button
-                    onClick={(e) => handleAddFile(originalIdx, e)}
+                    onClick={(e) => handleAddFile(encodedIdx, e)}
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -825,7 +829,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                     overflow: 'hidden'
                   }}>
                     {sessionModules.map((module, idx) =>
-                      renderModule(module, idx, idx === sessionModules.length - 1)
+                      renderModule(module, idx, idx === sessionModules.length - 1, session.number, idx)
                     )}
                   </div>
                 )}
@@ -1157,15 +1161,53 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
   };
 
   // Handle joining a BigBlueButton session via Supabase Edge Function
-  const handleJoinSession = async () => {
+  const handleJoinSession = async (scheduledSessionOrNumber) => {
     if (isJoiningSession || !course) return;
     setIsJoiningSession(true);
+
+    // Extract session number - can be passed as object (from SessionTimelineCards) or number
+    const sessionNumber = typeof scheduledSessionOrNumber === 'object'
+      ? (scheduledSessionOrNumber?.sessionNumber || 1)
+      : (scheduledSessionOrNumber || 1);
 
     try {
       const userName = currentUser?.name || 'Student';
 
+      // Fetch uploaded files from Supabase for this course
+      let sessionFilesForBBB = [];
+      console.log('🔍 Joining session for course:', course.id, 'session:', sessionNumber);
+      try {
+        const { data: courseFiles, error: filesError } = await getCourseFiles(course.id);
+        console.log('📁 Fetched course files:', courseFiles, 'error:', filesError);
+        if (courseFiles && courseFiles.length > 0) {
+          // Get session-level files (module_index = sessionNumber * 1000)
+          // Also include lesson files for this session (module_index between sessionNumber*1000+1 and sessionNumber*1000+999)
+          const sessionModuleStart = sessionNumber * 1000;
+          const sessionModuleEnd = sessionNumber * 1000 + 999;
+          console.log('🔢 Looking for module_index between', sessionModuleStart, 'and', sessionModuleEnd);
+
+          sessionFilesForBBB = courseFiles
+            .filter(file => {
+              const inSession = file.module_index >= sessionModuleStart && file.module_index <= sessionModuleEnd;
+              const loadInBbb = file.load_in_bbb !== false; // Default to true if not set
+              console.log('  File:', file.file_name, 'module_index:', file.module_index, 'inSession:', inSession, 'loadInBbb:', loadInBbb);
+              return inSession && loadInBbb;
+            })
+            .map(file => ({
+              name: file.file_name.replace(/\.[^/.]+$/, ''), // Remove extension for BBB
+              url: file.file_url
+            }));
+          console.log('✅ Session files for BBB:', sessionFilesForBBB);
+        }
+      } catch (err) {
+        console.error('Failed to fetch session files:', err);
+      }
+
+      // Combine with legacy sessionFiles if any
+      const allSessionFiles = [...sessionFilesForBBB, ...(course.sessionFiles || [])];
+      console.log('📤 Sending to BBB:', allSessionFiles);
+
       // Call Supabase Edge Function to create meeting and get join URL
-      // Include sessionFiles if the course has pre-upload materials for BBB
       const response = await fetch('https://vnleonyfgwkfpvprpbqa.supabase.co/functions/v1/bbb-join', {
         method: 'POST',
         headers: {
@@ -1176,7 +1218,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
           courseId: course.id,
           courseName: course.title,
           userName: userName,
-          sessionFiles: course.sessionFiles || [],
+          sessionFiles: allSessionFiles,
           baseUrl: window.location.origin
         })
       });
@@ -2450,11 +2492,10 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                   );
                 })()}
 
-                {/* Session 2 - Locked or Ready based on Session 1 completion */}
+                {/* Session 2 - Now always unlocked */}
                 {(() => {
                   const sessionNum = 2;
-                  const prevSessionComplete = sessionCompletion[course?.id]?.[1]?.completed;
-                  const isLocked = !prevSessionComplete;
+                  const isLocked = false; // Sessions are no longer locked
                   const isExpanded = expandedFileSessions[sessionNum];
                   const sessionData = course?.sessions?.list?.find(s => s.number === sessionNum);
 
@@ -3278,6 +3319,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
             expandedModules={expandedModules}
             setExpandedModules={setExpandedModules}
             isCreator={currentUser?.name === instructor?.name}
+            isEnrolled={isCoursePurchased}
             currentUser={currentUser}
           />
 

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { FaChevronDown, FaChevronRight, FaTrash, FaPlus, FaTimes, FaGripVertical } from 'react-icons/fa';
+import React, { useState, useRef, useEffect } from 'react';
+import { FaChevronDown, FaChevronRight, FaTrash, FaPlus, FaTimes, FaGripVertical, FaUpload, FaFile, FaSpinner } from 'react-icons/fa';
+import { uploadCourseFile, getCourseFiles, deleteCourseFile, formatFileSize, updateFileLoadInBbb } from '../services/courseFiles';
 
 /**
  * CourseBuilder - Full course creation interface with 4 tabs
@@ -111,6 +112,32 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
   const [nextLessonId, setNextLessonId] = useState(
     initialCourse ? getMaxLessonId(convertDbToBuilderFormat(initialCourse)?.sessions || []) + 1 : 1
   );
+
+  // File upload state
+  const [uploadedFiles, setUploadedFiles] = useState({});
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+  const sessionFileInputRef = useRef(null);
+
+  // Load existing files when editing a course
+  useEffect(() => {
+    const loadFiles = async () => {
+      if (initialCourse?.id) {
+        const { data } = await getCourseFiles(initialCourse.id);
+        if (data) {
+          // Group files by moduleIndex (numeric: sessionId * 1000 + lessonId)
+          const grouped = {};
+          data.forEach(file => {
+            const key = file.module_index || 'general';
+            if (!grouped[key]) grouped[key] = [];
+            grouped[key].push(file);
+          });
+          setUploadedFiles(grouped);
+        }
+      }
+    };
+    loadFiles();
+  }, [initialCourse?.id]);
 
   // Colors
   const bgCard = isDarkMode ? '#1e2a3a' : '#ffffff';
@@ -239,6 +266,123 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
 
   const getTypeIcon = (type) => ({ video: '🎬', document: '📄', quiz: '✏️', link: '🔗' }[type] || '📄');
 
+  // File upload handlers
+  // Module index encoding: sessionId * 1000 + lessonId (lesson 0 = session-level files)
+  const encodeModuleIndex = (sessionId, lessonId = 0) => sessionId * 1000 + lessonId;
+  const decodeModuleIndex = (moduleIndex) => ({
+    sessionId: Math.floor(moduleIndex / 1000),
+    lessonId: moduleIndex % 1000
+  });
+
+  const handleFileUpload = async (e, targetType) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Get the lesson's position within its session (1-indexed)
+    const getLessonIndexInSession = () => {
+      const session = courseData.sessions.find(s => s.id === selectedSession);
+      if (!session) return 0;
+      const lessonIdx = session.lessons.findIndex(l => l.id === selectedLesson);
+      return lessonIdx + 1; // 1-indexed to match CourseDetailView
+    };
+
+    // Determine the module index based on what's selected (numeric encoding)
+    let moduleIndex;
+    if (targetType === 'session') {
+      moduleIndex = encodeModuleIndex(selectedSession, 0); // 0 = session-level
+    } else {
+      moduleIndex = encodeModuleIndex(selectedSession, getLessonIndexInSession());
+    }
+
+    setIsUploading(true);
+
+    // Get file type from extension
+    const ext = file.name.split('.').pop().toLowerCase();
+    let fileType = 'document';
+    if (['mp4', 'mov', 'avi', 'webm'].includes(ext)) fileType = 'video';
+    else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) fileType = 'image';
+    else if (['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(ext)) fileType = 'document';
+
+    // Use course ID if editing, or a temp ID for new courses
+    const courseId = initialCourse?.id || `temp-${Date.now()}`;
+    console.log('📤 Uploading file to course:', courseId, 'module_index:', moduleIndex);
+
+    const { data, error } = await uploadCourseFile(
+      file,
+      courseId,
+      moduleIndex,
+      fileType,
+      'Course Creator' // TODO: use actual user name
+    );
+
+    if (data) {
+      setUploadedFiles(prev => ({
+        ...prev,
+        [moduleIndex]: [...(prev[moduleIndex] || []), data]
+      }));
+    } else if (error) {
+      console.error('Upload failed:', error);
+      alert('Upload failed: ' + (error.message || 'Unknown error'));
+    }
+
+    setIsUploading(false);
+    e.target.value = ''; // Reset input
+  };
+
+  const handleDeleteFile = async (fileId, filePath, moduleIndex) => {
+    if (!window.confirm('Delete this file?')) return;
+
+    const { error } = await deleteCourseFile(fileId, filePath);
+    if (!error) {
+      setUploadedFiles(prev => ({
+        ...prev,
+        [moduleIndex]: (prev[moduleIndex] || []).filter(f => f.id !== fileId)
+      }));
+    }
+  };
+
+  const handleToggleLoadInBbb = async (fileId, currentValue, moduleIndex) => {
+    const newValue = !currentValue;
+    const { data, error } = await updateFileLoadInBbb(fileId, newValue);
+    if (!error && data) {
+      setUploadedFiles(prev => ({
+        ...prev,
+        [moduleIndex]: (prev[moduleIndex] || []).map(f =>
+          f.id === fileId ? { ...f, load_in_bbb: newValue } : f
+        )
+      }));
+    }
+  };
+
+  const getLessonModuleIndex = () => {
+    if (!selectedSession || !selectedLesson) return 0;
+    const session = courseData.sessions.find(s => s.id === selectedSession);
+    if (!session) return 0;
+    const lessonIdx = session.lessons.findIndex(l => l.id === selectedLesson);
+    return encodeModuleIndex(selectedSession, lessonIdx + 1);
+  };
+
+  const getFilesForLesson = () => {
+    const key = getLessonModuleIndex();
+    if (!key) return [];
+    return uploadedFiles[key] || [];
+  };
+
+  const getFilesForSession = () => {
+    if (!selectedSession) return [];
+    const key = encodeModuleIndex(selectedSession, 0);
+    return uploadedFiles[key] || [];
+  };
+
+  const getFileIcon = (fileType) => {
+    switch (fileType) {
+      case 'video': return '🎬';
+      case 'image': return '🖼️';
+      case 'document': return '📄';
+      default: return '📁';
+    }
+  };
+
   const inputStyle = { width: '100%', padding: '12px 14px', background: bgInput, border: `1px solid ${border}`, borderRadius: 8, color: textPrimary, fontSize: 14, outline: 'none' };
   const labelStyle = { display: 'block', marginBottom: 8, fontSize: 14, fontWeight: 500, color: textPrimary };
   const sectionStyle = { background: bgCard, borderRadius: 12, padding: 24, marginBottom: 24, border: `1px solid ${border}` };
@@ -362,16 +506,118 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
                     </button>
                   ))}
                 </div>
-                <div style={{ marginTop: 20, border: `2px dashed ${border}`, borderRadius: 10, padding: '48px 24px', textAlign: 'center', cursor: 'pointer', background: bgInput }}>
-                  <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.5 }}>📁</div>
-                  <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 8, color: textPrimary }}>Drag & drop your {getSelectedLesson()?.type || 'content'} here</div>
-                  <div style={{ fontSize: 14, color: textSecondary, marginBottom: 16 }}>or click to browse</div>
-                  <button style={{ padding: '10px 20px', background: accentBlue, color: 'white', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>📤 Choose File</button>
+                <div style={sectionStyle}>
+                  <div style={sectionTitleStyle}>Lesson Files</div>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleFileUpload(e, 'lesson')}
+                  />
+                  <div
+                    onClick={() => !isUploading && fileInputRef.current?.click()}
+                    style={{ border: `2px dashed ${border}`, borderRadius: 10, padding: '32px 24px', textAlign: 'center', cursor: isUploading ? 'wait' : 'pointer', background: bgInput }}
+                  >
+                    {isUploading ? (
+                      <>
+                        <FaSpinner style={{ fontSize: 32, marginBottom: 12, color: accentBlue, animation: 'spin 1s linear infinite' }} />
+                        <div style={{ fontSize: 14, color: textSecondary }}>Uploading...</div>
+                      </>
+                    ) : (
+                      <>
+                        <FaUpload style={{ fontSize: 32, marginBottom: 12, color: textMuted }} />
+                        <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4, color: textPrimary }}>Upload {getSelectedLesson()?.type || 'content'} for this lesson</div>
+                        <div style={{ fontSize: 13, color: textSecondary }}>Click to browse or drag & drop</div>
+                      </>
+                    )}
+                  </div>
+                  {/* Display uploaded files */}
+                  {getFilesForLesson().length > 0 && (
+                    <div style={{ marginTop: 16 }}>
+                      {getFilesForLesson().map(file => (
+                        <div key={file.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: bgInput, borderRadius: 8, marginBottom: 8, border: `1px solid ${border}` }}>
+                          <span style={{ fontSize: 20 }}>{getFileIcon(file.file_type)}</span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 500, color: textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.file_name}</div>
+                            <div style={{ fontSize: 11, color: textMuted }}>{formatFileSize(file.file_size)}</div>
+                          </div>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: textSecondary, cursor: 'pointer' }}>
+                            <input
+                              type="checkbox"
+                              checked={file.load_in_bbb !== false}
+                              onChange={() => handleToggleLoadInBbb(file.id, file.load_in_bbb !== false, getLessonModuleIndex())}
+                              style={{ cursor: 'pointer' }}
+                            />
+                            BBB
+                          </label>
+                          <a href={file.file_url} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 12px', background: accentBlue + '20', color: accentBlue, borderRadius: 6, fontSize: 12, textDecoration: 'none' }}>View</a>
+                          <button onClick={() => handleDeleteFile(file.id, file.file_path, getLessonModuleIndex())} style={{ padding: 6, background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><FaTrash size={12} /></button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </>
           ) : selectedSession ? (
-            <div style={sectionStyle}><div style={sectionTitleStyle}>Session Details</div><label style={labelStyle}>Session Name</label><input type="text" value={getSelectedSessionName()} onChange={(e) => updateSessionName(selectedSession, e.target.value)} style={inputStyle} /></div>
+            <>
+              <div style={sectionStyle}>
+                <div style={sectionTitleStyle}>Session Details</div>
+                <label style={labelStyle}>Session Name</label>
+                <input type="text" value={getSelectedSessionName()} onChange={(e) => updateSessionName(selectedSession, e.target.value)} style={inputStyle} />
+              </div>
+              <div style={sectionStyle}>
+                <div style={sectionTitleStyle}>Session Materials</div>
+                <div style={{ fontSize: 13, color: textSecondary, marginBottom: 16 }}>Upload files that apply to this entire session (PDFs, slides, resources)</div>
+                <input
+                  type="file"
+                  ref={sessionFileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={(e) => handleFileUpload(e, 'session')}
+                />
+                <div
+                  onClick={() => !isUploading && sessionFileInputRef.current?.click()}
+                  style={{ border: `2px dashed ${border}`, borderRadius: 10, padding: '32px 24px', textAlign: 'center', cursor: isUploading ? 'wait' : 'pointer', background: bgInput }}
+                >
+                  {isUploading ? (
+                    <>
+                      <FaSpinner style={{ fontSize: 32, marginBottom: 12, color: accentBlue, animation: 'spin 1s linear infinite' }} />
+                      <div style={{ fontSize: 14, color: textSecondary }}>Uploading...</div>
+                    </>
+                  ) : (
+                    <>
+                      <FaUpload style={{ fontSize: 32, marginBottom: 12, color: textMuted }} />
+                      <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4, color: textPrimary }}>Upload materials for {getSelectedSessionName()}</div>
+                      <div style={{ fontSize: 13, color: textSecondary }}>Click to browse or drag & drop</div>
+                    </>
+                  )}
+                </div>
+                {getFilesForSession().length > 0 && (
+                  <div style={{ marginTop: 16 }}>
+                    {getFilesForSession().map(file => (
+                      <div key={file.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: bgInput, borderRadius: 8, marginBottom: 8, border: `1px solid ${border}` }}>
+                        <span style={{ fontSize: 20 }}>{getFileIcon(file.file_type)}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 13, fontWeight: 500, color: textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.file_name}</div>
+                          <div style={{ fontSize: 11, color: textMuted }}>{formatFileSize(file.file_size)}</div>
+                        </div>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: textSecondary, cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={file.load_in_bbb !== false}
+                            onChange={() => handleToggleLoadInBbb(file.id, file.load_in_bbb !== false, encodeModuleIndex(selectedSession, 0))}
+                            style={{ cursor: 'pointer' }}
+                          />
+                          BBB
+                        </label>
+                        <a href={file.file_url} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 12px', background: accentBlue + '20', color: accentBlue, borderRadius: 6, fontSize: 12, textDecoration: 'none' }}>View</a>
+                        <button onClick={() => handleDeleteFile(file.id, file.file_path, encodeModuleIndex(selectedSession, 0))} style={{ padding: 6, background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><FaTrash size={12} /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             <div style={{ textAlign: 'center', padding: '80px 40px' }}><div style={{ fontSize: 64, marginBottom: 24, opacity: 0.3 }}>📚</div><div style={{ fontSize: 20, fontWeight: 600, marginBottom: 8, color: textPrimary }}>Select a lesson to edit</div><div style={{ color: textSecondary, maxWidth: 400, margin: '0 auto' }}>Click on a lesson from the left, or add a new session to get started.</div></div>
           )}
@@ -455,7 +701,14 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 'calc(100vh - 140px)' }}>
+    <>
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 'calc(100vh - 140px)' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 0', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -483,6 +736,7 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
         {activeTab === 'settings' && renderSettingsTab()}
       </div>
     </div>
+    </>
   );
 };
 

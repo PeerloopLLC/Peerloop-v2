@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { FaCheck, FaLock, FaCalendar } from 'react-icons/fa';
+import { FaCheck, FaLock, FaCalendar, FaSpinner } from 'react-icons/fa';
 
 /**
  * SessionTimelineCards - Displays course sessions as a vertical timeline
@@ -24,6 +24,7 @@ const SessionTimelineCards = ({
   // Reschedule dropdown state
   const [openRescheduleDropdown, setOpenRescheduleDropdown] = useState(null);
   const [rescheduleDropdownPosition, setRescheduleDropdownPosition] = useState({ top: 0, left: 0 });
+  const [joiningSessionId, setJoiningSessionId] = useState(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -93,27 +94,22 @@ const SessionTimelineCards = ({
       return 'scheduled';
     }
 
-    // Check if locked (previous session not completed)
-    if (sessionNumber > 1) {
-      const previousComplete = isSessionComplete(sessionNumber - 1);
-      if (!previousComplete) {
-        return 'locked';
-      }
-    }
-
+    // All sessions are now unlocked - no need to complete previous sessions first
     // Ready to schedule
     return 'ready';
   };
 
   return (
-    <div style={{
-      background: isDarkMode ? '#16181c' : '#fff',
-      borderRadius: 12,
-      border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
-      marginBottom: 16,
-      overflow: 'hidden'
-    }}>
-      {/* Header */}
+    <>
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <div style={{
+        background: isDarkMode ? '#16181c' : '#fff',
+        borderRadius: 12,
+        border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+        marginBottom: 16,
+        overflow: 'hidden'
+      }}>
+        {/* Header */}
       <div style={{
         padding: '12px 16px',
         borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
@@ -252,19 +248,39 @@ const SessionTimelineCards = ({
                 {rowState === 'scheduled' && (
                   <>
                     <button
-                      onClick={() => onJoinSession && onJoinSession(scheduledSession)}
+                      onClick={async () => {
+                        if (joiningSessionId) return;
+                        setJoiningSessionId(scheduledSession.id);
+                        try {
+                          onJoinSession && await onJoinSession(scheduledSession);
+                        } finally {
+                          setJoiningSessionId(null);
+                        }
+                      }}
+                      disabled={joiningSessionId === scheduledSession.id}
                       style={{
-                        background: '#10b981',
+                        background: joiningSessionId === scheduledSession.id ? '#059669' : '#10b981',
                         color: '#fff',
                         border: 'none',
                         padding: '6px 14px',
                         borderRadius: 16,
                         fontSize: 13,
                         fontWeight: 600,
-                        cursor: 'pointer'
+                        cursor: joiningSessionId === scheduledSession.id ? 'wait' : 'pointer',
+                        opacity: joiningSessionId === scheduledSession.id ? 0.8 : 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6
                       }}
                     >
-                      Join
+                      {joiningSessionId === scheduledSession.id ? (
+                        <>
+                          <FaSpinner style={{ animation: 'spin 1s linear infinite' }} />
+                          Joining...
+                        </>
+                      ) : (
+                        'Join'
+                      )}
                     </button>
                     <div className="reschedule-dropdown-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
                       <button
@@ -427,7 +443,8 @@ const SessionTimelineCards = ({
           </span>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 
