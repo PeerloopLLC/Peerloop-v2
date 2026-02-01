@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Builder Wireframe - Full Flow</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f5f5f5;
+            color: #1a1a2e;
+            padding: 40px;
+        }
+        h1 { text-align: center; margin-bottom: 40px; }
+        h2 {
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3B9EE8;
+        }
+        h3 { margin: 20px 0 10px 0; color: #3B9EE8; }
+
+        .wireframe {
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .note {
+            background: #E8F4FC;
+            border-left: 4px solid #3B9EE8;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .section {
+            margin: 40px 0;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab-row {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .tab {
+            padding: 8px 20px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .tab.active {
+            background: #3B9EE8;
+            color: white;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .comparison > div {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>PeerLoop Course Builder - Complete Wireframe</h1>
+
+<!-- ================================================================ -->
+<div class="section">
+<h2>Overview: Builder Tabs</h2>
+
+<p>The course builder has 4 main sections accessed via tabs in the left panel:</p>
+
+<div class="tab-row">
+    <div class="tab active">Intro</div>
+    <div class="tab">Curriculum</div>
+    <div class="tab">Pricing</div>
+    <div class="tab">Settings</div>
+</div>
+
+<div class="note">
+    <strong>Tab Flow:</strong><br>
+    1. <strong>Intro</strong> - Course landing page for buyers (title, description, objectives, thumbnail)<br>
+    2. <strong>Curriculum</strong> - Session/lesson structure from original builder<br>
+    3. <strong>Pricing</strong> - Price and what's included (from original builder)<br>
+    4. <strong>Settings</strong> - Category, tags, visibility, publish status
+</div>
+</div>
+
+<!-- ================================================================ -->
+<div class="section">
+<h2>Tab 1: INTRO (Course Landing Page)</h2>
+
+<p>This is what potential students see before purchasing. All fields here create the course's sales page.</p>
+
+<div class="wireframe">
++--------------------------------------------------+
+| COURSE BUILDER                               [X] |
++--------------------------------------------------+
+| [Intro] [Curriculum] [Pricing] [Settings]        |
++==================================================+
+|                                                  |
+|  COURSE TITLE                                    |
+|  +--------------------------------------------+  |
+|  | AI Tools Overview                          |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  SHORT DESCRIPTION (for cards/search)            |
+|  +--------------------------------------------+  |
+|  | Navigate the world of AI tools with        |  |
+|  | confidence. Learn to evaluate and choose   |  |
+|  | the right tools for your needs.            |  |
+|  +--------------------------------------------+  |
+|  150 characters max                              |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|  COURSE THUMBNAIL                                |
+|  +--------------------------------------------+  |
+|  |                                            |  |
+|  |  [Choose Gradient]  [Upload Image]         |  |
+|  |                                            |  |
+|  |  +--------+  +--------+  +--------+        |  |
+|  |  | Blue   |  | Purple |  | Orange |        |  |
+|  |  +--------+  +--------+  +--------+        |  |
+|  |  +--------+  +--------+  +--------+        |  |
+|  |  | Green  |  | Pink   |  | Custom |        |  |
+|  |  +--------+  +--------+  +--------+        |  |
+|  |                                            |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|  DURATION                    LEVEL               |
+|  +------------------+        +----------------+  |
+|  | 3 hours          |        | Beginner    v |  |
+|  +------------------+        +----------------+  |
+|                                                  |
++--------------------------------------------------+
+</div>
+
+<h3>Intro Tab - Continued (Scroll Down)</h3>
+
+<div class="wireframe">
++--------------------------------------------------+
+|  WHAT STUDENTS WILL LEARN                        |
+|  (Learning Objectives - bullet points)           |
+|                                                  |
+|  +--------------------------------------------+  |
+|  | [+] Understand the major categories of AI  |  |
+|  |     tools available                        |  |
+|  +--------------------------------------------+  |
+|  | [+] Navigate AI writing tools (ChatGPT,    |  |
+|  |     Claude, Gemini) confidently            |  |
+|  +--------------------------------------------+  |
+|  | [+] Know when to use different AI coding   |  |
+|  |     tools                                  |  |
+|  +--------------------------------------------+  |
+|  | [+] Use a decision framework to choose     |  |
+|  |     the right tool for any task            |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  [+ Add Learning Objective]                      |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|  WHAT'S INCLUDED                                 |
+|  (Shows on course card)                          |
+|                                                  |
+|  +--------------------------------------------+  |
+|  | [x] Full course access                     |  |
+|  | [x] 2 live 1-on-1 sessions (90 min each)   |  |
+|  | [x] Hands-on demos with key tools          |  |
+|  | [x] Decision frameworks you can use        |  |
+|  | [x] Lifetime access to materials           |  |
+|  | [x] Certificate of completion              |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  [+ Add Item]                                    |
+|                                                  |
++--------------------------------------------------+
+</div>
+
+<div class="note">
+    <strong>Data Model:</strong> These fields map to database.js structure:
+    <ul style="margin-top: 10px;">
+        <li><code>title</code> - Course title</li>
+        <li><code>description</code> - Short description</li>
+        <li><code>duration</code> - "3 hours", "6 weeks" etc</li>
+        <li><code>level</code> - Beginner/Intermediate/Advanced</li>
+        <li><code>thumbnailGradient</code> or <code>thumbnail</code></li>
+        <li><code>learningObjectives</code> - Array of strings</li>
+        <li><code>includes</code> - Array of what's included</li>
+    </ul>
+</div>
+</div>
+
+<!-- ================================================================ -->
+<div class="section">
+<h2>Tab 2: CURRICULUM (Sessions & Lessons)</h2>
+
+<p>This is the two-panel builder from the original HTML. Left panel shows structure, right panel edits selected item.</p>
+
+<div class="wireframe">
++------------------------+-------------------------------------------+
+| LEFT PANEL (320px)     | RIGHT PANEL (Flexible)                    |
++------------------------+-------------------------------------------+
+| COURSE OUTLINE         | Session: Text & Code AI > Understanding   |
+|                        | AI Categories                             |
+| [Intro][Curriculum]... | ----------------------------------------- |
+|                        |                                           |
+| +--------------------+ | LESSON DETAILS                            |
+| | 1 | Text & Code AI | | +---------------------------------------+ |
+| |   | 4 lessons      | | | Lesson Title                          | |
+| +--------------------+ | | Understanding AI Categories           | |
+|   |                    | +---------------------------------------+ |
+|   +-- Understanding AI | | Duration        | Description          | |
+|   +-- AI Writing Tools | | 20 min          | Major types of AI... | |
+|   +-- AI Coding Tools  | +---------------------------------------+ |
+|   +-- Decision Framew  |                                           |
+|   [+ Add Lesson]       | CONTENT TYPE                              |
+|                        | +------+ +------+ +------+ +------+       |
+| +--------------------+ | |Video | | Doc  | | Quiz | | Link |       |
+| | 2 | Visual AI      | | +------+ +------+ +------+ +------+       |
+| |   | 4 lessons      | |                                           |
+| +--------------------+ | UPLOAD CONTENT                            |
+|                        | +---------------------------------------+ |
+| [+ Add Session]        | |                                       | |
+|                        | |  Drag & drop your video here          | |
+|                        | |  or click to browse                   | |
+|                        | |                                       | |
+|                        | |  [Choose File]                        | |
+|                        | |                                       | |
+|                        | +---------------------------------------+ |
+|                        |                                           |
+|                        | ADDITIONAL RESOURCES                      |
+|                        | +---------------------------------------+ |
+|                        | | worksheet.pdf                    [x]  | |
+|                        | +---------------------------------------+ |
+|                        | [+ Add Resource]                          |
++------------------------+-------------------------------------------+
+</div>
+
+<div class="note">
+    <strong>Key Features:</strong>
+    <ul style="margin-top: 10px;">
+        <li>Drag handles for reordering sessions and lessons</li>
+        <li>Inline editing of session/lesson names</li>
+        <li>Chevron to expand/collapse sessions</li>
+        <li>Delete buttons on hover</li>
+        <li>Content type icons (video, doc, quiz, link)</li>
+        <li>File upload with drag-and-drop</li>
+    </ul>
+</div>
+</div>
+
+<!-- ================================================================ -->
+<div class="section">
+<h2>Tab 3: PRICING</h2>
+
+<p>From the original builder - set price and what's included with purchase.</p>
+
+<div class="wireframe">
++--------------------------------------------------+
+| [Intro] [Curriculum] [Pricing] [Settings]        |
++==================================================+
+|                                                  |
+|  COURSE PRICE                                    |
+|  +--------------------------------------------+  |
+|  |  $  | 249                                  |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|  WHAT'S INCLUDED                                 |
+|                                                  |
+|  +--------------------------------------------+  |
+|  | [x]  Course Content                        |  |
+|  |      All video lessons, documents, and     |  |
+|  |      materials                             |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  +--------------------------------------------+  |
+|  | [x]  Community Access                      |  |
+|  |      Access to community discussions       |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  +--------------------------------------------+  |
+|  | [ ]  1-on-1 Sessions                       |  |
+|  |      Include live tutoring sessions        |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  +--------------------------------------------+  |
+|  | [x]  Certificate                           |  |
+|  |      Completion certificate for students   |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|  DISCOUNT OPTIONS                                |
+|                                                  |
+|  +--------------------------------------------+  |
+|  | [ ]  Early Bird Pricing                    |  |
+|  |      Discount for first 50 students        |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  +--------------------------------------------+  |
+|  | [ ]  Community Member Discount             |  |
+|  |      Special pricing for existing members  |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|  PRICE PREVIEW                                   |
+|  +--------------------------------------------+  |
+|  | Base Price              $249.00            |  |
+|  | Platform Fee (10%)      -$24.90            |  |
+|  | ------------------------------------------ |  |
+|  | You Earn                $224.10            |  |
+|  +--------------------------------------------+  |
+|                                                  |
++--------------------------------------------------+
+</div>
+</div>
+
+<!-- ================================================================ -->
+<div class="section">
+<h2>Tab 4: SETTINGS</h2>
+
+<p>Category, tags, and publish controls.</p>
+
+<div class="wireframe">
++--------------------------------------------------+
+| [Intro] [Curriculum] [Pricing] [Settings]        |
++==================================================+
+|                                                  |
+|  CATEGORY                                        |
+|  +--------------------------------------------+  |
+|  | AI Tools                               v   |  |
+|  +--------------------------------------------+  |
+|  Available: AI Tools, AI Coding, Machine Learning|
+|  Automation, Developer Tools, Business Analytics |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|  TAGS (help students find your course)           |
+|  +--------------------------------------------+  |
+|  | [AI Tools] [ChatGPT] [Claude] [x] [x] [+]  |  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|  SESSIONS FORMAT                                 |
+|  +--------------------------------------------+  |
+|  | Session Count   | 2                        |  |
+|  | Duration Each   | 90 min                   |  |
+|  | Format          | Live 1-on-1 via video   v|  |
+|  +--------------------------------------------+  |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|  VISIBILITY                                      |
+|                                                  |
+|  ( ) Draft - Only you can see this course        |
+|  ( ) Unlisted - Only people with link            |
+|  (o) Published - Visible in Discover             |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|  BADGE (optional)                                |
+|  +--------------------------------------------+  |
+|  | New                                    v   |  |
+|  +--------------------------------------------+  |
+|  Available: None, New, Featured, Bestseller,     |
+|  Popular                                         |
+|                                                  |
+|  ------------------------------------------------|
+|                                                  |
+|       [Preview Course]    [Save as Draft]        |
+|                                                  |
+|          [ Publish Course ]                      |
+|                                                  |
++--------------------------------------------------+
+</div>
+</div>
+
+<!-- ================================================================ -->
+<div class="section">
+<h2>Course Preview: What Students See</h2>
+
+<p>This shows how the intro section appears to potential buyers in Discover.</p>
+
+<div class="comparison">
+<div>
+<h3>Card View (Discover Grid)</h3>
+<div class="wireframe" style="font-size: 12px;">
++---------------------------+
+|  [Gradient Background]    |
+|                           |
+|        AI Tools           |
+|        Overview           |
+|                           |
++---------------------------+
+| AI Tools Overview         |
+| Navigate the world of AI  |
+| tools with confidence...  |
+|                           |
+| Guy Rymberg               |
+| * 4.8 (127 reviews)       |
+|                           |
+| $249     [New]            |
++---------------------------+
+</div>
+</div>
+
+<div>
+<h3>Full Page View (After Click)</h3>
+<div class="wireframe" style="font-size: 12px;">
++---------------------------+
+| [Back]                    |
++---------------------------+
+| AI Tools Overview         |
+| Navigate the world of...  |
+|                           |
+| [Gradient]  3 hours       |
+|             Beginner      |
+|             * 4.8         |
++---------------------------+
+| WHAT YOU'LL LEARN         |
+| * Understand AI categories|
+| * Navigate ChatGPT, Claude|
+| * Decision framework      |
++---------------------------+
+| CURRICULUM                |
+| Session 1: Text & Code AI |
+|   - Understanding AI...   |
+|   - AI Writing Tools      |
+| Session 2: Visual AI      |
++---------------------------+
+| WHAT'S INCLUDED           |
+| * Full course access      |
+| * 2 live 1-on-1 sessions  |
+| * Certificate             |
++---------------------------+
+| $249  [Enroll Now]        |
++---------------------------+
+</div>
+</div>
+</div>
+</div>
+
+<!-- ================================================================ -->
+<div class="section">
+<h2>Complete User Flow</h2>
+
+<div class="wireframe">
++------------------------------------------------------------------+
+|                                                                  |
+|  STEP 1: Click "Create Course" in Workspace > Content            |
+|          |                                                       |
+|          v                                                       |
+|  +--------------------+                                          |
+|  | Quick Start Modal  |                                          |
+|  | "Enter course name"|                                          |
+|  | [____________]     |                                          |
+|  | [Continue]         |                                          |
+|  +--------------------+                                          |
+|          |                                                       |
+|          v                                                       |
+|  STEP 2: INTRO TAB (auto-selected)                              |
+|          - Fill in title, description, thumbnail                 |
+|          - Add learning objectives                               |
+|          - Add what's included                                   |
+|          |                                                       |
+|          v                                                       |
+|  STEP 3: CURRICULUM TAB                                          |
+|          - Add sessions (grouped lessons)                        |
+|          - Add lessons to each session                           |
+|          - Upload content (video, docs, quizzes)                 |
+|          - Add resources to lessons                              |
+|          |                                                       |
+|          v                                                       |
+|  STEP 4: PRICING TAB                                             |
+|          - Set course price                                      |
+|          - Choose what's included in purchase                    |
+|          - Configure discounts (optional)                        |
+|          |                                                       |
+|          v                                                       |
+|  STEP 5: SETTINGS TAB                                            |
+|          - Select category and tags                              |
+|          - Configure session format                              |
+|          - Set visibility (Draft/Unlisted/Published)             |
+|          |                                                       |
+|          v                                                       |
+|  STEP 6: PREVIEW & PUBLISH                                       |
+|          - Preview how students see the course                   |
+|          - Publish to make visible in Discover                   |
+|                                                                  |
++------------------------------------------------------------------+
+</div>
+</div>
+
+<!-- ================================================================ -->
+<div class="section">
+<h2>Data Structure Summary</h2>
+
+<p>How the builder fields map to the course object in database.js:</p>
+
+<div class="wireframe">
+{
+  // INTRO TAB
+  id: 22,                    // auto-generated
+  title: "AI Tools Overview",
+  description: "Navigate the world of AI tools...",
+  duration: "3 hours",
+  level: "Beginner",
+  thumbnailGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  learningObjectives: [
+    "Understand the major categories of AI tools",
+    "Navigate AI writing tools confidently",
+    ...
+  ],
+  includes: [
+    "Full course access",
+    "2 live 1-on-1 sessions",
+    ...
+  ],
+
+  // CURRICULUM TAB
+  sessions: {
+    count: 2,
+    duration: "90 min each",
+    format: "Live 1-on-1 via video call",
+    list: [
+      { number: 1, title: "Text & Code AI", modules: [...] },
+      { number: 2, title: "Visual AI", modules: [...] }
+    ]
+  },
+  curriculum: [
+    { session: 1, module: 1, title: "...", duration: "20 min", description: "..." },
+    ...
+  ],
+
+  // PRICING TAB
+  price: "$249",
+  pricingOptions: {
+    content: true,
+    community: true,
+    sessions: false,
+    certificate: true
+  },
+
+  // SETTINGS TAB
+  category: "AI Tools",
+  tags: ["AI Tools", "ChatGPT", "Claude", ...],
+  badge: "New",
+  instructorId: 8,           // auto-set to current user
+
+  // AUTO-GENERATED
+  rating: 0,                 // starts at 0
+  ratingCount: 0,
+  students: 0
+}
+</div>
+</div>
+
+<!-- ================================================================ -->
+<div class="section">
+<h2>Implementation Approach</h2>
+
+<div class="note">
+<strong>Option A: Add Intro Tab to Existing Builder</strong><br>
+Extend the interactive HTML with a new "Intro" tab. Keep Curriculum and Pricing tabs as-is.
+
+<ul style="margin-top: 10px;">
+    <li>Add tab switching for 4 tabs: Intro, Curriculum, Pricing, Settings</li>
+    <li>Intro tab contains form fields for description, objectives, includes</li>
+    <li>Thumbnail picker with gradient presets</li>
+    <li>Dynamic list management for objectives and includes</li>
+</ul>
+</div>
+
+<div class="note">
+<strong>Option B: Wizard Flow (Step by Step)</strong><br>
+Guide creators through each section in order.
+
+<ul style="margin-top: 10px;">
+    <li>Step 1: Basic Info (title, description, thumbnail)</li>
+    <li>Step 2: Learning Objectives</li>
+    <li>Step 3: Curriculum (sessions & lessons)</li>
+    <li>Step 4: Pricing</li>
+    <li>Step 5: Settings & Publish</li>
+    <li>Progress bar at top</li>
+</ul>
+</div>
+</div>
+
+</body>
+</html>

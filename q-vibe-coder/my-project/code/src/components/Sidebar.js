@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import './Sidebar.css';
-import {  FaSearch,  FaBell,  FaEnvelope,  FaUser,  FaUsers,  FaChalkboardTeacher,  FaBook,  FaInfoCircle,  FaCog,  FaEllipsisH} from 'react-icons/fa';
+import {  FaSearch,  FaBell,  FaEnvelope,  FaUser,  FaUsers,  FaChalkboardTeacher,  FaInfoCircle,  FaCog,  FaEllipsisH} from 'react-icons/fa';
+import { MdSchool } from 'react-icons/md';
 import useDeviceDetect from '../hooks/useDeviceDetect';
 import PostComposeModal from './PostComposeModal';
 import { getInstructorById } from '../data/database';
@@ -527,7 +528,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
             handleMenuClick('My Courses');
           }}
         >
-          <div className="nav-icon"><FaBook /></div>
+          <div className="nav-icon"><MdSchool /></div>
           <span className="nav-label">My Courses</span>
         </div>
 

@@ -10,6 +10,14 @@
  * Price Range: $300-600 (1-on-1 tutoring pricing)
  */
 
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client for database operations
+const supabase = createClient(
+  'https://vnleonyfgwkfpvprpbqa.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZubGVvbnlmZ3drZnB2cHJwYnFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNDM2OTIsImV4cCI6MjA4MDYxOTY5Mn0.aunUqqZJTYGBIXjPT2_V_CtaBpmF61-IkEhkPvJdEu8'
+);
+
 // =============================================================================
 // GLOBAL ICON CONFIGURATION
 // Change these values to update icons across the entire app
@@ -289,7 +297,7 @@ export const instructorsDatabase = [
       averageRating: 4.9,
       totalReviews: 127
     },
-    courses: [15, 22, 23, 24, 25] // AI Prompting Mastery, AI Tools Overview, Intro to Claude Code, Intro to n8n, Vibe Coding 101
+    courses: [] // User creates their own courses via CourseBuilder
   },
   {
     id: 9,
@@ -1059,109 +1067,6 @@ export const coursesDatabase = [
     ]
   },
   {
-    id: 15,
-    title: "AI Prompting Mastery",
-    description: "Write effective AI prompts for business productivity. Master prompt engineering and build your own prompt library.",
-    duration: "4-6 weeks",
-    level: "Intermediate",
-    rating: 4.9,
-    ratingCount: 127,
-    students: 127,
-    price: "$450",
-    badge: "New",
-    thumbnail: "https://via.placeholder.com/300x200/1d9bf0/ffffff?text=AI+Prompting",
-    thumbnailGradient: "linear-gradient(135deg, #1d9bf0 0%, #60a5fa 100%)",
-    instructorId: 8, // Links to Guy Rymberg
-    category: "AI & Prompt Engineering",
-    tags: ["AI Prompting", "Prompt Engineering", "ChatGPT", "LLM", "Business AI", "Productivity"],
-    peerloopFeatures: {
-      oneOnOneTeaching: true,
-      certifiedTeachers: true,
-      earnWhileTeaching: true,
-      teacherCommission: "70%"
-    },
-    sessions: {
-      count: 2,
-      duration: "90 min each",
-      format: "Live 1-on-1 via video call",
-      list: [
-        { number: 1, title: "Foundations & Frameworks", duration: "90 min", modules: [1, 2] },
-        { number: 2, title: "Advanced Techniques & Library Building", duration: "90 min", modules: [3, 4, 5] }
-      ]
-    },
-    // Files to automatically upload to BigBlueButton when joining a session
-    sessionFiles: [
-      {
-        name: "AI Short Course Sample Material",
-        filename: "AI-Short-Course-Sample-Material.pdf",
-        url: "https://vnleonyfgwkfpvprpbqa.supabase.co/storage/v1/object/public/session-files/AI-Short-Course-Sample-Material.pdf"
-      }
-    ],
-    learningObjectives: [
-      "Fundamentals of prompt engineering",
-      "Advanced techniques for business applications",
-      "Building your own prompt library",
-      "Iteration and refinement strategies",
-      "Context and constraint design",
-      "Real-world AI use cases"
-    ],
-    curriculum: [
-      {
-        title: "Module 1: Foundations",
-        duration: "Week 1",
-        description: "What is AI prompting, your first prompts, and the prompt framework guide.",
-        videos: 2,
-        readings: 1,
-        sessionNumber: 1
-      },
-      {
-        title: "Module 2: Intermediate Techniques",
-        duration: "Week 2",
-        description: "Context and constraints, iteration strategies, and 50 prompt templates.",
-        videos: 2,
-        readings: 1,
-        sessionNumber: 1
-      },
-      {
-        title: "Module 3: Advanced Applications",
-        duration: "Week 3",
-        description: "Business use cases, building AI workflows, and automation patterns.",
-        videos: 2,
-        readings: 1,
-        sessionNumber: 2
-      },
-      {
-        title: "Module 4: Specialization",
-        duration: "Week 4",
-        description: "Industry-specific prompting, custom GPT creation, and prompt library design.",
-        videos: 2,
-        readings: 1,
-        sessionNumber: 2
-      },
-      {
-        title: "Module 5: Certification Prep",
-        duration: "Week 5-6",
-        description: "Final assessment, portfolio review, and becoming a certified Student-Teacher.",
-        videos: 1,
-        assessment: true,
-        sessionNumber: 2
-      }
-    ],
-    studentTeachers: [
-      { name: "Marcus Chen", studentsTaught: 12, certifiedDate: "December 2024" },
-      { name: "Jessica Torres", studentsTaught: 8, certifiedDate: "November 2024" },
-      { name: "Alex Rivera", studentsTaught: 5, certifiedDate: "January 2025" }
-    ],
-    includes: [
-      "Full course access",
-      "1-on-1 peer teaching sessions",
-      "Certificate on completion",
-      "Lifetime access to materials",
-      "Access to prompt library templates",
-      "Discord community access"
-    ]
-  },
-  {
     id: 16,
     title: "AI for Beginners",
     description: "Understand AI fundamentals without any coding required. Perfect for professionals wanting to leverage AI in business.",
@@ -1395,244 +1300,6 @@ export const coursesDatabase = [
       { title: "Advanced AI Patterns", duration: "2h 15min", description: "Chains, memory, and complex AI tasks" }
     ]
   },
-  {
-    id: 22,
-    title: "AI Tools Overview",
-    description: "Navigate the world of AI tools with confidence. Learn to evaluate and choose the right tools for your needs.",
-    duration: "3 hours",
-    level: "Beginner",
-    rating: 4.8,
-    ratingCount: 0,
-    students: 0,
-    price: "$249",
-    badge: "New",
-    thumbnail: "https://via.placeholder.com/300x200/667eea/ffffff?text=AI+Tools",
-    thumbnailGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    instructorId: 8,
-    category: "AI Tools",
-    tags: ["AI Tools", "ChatGPT", "Claude", "AI Coding", "AI Image Generation", "AI Video", "Tool Selection", "Beginner"],
-    peerloopFeatures: {
-      oneOnOneTeaching: true,
-      certifiedTeachers: true,
-      earnWhileTeaching: true,
-      teacherCommission: "70%"
-    },
-    sessions: {
-      count: 2,
-      duration: "90 min each",
-      format: "Live 1-on-1 via video call",
-      list: [
-        { number: 1, title: "Text & Code AI", duration: "90 min", modules: [1, 2, 3, 4] },
-        { number: 2, title: "Visual AI & Your Personal Toolkit", duration: "90 min", modules: [5, 6, 7, 8] }
-      ]
-    },
-    learningObjectives: [
-      "Understand the major categories of AI tools available",
-      "Navigate AI writing tools (ChatGPT, Claude, Gemini) confidently",
-      "Know when to use different AI coding tools",
-      "Understand AI image and video generation capabilities",
-      "Use a decision framework to choose the right tool for any task",
-      "Build a personal AI toolkit matched to your needs",
-      "Evaluate new AI tools without getting overwhelmed",
-      "Stay current with AI developments strategically"
-    ],
-    curriculum: [
-      { session: 1, module: 1, title: "Understanding AI Categories & Reducing Overwhelm", duration: "20 min", description: "Major types of AI tools (Text, Code, Visual, Productivity, Voice), framework for thinking about tools, strategies to avoid overwhelm and analysis paralysis" },
-      { session: 1, module: 2, title: "AI Writing Tools", duration: "30 min", description: "ChatGPT, Claude, Gemini, Perplexity - key differences, context windows, pricing, when to use which. Hands-on: compare same prompt across tools" },
-      { session: 1, module: 3, title: "AI Coding Tools", duration: "25 min", description: "Claude Code, Cursor, GitHub Copilot, Windsurf, v0, Bolt.new - interface differences, autonomy levels, skill requirements. Demo: watch AI coding in action" },
-      { session: 1, module: 4, title: "Decision Framework - Choosing the Right Tool", duration: "15 min", description: "7-step tool selection framework, key decision criteria (cost, privacy, integration), common mistakes to avoid, building your toolkit strategy" },
-      { session: 2, module: 5, title: "AI Image & Video Generation", duration: "30 min", description: "Midjourney, DALL-E, Stable Diffusion, Runway, Pika, Sora - capabilities, limitations, use cases, when AI vs traditional tools" },
-      { session: 2, module: 6, title: "Other AI Tools Landscape", duration: "20 min", description: "Productivity (Notion AI, Otter.ai), Research (Perplexity, Elicit), Voice (ElevenLabs), Design (Canva AI, Framer) - quick overview of what exists" },
-      { session: 2, module: 7, title: "Building Your Personal AI Toolkit", duration: "20 min", description: "Tier 1/2/3 toolkit strategy, matching tools to workflow, learning strategy, budget planning, common toolkit examples by profession" },
-      { session: 2, module: 8, title: "Staying Current Without Overwhelm", duration: "20 min", description: "New tool evaluation framework, staying informed strategically, avoiding FOMO, quarterly review process, quality resources to follow" }
-    ],
-    includes: [
-      "Full course access",
-      "2 live 1-on-1 sessions (90 min each)",
-      "Hands-on demos with key tools",
-      "Decision frameworks you can use immediately",
-      "Lifetime access to course materials",
-      "Certificate of completion",
-      "Personalized recommendations"
-    ]
-  },
-  {
-    id: 23,
-    title: "Intro to Claude Code",
-    description: "Harness AI-assisted development with Claude's terminal tool. Build real applications through natural conversation with AI.",
-    duration: "3 hours",
-    level: "Beginner",
-    rating: 4.9,
-    ratingCount: 0,
-    students: 0,
-    price: "$249",
-    badge: "New",
-    thumbnail: "https://via.placeholder.com/300x200/1d9bf0/ffffff?text=Claude+Code",
-    thumbnailGradient: "linear-gradient(135deg, #0d4f6e 0%, #0891b2 100%)",
-    instructorId: 8,
-    category: "AI Coding",
-    tags: ["AI Coding Assistant", "Terminal Tools", "Beginner", "No-Code", "Automation", "Claude AI"],
-    peerloopFeatures: {
-      oneOnOneTeaching: true,
-      certifiedTeachers: true,
-      earnWhileTeaching: true,
-      teacherCommission: "70%"
-    },
-    sessions: {
-      count: 2,
-      duration: "90 min each",
-      format: "Live 1-on-1 via video call",
-      list: [
-        { number: 1, title: "Foundation & Core Concepts", duration: "90 min", modules: [1, 2, 3, 4] },
-        { number: 2, title: "Advanced Techniques & Workflows", duration: "90 min", modules: [5, 6, 7] }
-      ]
-    },
-    learningObjectives: [
-      "Install and configure Claude Code on any system",
-      "Write effective prompts to generate clean code",
-      "Manage project context for accurate AI responses",
-      "Use planning and thinking modes for complex tasks",
-      "Create custom commands for repeated workflows",
-      "Build real projects with AI assistance"
-    ],
-    curriculum: [
-      { session: 1, module: 1, title: "Introduction & Setup", duration: "20 min", description: "What is Claude Code, why vs Cursor/Copilot/Windsurf, pricing plans, installation via npm, authentication workflow, VS Code integration" },
-      { session: 1, module: 2, title: "CLAUDE.md Files & Project Memory", duration: "20 min", description: "The /init command, what goes into CLAUDE.md (architecture, structure, conventions), project vs local vs global memory, adding memories with # symbol" },
-      { session: 1, module: 3, title: "Understanding Context", duration: "25 min", description: "What context is and why it matters, adding files with @, adding images, context bloat problems, /clear, /compact, /exit, /resume, 200K token limits" },
-      { session: 1, module: 4, title: "Tools & Permissions", duration: "20 min", description: "Built-in tools (read, edit, bash, write), permission prompts, settings.local.json, adding allowed commands, Alt+M accept edits mode" },
-      { session: 2, module: 5, title: "Planning & Thinking Modes", duration: "30 min", description: "Plan Mode (Alt+M twice), wide vs narrow scope tasks, reviewing plans. Thinking modes: think, think hard, think harder, ultra think - when each helps" },
-      { session: 2, module: 6, title: "Slash Commands & Customization", duration: "25 min", description: "Built-in commands (/clear, /compact, /memory, /init, /model, /terminal setup, /add dir), creating custom commands in .claude/commands/, using $arguments" },
-      { session: 2, module: 7, title: "Real-World Project Workflow", duration: "30 min", description: "Capstone: Build complete project applying everything learned. Initialize, create CLAUDE.md, use Plan Mode, implement iteratively, manage context, debug" }
-    ],
-    includes: [
-      "Full course access",
-      "2 live 1-on-1 sessions (90 min each)",
-      "Hands-on exercises during each session",
-      "Homework projects between sessions",
-      "Lifetime access to course materials",
-      "Certificate of completion"
-    ]
-  },
-  {
-    id: 24,
-    title: "Intro to n8n",
-    description: "Automate workflows and connect apps without writing code. Build automations through a simple drag-and-drop interface.",
-    duration: "3 hours",
-    level: "Beginner",
-    rating: 4.85,
-    ratingCount: 0,
-    students: 0,
-    price: "$249",
-    badge: "New",
-    thumbnail: "https://via.placeholder.com/300x200/EA580C/ffffff?text=n8n+101",
-    thumbnailGradient: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)",
-    instructorId: 8,
-    category: "Workflow Automation",
-    tags: ["Workflow Automation", "No-Code", "n8n", "App Integration", "Business Automation", "Productivity"],
-    peerloopFeatures: {
-      oneOnOneTeaching: true,
-      certifiedTeachers: true,
-      earnWhileTeaching: true,
-      teacherCommission: "70%"
-    },
-    sessions: {
-      count: 2,
-      duration: "90 min each",
-      format: "Live 1-on-1 via video call",
-      list: [
-        { number: 1, title: "Foundations & First Workflows", duration: "90 min", modules: [1, 2, 3, 4] },
-        { number: 2, title: "Advanced Workflows & Real Projects", duration: "90 min", modules: [5, 6, 7, 8] }
-      ]
-    },
-    learningObjectives: [
-      "Set up and navigate the n8n platform confidently",
-      "Build automated workflows connecting multiple apps",
-      "Use triggers, actions, and conditional logic in workflows",
-      "Integrate popular apps (Gmail, Google Sheets, Slack, Notion)",
-      "Handle credentials and security properly",
-      "Test, debug, and troubleshoot workflows",
-      "Use n8n's template library for quick automation",
-      "Build a complete form response handler with email notifications"
-    ],
-    curriculum: [
-      { session: 1, module: 1, title: "What is n8n & Platform Setup", duration: "20 min", description: "Workflow automation explained, n8n vs Zapier/Make, cloud vs self-hosted, Editor UI tour (canvas, node panel, workflow controls, executions)" },
-      { session: 1, module: 2, title: "Core Concepts & Understanding Data", duration: "25 min", description: "What nodes are, triggers vs actions, data structure in n8n (JSON), how data flows between nodes, workflow execution and history" },
-      { session: 1, module: 3, title: "Building Your First Workflows", duration: "25 min", description: "Simple 2-node workflow (Schedule Trigger + Action), configuring node settings, saving and activating workflows. Build: Daily Slack Reminder" },
-      { session: 1, module: 4, title: "Triggers & Data Flow", duration: "20 min", description: "Trigger types (Schedule, Webhook, App, Manual), working with app triggers (Gmail, Forms, Slack), using trigger data in subsequent nodes. Build: Email Notification workflow" },
-      { session: 2, module: 5, title: "App Integrations & Credentials", duration: "20 min", description: "OAuth vs API key authentication, storing credentials safely, Google Sheets integration (read, append, update). Build: Data Logger workflow" },
-      { session: 2, module: 6, title: "Conditional Logic & Multi-Step Workflows", duration: "25 min", description: "IF node (conditions, true/false branches), Switch node (multiple paths), data transformation (Set, Filter nodes). Build: Smart Email Router" },
-      { session: 2, module: 7, title: "Testing, Debugging & Templates", duration: "20 min", description: "Testing workflows effectively, common errors (credentials, missing data, rate limits), debugging strategies, n8n template library" },
-      { session: 2, module: 8, title: "Final Project - Automated Form Response Handler", duration: "25 min", description: "Capstone: Google Forms trigger → IF node (priority check) → Google Sheets → Slack notification → confirmation email. Complete production-ready automation" }
-    ],
-    includes: [
-      "Full course access",
-      "2 live 1-on-1 sessions (90 min each)",
-      "Hands-on building during every session",
-      "Practice workflows between sessions",
-      "Lifetime access to course materials",
-      "Certificate of completion",
-      "Personalized automation recommendations"
-    ]
-  },
-  {
-    id: 25,
-    title: "Vibe Coding 101",
-    description: "Build and deploy real websites using AI as your partner. Master the 6-phase methodology from idea to production.",
-    duration: "3 hours",
-    level: "Intermediate",
-    rating: 4.9,
-    ratingCount: 0,
-    students: 0,
-    price: "$249",
-    badge: "New",
-    thumbnail: "https://via.placeholder.com/300x200/10B981/ffffff?text=Vibe+Coding",
-    thumbnailGradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-    instructorId: 8,
-    category: "AI Development",
-    tags: ["Vibe Coding", "AI Development", "GitHub", "Vercel Deployment", "Web Development", "Project Planning", "Q-System"],
-    peerloopFeatures: {
-      oneOnOneTeaching: true,
-      certifiedTeachers: true,
-      earnWhileTeaching: true,
-      teacherCommission: "70%"
-    },
-    sessions: {
-      count: 2,
-      duration: "90 min each",
-      format: "Live 1-on-1 via video call",
-      list: [
-        { number: 1, title: "Planning & Setup", duration: "90 min", modules: [1, 2, 3, 4] },
-        { number: 2, title: "Building & Deployment", duration: "90 min", modules: [5, 6, 7, 8] }
-      ]
-    },
-    learningObjectives: [
-      "Plan and architect web projects with AI guidance",
-      "Build complete websites using the 6-phase vibe coding methodology",
-      "Set up GitHub repositories and manage code with git",
-      "Deploy production websites to Vercel",
-      "Troubleshoot and debug AI-generated code effectively",
-      "Understand tool limitations and when to use integrations",
-      "Use Q-System for session management across long projects",
-      "Make strategic technical decisions (deployment, stack, architecture)"
-    ],
-    curriculum: [
-      { session: 1, module: 1, title: "Vibe Coding Mindset & Philosophy", duration: "20 min", description: "What vibe coding is (directing AI strategically), the taste principle, common mistakes, when AI excels vs manual coding, role of structure" },
-      { session: 1, module: 2, title: "Project Planning with Claude", duration: "25 min", description: "The 6-phase methodology (Vision→Constraints→Architecture→Building→Testing→Deployment), strategic upfront decisions, q-vibe-coder template setup" },
-      { session: 1, module: 3, title: "Tool Limitations & When to Use What", duration: "20 min", description: "AI limitations (what requires caution), tool integration (design tools, libraries, APIs), Q-System session management (/q-begin, /q-end, /q-checkpoint)" },
-      { session: 1, module: 4, title: "Setting Up Your First Project - GitHub & Vercel", duration: "25 min", description: "GitHub repo creation, git basics (commit, push, pull), Vercel connection, project initialization (Next.js + Tailwind), first deploy" },
-      { session: 2, module: 5, title: "Building with Claude - Component by Component", duration: "30 min", description: "Iterative development workflow, providing clear instructions, staying in scope, git workflow (commit after each feature), tracking in project.md" },
-      { session: 2, module: 6, title: "Troubleshooting & Problem-Solving", duration: "25 min", description: "Common errors (build failures, deployment issues, styling problems), debugging strategies, git recovery (reverting, undoing), when to simplify" },
-      { session: 2, module: 7, title: "Refining & Polishing Your Project", duration: "20 min", description: "Phase 5 Testing (functional, error handling, visual, UX), iterative refinement, visual polish (spacing, typography, responsiveness), edge cases" },
-      { session: 2, module: 8, title: "Deploy to Production & Final Review", duration: "15 min", description: "Phase 6 Deployment verification, Vercel dashboard, custom domains (optional), maintenance workflow, planning v2 features" }
-    ],
-    includes: [
-      "Full course access",
-      "2 live 1-on-1 sessions (90 min each)",
-      "Hands-on building during each session",
-      "Lifetime access to course materials and q-vibe-coder template",
-      "Certificate of completion"
-    ]
-  }
 ];
 
 /**
@@ -1745,4 +1412,388 @@ export const getIndexedInstructors = () => {
       ...(instructor.stats ? Object.values(instructor.stats).map(String) : [])
     ].join(' ').toLowerCase()
   }));
+};
+
+// ============================================
+// COURSE MANAGEMENT FUNCTIONS
+// ============================================
+
+const CREATOR_COURSES_KEY = 'peerloop_creator_courses';
+
+/**
+ * Load user-created courses from localStorage and merge with database
+ */
+const loadCreatorCourses = () => {
+  try {
+    const stored = localStorage.getItem(CREATOR_COURSES_KEY);
+    if (stored) {
+      const creatorCourses = JSON.parse(stored);
+      // Add creator courses to database if not already present
+      creatorCourses.forEach(course => {
+        if (!coursesDatabase.find(c => c.id === course.id)) {
+          coursesDatabase.push(course);
+        }
+      });
+    }
+  } catch (e) {
+    console.error('Error loading creator courses:', e);
+  }
+};
+
+/**
+ * Save creator courses to localStorage
+ */
+const saveCreatorCourses = () => {
+  try {
+    // Get all courses created by instructors (those with isCreatorCourse flag)
+    const creatorCourses = coursesDatabase.filter(c => c.isCreatorCourse);
+    localStorage.setItem(CREATOR_COURSES_KEY, JSON.stringify(creatorCourses));
+  } catch (e) {
+    console.error('Error saving creator courses:', e);
+  }
+};
+
+// Load creator courses on module initialization (forced reload)
+loadCreatorCourses();
+console.log('Database module initialized, loading creator courses from localStorage');
+
+/**
+ * Generate unique course ID
+ */
+const generateCourseId = () => {
+  const maxId = coursesDatabase.reduce((max, c) => Math.max(max, c.id || 0), 0);
+  return maxId + 1;
+};
+
+/**
+ * Convert CourseBuilder data format to database course format
+ */
+const convertBuilderToDbFormat = (builderData, instructorId) => {
+  // Build curriculum from sessions/lessons
+  const curriculum = [];
+  let moduleNum = 1;
+  builderData.sessions.forEach((session, sessionIdx) => {
+    session.lessons.forEach(lesson => {
+      curriculum.push({
+        session: sessionIdx + 1,
+        module: moduleNum++,
+        title: lesson.name,
+        duration: lesson.duration || '30 min',
+        description: lesson.description || ''
+      });
+    });
+  });
+
+  // Build sessions list
+  const sessionsList = builderData.sessions.map((session, idx) => ({
+    number: idx + 1,
+    title: session.name,
+    duration: builderData.sessionDuration || '90 min',
+    modules: session.lessons.map((_, i) => i + 1)
+  }));
+
+  return {
+    id: builderData.id || generateCourseId(),
+    title: builderData.title || 'Untitled Course',
+    description: builderData.description || '',
+    duration: builderData.duration || '3 hours',
+    level: builderData.level || 'Beginner',
+    rating: 0,
+    ratingCount: 0,
+    students: 0,
+    enrolledCount: 0,
+    price: `$${builderData.price || 0}`,
+    badge: builderData.badge === 'None' ? null : builderData.badge,
+    thumbnail: `https://via.placeholder.com/300x200/667eea/ffffff?text=${encodeURIComponent(builderData.title?.substring(0, 10) || 'Course')}`,
+    thumbnailGradient: builderData.thumbnailGradient || 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    instructorId: instructorId,
+    category: builderData.category || 'AI Tools',
+    tags: builderData.tags || [],
+    status: builderData.visibility === 'published' ? 'published' : 'draft',
+    peerloopFeatures: {
+      oneOnOneTeaching: builderData.pricingOptions?.sessions || false,
+      certifiedTeachers: true,
+      earnWhileTeaching: true,
+      teacherCommission: "70%"
+    },
+    sessions: {
+      count: builderData.sessionCount || builderData.sessions.length,
+      duration: builderData.sessionDuration || '90 min each',
+      format: builderData.sessionFormat || 'Self-paced',
+      list: sessionsList
+    },
+    learningObjectives: builderData.learningObjectives?.filter(o => o.trim()) || [],
+    curriculum: curriculum,
+    includes: builderData.includes?.filter(i => i.trim()) || ['Full course access'],
+    isCreatorCourse: true,
+    createdAt: new Date().toISOString(),
+    sessionFiles: builderData.sessionFiles || [] // Files linked to this course for BBB sessions
+  };
+};
+
+/**
+ * Add a new course to the database
+ * @param {Object} builderData - Course data from CourseBuilder
+ * @param {number} instructorId - ID of the instructor creating the course
+ * @returns {Object} The created course object
+ */
+export const addCourse = (builderData, instructorId = 8) => {
+  const course = convertBuilderToDbFormat(builderData, instructorId);
+  coursesDatabase.push(course);
+  saveCreatorCourses();
+  console.log('Course added:', course.title, 'ID:', course.id);
+  return course;
+};
+
+/**
+ * Update an existing course in the database
+ * @param {number} courseId - ID of the course to update
+ * @param {Object} builderData - Updated course data from CourseBuilder
+ * @returns {Object|null} The updated course object or null if not found
+ */
+export const updateCourse = (courseId, builderData, instructorId = 8) => {
+  const index = coursesDatabase.findIndex(c => c.id === courseId);
+  if (index === -1) return null;
+
+  const course = convertBuilderToDbFormat({ ...builderData, id: courseId }, instructorId);
+  coursesDatabase[index] = course;
+  saveCreatorCourses();
+  console.log('Course updated:', course.title, 'ID:', course.id);
+  return course;
+};
+
+/**
+ * Delete a course from the database
+ * @param {number} courseId - ID of the course to delete
+ * @returns {boolean} True if deleted, false if not found
+ */
+export const deleteCourse = (courseId) => {
+  const index = coursesDatabase.findIndex(c => c.id === courseId);
+  if (index === -1) return false;
+
+  coursesDatabase.splice(index, 1);
+  saveCreatorCourses();
+  console.log('Course deleted, ID:', courseId);
+  return true;
+};
+
+/**
+ * Update session files for a course
+ * @param {number} courseId - ID of the course to update
+ * @param {Array} sessionFiles - Array of session file objects
+ * @returns {Object|null} The updated course or null if not found
+ */
+export const updateCourseSessionFiles = (courseId, sessionFiles) => {
+  const index = coursesDatabase.findIndex(c => c.id === courseId);
+  if (index === -1) return null;
+
+  coursesDatabase[index].sessionFiles = sessionFiles;
+  saveCreatorCourses();
+  console.log('Course session files updated, ID:', courseId, 'Files:', sessionFiles.length);
+  return coursesDatabase[index];
+};
+
+// ============================================
+// SUPABASE COURSE FUNCTIONS (Persistent Storage)
+// ============================================
+
+/**
+ * Convert JS course object to Supabase snake_case format
+ */
+const toSupabaseFormat = (course) => ({
+  id: course.id,
+  title: course.title,
+  description: course.description,
+  duration: course.duration,
+  level: course.level,
+  rating: course.rating || 0,
+  rating_count: course.ratingCount || 0,
+  students: course.students || 0,
+  enrolled_count: course.enrolledCount || 0,
+  price: course.price,
+  badge: course.badge,
+  thumbnail: course.thumbnail,
+  thumbnail_gradient: course.thumbnailGradient,
+  instructor_id: course.instructorId,
+  category: course.category,
+  tags: course.tags || [],
+  status: course.status || 'draft',
+  peerloop_features: course.peerloopFeatures || {},
+  sessions: course.sessions || {},
+  learning_objectives: course.learningObjectives || [],
+  curriculum: course.curriculum || [],
+  includes: course.includes || [],
+  session_files: course.sessionFiles || [],
+  is_creator_course: course.isCreatorCourse || true
+});
+
+/**
+ * Convert Supabase snake_case to JS camelCase format
+ */
+const fromSupabaseFormat = (row) => ({
+  id: row.id,
+  title: row.title,
+  description: row.description,
+  duration: row.duration,
+  level: row.level,
+  rating: row.rating,
+  ratingCount: row.rating_count,
+  students: row.students,
+  enrolledCount: row.enrolled_count,
+  price: row.price,
+  badge: row.badge,
+  thumbnail: row.thumbnail,
+  thumbnailGradient: row.thumbnail_gradient,
+  instructorId: row.instructor_id,
+  category: row.category,
+  tags: row.tags || [],
+  status: row.status,
+  peerloopFeatures: row.peerloop_features || {},
+  sessions: row.sessions || {},
+  learningObjectives: row.learning_objectives || [],
+  curriculum: row.curriculum || [],
+  includes: row.includes || [],
+  sessionFiles: row.session_files || [],
+  isCreatorCourse: row.is_creator_course,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at
+});
+
+/**
+ * Load courses from Supabase for a specific instructor
+ */
+export const loadCoursesFromSupabase = async (instructorId = 8) => {
+  try {
+    const { data, error } = await supabase
+      .from('courses')
+      .select('*')
+      .eq('instructor_id', instructorId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error loading courses from Supabase:', error);
+      return [];
+    }
+
+    const courses = (data || []).map(fromSupabaseFormat);
+    console.log('Loaded', courses.length, 'courses from Supabase');
+    return courses;
+  } catch (e) {
+    console.error('Supabase load error:', e);
+    return [];
+  }
+};
+
+/**
+ * Add a new course to Supabase
+ */
+export const addCourseToSupabase = async (builderData, instructorId = 8) => {
+  try {
+    // First convert to our standard format
+    const course = convertBuilderToDbFormat(builderData, instructorId);
+    // Remove the auto-generated ID - let Supabase create one
+    const { id, ...courseWithoutId } = toSupabaseFormat(course);
+
+    const { data, error } = await supabase
+      .from('courses')
+      .insert([courseWithoutId])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding course to Supabase:', error);
+      return null;
+    }
+
+    const newCourse = fromSupabaseFormat(data);
+    console.log('Course added to Supabase:', newCourse.title, 'ID:', newCourse.id);
+    return newCourse;
+  } catch (e) {
+    console.error('Supabase add error:', e);
+    return null;
+  }
+};
+
+/**
+ * Update an existing course in Supabase
+ */
+export const updateCourseInSupabase = async (courseId, builderData, instructorId = 8) => {
+  try {
+    const course = convertBuilderToDbFormat({ ...builderData, id: courseId }, instructorId);
+    const supabaseData = toSupabaseFormat(course);
+    // Remove id from update data, add updated_at
+    const { id, ...updateData } = supabaseData;
+    updateData.updated_at = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .from('courses')
+      .update(updateData)
+      .eq('id', courseId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating course in Supabase:', error);
+      return null;
+    }
+
+    const updatedCourse = fromSupabaseFormat(data);
+    console.log('Course updated in Supabase:', updatedCourse.title, 'ID:', updatedCourse.id);
+    return updatedCourse;
+  } catch (e) {
+    console.error('Supabase update error:', e);
+    return null;
+  }
+};
+
+/**
+ * Delete a course from Supabase
+ */
+export const deleteCourseFromSupabase = async (courseId) => {
+  try {
+    const { error } = await supabase
+      .from('courses')
+      .delete()
+      .eq('id', courseId);
+
+    if (error) {
+      console.error('Error deleting course from Supabase:', error);
+      return false;
+    }
+
+    console.log('Course deleted from Supabase, ID:', courseId);
+    return true;
+  } catch (e) {
+    console.error('Supabase delete error:', e);
+    return false;
+  }
+};
+
+/**
+ * Update session files for a course in Supabase
+ */
+export const updateCourseSessionFilesSupabase = async (courseId, sessionFiles) => {
+  try {
+    const { data, error } = await supabase
+      .from('courses')
+      .update({
+        session_files: sessionFiles,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', courseId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating session files in Supabase:', error);
+      return null;
+    }
+
+    const updatedCourse = fromSupabaseFormat(data);
+    console.log('Session files updated in Supabase, ID:', courseId, 'Files:', sessionFiles.length);
+    return updatedCourse;
+  } catch (e) {
+    console.error('Supabase session files update error:', e);
+    return null;
+  }
 }; 

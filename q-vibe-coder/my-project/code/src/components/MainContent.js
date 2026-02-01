@@ -40,7 +40,7 @@ import { communityUsers } from '../data/users';
 import { UserPropType } from './PropTypes';
 
 // Guy Rymberg's course IDs - default enrollment for all users
-const GUY_RYMBERG_COURSES = [15, 22, 23, 24, 25];
+// Courses are now managed in Workspace > Content
 
 const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDarkMode }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -610,57 +610,74 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   const userStatus = useUserStatus(currentUser?.id);
 
   // Purchased courses - courses the user has bought (enables course-level follow/unfollow)
+  // One-time migration: clear old hardcoded courses [15, 22, 23, 24, 25]
+  const OLD_HARDCODED_COURSES = [15, 22, 23, 24, 25];
   const [purchasedCourses, setPurchasedCourses] = useState(() => {
-    // New User, Sarah, and Alex start with no courses - completely fresh
-    if (currentUser?.id === 'demo_new' || currentUser?.id === 'demo_sarah' || currentUser?.id === 'demo_alex') {
-      return [];
-    }
-    // All other users default to Guy Rymberg's courses
+    if (!currentUser?.id) return [];
     try {
       const storageKey = `purchasedCourses_${currentUser?.id}`;
+      const migrationKey = `purchasedCourses_migrated_${currentUser?.id}`;
       const stored = localStorage.getItem(storageKey);
+
+      // Check if we need to migrate (remove old hardcoded courses)
+      if (stored && !localStorage.getItem(migrationKey)) {
+        const parsed = JSON.parse(stored);
+        // If it exactly matches old defaults, clear it
+        if (JSON.stringify(parsed.sort()) === JSON.stringify(OLD_HARDCODED_COURSES.sort())) {
+          localStorage.removeItem(storageKey);
+          localStorage.setItem(migrationKey, 'true');
+          return [];
+        }
+        // Otherwise filter out the old hardcoded ones
+        const filtered = parsed.filter(id => !OLD_HARDCODED_COURSES.includes(id));
+        localStorage.setItem(storageKey, JSON.stringify(filtered));
+        localStorage.setItem(migrationKey, 'true');
+        return filtered;
+      }
+
       if (stored) {
         return JSON.parse(stored);
       }
-      // Default: Guy Rymberg's courses for all users
-      return GUY_RYMBERG_COURSES;
+      return [];
     } catch (e) {
-      return GUY_RYMBERG_COURSES;
+      return [];
     }
   });
 
-  // Reload purchased courses when user changes
+  // Reload purchased courses when user changes (with migration)
   React.useEffect(() => {
     if (!currentUser?.id) return;
 
-    // New User, Sarah, and Alex start with no courses - completely fresh
-    if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah' || currentUser.id === 'demo_alex') {
-      // Check localStorage first - they may have purchased courses
-      try {
-        const storageKey = `purchasedCourses_${currentUser.id}`;
-        const stored = localStorage.getItem(storageKey);
-        if (stored) {
-          setPurchasedCourses(JSON.parse(stored));
-        } else {
-          setPurchasedCourses([]);
-        }
-      } catch (e) {
-        setPurchasedCourses([]);
-      }
-      return;
-    }
-
     try {
       const storageKey = `purchasedCourses_${currentUser.id}`;
+      const migrationKey = `purchasedCourses_migrated_${currentUser.id}`;
       const stored = localStorage.getItem(storageKey);
+
+      // Check if we need to migrate (remove old hardcoded courses)
+      if (stored && !localStorage.getItem(migrationKey)) {
+        const parsed = JSON.parse(stored);
+        // If it exactly matches old defaults, clear it
+        if (JSON.stringify(parsed.sort()) === JSON.stringify(OLD_HARDCODED_COURSES.sort())) {
+          localStorage.removeItem(storageKey);
+          localStorage.setItem(migrationKey, 'true');
+          setPurchasedCourses([]);
+          return;
+        }
+        // Otherwise filter out the old hardcoded ones
+        const filtered = parsed.filter(id => !OLD_HARDCODED_COURSES.includes(id));
+        localStorage.setItem(storageKey, JSON.stringify(filtered));
+        localStorage.setItem(migrationKey, 'true');
+        setPurchasedCourses(filtered);
+        return;
+      }
+
       if (stored) {
         setPurchasedCourses(JSON.parse(stored));
       } else {
-        // Default: Guy Rymberg's courses for all users
-        setPurchasedCourses(GUY_RYMBERG_COURSES);
+        setPurchasedCourses([]);
       }
     } catch (e) {
-      setPurchasedCourses(GUY_RYMBERG_COURSES);
+      setPurchasedCourses([]);
     }
   }, [currentUser?.id]);
 
