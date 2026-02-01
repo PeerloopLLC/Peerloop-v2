@@ -132,12 +132,12 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
   // Navigation tabs - simplified per wireframe
   const navTabs = [
     { id: 'overview', label: 'Overview' },
+    { id: 'content', label: 'Content' },
     { id: 'analytics', label: 'Analytics' },
     { id: 'students', label: 'Students' },
     { id: 'certifications', label: 'Certifications' },
     { id: 'payouts', label: 'Payouts' },
     { id: 'sessions', label: 'Sessions' },
-    { id: 'content', label: 'Content' },
     { id: 'moderator', label: 'Moderator' }
   ];
 
@@ -755,7 +755,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   <div style={{
                     padding: '20px 24px',
                     background: isDarkMode ? '#0d1117' : '#f1f5f9',
-                    borderBottom: index < creatorCourses.length - 1 ? `1px solid ${borderColor}` : 'none'
+                    borderBottom: index < courses.length - 1 ? `1px solid ${borderColor}` : 'none'
                   }}>
                     <h4 style={{
                       fontSize: 13,

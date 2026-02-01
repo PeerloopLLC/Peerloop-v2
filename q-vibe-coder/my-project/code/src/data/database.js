@@ -1660,6 +1660,33 @@ const fromSupabaseFormat = (row) => ({
 });
 
 /**
+ * Load ALL courses from Supabase (replaces hardcoded courses)
+ */
+export const loadAllCoursesFromSupabase = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('courses')
+      .select('*')
+      .order('instructor_id', { ascending: true });
+
+    if (error) {
+      console.error('Error loading all courses from Supabase:', error);
+      return [];
+    }
+
+    const courses = (data || []).map(fromSupabaseFormat);
+    // Replace coursesDatabase with Supabase courses
+    coursesDatabase.length = 0; // Clear existing
+    courses.forEach(course => coursesDatabase.push(course));
+    console.log('Loaded ALL', courses.length, 'courses from Supabase');
+    return courses;
+  } catch (e) {
+    console.error('Supabase load error:', e);
+    return [];
+  }
+};
+
+/**
  * Load courses from Supabase for a specific instructor
  */
 export const loadCoursesFromSupabase = async (instructorId = 8) => {
@@ -1676,7 +1703,16 @@ export const loadCoursesFromSupabase = async (instructorId = 8) => {
     }
 
     const courses = (data || []).map(fromSupabaseFormat);
-    console.log('Loaded', courses.length, 'courses from Supabase');
+    // Merge into local coursesDatabase so DiscoverView sees them
+    courses.forEach(course => {
+      const existingIndex = coursesDatabase.findIndex(c => c.id === course.id);
+      if (existingIndex !== -1) {
+        coursesDatabase[existingIndex] = course;
+      } else {
+        coursesDatabase.push(course);
+      }
+    });
+    console.log('Loaded', courses.length, 'courses from Supabase (merged into coursesDatabase)');
     return courses;
   } catch (e) {
     console.error('Supabase load error:', e);
@@ -1706,6 +1742,10 @@ export const addCourseToSupabase = async (builderData, instructorId = 8) => {
     }
 
     const newCourse = fromSupabaseFormat(data);
+    // Also add to local coursesDatabase so DiscoverView sees it
+    if (!coursesDatabase.find(c => c.id === newCourse.id)) {
+      coursesDatabase.push(newCourse);
+    }
     console.log('Course added to Supabase:', newCourse.title, 'ID:', newCourse.id);
     return newCourse;
   } catch (e) {
@@ -1738,6 +1778,13 @@ export const updateCourseInSupabase = async (courseId, builderData, instructorId
     }
 
     const updatedCourse = fromSupabaseFormat(data);
+    // Also update in local coursesDatabase so DiscoverView sees changes
+    const index = coursesDatabase.findIndex(c => c.id === updatedCourse.id);
+    if (index !== -1) {
+      coursesDatabase[index] = updatedCourse;
+    } else {
+      coursesDatabase.push(updatedCourse);
+    }
     console.log('Course updated in Supabase:', updatedCourse.title, 'ID:', updatedCourse.id);
     return updatedCourse;
   } catch (e) {
@@ -1790,6 +1837,13 @@ export const updateCourseSessionFilesSupabase = async (courseId, sessionFiles) =
     }
 
     const updatedCourse = fromSupabaseFormat(data);
+
+    // Also update local coursesDatabase so DiscoverView sees the files
+    const index = coursesDatabase.findIndex(c => c.id === updatedCourse.id);
+    if (index !== -1) {
+      coursesDatabase[index] = updatedCourse;
+    }
+
     console.log('Session files updated in Supabase, ID:', courseId, 'Files:', sessionFiles.length);
     return updatedCourse;
   } catch (e) {

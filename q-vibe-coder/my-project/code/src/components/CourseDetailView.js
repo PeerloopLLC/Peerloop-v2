@@ -2254,11 +2254,8 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                               borderRadius: 8,
                               overflow: 'hidden'
                             }}>
-                              {[
-                                { name: 'Session 1 Slides.pdf', size: '2.4 MB' },
-                                { name: 'Prompt Templates.docx', size: '156 KB' },
-                                { name: 'Reference Links.pdf', size: '89 KB' }
-                              ].map((doc, idx, arr) => (
+                              {(course?.sessionFiles && course.sessionFiles.length > 0) ? (
+                              course.sessionFiles.map((doc, idx, arr) => (
                                 <div
                                   key={idx}
                                   style={{
@@ -2286,17 +2283,32 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                                       {doc.size}
                                     </span>
                                   </div>
-                                  <button style={{
-                                    background: 'none',
-                                    border: 'none',
-                                    color: '#1d9bf0',
-                                    cursor: 'pointer',
-                                    padding: 4
-                                  }}>
+                                  <a
+                                    href={doc.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      background: 'none',
+                                      border: 'none',
+                                      color: '#1d9bf0',
+                                      cursor: 'pointer',
+                                      padding: 4
+                                    }}
+                                  >
                                     <FaDownload style={{ fontSize: 14 }} />
-                                  </button>
+                                  </a>
                                 </div>
-                              ))}
+                              ))
+                            ) : (
+                              <div style={{
+                                padding: '20px 16px',
+                                textAlign: 'center',
+                                color: isDarkMode ? '#71767b' : '#536471',
+                                fontSize: 14
+                              }}>
+                                No documents available yet
+                              </div>
+                            )}
                             </div>
                           </div>
 
@@ -3268,6 +3280,94 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
             isCreator={currentUser?.name === instructor?.name}
             currentUser={currentUser}
           />
+
+          {/* Course Materials Section - Only show to enrolled users or course creator */}
+          {(isCoursePurchased || currentUser?.name === instructor?.name) && course?.sessionFiles && course.sessionFiles.length > 0 && (
+            <div style={{
+              marginTop: 24,
+              background: isDarkMode ? '#16181c' : '#f7f9f9',
+              borderRadius: 12,
+              border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                padding: '16px 20px',
+                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+              }}>
+                <h3 style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  margin: 0,
+                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8
+                }}>
+                  <FaFileAlt style={{ color: isDarkMode ? '#71767b' : '#536471' }} />
+                  Course Materials
+                </h3>
+              </div>
+              <div style={{ padding: '12px 20px' }}>
+                {course.sessionFiles.map((file, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '12px 0',
+                      borderBottom: idx < course.sessionFiles.length - 1
+                        ? (isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4')
+                        : 'none'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <FaFileAlt style={{ color: '#1d9bf0', fontSize: 16 }} />
+                      <div>
+                        <div style={{
+                          fontWeight: 500,
+                          color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                          fontSize: 14
+                        }}>
+                          {file.name || file.filename}
+                        </div>
+                        {file.size && (
+                          <div style={{
+                            fontSize: 12,
+                            color: isDarkMode ? '#71767b' : '#536471',
+                            marginTop: 2
+                          }}>
+                            {file.size}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <a
+                      href={file.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        background: '#1d9bf0',
+                        color: '#fff',
+                        border: 'none',
+                        padding: '8px 16px',
+                        borderRadius: 6,
+                        fontSize: 13,
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <FaDownload style={{ fontSize: 12 }} /> Download
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

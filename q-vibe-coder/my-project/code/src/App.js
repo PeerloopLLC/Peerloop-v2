@@ -10,6 +10,7 @@ import FeedsSlideoutPanel from './components/FeedsSlideoutPanel';
 import useDeviceDetect from './hooks/useDeviceDetect';
 import Login from './components/Login';
 import { supabase, getProfile } from './services/supabase';
+import { loadAllCoursesFromSupabase } from './data/database';
 
 /**
  * Main Application Component
@@ -74,7 +75,7 @@ function App() {
   };
 
   // Handle demo login (skip auth, use mock user)
-  const handleDemoLogin = (demoUser) => {
+  const handleDemoLogin = async (demoUser) => {
     // Note: followedCommunities are now stored per-user in MainContent.js
     // New users will automatically start with empty follows
 
@@ -87,6 +88,9 @@ function App() {
     });
     // Set a fake session to bypass login screen
     setSession({ user: { id: demoUser.id, email: demoUser.email }, isDemo: true });
+
+    // Load ALL courses from Supabase so they show up in Discover
+    loadAllCoursesFromSupabase();
   };
 
   // Handle logout / switch user
