@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Courses Tab Mockups</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+      color: #0f1419;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    .mockup-section {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .mockup-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .mockup-description {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* Current Design (Reference) */
+    .current-tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .current-tabs .tab {
+      padding: 12px 24px;
+      font-size: 15px;
+      color: #536471;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .current-tabs .tab.active {
+      color: #0f1419;
+      border-bottom-color: #1d9bf0;
+    }
+
+    /* Option A: Pill Tabs (like Discover categories) */
+    .pill-tabs {
+      display: flex;
+      gap: 12px;
+      padding: 8px;
+      background: #f7f9f9;
+      border-radius: 24px;
+      width: fit-content;
+    }
+
+    .pill-tabs .tab {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #536471;
+      background: transparent;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill-tabs .tab:hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    .pill-tabs .tab.active {
+      background: #1d9bf0;
+      color: white;
+    }
+
+    /* Option B: Segmented Control (iOS style) */
+    .segmented-tabs {
+      display: flex;
+      background: #e5e7eb;
+      border-radius: 10px;
+      padding: 4px;
+      width: fit-content;
+    }
+
+    .segmented-tabs .tab {
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #536471;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .segmented-tabs .tab.active {
+      background: white;
+      color: #0f1419;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Option C: Card Tabs with Icons */
+    .card-tabs {
+      display: flex;
+      gap: 16px;
+    }
+
+    .card-tabs .tab {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #536471;
+      background: #f7f9f9;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .card-tabs .tab:hover {
+      background: #eff3f4;
+      border-color: #cfd9de;
+    }
+
+    .card-tabs .tab.active {
+      background: #e8f5fe;
+      border-color: #1d9bf0;
+      color: #1d9bf0;
+    }
+
+    .card-tabs .tab .icon {
+      font-size: 18px;
+    }
+
+    .card-tabs .tab .count {
+      background: rgba(0,0,0,0.1);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+
+    .card-tabs .tab.active .count {
+      background: rgba(29, 155, 240, 0.2);
+    }
+
+    /* Option D: Bold Underline Tabs */
+    .bold-tabs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .bold-tabs .tab {
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #71767b;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .bold-tabs .tab:hover {
+      color: #0f1419;
+      background: rgba(0,0,0,0.03);
+    }
+
+    .bold-tabs .tab.active {
+      color: #0f1419;
+      border-bottom-color: #1d9bf0;
+    }
+
+    .bold-tabs .tab .count {
+      color: #1d9bf0;
+      font-weight: 700;
+    }
+
+    /* Option E: Button Group */
+    .button-tabs {
+      display: flex;
+      gap: 0;
+    }
+
+    .button-tabs .tab {
+      padding: 12px 28px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #536471;
+      background: white;
+      border: 2px solid #cfd9de;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .button-tabs .tab:first-child {
+      border-radius: 24px 0 0 24px;
+    }
+
+    .button-tabs .tab:last-child {
+      border-radius: 0 24px 24px 0;
+      border-left: none;
+    }
+
+    .button-tabs .tab:hover {
+      background: #f7f9f9;
+    }
+
+    .button-tabs .tab.active {
+      background: #1d9bf0;
+      border-color: #1d9bf0;
+      color: white;
+    }
+
+    /* Option F: Dropdown Style with Chevron */
+    .dropdown-tabs {
+      display: flex;
+      gap: 16px;
+    }
+
+    .dropdown-tabs .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #536471;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dropdown-tabs .tab:hover {
+      border-color: #1d9bf0;
+      color: #1d9bf0;
+    }
+
+    .dropdown-tabs .tab.active {
+      background: #1d9bf0;
+      border-color: #1d9bf0;
+      color: white;
+    }
+
+    .dropdown-tabs .tab .chevron {
+      font-size: 10px;
+      opacity: 0.7;
+    }
+
+    /* Option G: Minimal with Color Dot */
+    .dot-tabs {
+      display: flex;
+      gap: 32px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 2px;
+    }
+
+    .dot-tabs .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 0;
+      font-size: 15px;
+      font-weight: 500;
+      color: #71767b;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .dot-tabs .tab::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: transparent;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    .dot-tabs .tab:hover {
+      color: #0f1419;
+    }
+
+    .dot-tabs .tab.active {
+      color: #0f1419;
+    }
+
+    .dot-tabs .tab.active::after {
+      background: #1d9bf0;
+    }
+
+    .dot-tabs .tab .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    .dot-tabs .tab .dot.completed {
+      background: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Courses Tab Design Options</h1>
+
+  <!-- Current Design -->
+  <div class="mockup-section">
+    <div class="mockup-title">Current Design (Reference)</div>
+    <div class="mockup-description">The current tabs are subtle text with a thin underline. Hard to recognize as clickable tabs.</div>
+    <div class="current-tabs">
+      <div class="tab active">Active Courses (1)</div>
+      <div class="tab">Completed Courses (2)</div>
+    </div>
+  </div>
+
+  <!-- Option A: Pill Tabs -->
+  <div class="mockup-section">
+    <div class="mockup-title">Option A: Pill Tabs</div>
+    <div class="mockup-description">Rounded pill buttons like the Discover category filters. Clear visual distinction between active/inactive. Familiar pattern from the app.</div>
+    <div class="pill-tabs">
+      <button class="tab active">Active Courses (1)</button>
+      <button class="tab">Completed Courses (2)</button>
+    </div>
+  </div>
+
+  <!-- Option B: Segmented Control -->
+  <div class="mockup-section">
+    <div class="mockup-title">Option B: Segmented Control (iOS Style)</div>
+    <div class="mockup-description">Clean iOS-style segmented control. The raised active state clearly shows which is selected. Modern and minimal.</div>
+    <div class="segmented-tabs">
+      <button class="tab active">Active Courses (1)</button>
+      <button class="tab">Completed Courses (2)</button>
+    </div>
+  </div>
+
+  <!-- Option C: Card Tabs with Icons -->
+  <div class="mockup-section">
+    <div class="mockup-title">Option C: Card Tabs with Icons</div>
+    <div class="mockup-description">Larger touch targets with icons. Very obvious that these are clickable. The border highlight on active makes selection clear.</div>
+    <div class="card-tabs">
+      <button class="tab active">
+        <span class="icon">📚</span>
+        <span>Active Courses</span>
+        <span class="count">1</span>
+      </button>
+      <button class="tab">
+        <span class="icon">✅</span>
+        <span>Completed Courses</span>
+        <span class="count">2</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Option D: Bold Underline Tabs -->
+  <div class="mockup-section">
+    <div class="mockup-title">Option D: Bold Underline Tabs</div>
+    <div class="mockup-description">Similar to current but with bolder text and thicker underline. Hover states make it clear they're interactive. Subtle but improved.</div>
+    <div class="bold-tabs">
+      <button class="tab active">Active Courses <span class="count">(1)</span></button>
+      <button class="tab">Completed Courses <span class="count">(2)</span></button>
+    </div>
+  </div>
+
+  <!-- Option E: Button Group -->
+  <div class="mockup-section">
+    <div class="mockup-title">Option E: Button Group</div>
+    <div class="mockup-description">Connected buttons that look like a toggle. Very obviously clickable. The filled active state is unmistakable.</div>
+    <div class="button-tabs">
+      <button class="tab active">Active Courses (1)</button>
+      <button class="tab">Completed Courses (2)</button>
+    </div>
+  </div>
+
+  <!-- Option F: Dropdown Style -->
+  <div class="mockup-section">
+    <div class="mockup-title">Option F: Individual Buttons</div>
+    <div class="mockup-description">Separate bordered buttons. Each looks distinctly clickable. Good for adding more options later.</div>
+    <div class="dropdown-tabs">
+      <button class="tab active">Active Courses (1) <span class="chevron">▼</span></button>
+      <button class="tab">Completed Courses (2) <span class="chevron">▼</span></button>
+    </div>
+  </div>
+
+  <!-- Option G: Minimal with Color Dot -->
+  <div class="mockup-section">
+    <div class="mockup-title">Option G: Tabs with Status Dots</div>
+    <div class="mockup-description">Keeps the current minimal style but adds color dots to indicate status. Green for active, gray for completed. Thicker underline on active.</div>
+    <div class="dot-tabs">
+      <button class="tab active">
+        <span class="dot"></span>
+        Active Courses (1)
+      </button>
+      <button class="tab">
+        <span class="dot completed"></span>
+        Completed Courses (2)
+      </button>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -35,7 +35,7 @@ import AboutView from './AboutView';
 import DiscoverView from './DiscoverView';
 import Breadcrumb from './Breadcrumb';
 import { useUserStatus } from '../hooks/useUserStatus';
-import { getAllInstructors, getInstructorWithCourses, getCourseById, getAllCourses, getInstructorById, getIndexedCourses, getIndexedInstructors } from '../data/database';
+import { getAllInstructors, getInstructorWithCourses, getCourseById, getAllCourses, getInstructorById, getIndexedCourses, getIndexedInstructors, loadAllCoursesFromSupabase } from '../data/database';
 import { communityUsers } from '../data/users';
 import { UserPropType } from './PropTypes';
 
@@ -1626,6 +1626,23 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       
       initializeIndexes();
     }, []);
+
+  // When user logs in, reload courses from Supabase and refresh indexes
+  useEffect(() => {
+    if (currentUser?.id) {
+      const refreshIndexes = async () => {
+        // Load fresh courses from Supabase
+        await loadAllCoursesFromSupabase();
+        // Refresh indexed courses with Supabase data
+        const courses = getIndexedCourses();
+        const instructors = getIndexedInstructors();
+        setIndexedCourses(courses);
+        setIndexedInstructors(instructors);
+        console.log('Refreshed indexes after login:', courses.length, 'courses');
+      };
+      refreshIndexes();
+    }
+  }, [currentUser?.id]);
 
   // When user changes, reload their follows from user-specific storage
   useEffect(() => {

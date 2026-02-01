@@ -1,8 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import './Sidebar.css';
-import {  FaSearch,  FaBell,  FaEnvelope,  FaUser,  FaUsers,  FaChalkboardTeacher,  FaInfoCircle,  FaCog,  FaEllipsisH} from 'react-icons/fa';
+import {  FaSearch,  FaBell,  FaEnvelope,  FaUser,  FaUsers,  FaInfoCircle,  FaCog,  FaEllipsisH} from 'react-icons/fa';
 import { MdSchool } from 'react-icons/md';
+
+// Custom Kanban Board icon for Workspace
+const KanbanIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1em', height: '1em' }}>
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <line x1="9" y1="3" x2="9" y2="21"/>
+    <line x1="15" y1="3" x2="15" y2="21"/>
+    <rect x="5" y="6" width="2.5" height="3" rx="0.5" fill="currentColor"/>
+    <rect x="5" y="11" width="2.5" height="2" rx="0.5" fill="currentColor"/>
+    <rect x="11" y="6" width="2.5" height="4" rx="0.5" fill="currentColor"/>
+    <rect x="17" y="6" width="2.5" height="2" rx="0.5" fill="currentColor"/>
+  </svg>
+);
 import useDeviceDetect from '../hooks/useDeviceDetect';
 import PostComposeModal from './PostComposeModal';
 import { getInstructorById } from '../data/database';
@@ -238,7 +251,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
   const personalItems = [
     { icon: <FaEnvelope />, label: 'Messages', displayLabel: 'Messages' }, // Messaging system
     { icon: <FaBell />, label: 'Notifications', displayLabel: 'Notifications' }, // Notification center
-    ...(showDashboard ? [{ icon: <FaChalkboardTeacher />, label: 'Workspace', displayLabel: 'Workspace' }] : []), // User workspace (only for creators/admins)
+    ...(showDashboard ? [{ icon: <KanbanIcon />, label: 'Workspace', displayLabel: 'Workspace' }] : []), // User workspace (only for creators/admins)
     { icon: <FaUser />, label: 'Profile', displayLabel: 'Profile' }, // User profile
   ];
 

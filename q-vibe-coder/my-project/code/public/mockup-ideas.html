@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Detail Layout Mockups</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #15202b;
+      color: #e7e9ea;
+      padding: 20px;
+    }
+
+    .mockup-container {
+      max-width: 700px;
+      margin: 0 auto 60px;
+      background: #192734;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .mockup-label {
+      background: #1d9bf0;
+      color: white;
+      padding: 12px 20px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .mockup-content {
+      padding: 20px;
+    }
+
+    /* Community Header */
+    .community-header {
+      background: rgba(29, 155, 240, 0.1);
+      border: 1px solid rgba(29, 155, 240, 0.2);
+      border-radius: 10px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .community-header .icon { font-size: 20px; }
+    .community-header .name { font-weight: 600; font-size: 14px; }
+
+    /* Course Title */
+    .course-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .instructor {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #71767b;
+      margin-bottom: 12px;
+    }
+    .instructor-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1d9bf0;
+    }
+
+    /* Description */
+    .description {
+      color: #8b98a5;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    /* Stats */
+    .stats {
+      color: #71767b;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Pill Tabs */
+    .pill-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #38444d;
+    }
+    .pill-tab {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: #253341;
+      color: #8b98a5;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+    }
+    .pill-tab.active {
+      background: #1d9bf0;
+      color: white;
+    }
+
+    /* Sessions Card */
+    .sessions-card {
+      background: linear-gradient(135deg, rgba(29, 155, 240, 0.15), rgba(29, 155, 240, 0.05));
+      border: 1px solid rgba(29, 155, 240, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .sessions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .sessions-title {
+      font-size: 12px;
+      color: #1d9bf0;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .sessions-progress {
+      font-size: 12px;
+      color: #71767b;
+    }
+
+    /* Session Row */
+    .session-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .session-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #253341;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .session-info { flex: 1; }
+    .session-name { font-size: 14px; font-weight: 500; }
+    .session-meta { font-size: 12px; color: #71767b; }
+
+    /* Content Area */
+    .content-area {
+      background: #253341;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .content-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    /* Module Row */
+    .module-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .module-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #1d9bf0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .module-info { flex: 1; }
+    .module-name { font-size: 14px; }
+    .module-week { font-size: 12px; color: #71767b; }
+
+    /* File Badge */
+    .file-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(249, 24, 128, 0.2);
+      color: #f91880;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+
+    /* File Row */
+    .file-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: rgba(249, 24, 128, 0.1);
+      border: 1px solid rgba(249, 24, 128, 0.2);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .file-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: #f91880;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .file-name { font-size: 14px; flex: 1; }
+    .file-size { font-size: 12px; color: #71767b; }
+
+    /* Collapsible */
+    .collapsible-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .collapsible-content {
+      margin-left: 40px;
+      padding-left: 12px;
+      border-left: 2px solid #38444d;
+    }
+
+    /* Section Divider */
+    .section-divider {
+      height: 1px;
+      background: #38444d;
+      margin: 16px 0;
+    }
+
+    /* Mini file icon */
+    .mini-file {
+      background: rgba(249, 24, 128, 0.3);
+      color: #f91880;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      margin-left: 8px;
+    }
+
+    /* Two column */
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    hr {
+      border: none;
+      border-top: 3px dashed #38444d;
+      margin: 40px 0;
+    }
+
+    h2 {
+      color: #1d9bf0;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🎯 Current Issue: Pill tabs are below "Your Sessions" — move them up under description</h2>
+
+<!-- MOCKUP A: Tabs Under Description, Integrated Files in Curriculum -->
+<div class="mockup-container">
+  <div class="mockup-label">OPTION A: Tabs Under Description + Files Integrated into Curriculum</div>
+  <div class="mockup-content">
+
+    <div class="community-header">
+      <span class="icon">👥</span>
+      <span class="name">Prompt Masters</span>
+    </div>
+
+    <h1 class="course-title">AI Prompting Mastery</h1>
+    <div class="instructor">
+      <div class="instructor-avatar"></div>
+      <span>Guy Rymberg</span>
+    </div>
+
+    <p class="description">Learn to write effective AI prompts for business use. Master the art of communicating with AI to boost your productivity.</p>
+
+    <div class="stats">★ 4.8 (234) • 1,250 students • 5 Modules</div>
+
+    <!-- TABS MOVED HERE -->
+    <div class="pill-tabs">
+      <button class="pill-tab active">Curriculum</button>
+      <button class="pill-tab">Course Feed</button>
+      <button class="pill-tab">Reviews</button>
+      <button class="pill-tab">About</button>
+    </div>
+
+    <!-- Sessions Card -->
+    <div class="sessions-card">
+      <div class="sessions-header">
+        <span class="sessions-title">Your Sessions</span>
+        <span class="sessions-progress">0 of 2 complete</span>
+      </div>
+      <div class="session-row">
+        <div class="session-number">1</div>
+        <div class="session-info">
+          <div class="session-name">Session 1: Foundations & Frameworks</div>
+          <div class="session-meta">90 min • 2 modules</div>
+        </div>
+        <button style="background:#1d9bf0;color:white;border:none;padding:8px 12px;border-radius:20px;font-size:12px;">Schedule</button>
+      </div>
+    </div>
+
+    <!-- Curriculum with Integrated Files -->
+    <div class="content-area">
+      <div class="content-title">Course Curriculum</div>
+
+      <div class="collapsible-header">
+        <div class="session-number">1</div>
+        <div class="session-info">
+          <div class="session-name">Session 1: Foundations & Frameworks <span class="mini-file">📄 2</span></div>
+          <div class="session-meta">90 min • 2 modules</div>
+        </div>
+      </div>
+      <div class="collapsible-content">
+        <div class="module-row">
+          <div class="module-icon">📚</div>
+          <div class="module-info">
+            <div class="module-name">Module 1: Foundations</div>
+            <div class="module-week">Week 1</div>
+          </div>
+        </div>
+        <div class="module-row">
+          <div class="module-icon">📚</div>
+          <div class="module-info">
+            <div class="module-name">Module 2: Intermediate Techniques</div>
+            <div class="module-week">Week 2</div>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="file-icon">📄</div>
+          <div class="file-name">Session 1 Slides.pdf</div>
+          <div class="file-size">2.4 MB</div>
+        </div>
+        <div class="file-row">
+          <div class="file-icon">📊</div>
+          <div class="file-name">Prompt Templates.pptx</div>
+          <div class="file-size">1.1 MB</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr>
+
+<!-- MOCKUP B: Tabs Under Description, Files as Expandable Section Per Session -->
+<div class="mockup-container">
+  <div class="mockup-label">OPTION B: Tabs Under Description + Collapsible Files Section per Session</div>
+  <div class="mockup-content">
+
+    <div class="community-header">
+      <span class="icon">👥</span>
+      <span class="name">Prompt Masters</span>
+    </div>
+
+    <h1 class="course-title">AI Prompting Mastery</h1>
+    <div class="instructor">
+      <div class="instructor-avatar"></div>
+      <span>Guy Rymberg</span>
+    </div>
+
+    <p class="description">Learn to write effective AI prompts for business use. Master the art of communicating with AI to boost your productivity.</p>
+
+    <div class="stats">★ 4.8 (234) • 1,250 students • 5 Modules</div>
+
+    <!-- TABS MOVED HERE -->
+    <div class="pill-tabs">
+      <button class="pill-tab active">Curriculum</button>
+      <button class="pill-tab">Course Feed</button>
+      <button class="pill-tab">Reviews</button>
+      <button class="pill-tab">About</button>
+    </div>
+
+    <!-- Sessions Card -->
+    <div class="sessions-card">
+      <div class="sessions-header">
+        <span class="sessions-title">Your Sessions</span>
+        <span class="sessions-progress">0 of 2 complete</span>
+      </div>
+      <div class="session-row">
+        <div class="session-number">1</div>
+        <div class="session-info">
+          <div class="session-name">Session 1: Foundations & Frameworks</div>
+          <div class="session-meta">90 min • 2 modules</div>
+        </div>
+        <button style="background:#1d9bf0;color:white;border:none;padding:8px 12px;border-radius:20px;font-size:12px;">Schedule</button>
+      </div>
+    </div>
+
+    <!-- Curriculum with Files Section -->
+    <div class="content-area">
+      <div class="content-title">Course Curriculum</div>
+
+      <div class="collapsible-header">
+        <div class="session-number">1</div>
+        <div class="session-info">
+          <div class="session-name">Session 1: Foundations & Frameworks</div>
+          <div class="session-meta">90 min • 2 modules</div>
+        </div>
+        <span style="color:#71767b">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <!-- Modules Sub-section -->
+        <div style="font-size:12px;color:#71767b;margin-bottom:8px;text-transform:uppercase;">Modules</div>
+        <div class="module-row">
+          <div class="module-icon">📚</div>
+          <div class="module-info">
+            <div class="module-name">Module 1: Foundations</div>
+            <div class="module-week">Week 1</div>
+          </div>
+        </div>
+        <div class="module-row">
+          <div class="module-icon">📚</div>
+          <div class="module-info">
+            <div class="module-name">Module 2: Intermediate Techniques</div>
+            <div class="module-week">Week 2</div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Files Sub-section -->
+        <div style="font-size:12px;color:#f91880;margin-bottom:8px;text-transform:uppercase;">📎 Session Files</div>
+        <div class="file-row">
+          <div class="file-icon">📄</div>
+          <div class="file-name">Session 1 Slides.pdf</div>
+          <div class="file-size">2.4 MB</div>
+        </div>
+        <div class="file-row">
+          <div class="file-icon">📊</div>
+          <div class="file-name">Prompt Templates.pptx</div>
+          <div class="file-size">1.1 MB</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr>
+
+<!-- MOCKUP C: Two-Column Layout -->
+<div class="mockup-container">
+  <div class="mockup-label">OPTION C: Two-Column Layout (Modules Left, Files Right)</div>
+  <div class="mockup-content">
+
+    <div class="community-header">
+      <span class="icon">👥</span>
+      <span class="name">Prompt Masters</span>
+    </div>
+
+    <h1 class="course-title">AI Prompting Mastery</h1>
+    <div class="instructor">
+      <div class="instructor-avatar"></div>
+      <span>Guy Rymberg</span>
+    </div>
+
+    <p class="description">Learn to write effective AI prompts for business use. Master the art of communicating with AI to boost your productivity.</p>
+
+    <div class="stats">★ 4.8 (234) • 1,250 students • 5 Modules</div>
+
+    <!-- TABS MOVED HERE -->
+    <div class="pill-tabs">
+      <button class="pill-tab active">Curriculum</button>
+      <button class="pill-tab">Course Feed</button>
+      <button class="pill-tab">Reviews</button>
+      <button class="pill-tab">About</button>
+    </div>
+
+    <!-- Sessions Card -->
+    <div class="sessions-card">
+      <div class="sessions-header">
+        <span class="sessions-title">Your Sessions</span>
+        <span class="sessions-progress">0 of 2 complete</span>
+      </div>
+      <div class="session-row">
+        <div class="session-number">1</div>
+        <div class="session-info">
+          <div class="session-name">Session 1: Foundations & Frameworks</div>
+          <div class="session-meta">90 min • 2 modules</div>
+        </div>
+        <button style="background:#1d9bf0;color:white;border:none;padding:8px 12px;border-radius:20px;font-size:12px;">Schedule</button>
+      </div>
+    </div>
+
+    <!-- Two Column Content -->
+    <div class="content-area">
+      <div class="collapsible-header" style="margin-bottom:16px;">
+        <div class="session-number">1</div>
+        <div class="session-info">
+          <div class="session-name">Session 1: Foundations & Frameworks</div>
+          <div class="session-meta">90 min • 2 modules • 2 files</div>
+        </div>
+      </div>
+
+      <div class="two-columns">
+        <!-- Left: Modules -->
+        <div>
+          <div style="font-size:12px;color:#1d9bf0;margin-bottom:8px;text-transform:uppercase;">📚 Modules</div>
+          <div class="module-row">
+            <div class="module-icon">📚</div>
+            <div class="module-info">
+              <div class="module-name">Module 1: Foundations</div>
+              <div class="module-week">Week 1</div>
+            </div>
+          </div>
+          <div class="module-row">
+            <div class="module-icon">📚</div>
+            <div class="module-info">
+              <div class="module-name">Module 2: Intermediate</div>
+              <div class="module-week">Week 2</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Files -->
+        <div>
+          <div style="font-size:12px;color:#f91880;margin-bottom:8px;text-transform:uppercase;">📎 Files</div>
+          <div class="file-row">
+            <div class="file-icon">📄</div>
+            <div class="file-name">Slides.pdf</div>
+          </div>
+          <div class="file-row">
+            <div class="file-icon">📊</div>
+            <div class="file-name">Templates.pptx</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr>
+
+<!-- MOCKUP D: Unified Session Card with Everything -->
+<div class="mockup-container">
+  <div class="mockup-label">OPTION D: Unified Session Cards (Everything Together)</div>
+  <div class="mockup-content">
+
+    <div class="community-header">
+      <span class="icon">👥</span>
+      <span class="name">Prompt Masters</span>
+    </div>
+
+    <h1 class="course-title">AI Prompting Mastery</h1>
+    <div class="instructor">
+      <div class="instructor-avatar"></div>
+      <span>Guy Rymberg</span>
+    </div>
+
+    <p class="description">Learn to write effective AI prompts for business use. Master the art of communicating with AI to boost your productivity.</p>
+
+    <div class="stats">★ 4.8 (234) • 1,250 students • 5 Modules</div>
+
+    <!-- TABS MOVED HERE - Simplified -->
+    <div class="pill-tabs">
+      <button class="pill-tab active">Sessions</button>
+      <button class="pill-tab">Course Feed</button>
+      <button class="pill-tab">Reviews</button>
+      <button class="pill-tab">About</button>
+    </div>
+
+    <!-- Unified Session Card -->
+    <div style="background:linear-gradient(135deg, rgba(29,155,240,0.15), rgba(29,155,240,0.05)); border:1px solid rgba(29,155,240,0.3); border-radius:12px; padding:16px; margin-bottom:16px;">
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div class="session-number" style="background:#1d9bf0;color:white;">1</div>
+          <div>
+            <div style="font-weight:600;">Session 1: Foundations & Frameworks</div>
+            <div style="font-size:12px;color:#71767b;">90 min • Not scheduled</div>
+          </div>
+        </div>
+        <button style="background:#1d9bf0;color:white;border:none;padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;">Schedule</button>
+      </div>
+
+      <!-- Modules inside session card -->
+      <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:12px;margin-bottom:12px;">
+        <div style="font-size:11px;color:#71767b;text-transform:uppercase;margin-bottom:8px;">What You'll Learn</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#253341;padding:6px 12px;border-radius:16px;font-size:13px;">📚 Module 1: Foundations</span>
+          <span style="background:#253341;padding:6px 12px;border-radius:16px;font-size:13px;">📚 Module 2: Intermediate</span>
+        </div>
+      </div>
+
+      <!-- Files inside session card -->
+      <div style="background:rgba(249,24,128,0.1);border:1px solid rgba(249,24,128,0.2);border-radius:8px;padding:12px;">
+        <div style="font-size:11px;color:#f91880;text-transform:uppercase;margin-bottom:8px;">📎 Session Materials</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:rgba(249,24,128,0.2);padding:6px 12px;border-radius:16px;font-size:13px;display:flex;align-items:center;gap:4px;">
+            📄 Slides.pdf <span style="color:#71767b;font-size:11px;">2.4MB</span>
+          </span>
+          <span style="background:rgba(249,24,128,0.2);padding:6px 12px;border-radius:16px;font-size:13px;display:flex;align-items:center;gap:4px;">
+            📊 Templates.pptx <span style="color:#71767b;font-size:11px;">1.1MB</span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Session 2 (Locked) -->
+    <div style="background:rgba(0,0,0,0.2);border:1px solid #38444d;border-radius:12px;padding:16px;opacity:0.6;">
+      <div style="display:flex;gap:12px;align-items:center;">
+        <div class="session-number">🔒</div>
+        <div>
+          <div style="font-weight:600;">Session 2: Advanced Techniques</div>
+          <div style="font-size:12px;color:#71767b;">Complete Session 1 first</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr>
+
+<h2 style="margin-top:40px;">Summary of Options</h2>
+<div style="background:#253341;padding:20px;border-radius:12px;max-width:700px;margin:0 auto;">
+  <p style="margin-bottom:16px;"><strong>Option A:</strong> Files appear at the bottom of each expanded session. Simple badge shows file count.</p>
+  <p style="margin-bottom:16px;"><strong>Option B:</strong> Clear visual separation between Modules and Files within each session. More organized.</p>
+  <p style="margin-bottom:16px;"><strong>Option C:</strong> Side-by-side columns. Good for desktop, might need stacking on mobile.</p>
+  <p><strong>Option D:</strong> Eliminates separate Curriculum tab entirely. Each session is a complete card with modules + files. Sessions-centric approach.</p>
+</div>
+
+</body>
+</html>
