@@ -2422,6 +2422,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             isDarkMode={isDarkMode}
             currentUser={currentUser}
             isCoursePurchased={false}
+            purchasedCourses={[]}
           />
         </div>
       </div>

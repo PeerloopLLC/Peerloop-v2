@@ -662,48 +662,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
           </div>
         ))}
 
-        {/* Divider line and My Feeds - always visible */}
-        <>
-          <div className="nav-section-divider" />
-
-            {/* Scrollable Communities Section - My Feeds at bottom of sidebar */}
-            <div
-              className="sidebar-communities-section"
-            >
-              <div className="communities-header">
-                <span className="communities-title">My Feeds</span>
-              </div>
-              <div className="communities-list">
-                {/* The Commons - always first */}
-                <div
-                  className="community-item"
-                  onClick={() => { setIsFlyoutOpen(false); handleCommunitySelect(townHall); }}
-                >
-                  <div className="community-avatar community-badge" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>👥</div>
-                  <span className="community-name">The Commons</span>
-                </div>
-                {/* Followed creator communities - only show instructor communities, not courses */}
-                {communities
-                  .filter(c => c.type === 'creator' || (typeof c.id === 'string' && c.id.startsWith('creator-')))
-                  .map((community) => {
-                  // Get instructor for communityName
-                  const instructorId = typeof community.id === 'string' ? parseInt(community.id.replace('creator-', '')) : community.instructorId;
-                  const instructor = getInstructorById(instructorId);
-                  const communityNameDisplay = instructor?.communityName || `${community.name || community.id?.replace('creator-', '') || 'Community'} Community`;
-                  return (
-                    <div
-                      key={community.id}
-                      className="community-item"
-                      onClick={() => { setIsFlyoutOpen(false); handleCommunitySelect(community); }}
-                    >
-                      <div className="community-avatar community-badge" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>👥</div>
-                      <span className="community-name">{communityNameDisplay}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </>
 
       </nav>
 

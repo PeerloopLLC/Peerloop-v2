@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { FaStar, FaUsers, FaClock, FaPlay, FaBook, FaCertificate, FaChalkboardTeacher, FaCheck, FaPlus, FaInfinity, FaGraduationCap, FaHeart, FaComment, FaRetweet, FaShare, FaImage, FaLink, FaPaperclip, FaVideo, FaFileAlt, FaDownload, FaExclamationTriangle, FaChevronDown, FaChevronRight, FaCalendar, FaUpload, FaSpinner } from 'react-icons/fa';
-import { getInstructorById } from '../data/database';
+import { getInstructorById, getCourseById } from '../data/database';
+import { useHeaderCollapse } from '../hooks/useHeaderCollapse';
 import SessionTimelineCards from './SessionTimelineCards';
 import { getCourseFiles, uploadCourseFile, addCourseFileLink, deleteCourseFile, formatFileSize } from '../services/courseFiles';
 import { uploadHomework, getStudentHomework, replaceHomework, formatFileSize as formatHomeworkSize } from '../services/homeworkFiles';
@@ -1203,7 +1204,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
  * Shows detailed view of a course with tabs and two-column layout
  * Merged design: combines marketing view (pre-enrollment) with learning dashboard (post-enrollment)
  */
-const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, currentUser, onMenuChange, scheduledSessions = [], sessionCompletion = {}, onBrowseStudentTeachers, onRescheduleSession }) => {
+const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, purchasedCourses = [], currentUser, onMenuChange, scheduledSessions = [], sessionCompletion = {}, onBrowseStudentTeachers, onRescheduleSession }) => {
   // Check if this specific course is being followed (within creator's followedCourseIds)
   const [isFollowing, setIsFollowing] = useState(() => {
     if (!course) return false;
@@ -1220,65 +1221,10 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
   const [showHelpPanel, setShowHelpPanel] = useState(false);
   const [expandedFileSessions, setExpandedFileSessions] = useState({ 1: true }); // Session 1 expanded by default
 
-  // Collapsible header state
-  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  // Collapsible header - uses shared hook
+  const isHeaderCollapsed = useHeaderCollapse({ collapseThreshold: 150 });
   const headerRef = React.useRef(null);
   const stickyHeaderRef = React.useRef(null);
-
-  // Scroll detection for collapsible header
-  useEffect(() => {
-    let lastScrollYRef = lastScrollY;
-    let ticking = false;
-
-    const handleScroll = (e) => {
-      const scrollElement = e.target;
-      const currentScrollY = scrollElement.scrollTop || window.scrollY;
-
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const scrollThreshold = 150;
-          const scrollDelta = currentScrollY - lastScrollYRef;
-
-          // Only trigger state change if scroll delta is significant (reduces jerkiness)
-          if (Math.abs(scrollDelta) > 5) {
-            if (currentScrollY > scrollThreshold) {
-              // Scrolling down past threshold - collapse
-              if (scrollDelta > 0) {
-                setIsHeaderCollapsed(true);
-              }
-              // Scrolling up - expand
-              else if (scrollDelta < 0) {
-                setIsHeaderCollapsed(false);
-              }
-            } else {
-              // Above threshold - always expanded
-              setIsHeaderCollapsed(false);
-            }
-            lastScrollYRef = currentScrollY;
-            setLastScrollY(currentScrollY);
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    // Try to find the main-content scrollable container
-    const mainContent = document.querySelector('.main-content');
-
-    if (mainContent) {
-      mainContent.addEventListener('scroll', handleScroll, { passive: true });
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      if (mainContent) {
-        mainContent.removeEventListener('scroll', handleScroll);
-      }
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   // Apply to Teach modal state
   const [applyToTeachModal, setApplyToTeachModal] = useState(false);
@@ -2200,6 +2146,29 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
         }}>
           <span style={{ color: '#fbbf24' }}>★</span> 4.8 (234) <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> 1,250 students <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> {course.curriculum?.length || 5} Modules <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> {(course.curriculum?.length || 5) * 4} Lessons <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>•</span> 12 hours
         </div>
+
+        {/* Prerequisites - Simple list of required courses */}
+        {!isCoursePurchased && course.prerequisites && course.prerequisites.length > 0 && (
+          <div style={{
+            fontSize: 'var(--fs-14)',
+            color: isDarkMode ? '#71767b' : '#536471',
+            marginBottom: 16
+          }}>
+            <span style={{ fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+              Prerequisites:
+            </span>{' '}
+            {course.prerequisites.map((prereqId, idx) => {
+              const prereqCourse = getCourseById(prereqId);
+              if (!prereqCourse) return null;
+              return (
+                <span key={idx}>
+                  {prereqCourse.title}
+                  {idx < course.prerequisites.length - 1 ? ', ' : ''}
+                </span>
+              );
+            })}
+          </div>
+        )}
 
         {/* Video and What You'll Learn - Only for NON-enrolled users (enrolled users see this in About tab) */}
         {!isCoursePurchased && (

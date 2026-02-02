@@ -625,6 +625,7 @@ export const coursesDatabase = [
     instructorId: 2, // Links to Jane Doe
     category: "Computer Vision",
     tags: ["OpenCV", "Image Processing", "Object Detection", "CNN"],
+    prerequisites: [14, 17], // AI Coding Bootcamp: Python Projects, Machine Learning Essentials
     sessions: {
       count: 2,
       duration: "90 min each",
@@ -1122,6 +1123,7 @@ export const coursesDatabase = [
     instructorId: 9, // Dr. Sarah Chen
     category: "Machine Learning",
     tags: ["Machine Learning", "Python", "Algorithms", "Data Science"],
+    prerequisites: [14, 16], // AI Coding Bootcamp: Python Projects, AI Fundamentals for Business
     sessions: {
       count: 2,
       duration: "90 min each",
@@ -1656,6 +1658,7 @@ const fromSupabaseFormat = (row) => ({
   curriculum: row.curriculum || [],
   includes: row.includes || [],
   sessionFiles: row.session_files || [],
+  prerequisites: row.prerequisites || [],
   isCreatorCourse: row.is_creator_course,
   createdAt: row.created_at,
   updatedAt: row.updated_at

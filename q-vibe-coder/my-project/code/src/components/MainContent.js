@@ -2283,6 +2283,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               onMenuChange('Browse');
             }}
             isCoursePurchased={true}
+            purchasedCourses={purchasedCourses}
             currentUser={currentUser}
             onMenuChange={onMenuChange}
             scheduledSessions={scheduledSessions}
@@ -2440,6 +2441,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               setEnrollingCourse(null);
             }}
             isCoursePurchased={false}
+            purchasedCourses={purchasedCourses}
             currentUser={currentUser}
             onMenuChange={onMenuChange}
             scheduledSessions={scheduledSessions}
@@ -2487,6 +2489,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               setEnrollingCourse(null);
             }}
             isCoursePurchased={false}
+            purchasedCourses={purchasedCourses}
             currentUser={currentUser}
             onMenuChange={onMenuChange}
             scheduledSessions={scheduledSessions}
@@ -2706,6 +2709,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             onMenuChange('Browse');
           }}
           isCoursePurchased={false}
+          purchasedCourses={purchasedCourses}
           currentUser={currentUser}
           onMenuChange={onMenuChange}
           scheduledSessions={scheduledSessions}

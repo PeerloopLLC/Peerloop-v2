@@ -1801,6 +1801,7 @@ const BrowseView = ({
                       followedCommunities={followedCommunities}
                       setFollowedCommunities={setFollowedCommunities}
                       isCoursePurchased={isCoursePurchased(selectedCourse.id)}
+                      purchasedCourses={purchasedCourses}
                       currentUser={currentUser}
                       onViewInstructor={(instructorId) => {
                         const instructor = getInstructorById(instructorId);
@@ -2152,6 +2153,7 @@ const BrowseView = ({
                       followedCommunities={followedCommunities}
                       setFollowedCommunities={setFollowedCommunities}
                       isCoursePurchased={isCoursePurchased(selectedCourse.id)}
+                      purchasedCourses={purchasedCourses}
                       currentUser={currentUser}
                       onViewInstructor={(instructorId) => {
                         const instructor = getInstructorById(instructorId);

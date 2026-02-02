@@ -7,6 +7,7 @@ import { getInstructorWithCourses, getAllCourses, getInstructorById } from '../d
 import CommunityHoverCard from './CommunityHoverCard';
 import CourseHoverCard from './CourseHoverCard';
 import Breadcrumb from './Breadcrumb';
+import { useHeaderCollapse } from '../hooks/useHeaderCollapse';
 
 /**
  * DiscoverView - Unified search for communities and courses
@@ -56,11 +57,8 @@ const DiscoverView = ({
   const [openCourseFollowDropdown, setOpenCourseFollowDropdown] = useState(null);
   const [courseDropdownPosition, setCourseDropdownPosition] = useState({ top: 0, left: 0 });
 
-  // Collapsible header state
-  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
-  const isHeaderCollapsedRef = useRef(false); // Ref to track current collapsed state for scroll handler
-  const lastScrollY = useRef(0);
-  const lastToggleTime = useRef(0);
+  // Collapsible header - uses shared hook
+  const isHeaderCollapsed = useHeaderCollapse({ collapseThreshold: 100 });
 
   // Pills drag scrolling state
   const discoverPillsRef = useRef(null);
@@ -194,11 +192,6 @@ const DiscoverView = ({
   // Ref for scroll container
   const scrollContainerRef = useRef(null);
 
-  // Keep ref in sync with state
-  useEffect(() => {
-    isHeaderCollapsedRef.current = isHeaderCollapsed;
-  }, [isHeaderCollapsed]);
-
   // Clear selections when user changes (for demo purposes)
   useEffect(() => {
     setSelectedInterests([]);
@@ -222,64 +215,6 @@ const DiscoverView = ({
     window.addEventListener('compactTextScaleChanged', handleScaleChange);
     return () => window.removeEventListener('compactTextScaleChanged', handleScaleChange);
   }, []);
-
-  // Handle scroll to collapse/expand header based on scroll position
-  useEffect(() => {
-    const COLLAPSE_THRESHOLD = 1; // Collapse immediately when scrolling
-    const EXPAND_THRESHOLD = 5; // Expand when back at top
-    const TOGGLE_COOLDOWN = 200; // Cooldown for responsive expand
-
-    const handleScroll = () => {
-      const container = scrollContainerRef.current;
-      if (!container) return;
-
-      const currentScrollY = container.scrollTop;
-      const now = Date.now();
-
-      // Always expand when at the very top (scrollTop <= 5), bypass cooldown
-      if (isHeaderCollapsedRef.current && currentScrollY <= EXPAND_THRESHOLD) {
-        setIsHeaderCollapsed(false);
-        isHeaderCollapsedRef.current = false;
-        lastToggleTime.current = now;
-        lastScrollY.current = currentScrollY;
-        return;
-      }
-
-      // Respect cooldown for other state changes
-      if (now - lastToggleTime.current < TOGGLE_COOLDOWN) {
-        return;
-      }
-
-      // Collapse: when scrolled down past threshold
-      if (!isHeaderCollapsedRef.current && currentScrollY > COLLAPSE_THRESHOLD) {
-        setIsHeaderCollapsed(true);
-        isHeaderCollapsedRef.current = true;
-        lastToggleTime.current = now;
-      }
-      // Expand: when scrolled back near the top
-      else if (isHeaderCollapsedRef.current && currentScrollY < EXPAND_THRESHOLD) {
-        setIsHeaderCollapsed(false);
-        isHeaderCollapsedRef.current = false;
-        lastToggleTime.current = now;
-      }
-
-      lastScrollY.current = currentScrollY;
-
-      // Save scroll position on every scroll for restoration when returning
-      sessionStorage.setItem('discoverScrollPosition', currentScrollY.toString());
-    };
-
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', handleScroll, { passive: true });
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, []); // Empty dependency - handler uses refs for current values
 
   // Restore scroll position on mount - only if returning from a detail view
   // Use sessionStorage so it clears on new browser session
