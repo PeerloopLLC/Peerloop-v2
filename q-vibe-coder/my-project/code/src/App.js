@@ -79,6 +79,22 @@ function App() {
     // Note: followedCommunities are now stored per-user in MainContent.js
     // New users will automatically start with empty follows
 
+    // Reset My Courses to zero for New User only
+    if (demoUser.id === 'demo_new') {
+      const keysToRemove = [
+        `purchasedCourses_${demoUser.id}`,
+        `scheduledSessions_${demoUser.id}`,
+        `sessionCompletion_${demoUser.id}`,
+        `enrolledCourses_${demoUser.id}`,
+        `followedCourses_${demoUser.id}`,
+        `followedInstructors_${demoUser.id}`,
+        `stTeacherStats_${demoUser.id}`,
+        `stTeacherSessions_${demoUser.id}`,
+      ];
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      console.log('🆕 New User login: Reset My Courses to zero');
+    }
+
     // Pass through ALL user data from communityUsers, plus demo-specific flags
     setCurrentUser({
       ...demoUser, // Spread all user data (joinedDate, posts, courses, etc.)
@@ -124,6 +140,15 @@ function App() {
     document.body.classList.toggle('dark-mode', isDarkMode);
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
+
+  // Apply saved font size on app load
+  useEffect(() => {
+    const fontSizeLevels = [13, 14, 15, 17, 19]; // px values for levels 0-4
+    const saved = localStorage.getItem('fontSizeLevel');
+    const level = saved ? parseInt(saved, 10) : 2; // Default level 2 (15px)
+    const size = fontSizeLevels[level] || 15;
+    document.documentElement.style.fontSize = `${size}px`;
+  }, []);
 
   // Debug mode - set to true to show device info overlay
   const [showDeviceDebug, setShowDeviceDebug] = useState(false);

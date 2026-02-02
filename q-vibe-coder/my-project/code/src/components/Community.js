@@ -102,7 +102,7 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
           style={{
             width: '100%',
             padding: '14px 14px 14px 44px',
-            fontSize: 15,
+            fontSize: 'var(--fs-15)',
             border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
             borderRadius: 9999,
             background: isDarkMode ? '#16181c' : '#f7f9f9',
@@ -123,7 +123,7 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
 
       {/* Results Count */}
       <div style={{
-        fontSize: 14,
+        fontSize: 'var(--fs-14)',
         color: isDarkMode ? '#71767b' : '#536471',
         marginBottom: 16
       }}>
@@ -183,7 +183,7 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 20,
+                  fontSize: 'var(--fs-20)',
                   fontWeight: 700,
                   flexShrink: 0
                 }}>
@@ -200,7 +200,7 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
                   marginBottom: 4
                 }}>
                   <span style={{
-                    fontSize: 16,
+                    fontSize: 'var(--fs-16)',
                     fontWeight: 700,
                     color: isDarkMode ? '#e7e9ea' : '#0f1419'
                   }}>
@@ -214,7 +214,7 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
                     borderRadius: 9999,
                     background: `${typeInfo.color}20`,
                     color: typeInfo.color,
-                    fontSize: 12,
+                    fontSize: 'var(--fs-12)',
                     fontWeight: 600
                   }}>
                     {typeInfo.icon}
@@ -223,7 +223,7 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
                 </div>
 
                 <div style={{
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   color: isDarkMode ? '#71767b' : '#536471',
                   marginBottom: 6
                 }}>
@@ -231,7 +231,7 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
                 </div>
 
                 <div style={{
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   color: isDarkMode ? '#71767b' : '#536471',
                   display: 'flex',
                   gap: 16
@@ -262,7 +262,7 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
                   border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
                   background: 'transparent',
                   color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -292,11 +292,11 @@ const MemberSearchView = ({ isDarkMode, searchQuery, setSearchQuery, onViewMembe
             padding: '40px 20px',
             color: isDarkMode ? '#71767b' : '#536471'
           }}>
-            <FaSearch style={{ fontSize: 32, marginBottom: 12, opacity: 0.5 }} />
-            <p style={{ fontSize: 16, margin: 0 }}>
+            <FaSearch style={{ fontSize: 'var(--fs-32)', marginBottom: 12, opacity: 0.5 }} />
+            <p style={{ fontSize: 'var(--fs-16)', margin: 0 }}>
               No members found matching "{searchQuery}"
             </p>
-            <p style={{ fontSize: 14, margin: '8px 0 0 0' }}>
+            <p style={{ fontSize: 'var(--fs-14)', margin: '8px 0 0 0' }}>
               Try a different search term
             </p>
           </div>
@@ -1303,12 +1303,12 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 32
+                fontSize: 'var(--fs-32)'
               }}>
                 📚
               </div>
               <div style={{ flex: 1, paddingBottom: 8 }}>
-                <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: '#1e293b' }}>{selectedCommunity.name}</h1>
+                <h1 style={{ margin: 0, fontSize: 'var(--fs-24)', fontWeight: 700, color: '#1e293b' }}>{selectedCommunity.name}</h1>
                 <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: 14 }}>{selectedCommunity.topic}</p>
               </div>
               <button
@@ -1320,7 +1320,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   padding: '10px 24px',
                   borderRadius: 8,
                   fontWeight: 600,
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   cursor: 'pointer'
                 }}
               >
@@ -1329,12 +1329,12 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
             </div>
 
             {/* Description */}
-            <p style={{ color: '#475569', fontSize: 15, lineHeight: 1.6, margin: '0 0 16px 0' }}>
+            <p style={{ color: '#475569', fontSize: 'var(--fs-15)', lineHeight: 1.6, margin: '0 0 16px 0' }}>
               {selectedCommunity.description}
             </p>
 
             {/* Stats */}
-            <div style={{ display: 'flex', gap: 24, fontSize: 14, color: '#64748b' }}>
+            <div style={{ display: 'flex', gap: 24, fontSize: 'var(--fs-14)', color: '#64748b' }}>
               <span><strong style={{ color: '#1e293b' }}>{selectedCommunity.members?.toLocaleString()}</strong> members</span>
               <span><strong style={{ color: '#1e293b' }}>{selectedCommunity.posts}</strong> posts</span>
               <span>Created by <strong style={{ color: '#1e293b' }}>{selectedCommunity.instructor}</strong></span>
@@ -1344,7 +1344,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
 
         {/* Community Feed */}
         <div style={{ margin: '0 16px' }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1e293b', margin: '0 0 16px 0' }}>Community Posts</h2>
+          <h2 style={{ fontSize: 'var(--fs-18)', fontWeight: 700, color: '#1e293b', margin: '0 0 16px 0' }}>Community Posts</h2>
           
           {communityPosts.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -1366,8 +1366,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       <div style={{ color: '#64748b', fontSize: 12 }}>{post.authorHandle} • {post.timestamp}</div>
                     </div>
                   </div>
-                  <p style={{ margin: '0 0 12px 0', color: '#334155', fontSize: 15, lineHeight: 1.5 }}>{post.content}</p>
-                  <div style={{ display: 'flex', gap: 20, fontSize: 14, color: '#64748b' }}>
+                  <p style={{ margin: '0 0 12px 0', color: '#334155', fontSize: 'var(--fs-15)', lineHeight: 1.5 }}>{post.content}</p>
+                  <div style={{ display: 'flex', gap: 20, fontSize: 'var(--fs-14)', color: '#64748b' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><FaComment /> {post.replies}</span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><FaHeart /> {post.likes}</span>
                   </div>
@@ -1397,8 +1397,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
             padding: 20, 
             border: '1px solid #e2e8f0'
           }}>
-            <h3 style={{ margin: '0 0 12px 0', fontSize: 16, fontWeight: 600, color: '#1e293b' }}>Community Guidelines</h3>
-            <ul style={{ margin: 0, paddingLeft: 20, color: '#475569', fontSize: 14, lineHeight: 1.8 }}>
+            <h3 style={{ margin: '0 0 12px 0', fontSize: 'var(--fs-16)', fontWeight: 600, color: '#1e293b' }}>Community Guidelines</h3>
+            <ul style={{ margin: 0, paddingLeft: 20, color: '#475569', fontSize: 'var(--fs-14)', lineHeight: 1.8 }}>
               <li>Be respectful and inclusive in all discussions</li>
               <li>Share knowledge and help others learn</li>
               <li>Keep discussions relevant to the course topic</li>
@@ -1463,7 +1463,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 border: 'none',
                 background: 'rgba(0, 0, 0, 0.6)',
                 color: '#fff',
-                fontSize: 20,
+                fontSize: 'var(--fs-20)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -1541,7 +1541,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 border: 'none',
                 background: isDarkMode ? '#2f3336' : '#eff3f4',
                 color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                fontSize: 18,
+                fontSize: 'var(--fs-18)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -1555,7 +1555,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
             {/* Content */}
             <div style={{ padding: '40px 32px 32px', overflowY: 'auto', maxHeight: '90vh' }}>
               <h2 style={{
-                fontSize: 24,
+                fontSize: 'var(--fs-24)',
                 fontWeight: 700,
                 color: isDarkMode ? '#e7e9ea' : '#0f1419',
                 margin: '0 0 8px 0',
@@ -1564,7 +1564,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 Dive into your interests
               </h2>
               <p style={{
-                fontSize: 15,
+                fontSize: 'var(--fs-15)',
                 color: isDarkMode ? '#71767b' : '#536471',
                 margin: '0 0 24px 0',
                 textAlign: 'center'
@@ -1592,7 +1592,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         border: `1px solid ${isSelected ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#cfd9de')}`,
                         background: isSelected ? '#1d9bf0' : 'transparent',
                         color: isSelected ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         fontWeight: 500,
                         cursor: 'pointer',
                         transition: 'all 0.2s ease'
@@ -1619,7 +1619,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   border: 'none',
                   background: selectedInterests.length >= 3 ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#cfd9de'),
                   color: selectedInterests.length >= 3 ? '#fff' : (isDarkMode ? '#71767b' : '#536471'),
-                  fontSize: 15,
+                  fontSize: 'var(--fs-15)',
                   fontWeight: 600,
                   cursor: selectedInterests.length >= 3 ? 'pointer' : 'default',
                   transition: 'all 0.2s ease'
@@ -1668,7 +1668,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
             {/* Content */}
             <div style={{ padding: '32px 24px', overflowY: 'auto', maxHeight: '90vh' }}>
               <h2 style={{
-                fontSize: 22,
+                fontSize: 'var(--fs-22)',
                 fontWeight: 700,
                 color: isDarkMode ? '#e7e9ea' : '#0f1419',
                 margin: '0 0 8px 0',
@@ -1677,7 +1677,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 Communities you may like
               </h2>
               <p style={{
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 color: isDarkMode ? '#71767b' : '#536471',
                 margin: '0 0 20px 0',
                 textAlign: 'center'
@@ -1696,7 +1696,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 }}
               >
                 <span style={{
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   color: '#1d9bf0',
                   fontWeight: 500
                 }}>
@@ -1735,7 +1735,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         justifyContent: 'center',
                         color: '#fff',
                         fontWeight: 700,
-                        fontSize: 18,
+                        fontSize: 'var(--fs-18)',
                         flexShrink: 0
                       }}>
                         {!community.avatar && community.name.charAt(0)}
@@ -1744,21 +1744,21 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       {/* Info */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{
-                          fontSize: 15,
+                          fontSize: 'var(--fs-15)',
                           fontWeight: 600,
                           color: isDarkMode ? '#e7e9ea' : '#0f1419'
                         }}>
                           {community.name}
                         </div>
                         <div style={{
-                          fontSize: 13,
+                          fontSize: 'var(--fs-13)',
                           color: isDarkMode ? '#71767b' : '#536471',
                           marginBottom: 4
                         }}>
                           by {community.author}
                         </div>
                         <div style={{
-                          fontSize: 13,
+                          fontSize: 'var(--fs-13)',
                           color: isDarkMode ? '#71767b' : '#536471',
                           lineHeight: 1.4
                         }}>
@@ -1780,7 +1780,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         marginTop: 2
                       }}>
                         {isSelected && (
-                          <span style={{ color: '#fff', fontSize: 14, fontWeight: 700 }}>✓</span>
+                          <span style={{ color: '#fff', fontSize: 'var(--fs-14)', fontWeight: 700 }}>✓</span>
                         )}
                       </div>
                     </div>
@@ -1823,7 +1823,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   border: 'none',
                   background: '#1d9bf0',
                   color: '#fff',
-                  fontSize: 15,
+                  fontSize: 'var(--fs-15)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.2s ease'
@@ -1916,7 +1916,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     color: communityMode === 'hub'
                       ? '#1d9bf0'
                       : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     fontWeight: 600,
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
@@ -1953,7 +1953,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         color: isSelected
                           ? '#1d9bf0'
                           : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         fontWeight: 600,
                         cursor: 'pointer',
                         whiteSpace: 'nowrap',
@@ -2015,7 +2015,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   display: 'flex',
                   alignItems: 'center',
                   gap: 10,
-                  padding: '10px 14px',
+                  padding: '10px 16px',
                   background: isDarkMode ? '#16181c' : '#ffffff',
                   border: 'none',
                   borderBottom: `1px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`,
@@ -2023,7 +2023,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   position: 'relative',
-                  boxShadow: 'none'
+                  boxShadow: 'none',
+                  width: '100%'
                 }}
                 onMouseEnter={e => {
                   if (!showSelectorDropdown) {
@@ -2057,7 +2058,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       alignItems: 'center',
                       justifyContent: 'center',
                       color: '#fff',
-                      fontSize: 12,
+                      fontSize: 'var(--fs-12)',
                       fontWeight: 600,
                       flexShrink: 0
                     }}>
@@ -2067,7 +2068,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 })()}
 
                 {/* Name only */}
-                <div style={{ fontSize: 14, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                <div style={{ fontSize: 'var(--fs-14)', fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
                   {communityMode === 'hub' ? 'The Commons' : (() => {
                     const selectedCreator = groupedByCreator.find(c => c.id === selectedCreatorId);
                     if (selectedCreator) {
@@ -2078,18 +2079,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   })()}
                 </div>
 
-                {/* Dropdown Arrow (next to name) */}
-                <FaChevronDown size={12} style={{
-                  color: showSelectorDropdown ? '#1d9bf0' : (isDarkMode ? '#9ca3af' : '#71767b'),
-                  transform: showSelectorDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'all 0.2s',
-                  flexShrink: 0
-                }} />
-
-                {/* Spacer */}
-                <div style={{ flex: 1 }} />
-
-                {/* Dropdown Arrow (far right) */}
+                {/* Dropdown Arrow */}
                 <FaChevronDown size={12} style={{
                   color: showSelectorDropdown ? '#1d9bf0' : (isDarkMode ? '#9ca3af' : '#71767b'),
                   transform: showSelectorDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -2104,8 +2094,10 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     style={{
                       position: 'absolute',
                       top: '100%',
-                      left: 0,
-                      right: 0,
+                      left: 16,
+                      width: '50%',
+                      maxWidth: 400,
+                      minWidth: 280,
                       background: isDarkMode ? '#1f2937' : '#fff',
                       borderRadius: 12,
                       boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
@@ -2140,8 +2132,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       <span style={{ width: 20, color: '#1d9bf0', fontWeight: 700, flexShrink: 0 }}>{communityMode === 'hub' ? '\u2713' : ''}</span>
                       <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=60&h=60&fit=crop" alt="The Commons" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 600, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>The Commons Community</div>
-                        <div style={{ fontSize: 12, color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: 2 }}>Open forum for all members</div>
+                        <div style={{ fontWeight: 600, fontSize: 'var(--fs-14)', color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>The Commons Community</div>
+                        <div style={{ fontSize: 'var(--fs-12)', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: 2 }}>Open forum for all members</div>
                       </div>
                     </div>
 
@@ -2188,7 +2180,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                               alignItems: 'center',
                               justifyContent: 'center',
                               color: '#fff',
-                              fontSize: 12,
+                              fontSize: 'var(--fs-12)',
                               fontWeight: 600,
                               flexShrink: 0
                             }}>
@@ -2196,8 +2188,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                             </div>
                           )}
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontWeight: 600, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{instructor?.communityName || `${creator.name} Community`}</div>
-                            {instructor?.title && <div style={{ fontSize: 12, color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{instructor.title}</div>}
+                            <div style={{ fontWeight: 600, fontSize: 'var(--fs-14)', color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{instructor?.communityName || `${creator.name} Community`}</div>
+                            {instructor?.title && <div style={{ fontSize: 'var(--fs-12)', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{instructor.title}</div>}
                           </div>
                         </div>
                       );
@@ -2239,7 +2231,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 /* The Commons description + feed pills */
                 <div style={{ marginTop: isProfileCollapsed ? 8 : 12, transition: 'margin 0.3s ease-out' }}>
                   <div style={{
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     color: isDarkMode ? '#9ca3af' : '#4a5568',
                     lineHeight: 1.4,
                     marginBottom: isProfileCollapsed ? 0 : 12,
@@ -2274,7 +2266,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         color: commonsActiveFeed === 'main'
                           ? '#1d9bf0'
                           : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         fontWeight: 600,
                         cursor: 'pointer',
                         whiteSpace: 'nowrap'
@@ -2300,7 +2292,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         color: commonsActiveFeed === 'Member Search'
                           ? '#1d9bf0'
                           : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         fontWeight: 600,
                         cursor: 'pointer',
                         whiteSpace: 'nowrap'
@@ -2326,7 +2318,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         color: commonsActiveFeed === 'App Tour'
                           ? '#1d9bf0'
                           : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         fontWeight: 600,
                         cursor: 'pointer',
                         whiteSpace: 'nowrap'
@@ -2365,7 +2357,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     {/* First Row: Name, Go to Profile, View All Courses */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <div style={{
-                          fontSize: 18,
+                          fontSize: 'var(--fs-18)',
                           fontWeight: 700,
                           color: isDarkMode ? '#e7e9ea' : '#0f1419',
                           display: 'inline-block',
@@ -2376,7 +2368,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{
-                          fontSize: 13,
+                          fontSize: 'var(--fs-13)',
                           color: isDarkMode ? '#9ca3af' : '#536471'
                         }}>
                           Created by
@@ -2392,7 +2384,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                             display: 'flex',
                             alignItems: 'center',
                             gap: 6,
-                            fontSize: 13,
+                            fontSize: 'var(--fs-13)',
                             fontWeight: 600,
                             color: '#1d9bf0',
                             cursor: 'pointer'
@@ -2452,7 +2444,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           border: isDarkMode ? '2px solid #536471' : '2px solid #cfd9de',
                           background: isDarkMode ? '#2f3336' : '#f7f9f9',
                           color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                          fontSize: 14,
+                          fontSize: 'var(--fs-14)',
                           fontWeight: 600,
                           cursor: 'pointer',
                           whiteSpace: 'nowrap',
@@ -2465,7 +2457,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     </div>
                     {/* Title */}
                     <div style={{
-                      fontSize: 14,
+                      fontSize: 'var(--fs-14)',
                       color: isDarkMode ? '#9ca3af' : '#536471',
                       marginTop: 4
                     }}>
@@ -2473,7 +2465,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     </div>
                     {/* Stats */}
                     <div style={{
-                      fontSize: 12,
+                      fontSize: 'var(--fs-12)',
                       color: isDarkMode ? '#9ca3af' : '#536471',
                       marginTop: 2
                     }}>
@@ -2482,7 +2474,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     {/* Bio */}
                     {instructor.bio && (
                       <div style={{
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         color: isDarkMode ? '#d1d5db' : '#374151',
                         marginTop: 8,
                         lineHeight: 1.4
@@ -2585,7 +2577,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           color: isHubSelected
                             ? '#1d9bf0'
                             : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                          fontSize: 14,
+                          fontSize: 'var(--fs-14)',
                           fontWeight: 600,
                           cursor: 'pointer',
                           whiteSpace: 'nowrap',
@@ -2622,7 +2614,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                               color: isSelected
                                 ? '#1d9bf0'
                                 : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                              fontSize: 14,
+                              fontSize: 'var(--fs-14)',
                               fontWeight: 600,
                               cursor: 'pointer',
                               whiteSpace: 'nowrap',
@@ -2743,7 +2735,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 padding: '0 20px'
               }}>
                 <div style={{
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   color: isDarkMode ? '#71767b' : '#536471',
                   marginBottom: 8,
                   marginTop: 4
@@ -2751,7 +2743,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   Community Discussion Hub
                 </div>
                 <div style={{
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   color: isDarkMode ? '#9ca3af' : '#4a5568',
                   lineHeight: 1.5
                 }}>
@@ -2912,7 +2904,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     }}
                   >
                     <span style={{
-                      fontSize: 13,
+                      fontSize: 'var(--fs-13)',
                       color: isDarkMode ? '#9ca3af' : '#536471'
                     }}>
                       Created by
@@ -2927,7 +2919,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         display: 'flex',
                         alignItems: 'center',
                         gap: 6,
-                        fontSize: 13,
+                        fontSize: 'var(--fs-13)',
                         fontWeight: 600,
                         color: '#1d9bf0',
                         cursor: 'pointer'
@@ -2988,7 +2980,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       border: '2px solid #6366f1',
                       background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
                       color: '#6366f1',
-                      fontSize: 13,
+                      fontSize: 'var(--fs-13)',
                       fontWeight: 600,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
@@ -3021,13 +3013,13 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   marginTop: isProfileCollapsed ? 0 : 4
                 }}>
                   <div style={{
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     color: isDarkMode ? '#9ca3af' : '#536471'
                   }}>
                     {instructor.title}
                   </div>
                   <div style={{
-                    fontSize: 12,
+                    fontSize: 'var(--fs-12)',
                     color: isDarkMode ? '#9ca3af' : '#536471',
                     marginTop: 2
                   }}>
@@ -3035,7 +3027,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   </div>
                   {instructor.bio && (
                     <div style={{
-                      fontSize: 14,
+                      fontSize: 'var(--fs-14)',
                       color: isDarkMode ? '#d1d5db' : '#374151',
                       marginTop: 8,
                       lineHeight: 1.4
@@ -3066,7 +3058,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       {purchasedCourses.length > 0 && (
                         <div style={{
                           marginTop: isProfileCollapsed ? 0 : 12,
-                          fontSize: 13,
+                          fontSize: 'var(--fs-13)',
                           fontWeight: 500,
                           color: isDarkMode ? '#9ca3af' : '#6b7280'
                         }}>
@@ -3145,7 +3137,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                             color: isHubSelected
                               ? '#1d9bf0'
                               : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                            fontSize: 14,
+                            fontSize: 'var(--fs-14)',
                             fontWeight: 600,
                             cursor: 'pointer',
                             whiteSpace: 'nowrap',
@@ -3182,7 +3174,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                                 color: isSelected
                                   ? '#1d9bf0'
                                   : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                                fontSize: 14,
+                                fontSize: 'var(--fs-14)',
                                 fontWeight: 600,
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
@@ -3304,19 +3296,19 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       justifyContent: 'center',
                       zIndex: 2
                     }}>
-                      <FaPlay style={{ fontSize: 24, color: '#fff', marginLeft: 4 }} />
+                      <FaPlay style={{ fontSize: 'var(--fs-24)', color: '#fff', marginLeft: 4 }} />
                     </div>
                   </div>
 
                   {/* Content - Right Side */}
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
-                    <h1 style={{ fontSize: 28, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: 0 }}>
+                    <h1 style={{ fontSize: 'var(--fs-28)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: 0 }}>
                       Welcome to PeerLoop
                     </h1>
-                    <p style={{ fontSize: 17, color: isDarkMode ? '#71767b' : '#536471', margin: 0, fontWeight: 500 }}>
+                    <p style={{ fontSize: 'var(--fs-17)', color: isDarkMode ? '#71767b' : '#536471', margin: 0, fontWeight: 500 }}>
                       A peer-to-peer knowledge sharing community
                     </p>
-                    <p style={{ fontSize: 16, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '6px 0 0 0', lineHeight: 1.6 }}>
+                    <p style={{ fontSize: 'var(--fs-16)', color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '6px 0 0 0', lineHeight: 1.6 }}>
                       Learn from people who've been where you are. Teach what you've mastered.
                       Follow creators, take courses, and share your own knowledge when you're ready.
                     </p>
@@ -3328,7 +3320,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         border: 'none',
                         borderRadius: 9999,
                         padding: '12px 28px',
-                        fontSize: 15,
+                        fontSize: 'var(--fs-15)',
                         fontWeight: 600,
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
@@ -3390,12 +3382,12 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       padding: '16px 24px'
                     }}>
                       <div style={{
-                        fontSize: 24,
+                        fontSize: 'var(--fs-24)',
                         marginBottom: 8
                       }}>🔒</div>
                       <div style={{
                         color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                        fontSize: 15,
+                        fontSize: 'var(--fs-15)',
                         fontWeight: 600,
                         marginBottom: 4
                       }}>
@@ -3450,7 +3442,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: 12,
+                        fontSize: 'var(--fs-12)',
                         fontWeight: 700,
                         flexShrink: 0,
                         marginTop: 2,
@@ -3481,7 +3473,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       border: 'none',
                       outline: 'none',
                       resize: 'none',
-                      fontSize: 15,
+                      fontSize: 'var(--fs-15)',
                       fontWeight: 400,
                       lineHeight: 1.5,
                       background: (isDarkMode ? '#2f3336' : '#f7f9f9'),
@@ -3523,7 +3515,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: 16,
+                          fontSize: 'var(--fs-16)',
                           transition: 'background 0.2s'
                         }}
                         title="Add image"
@@ -3544,7 +3536,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: 16,
+                          fontSize: 'var(--fs-16)',
                           transition: 'background 0.2s'
                         }}
                         title="Add link"
@@ -3565,7 +3557,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: 16,
+                          fontSize: 'var(--fs-16)',
                           transition: 'background 0.2s'
                         }}
                         title="Attach file"
@@ -3587,7 +3579,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       borderRadius: 20,
                       padding: '8px 20px',
                       fontWeight: 600,
-                      fontSize: 14,
+                      fontSize: 'var(--fs-14)',
                       cursor: (newPostText.trim() && !isPosting && !(currentUser?.isNewUser && !signupCompleted)) ? 'pointer' : 'not-allowed',
                       opacity: (newPostText.trim() && !isPosting && !(currentUser?.isNewUser && !signupCompleted)) ? 1 : 0.5,
                       transition: 'opacity 0.2s'
@@ -3597,7 +3589,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   </button>
                 </div>
                 {postError && (
-                  <div style={{ color: '#f44', fontSize: 12, padding: '0 12px 8px' }}>{postError}</div>
+                  <div style={{ color: '#f44', fontSize: 'var(--fs-12)', padding: '0 12px 8px' }}>{postError}</div>
                 )}
               </div>
             </div>}
@@ -3667,19 +3659,19 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     justifyContent: 'center',
                     zIndex: 2
                   }}>
-                    <FaPlay style={{ fontSize: 24, color: '#fff', marginLeft: 4 }} />
+                    <FaPlay style={{ fontSize: 'var(--fs-24)', color: '#fff', marginLeft: 4 }} />
                   </div>
                 </div>
 
                 {/* Content - Right Side */}
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
-                  <h1 style={{ fontSize: 28, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: 0 }}>
+                  <h1 style={{ fontSize: 'var(--fs-28)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: 0 }}>
                     Welcome to PeerLoop
                   </h1>
-                  <p style={{ fontSize: 17, color: isDarkMode ? '#71767b' : '#536471', margin: 0, fontWeight: 500 }}>
+                  <p style={{ fontSize: 'var(--fs-17)', color: isDarkMode ? '#71767b' : '#536471', margin: 0, fontWeight: 500 }}>
                     A peer-to-peer knowledge sharing community
                   </p>
-                  <p style={{ fontSize: 16, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '6px 0 0 0', lineHeight: 1.6 }}>
+                  <p style={{ fontSize: 'var(--fs-16)', color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '6px 0 0 0', lineHeight: 1.6 }}>
                     Learn from people who've been where you are. Teach what you've mastered.
                     Follow creators, take courses, and share your own knowledge when you're ready.
                   </p>
@@ -3693,7 +3685,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       border: 'none',
                       borderRadius: 9999,
                       padding: '12px 28px',
-                      fontSize: 15,
+                      fontSize: 'var(--fs-15)',
                       fontWeight: 600,
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',

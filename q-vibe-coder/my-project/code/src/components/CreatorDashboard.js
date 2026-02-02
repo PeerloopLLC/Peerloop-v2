@@ -547,7 +547,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       }}>
         <div>
           <h1 style={{
-            fontSize: 24,
+            fontSize: 'var(--fs-24)',
             fontWeight: 700,
             color: textPrimary,
             margin: 0,
@@ -558,7 +558,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             <span style={{ fontSize: 28 }}>📝</span> Course Content
           </h1>
           <p style={{
-            fontSize: 15,
+            fontSize: 'var(--fs-15)',
             color: textSecondary,
             margin: '8px 0 0 0'
           }}>
@@ -573,7 +573,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             border: 'none',
             borderRadius: 8,
             color: '#fff',
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 600,
             cursor: 'pointer',
             display: 'flex',
@@ -588,7 +588,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {/* My Courses Section */}
       <div style={{ marginBottom: 32 }}>
         <h2 style={{
-          fontSize: 14,
+          fontSize: 'var(--fs-14)',
           fontWeight: 600,
           color: textSecondary,
           margin: '0 0 16px 0',
@@ -614,10 +614,10 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             borderBottom: `1px solid ${borderColor}`,
             background: bgSecondary
           }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary }}>Course</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Students</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Status</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Actions</div>
+            <div style={{ fontSize: 'var(--fs-12)', fontWeight: 600, color: textSecondary }}>Course</div>
+            <div style={{ fontSize: 'var(--fs-12)', fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Students</div>
+            <div style={{ fontSize: 'var(--fs-12)', fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Status</div>
+            <div style={{ fontSize: 'var(--fs-12)', fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Actions</div>
           </div>
 
           {/* Course Rows */}
@@ -675,28 +675,28 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                       justifyContent: 'center',
                       color: '#0c4a6e',
                       fontWeight: 700,
-                      fontSize: 12,
+                      fontSize: 'var(--fs-12)',
                       flexShrink: 0
                     }}>
                       {course.title?.substring(0, 2).toUpperCase() || 'CO'}
                     </div>
                     <div>
-                      <div style={{ fontSize: 14, color: textPrimary, fontWeight: 500 }}>
+                      <div style={{ fontSize: 'var(--fs-14)', color: textPrimary, fontWeight: 500 }}>
                         {course.title}
                       </div>
-                      <div style={{ fontSize: 12, color: textSecondary }}>
+                      <div style={{ fontSize: 'var(--fs-12)', color: textSecondary }}>
                         {course.price || '$0'}
                       </div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'center', fontSize: 14, color: textPrimary }}>
+                  <div style={{ textAlign: 'center', fontSize: 'var(--fs-14)', color: textPrimary }}>
                     {course.enrolledCount || 0}
                   </div>
                   <div style={{ textAlign: 'center' }}>
                     <span style={{
                       padding: '4px 10px',
                       borderRadius: 12,
-                      fontSize: 11,
+                      fontSize: 'var(--fs-11)',
                       fontWeight: 600,
                       background: course.status === 'published' ? (isDarkMode ? '#0d2818' : '#d1fae5') : (isDarkMode ? '#2d2006' : '#fef3c7'),
                       color: course.status === 'published' ? accentGreen : '#b45309'
@@ -713,7 +713,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                         border: `1px solid ${textSecondary}`,
                         borderRadius: 6,
                         color: textSecondary,
-                        fontSize: 12,
+                        fontSize: 'var(--fs-12)',
                         fontWeight: 500,
                         cursor: 'pointer'
                       }}
@@ -731,7 +731,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                         border: `1px solid ${accentBlue}`,
                         borderRadius: 6,
                         color: accentBlue,
-                        fontSize: 12,
+                        fontSize: 'var(--fs-12)',
                         fontWeight: 500,
                         cursor: 'pointer'
                       }}
@@ -749,7 +749,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {/* Placeholder for Course Modules editor */}
       <div style={{ marginBottom: 32 }}>
         <h2 style={{
-          fontSize: 14,
+          fontSize: 'var(--fs-14)',
           fontWeight: 600,
           color: textSecondary,
           margin: '0 0 16px 0',
@@ -780,7 +780,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {/* Welcome Header */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{
-          fontSize: 24,
+          fontSize: 'var(--fs-24)',
           fontWeight: 700,
           color: textPrimary,
           margin: 0,
@@ -791,7 +791,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
           <span style={{ fontSize: 28 }}>👋</span> Welcome back, {dashboardData.creatorName}
         </h1>
         <p style={{
-          fontSize: 15,
+          fontSize: 'var(--fs-15)',
           color: textSecondary,
           margin: '8px 0 0 0'
         }}>
@@ -802,7 +802,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {/* Action Required */}
       <div style={{ marginBottom: 24 }}>
         <h2 style={{
-          fontSize: 14,
+          fontSize: 'var(--fs-14)',
           fontWeight: 600,
           color: textSecondary,
           margin: '0 0 12px 0',
@@ -832,12 +832,12 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ fontSize: 18 }}>{item.icon}</span>
-                <span style={{ fontSize: 14, color: textPrimary }}>
+                <span style={{ fontSize: 'var(--fs-14)', color: textPrimary }}>
                   {item.count} {item.label}
                 </span>
               </div>
               <span style={{
-                fontSize: 13,
+                fontSize: 'var(--fs-13)',
                 color: accentBlue,
                 fontWeight: 500
               }}>
@@ -851,7 +851,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {/* Key Metrics */}
       <div style={{ marginBottom: 24 }}>
         <h2 style={{
-          fontSize: 14,
+          fontSize: 'var(--fs-14)',
           fontWeight: 600,
           color: textSecondary,
           margin: '0 0 12px 0',
@@ -880,21 +880,21 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
               }}
             >
               <div style={{
-                fontSize: 24,
+                fontSize: 'var(--fs-24)',
                 fontWeight: 700,
                 color: textPrimary,
                 marginBottom: 4
               }}>
                 {metric.value}
               </div>
-              <div style={{ fontSize: 12, color: textSecondary }}>
+              <div style={{ fontSize: 'var(--fs-12)', color: textSecondary }}>
                 {metric.label}
               </div>
-              <div style={{ fontSize: 11, color: textSecondary, opacity: 0.8 }}>
+              <div style={{ fontSize: 'var(--fs-11)', color: textSecondary, opacity: 0.8 }}>
                 {metric.sublabel}
               </div>
               <div style={{
-                fontSize: 11,
+                fontSize: 'var(--fs-11)',
                 color: accentGreen,
                 marginTop: 8,
                 display: 'flex',
@@ -905,7 +905,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 <FaArrowUp style={{ fontSize: 9 }} />
                 {metric.change}
               </div>
-              <div style={{ fontSize: 10, color: textSecondary }}>
+              <div style={{ fontSize: 'var(--fs-10)', color: textSecondary }}>
                 {metric.changeLabel}
               </div>
             </div>
@@ -916,7 +916,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {/* Today's Sessions */}
       <div style={{ marginBottom: 24 }}>
         <h2 style={{
-          fontSize: 14,
+          fontSize: 'var(--fs-14)',
           fontWeight: 600,
           color: textSecondary,
           margin: '0 0 12px 0',
@@ -940,10 +940,10 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             borderBottom: `1px solid ${borderColor}`,
             background: bgSecondary
           }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: textSecondary }}>Time</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: textSecondary }}>Student</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: textSecondary }}>S-T</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: textSecondary }}>Module</div>
+            <div style={{ fontSize: 'var(--fs-11)', fontWeight: 600, color: textSecondary }}>Time</div>
+            <div style={{ fontSize: 'var(--fs-11)', fontWeight: 600, color: textSecondary }}>Student</div>
+            <div style={{ fontSize: 'var(--fs-11)', fontWeight: 600, color: textSecondary }}>S-T</div>
+            <div style={{ fontSize: 'var(--fs-11)', fontWeight: 600, color: textSecondary }}>Module</div>
           </div>
 
           {/* Table Rows */}
@@ -958,10 +958,10 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 alignItems: 'center'
               }}
             >
-              <div style={{ fontSize: 14, color: textPrimary }}>{session.time}</div>
-              <div style={{ fontSize: 14, color: textPrimary }}>{session.student}</div>
-              <div style={{ fontSize: 14, color: textSecondary }}>{session.teacher}</div>
-              <div style={{ fontSize: 14, color: textSecondary }}>{session.module}</div>
+              <div style={{ fontSize: 'var(--fs-14)', color: textPrimary }}>{session.time}</div>
+              <div style={{ fontSize: 'var(--fs-14)', color: textPrimary }}>{session.student}</div>
+              <div style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>{session.teacher}</div>
+              <div style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>{session.module}</div>
             </div>
           ))}
 
@@ -971,7 +971,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             borderTop: `1px solid ${borderColor}`
           }}>
             <span style={{
-              fontSize: 13,
+              fontSize: 'var(--fs-13)',
               color: accentBlue,
               cursor: 'pointer',
               fontWeight: 500
@@ -985,7 +985,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {/* Student Progress Snapshot */}
       <div style={{ marginBottom: 24 }}>
         <h2 style={{
-          fontSize: 14,
+          fontSize: 'var(--fs-14)',
           fontWeight: 600,
           color: textSecondary,
           margin: '0 0 12px 0',
@@ -1015,7 +1015,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
               >
                 <div style={{
                   width: 70,
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   color: textPrimary,
                   flexShrink: 0
                 }}>
@@ -1037,7 +1037,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 </div>
                 <div style={{
                   width: 80,
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   color: textSecondary,
                   textAlign: 'right',
                   flexShrink: 0
@@ -1053,7 +1053,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {/* Revenue This Month */}
       <div style={{ marginBottom: 24 }}>
         <h2 style={{
-          fontSize: 14,
+          fontSize: 'var(--fs-14)',
           fontWeight: 600,
           color: textSecondary,
           margin: '0 0 12px 0',
@@ -1070,7 +1070,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
           padding: 16
         }}>
           <div style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             color: textSecondary,
             marginBottom: 12
           }}>
@@ -1121,7 +1121,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             borderTop: `1px solid ${borderColor}`
           }}>
             <span style={{
-              fontSize: 13,
+              fontSize: 'var(--fs-13)',
               color: accentBlue,
               cursor: 'pointer',
               fontWeight: 500,
@@ -1151,7 +1151,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
           <h1 style={{
-            fontSize: 24,
+            fontSize: 'var(--fs-24)',
             fontWeight: 700,
             color: textPrimary,
             margin: 0,
@@ -1162,7 +1162,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             <span style={{ fontSize: 28 }}>📈</span> Analytics
           </h1>
           <p style={{
-            fontSize: 15,
+            fontSize: 'var(--fs-15)',
             color: textSecondary,
             margin: '8px 0 0 0'
           }}>
@@ -1178,14 +1178,14 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
           flexWrap: 'wrap',
           alignItems: 'center'
         }}>
-          <span style={{ fontSize: 14, color: textSecondary }}>Date Range:</span>
+          <span style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>Date Range:</span>
           <button style={{
             padding: '8px 16px',
             background: isDarkMode ? '#2f3336' : '#e2e8f0',
             border: 'none',
             borderRadius: 8,
             color: textPrimary,
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -1199,7 +1199,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             border: `1px solid ${borderColor}`,
             borderRadius: 8,
             color: textSecondary,
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             cursor: 'pointer'
           }}>
             Custom
@@ -1210,7 +1210,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             border: `1px solid ${accentBlue}`,
             borderRadius: 8,
             color: accentBlue,
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             cursor: 'pointer',
             marginLeft: 'auto'
           }}>
@@ -1221,7 +1221,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Enrollment Trends */}
         <div style={{ marginBottom: 32 }}>
           <h2 style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 600,
             color: textSecondary,
             margin: '0 0 16px 0',
@@ -1239,7 +1239,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             padding: 20
           }}>
             <div style={{
-              fontSize: 14,
+              fontSize: 'var(--fs-14)',
               fontWeight: 500,
               color: textPrimary,
               marginBottom: 16
@@ -1268,7 +1268,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   }}
                 >
                   <div style={{
-                    fontSize: 11,
+                    fontSize: 'var(--fs-11)',
                     color: textPrimary,
                     fontWeight: 500
                   }}>
@@ -1297,7 +1297,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   style={{
                     flex: 1,
                     textAlign: 'center',
-                    fontSize: 11,
+                    fontSize: 'var(--fs-11)',
                     color: textSecondary
                   }}
                 >
@@ -1315,13 +1315,13 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
               borderTop: `1px solid ${borderColor}`,
               flexWrap: 'wrap'
             }}>
-              <span style={{ fontSize: 14, color: textSecondary }}>
+              <span style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>
                 Total: <strong style={{ color: textPrimary }}>{analytics.enrollmentStats.total} enrollments</strong>
               </span>
-              <span style={{ fontSize: 14, color: textSecondary }}>
+              <span style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>
                 This period: <strong style={{ color: textPrimary }}>{analytics.enrollmentStats.thisPeriod}</strong>
               </span>
-              <span style={{ fontSize: 14, color: accentGreen }}>
+              <span style={{ fontSize: 'var(--fs-14)', color: accentGreen }}>
                 Growth: <strong>+{analytics.enrollmentStats.growth}%</strong>
               </span>
             </div>
@@ -1331,7 +1331,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Completion Funnel */}
         <div style={{ marginBottom: 32 }}>
           <h2 style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 600,
             color: textSecondary,
             margin: '0 0 16px 0',
@@ -1360,7 +1360,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
               >
                 <div style={{
                   width: 120,
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   color: textPrimary,
                   flexShrink: 0
                 }}>
@@ -1382,7 +1382,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 </div>
                 <div style={{
                   width: 100,
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   color: textSecondary,
                   textAlign: 'right',
                   flexShrink: 0
@@ -1403,7 +1403,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
               gap: 8
             }}>
               <span style={{ fontSize: 16 }}>⚠️</span>
-              <span style={{ fontSize: 13, color: isDarkMode ? accentYellow : '#92400e' }}>
+              <span style={{ fontSize: 'var(--fs-13)', color: isDarkMode ? accentYellow : '#92400e' }}>
                 {analytics.dropOffAlert}
               </span>
             </div>
@@ -1413,7 +1413,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Revenue Analytics */}
         <div style={{ marginBottom: 32 }}>
           <h2 style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 600,
             color: textSecondary,
             margin: '0 0 16px 0',
@@ -1482,7 +1482,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Flywheel Metrics */}
         <div style={{ marginBottom: 24 }}>
           <h2 style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 600,
             color: textSecondary,
             margin: '0 0 16px 0',
@@ -1506,7 +1506,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   {analytics.flywheel.studentsToST.count} of {analytics.flywheel.studentsToST.total} ({analytics.flywheel.studentsToST.percent}%)
                   <span style={{
                     marginLeft: 8,
-                    fontSize: 11,
+                    fontSize: 'var(--fs-11)',
                     color: accentBlue,
                     background: isDarkMode ? '#1d3a5c' : '#dbeafe',
                     padding: '2px 6px',
@@ -1522,7 +1522,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   {analytics.flywheel.recruitedByST}
                   <span style={{
                     marginLeft: 8,
-                    fontSize: 11,
+                    fontSize: 'var(--fs-11)',
                     color: accentBlue,
                     background: isDarkMode ? '#1d3a5c' : '#dbeafe',
                     padding: '2px 6px',
@@ -1543,12 +1543,12 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 marginTop: 4
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 14, color: textSecondary }}>Flywheel Status:</span>
+                  <span style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>Flywheel Status:</span>
                   <span style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 6,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     color: accentGreen,
                     fontWeight: 500
                   }}>
@@ -1574,7 +1574,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Header with Stats */}
         <div style={{ marginBottom: 24 }}>
           <h1 style={{
-            fontSize: 24,
+            fontSize: 'var(--fs-24)',
             fontWeight: 700,
             color: textPrimary,
             margin: 0,
@@ -1585,7 +1585,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             <span style={{ fontSize: 28 }}>🎓</span> Certification Requests
           </h1>
           <p style={{
-            fontSize: 15,
+            fontSize: 'var(--fs-15)',
             color: textSecondary,
             margin: '8px 0 0 0'
           }}>
@@ -1596,7 +1596,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Pending Approval Section */}
         <div style={{ marginBottom: 32 }}>
           <h2 style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 600,
             color: accentRed,
             margin: '0 0 16px 0',
@@ -1634,17 +1634,17 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                       }}>
                         <span style={{ fontSize: 24 }}>👤</span>
                         <span style={{
-                          fontSize: 18,
+                          fontSize: 'var(--fs-18)',
                           fontWeight: 600,
                           color: textPrimary
                         }}>
                           {request.student}
                         </span>
                       </div>
-                      <div style={{ fontSize: 14, color: textSecondary, marginLeft: 34 }}>
+                      <div style={{ fontSize: 'var(--fs-14)', color: textSecondary, marginLeft: 34 }}>
                         Recommended by: {request.recommendedBy} ({request.recommendedByRole})
                       </div>
-                      <div style={{ fontSize: 14, color: textSecondary, marginLeft: 34 }}>
+                      <div style={{ fontSize: 'var(--fs-14)', color: textSecondary, marginLeft: 34 }}>
                         Submitted: {request.submittedDate}
                       </div>
                     </div>
@@ -1658,7 +1658,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                       marginBottom: 16
                     }}>
                       <div style={{
-                        fontSize: 12,
+                        fontSize: 'var(--fs-12)',
                         fontWeight: 600,
                         color: textSecondary,
                         marginBottom: 12,
@@ -1714,11 +1714,11 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
 
                       {/* S-T Notes */}
                       <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px solid ${borderColor}` }}>
-                        <div style={{ fontSize: 13, color: textSecondary, marginBottom: 6 }}>
+                        <div style={{ fontSize: 'var(--fs-13)', color: textSecondary, marginBottom: 6 }}>
                           S-T Notes:
                         </div>
                         <div style={{
-                          fontSize: 14,
+                          fontSize: 'var(--fs-14)',
                           color: textPrimary,
                           fontStyle: 'italic',
                           lineHeight: 1.5
@@ -1735,7 +1735,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                       marginBottom: 20
                     }}>
                       <span style={{
-                        fontSize: 13,
+                        fontSize: 'var(--fs-13)',
                         color: accentBlue,
                         cursor: 'pointer',
                         fontWeight: 500
@@ -1743,7 +1743,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                         [View Full Progress]
                       </span>
                       <span style={{
-                        fontSize: 13,
+                        fontSize: 'var(--fs-13)',
                         color: accentBlue,
                         cursor: 'pointer',
                         fontWeight: 500
@@ -1764,7 +1764,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                         border: 'none',
                         borderRadius: 8,
                         color: '#fff',
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         fontWeight: 600,
                         cursor: 'pointer',
                         display: 'flex',
@@ -1779,7 +1779,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                         border: `1px solid ${accentRed}`,
                         borderRadius: 8,
                         color: accentRed,
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         fontWeight: 600,
                         cursor: 'pointer',
                         display: 'flex',
@@ -1794,7 +1794,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                         border: `1px solid ${borderColor}`,
                         borderRadius: 8,
                         color: textPrimary,
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         fontWeight: 600,
                         cursor: 'pointer',
                         display: 'flex',
@@ -1821,28 +1821,28 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                       <span style={{ fontSize: 20 }}>👤</span>
                       <div>
                         <span style={{
-                          fontSize: 15,
+                          fontSize: 'var(--fs-15)',
                           fontWeight: 600,
                           color: textPrimary
                         }}>
                           {request.student}
                         </span>
                         <span style={{ color: textSecondary, margin: '0 8px' }}>│</span>
-                        <span style={{ fontSize: 14, color: textSecondary }}>
+                        <span style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>
                           {request.recommendedBy}
                         </span>
                         <span style={{ color: textSecondary, margin: '0 8px' }}>│</span>
-                        <span style={{ fontSize: 14, color: textSecondary }}>
+                        <span style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>
                           {request.submittedDate.replace('December ', 'Dec ').replace(', 2025', '')}
                         </span>
                         <span style={{ color: textSecondary, margin: '0 8px' }}>│</span>
-                        <span style={{ fontSize: 14, color: textSecondary }}>
+                        <span style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>
                           {request.modulesCompleted}/{request.modulesTotal} • {request.sessionsAttended} sessions
                         </span>
                       </div>
                     </div>
                     <span style={{
-                      fontSize: 13,
+                      fontSize: 'var(--fs-13)',
                       color: accentBlue,
                       fontWeight: 500
                     }}>
@@ -1858,7 +1858,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Recently Approved Section */}
         <div>
           <h2 style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 600,
             color: accentGreen,
             margin: '0 0 16px 0',
@@ -1887,16 +1887,16 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ fontSize: 15, fontWeight: 500, color: textPrimary }}>
+                  <span style={{ fontSize: 'var(--fs-15)', fontWeight: 500, color: textPrimary }}>
                     {item.student}
                   </span>
                   <span style={{ color: textSecondary, margin: '0 4px' }}>│</span>
-                  <span style={{ fontSize: 14, color: textSecondary }}>
+                  <span style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>
                     Approved {item.approvedDate}
                   </span>
                 </div>
                 <span style={{
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   color: accentBlue,
                   cursor: 'pointer',
                   fontWeight: 500
@@ -1922,7 +1922,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Header with Stats */}
         <div style={{ marginBottom: 24 }}>
           <h1 style={{
-            fontSize: 24,
+            fontSize: 'var(--fs-24)',
             fontWeight: 700,
             color: textPrimary,
             margin: 0,
@@ -1933,7 +1933,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             <span style={{ fontSize: 28 }}>👩‍🏫</span> Student-Teacher Management
           </h1>
           <p style={{
-            fontSize: 15,
+            fontSize: 'var(--fs-15)',
             color: textSecondary,
             margin: '8px 0 0 0'
           }}>
@@ -1944,7 +1944,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Pending Applications Section */}
         <div style={{ marginBottom: 32 }}>
           <h2 style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 600,
             color: accentRed,
             margin: '0 0 16px 0',
@@ -1975,7 +1975,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
               }}>
                 <span style={{ fontSize: 24 }}>👤</span>
                 <span style={{
-                  fontSize: 18,
+                  fontSize: 'var(--fs-18)',
                   fontWeight: 600,
                   color: textPrimary
                 }}>
@@ -1992,7 +1992,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 marginBottom: 16
               }}>
                 <div style={{
-                  fontSize: 12,
+                  fontSize: 'var(--fs-12)',
                   fontWeight: 600,
                   color: textSecondary,
                   marginBottom: 12,
@@ -2028,14 +2028,14 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
 
                 {/* Taught by & Recommendation */}
                 <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px solid ${borderColor}` }}>
-                  <div style={{ fontSize: 14, color: textSecondary, marginBottom: 6 }}>
+                  <div style={{ fontSize: 'var(--fs-14)', color: textSecondary, marginBottom: 6 }}>
                     Taught by: <span style={{ color: textPrimary }}>{app.taughtBy}</span>
                   </div>
-                  <div style={{ fontSize: 13, color: textSecondary, marginBottom: 4 }}>
+                  <div style={{ fontSize: 'var(--fs-13)', color: textSecondary, marginBottom: 4 }}>
                     {app.taughtBy.split(' ')[0]}'s Recommendation:
                   </div>
                   <div style={{
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     color: textPrimary,
                     fontStyle: 'italic',
                     lineHeight: 1.5,
@@ -2044,11 +2044,11 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                     "{app.recommendation}"
                   </div>
 
-                  <div style={{ fontSize: 13, color: textSecondary, marginBottom: 4 }}>
+                  <div style={{ fontSize: 'var(--fs-13)', color: textSecondary, marginBottom: 4 }}>
                     {app.name.split(' ')[0]}'s Statement:
                   </div>
                   <div style={{
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     color: textPrimary,
                     fontStyle: 'italic',
                     lineHeight: 1.5,
@@ -2057,7 +2057,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                     "{app.statement}"
                   </div>
 
-                  <div style={{ fontSize: 14, color: textSecondary }}>
+                  <div style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>
                     Availability: <span style={{ color: textPrimary }}>{app.availability}</span>
                   </div>
                 </div>
@@ -2075,7 +2075,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   border: 'none',
                   borderRadius: 8,
                   color: '#fff',
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   display: 'flex',
@@ -2090,7 +2090,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   border: `1px solid ${accentRed}`,
                   borderRadius: 8,
                   color: accentRed,
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   display: 'flex',
@@ -2105,7 +2105,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   border: `1px solid ${borderColor}`,
                   borderRadius: 8,
                   color: textPrimary,
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   display: 'flex',
@@ -2122,7 +2122,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Active Student-Teachers Section */}
         <div style={{ marginBottom: 32 }}>
           <h2 style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 600,
             color: accentGreen,
             margin: '0 0 16px 0',
@@ -2164,11 +2164,11 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                           <span style={{ fontSize: 24 }}>👤</span>
-                          <span style={{ fontSize: 18, fontWeight: 600, color: textPrimary }}>
+                          <span style={{ fontSize: 'var(--fs-18)', fontWeight: 600, color: textPrimary }}>
                             {st.name}
                           </span>
                         </div>
-                        <span style={{ fontSize: 14, color: accentYellow }}>
+                        <span style={{ fontSize: 'var(--fs-14)', color: accentYellow }}>
                           ⭐ {st.rating} rating
                         </span>
                       </div>
@@ -2223,7 +2223,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                           <span
                             key={action}
                             style={{
-                              fontSize: 13,
+                              fontSize: 'var(--fs-13)',
                               color: action === 'Remove' ? accentRed : accentBlue,
                               cursor: 'pointer',
                               fontWeight: 500
@@ -2244,24 +2244,24 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         <span style={{ fontSize: 18 }}>👤</span>
-                        <span style={{ fontSize: 15, fontWeight: 500, color: textPrimary }}>
+                        <span style={{ fontSize: 'var(--fs-15)', fontWeight: 500, color: textPrimary }}>
                           {st.name}
                         </span>
                         <span style={{ color: textSecondary }}>│</span>
-                        <span style={{ fontSize: 14, color: statusColor }}>
+                        <span style={{ fontSize: 'var(--fs-14)', color: statusColor }}>
                           {statusIcon} {statusLabel}
                         </span>
                         <span style={{ color: textSecondary }}>│</span>
-                        <span style={{ fontSize: 14, color: textSecondary }}>
+                        <span style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>
                           {st.studentsCurrent} students
                         </span>
                         <span style={{ color: textSecondary }}>│</span>
-                        <span style={{ fontSize: 14, color: accentYellow }}>
+                        <span style={{ fontSize: 'var(--fs-14)', color: accentYellow }}>
                           ⭐{st.rating}
                         </span>
                       </div>
                       <span style={{
-                        fontSize: 13,
+                        fontSize: 'var(--fs-13)',
                         color: accentBlue,
                         cursor: 'pointer',
                         fontWeight: 500
@@ -2279,7 +2279,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         {/* Student-Teacher Performance Section */}
         <div>
           <h2 style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 600,
             color: textSecondary,
             margin: '0 0 16px 0',
@@ -2304,11 +2304,11 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
               borderBottom: `1px solid ${borderColor}`,
               background: bgSecondary
             }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary }}>S-Teacher</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Students</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Completion</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Avg Rating</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: textSecondary, textAlign: 'right' }}>Earnings</div>
+              <div style={{ fontSize: 'var(--fs-12)', fontWeight: 600, color: textSecondary }}>S-Teacher</div>
+              <div style={{ fontSize: 'var(--fs-12)', fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Students</div>
+              <div style={{ fontSize: 'var(--fs-12)', fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Completion</div>
+              <div style={{ fontSize: 'var(--fs-12)', fontWeight: 600, color: textSecondary, textAlign: 'center' }}>Avg Rating</div>
+              <div style={{ fontSize: 'var(--fs-12)', fontWeight: 600, color: textSecondary, textAlign: 'right' }}>Earnings</div>
             </div>
 
             {/* Table Rows */}
@@ -2323,11 +2323,11 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   alignItems: 'center'
                 }}
               >
-                <div style={{ fontSize: 14, color: textPrimary }}>{row.name}</div>
-                <div style={{ fontSize: 14, color: textPrimary, textAlign: 'center' }}>{row.students}</div>
-                <div style={{ fontSize: 14, color: textPrimary, textAlign: 'center' }}>{row.completion}%</div>
-                <div style={{ fontSize: 14, color: accentYellow, textAlign: 'center' }}>⭐ {row.rating}</div>
-                <div style={{ fontSize: 14, color: textPrimary, textAlign: 'right' }}>${row.earnings.toLocaleString()}</div>
+                <div style={{ fontSize: 'var(--fs-14)', color: textPrimary }}>{row.name}</div>
+                <div style={{ fontSize: 'var(--fs-14)', color: textPrimary, textAlign: 'center' }}>{row.students}</div>
+                <div style={{ fontSize: 'var(--fs-14)', color: textPrimary, textAlign: 'center' }}>{row.completion}%</div>
+                <div style={{ fontSize: 'var(--fs-14)', color: accentYellow, textAlign: 'center' }}>⭐ {row.rating}</div>
+                <div style={{ fontSize: 'var(--fs-14)', color: textPrimary, textAlign: 'right' }}>${row.earnings.toLocaleString()}</div>
               </div>
             ))}
           </div>
@@ -2368,7 +2368,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
               background: 'transparent',
               border: 'none',
               color: accentBlue,
-              fontSize: 14,
+              fontSize: 'var(--fs-14)',
               fontWeight: 500,
               cursor: 'pointer'
             }}
@@ -2381,7 +2381,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             color: textSecondary
           }}>
             <span>Workspace</span>
@@ -2405,7 +2405,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
               border: 'none',
               borderRadius: 6,
               color: '#fff',
-              fontSize: 13,
+              fontSize: 'var(--fs-13)',
               fontWeight: 500,
               cursor: 'pointer'
             }}
@@ -2462,7 +2462,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                fontSize: 13,
+                fontSize: 'var(--fs-13)',
                 fontWeight: 500
               }}
             >
@@ -2471,7 +2471,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             </button>
           )}
           <div style={{
-            fontSize: 24,
+            fontSize: 'var(--fs-24)',
             fontWeight: 700,
             color: accentBlue
           }}>
@@ -2538,7 +2538,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   border: 'none',
                   borderRadius: 6,
                   color: activeTab === tab.id ? accentBlue : textSecondary,
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   fontWeight: activeTab === tab.id ? 600 : 500,
                   cursor: isDragging ? 'grabbing' : 'pointer',
                   transition: 'all 0.2s',
@@ -2583,7 +2583,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
           border: `1px solid ${borderColor}`,
           borderRadius: 20,
           color: textPrimary,
-          fontSize: 14,
+          fontSize: 'var(--fs-14)',
           fontWeight: 500,
           cursor: 'pointer'
         }}>
@@ -2596,13 +2596,13 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
             alignItems: 'center',
             justifyContent: 'center',
             color: '#fff',
-            fontSize: 11,
+            fontSize: 'var(--fs-11)',
             fontWeight: 700
           }}>
             {dashboardData.creatorInitials}
           </div>
           {dashboardData.creatorName}
-          <FaChevronDown style={{ fontSize: 10, color: textSecondary }} />
+          <FaChevronDown style={{ fontSize: 'var(--fs-10)', color: textSecondary }} />
         </button>
       </div>
 
@@ -2613,7 +2613,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {activeTab === 'certifications' && renderCertificationsTab()}
       {activeTab === 'payouts' && (
         <div style={{ padding: 24, maxWidth: 1400 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: textPrimary }}>
+          <h1 style={{ fontSize: 'var(--fs-24)', fontWeight: 700, color: textPrimary }}>
             Payouts
           </h1>
           <p style={{ color: textSecondary }}>Payout management coming soon...</p>
@@ -2622,7 +2622,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {activeTab === 'sessions' && (
         <div style={{ padding: 24, maxWidth: 1400 }}>
           <h1 style={{
-            fontSize: 24,
+            fontSize: 'var(--fs-24)',
             fontWeight: 700,
             color: textPrimary,
             margin: 0,
@@ -2642,7 +2642,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
       {activeTab === 'moderator' && (
         <div style={{ padding: 24, maxWidth: 1400 }}>
           <h1 style={{
-            fontSize: 24,
+            fontSize: 'var(--fs-24)',
             fontWeight: 700,
             color: textPrimary,
             margin: 0,
@@ -2699,7 +2699,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 alignItems: 'center',
                 gap: 8,
                 color: '#fff',
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 fontWeight: 500
               }}>
                 <span>👁️ Preview Mode</span>
@@ -2714,7 +2714,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                     border: previewTab === 'card' ? '2px solid #1d9bf0' : '2px solid rgba(255,255,255,0.3)',
                     background: previewTab === 'card' ? 'rgba(29, 155, 240, 0.2)' : 'rgba(255,255,255,0.1)',
                     color: previewTab === 'card' ? '#1d9bf0' : '#fff',
-                    fontSize: 13,
+                    fontSize: 'var(--fs-13)',
                     fontWeight: 600,
                     cursor: 'pointer'
                   }}
@@ -2729,7 +2729,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                     border: previewTab === 'detail' ? '2px solid #1d9bf0' : '2px solid rgba(255,255,255,0.3)',
                     background: previewTab === 'detail' ? 'rgba(29, 155, 240, 0.2)' : 'rgba(255,255,255,0.1)',
                     color: previewTab === 'detail' ? '#1d9bf0' : '#fff',
-                    fontSize: 13,
+                    fontSize: 'var(--fs-13)',
                     fontWeight: 600,
                     cursor: 'pointer'
                   }}
@@ -2772,7 +2772,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                       background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                       borderRadius: '50%',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: 'white', fontWeight: 600, fontSize: 14,
+                      color: 'white', fontWeight: 600, fontSize: 'var(--fs-14)',
                       border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', flexShrink: 0
                     }}>👥</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -2784,9 +2784,9 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                           @{(currentUser?.name || 'guyrymberg').toLowerCase().replace(/\s+/g, '')}
                         </span>
                         <span style={{ color: isDarkMode ? '#71767b' : '#374151' }}>·</span>
-                        <span style={{ color: '#1d9bf0', fontSize: 15, fontWeight: 600 }}>Following</span>
+                        <span style={{ color: '#1d9bf0', fontSize: 'var(--fs-15)', fontWeight: 600 }}>Following</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: isDarkMode ? '#71767b' : '#374151', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-13)', color: isDarkMode ? '#71767b' : '#374151', flexWrap: 'wrap' }}>
                         <span>Created by</span>
                         <span style={{ color: '#1d9bf0', fontWeight: 500 }}>{currentUser?.name || 'Guy Rymberg'}</span>
                         <span>·</span><span>👥 142 followers</span><span>·</span><span>AI Teaching Specialist</span>
@@ -2796,12 +2796,12 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   {/* Course Content */}
                   <div style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4, gap: 10 }}>
-                      <span style={{ fontSize: 17, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{previewCourse.title}</span>
-                      <button style={{ background: '#22c55e', border: '2px solid #22c55e', color: 'white', padding: '8px 16px', borderRadius: 20, fontSize: 14, fontWeight: 600, cursor: 'default', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--fs-17)', fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{previewCourse.title}</span>
+                      <button style={{ background: '#22c55e', border: '2px solid #22c55e', color: 'white', padding: '8px 16px', borderRadius: 20, fontSize: 'var(--fs-14)', fontWeight: 600, cursor: 'default', whiteSpace: 'nowrap' }}>
                         Enroll {previewCourse.price || '$0'}
                       </button>
                     </div>
-                    <p style={{ color: isDarkMode ? '#8b98a5' : '#374151', fontSize: 14, lineHeight: 1.3, margin: '0 0 6px 0' }}>
+                    <p style={{ color: isDarkMode ? '#8b98a5' : '#374151', fontSize: 'var(--fs-14)', lineHeight: 1.3, margin: '0 0 6px 0' }}>
                       {previewCourse.description || 'No description provided.'}
                     </p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', color: '#71767b', fontSize: 13 }}>
@@ -2839,23 +2839,23 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   {/* Title & Price Row */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 20, marginBottom: 16 }}>
                     <div>
-                      <h1 style={{ fontSize: 28, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: 0 }}>
+                      <h1 style={{ fontSize: 'var(--fs-28)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: 0 }}>
                         {previewCourse.title}
                       </h1>
-                      <p style={{ fontSize: 16, color: isDarkMode ? '#8b98a5' : '#536471', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                      <p style={{ fontSize: 'var(--fs-16)', color: isDarkMode ? '#8b98a5' : '#536471', margin: '8px 0 0 0', lineHeight: 1.5 }}>
                         {previewCourse.description || 'No description provided.'}
                       </p>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontSize: 32, fontWeight: 700, color: '#22c55e' }}>{previewCourse.price || '$0'}</div>
+                      <div style={{ fontSize: 'var(--fs-32)', fontWeight: 700, color: '#22c55e' }}>{previewCourse.price || '$0'}</div>
                       <button style={{
                         marginTop: 8, background: '#22c55e', border: 'none', color: 'white',
-                        padding: '12px 32px', borderRadius: 24, fontSize: 16, fontWeight: 600, cursor: 'default'
+                        padding: '12px 32px', borderRadius: 24, fontSize: 'var(--fs-16)', fontWeight: 600, cursor: 'default'
                       }}>Enroll Now</button>
                     </div>
                   </div>
                   {/* Stats Row */}
-                  <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 14, color: isDarkMode ? '#71767b' : '#536471' }}>
+                  <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 'var(--fs-14)', color: isDarkMode ? '#71767b' : '#536471' }}>
                     <span><span style={{ color: '#ffc107' }}>★</span> {previewCourse.rating || '4.7'} ({previewCourse.students || 0} students)</span>
                     <span>📚 {previewCourse.level || 'Beginner'}</span>
                     <span>🕐 {previewCourse.duration || '3 hours'}</span>
@@ -2877,7 +2877,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                       border: tab === 'Curriculum' ? '2px solid #1d9bf0' : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                       background: tab === 'Curriculum' ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)') : (isDarkMode ? '#2f3336' : '#f7f9f9'),
                       color: tab === 'Curriculum' ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                      fontSize: 14, fontWeight: 600, cursor: 'default'
+                      fontSize: 'var(--fs-14)', fontWeight: 600, cursor: 'default'
                     }}>{tab}</button>
                   ))}
                 </div>
@@ -2887,7 +2887,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   {/* Learning Objectives */}
                   {previewCourse.learningObjectives && previewCourse.learningObjectives.length > 0 && (
                     <div style={{ marginBottom: 24 }}>
-                      <h3 style={{ fontSize: 16, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '0 0 12px 0' }}>
+                      <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '0 0 12px 0' }}>
                         What You'll Learn
                       </h3>
                       <div style={{
@@ -2901,7 +2901,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                             padding: 12, background: isDarkMode ? '#16181c' : '#f7f9f9', borderRadius: 8
                           }}>
                             <span style={{ color: '#22c55e', fontSize: 16 }}>✓</span>
-                            <span style={{ fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{obj}</span>
+                            <span style={{ fontSize: 'var(--fs-14)', color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{obj}</span>
                           </div>
                         ))}
                       </div>
@@ -2911,7 +2911,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   {/* Curriculum */}
                   {previewCourse.curriculum && previewCourse.curriculum.length > 0 && (
                     <div>
-                      <h3 style={{ fontSize: 16, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '0 0 12px 0' }}>
+                      <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '0 0 12px 0' }}>
                         Curriculum ({previewCourse.curriculum.length} lessons)
                       </h3>
                       <div style={{
@@ -2933,16 +2933,16 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                                 width: 32, height: 32, borderRadius: '50%',
                                 background: isDarkMode ? '#2f3336' : '#e8f4fc',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: 14, fontWeight: 600, color: '#1d9bf0'
+                                fontSize: 'var(--fs-14)', fontWeight: 600, color: '#1d9bf0'
                               }}>{idx + 1}</div>
                               <div>
-                                <div style={{ fontSize: 14, fontWeight: 500, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{item.title}</div>
+                                <div style={{ fontSize: 'var(--fs-14)', fontWeight: 500, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{item.title}</div>
                                 {item.description && (
-                                  <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471', marginTop: 2 }}>{item.description}</div>
+                                  <div style={{ fontSize: 'var(--fs-12)', color: isDarkMode ? '#71767b' : '#536471', marginTop: 2 }}>{item.description}</div>
                                 )}
                               </div>
                             </div>
-                            <span style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>{item.duration}</span>
+                            <span style={{ fontSize: 'var(--fs-13)', color: isDarkMode ? '#71767b' : '#536471' }}>{item.duration}</span>
                           </div>
                         ))}
                       </div>
@@ -2952,13 +2952,13 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                   {/* Tags */}
                   {previewCourse.tags && previewCourse.tags.length > 0 && (
                     <div style={{ marginTop: 24 }}>
-                      <h3 style={{ fontSize: 14, fontWeight: 600, color: isDarkMode ? '#71767b' : '#536471', margin: '0 0 12px 0' }}>Topics</h3>
+                      <h3 style={{ fontSize: 'var(--fs-14)', fontWeight: 600, color: isDarkMode ? '#71767b' : '#536471', margin: '0 0 12px 0' }}>Topics</h3>
                       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         {previewCourse.tags.map((tag, idx) => (
                           <span key={idx} style={{
                             padding: '6px 14px',
                             background: isDarkMode ? '#2f3336' : '#e8f4fc',
-                            borderRadius: 16, fontSize: 13, color: '#1d9bf0'
+                            borderRadius: 16, fontSize: 'var(--fs-13)', color: '#1d9bf0'
                           }}>{tag}</span>
                         ))}
                       </div>
@@ -2975,7 +2975,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 style={{
                   padding: '10px 24px', background: 'rgba(255,255,255,0.1)',
                   border: '1px solid rgba(255,255,255,0.3)', borderRadius: 8,
-                  color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer'
+                  color: '#fff', fontSize: 'var(--fs-14)', fontWeight: 500, cursor: 'pointer'
                 }}
               >Close</button>
               <button
@@ -2987,7 +2987,7 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                 }}
                 style={{
                   padding: '10px 24px', background: accentBlue, border: 'none',
-                  borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer'
+                  borderRadius: 8, color: '#fff', fontSize: 'var(--fs-14)', fontWeight: 500, cursor: 'pointer'
                 }}
               >Edit Course</button>
             </div>

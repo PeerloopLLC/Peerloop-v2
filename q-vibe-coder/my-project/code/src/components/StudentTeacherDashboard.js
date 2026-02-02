@@ -320,7 +320,7 @@ const StudentTeacherDashboard = ({
           borderRadius: 4
         }} />
       </div>
-      <span style={{ fontSize: 13, color: textSecondary }}>{percent}%</span>
+      <span style={{ fontSize: 'var(--fs-13)', color: textSecondary }}>{percent}%</span>
     </div>
   );
 
@@ -330,7 +330,7 @@ const StudentTeacherDashboard = ({
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{
-          fontSize: 24,
+          fontSize: 'var(--fs-24)',
           fontWeight: 700,
           color: textPrimary,
           margin: 0,
@@ -341,7 +341,7 @@ const StudentTeacherDashboard = ({
           <span style={{ fontSize: 24 }}>⚙️</span> My Availability
         </h1>
         <p style={{
-          fontSize: 15,
+          fontSize: 'var(--fs-15)',
           color: textSecondary,
           margin: '8px 0 0 0'
         }}>
@@ -351,7 +351,7 @@ const StudentTeacherDashboard = ({
 
       {/* Timezone Selector */}
       <div style={{ marginBottom: 24 }}>
-        <span style={{ fontSize: 14, color: textSecondary }}>Timezone: </span>
+        <span style={{ fontSize: 'var(--fs-14)', color: textSecondary }}>Timezone: </span>
         <select
           value={timezone}
           onChange={(e) => setTimezone(e.target.value)}
@@ -361,7 +361,7 @@ const StudentTeacherDashboard = ({
             border: `1px solid ${borderColor}`,
             background: bgSecondary,
             color: textPrimary,
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             cursor: 'pointer'
           }}
         >
@@ -391,7 +391,7 @@ const StudentTeacherDashboard = ({
           >
             {/* Day Header */}
             <div style={{
-              fontSize: 14,
+              fontSize: 'var(--fs-14)',
               fontWeight: 600,
               color: textPrimary,
               textTransform: 'uppercase',
@@ -415,7 +415,7 @@ const StudentTeacherDashboard = ({
                   border: `1px solid ${borderColor}`
                 }}
               >
-                <span style={{ fontSize: 14, color: textPrimary }}>
+                <span style={{ fontSize: 'var(--fs-14)', color: textPrimary }}>
                   {slot.start} - {slot.end}
                 </span>
                 <button
@@ -429,7 +429,7 @@ const StudentTeacherDashboard = ({
                     border: `1px solid ${isDarkMode ? '#ef4444' : '#fca5a5'}`,
                     borderRadius: 6,
                     color: '#ef4444',
-                    fontSize: 13,
+                    fontSize: 'var(--fs-13)',
                     cursor: 'pointer'
                   }}
                 >
@@ -450,7 +450,7 @@ const StudentTeacherDashboard = ({
                 background: 'transparent',
                 border: 'none',
                 color: accentBlue,
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 cursor: 'pointer',
                 fontWeight: 500
               }}
@@ -475,7 +475,7 @@ const StudentTeacherDashboard = ({
           border: 'none',
           borderRadius: 12,
           color: '#fff',
-          fontSize: 16,
+          fontSize: 'var(--fs-16)',
           fontWeight: 600,
           cursor: 'pointer'
         }}
@@ -742,7 +742,7 @@ const StudentTeacherDashboard = ({
           marginBottom: 4
         }}>
           <h1 style={{
-            fontSize: 22,
+            fontSize: 'var(--fs-22)',
             fontWeight: 700,
             color: textPrimary,
             margin: 0,
@@ -765,7 +765,7 @@ const StudentTeacherDashboard = ({
           </div>
         </div>
         <p style={{
-          fontSize: 15,
+          fontSize: 'var(--fs-15)',
           color: textSecondary,
           fontStyle: 'italic',
           margin: '0 0 12px 0'
@@ -822,10 +822,10 @@ const StudentTeacherDashboard = ({
               >
                 <div style={{ fontSize: 20 }}>🔄</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: textPrimary, marginBottom: 2 }}>
+                  <div style={{ fontSize: 'var(--fs-13)', fontWeight: 600, color: textPrimary, marginBottom: 2 }}>
                     {notif.studentName} rescheduled
                   </div>
-                  <div style={{ fontSize: 12, color: textSecondary }}>
+                  <div style={{ fontSize: 'var(--fs-12)', color: textSecondary }}>
                     {notif.courseName}: {formatNotifDate(notif.oldDate)} {notif.oldTime} → {formatNotifDate(notif.newDate)} {notif.newTime}
                   </div>
                 </div>
@@ -837,7 +837,7 @@ const StudentTeacherDashboard = ({
                     color: textPrimary,
                     padding: '6px 12px',
                     borderRadius: 6,
-                    fontSize: 12,
+                    fontSize: 'var(--fs-12)',
                     fontWeight: 600,
                     cursor: 'pointer'
                   }}
@@ -857,9 +857,9 @@ const StudentTeacherDashboard = ({
           textAlign: 'center',
           color: textSecondary
         }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>👥</div>
-          <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 4 }}>No students yet</div>
-          <div style={{ fontSize: 14, opacity: 0.8 }}>
+          <div style={{ fontSize: 'var(--fs-48)', marginBottom: 12 }}>👥</div>
+          <div style={{ fontSize: 'var(--fs-16)', fontWeight: 500, marginBottom: 4 }}>No students yet</div>
+          <div style={{ fontSize: 'var(--fs-14)', opacity: 0.8 }}>
             Students will appear here when they enroll with you
           </div>
         </div>
@@ -883,17 +883,17 @@ const StudentTeacherDashboard = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 16,
+                  fontSize: 'var(--fs-16)',
                   fontWeight: 600,
                   color: '#fff'
                 }}>
                   {student.initials}
                 </div>
                 <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: textPrimary }}>
+                  <div style={{ fontSize: 'var(--fs-16)', fontWeight: 700, color: textPrimary }}>
                     {student.name}
                   </div>
-                  <div style={{ fontSize: 13, color: textSecondary }}>
+                  <div style={{ fontSize: 'var(--fs-13)', color: textSecondary }}>
                     {student.totalCourses} course{student.totalCourses !== 1 ? 's' : ''} · {student.certifiedSessionCount}/{student.totalSessionCount} sessions certified
                   </div>
                 </div>
@@ -919,7 +919,7 @@ const StudentTeacherDashboard = ({
                       marginBottom: 12
                     }}>
                       <div style={{
-                        fontSize: 15,
+                        fontSize: 'var(--fs-15)',
                         fontWeight: 600,
                         color: textPrimary
                       }}>
@@ -931,7 +931,7 @@ const StudentTeacherDashboard = ({
                           display: 'flex',
                           alignItems: 'center',
                           gap: 6,
-                          fontSize: 13,
+                          fontSize: 'var(--fs-13)',
                           color: accentGreen,
                           fontWeight: 600
                         }}>
@@ -951,16 +951,16 @@ const StudentTeacherDashboard = ({
                       borderBottom: `1px solid ${borderColor}`
                     }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: textPrimary, marginBottom: 4 }}>
+                        <div style={{ fontSize: 'var(--fs-13)', fontWeight: 600, color: textPrimary, marginBottom: 4 }}>
                           Session 1: Foundations
                         </div>
                         {course.session1Certified ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: accentGreen }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-13)', color: accentGreen }}>
                             <span>✅</span>
                             <span>Certified {course.session1CertifiedDate || ''}</span>
                           </div>
                         ) : (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: course.session1Date ? textPrimary : textSecondary }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-13)', color: course.session1Date ? textPrimary : textSecondary }}>
                             <span>📅</span>
                             <span>{course.session1Date || 'Not scheduled'}</span>
                           </div>
@@ -975,7 +975,7 @@ const StudentTeacherDashboard = ({
                               border: `1px solid ${borderColor}`,
                               borderRadius: 16,
                               color: textPrimary,
-                              fontSize: 13,
+                              fontSize: 'var(--fs-13)',
                               fontWeight: 600,
                               cursor: 'pointer'
                             }}
@@ -1005,7 +1005,7 @@ const StudentTeacherDashboard = ({
                                   border: 'none',
                                   borderRadius: 16,
                                   color: '#fff',
-                                  fontSize: 13,
+                                  fontSize: 'var(--fs-13)',
                                   fontWeight: 600,
                                   cursor: joiningSessionId === course.session1Id ? 'wait' : 'pointer'
                                 }}
@@ -1028,7 +1028,7 @@ const StudentTeacherDashboard = ({
                                 border: 'none',
                                 borderRadius: 16,
                                 color: '#fff',
-                                fontSize: 13,
+                                fontSize: 'var(--fs-13)',
                                 fontWeight: 600,
                                 cursor: 'pointer'
                               }}
@@ -1048,16 +1048,16 @@ const StudentTeacherDashboard = ({
                       padding: '8px 0'
                     }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: textPrimary, marginBottom: 4 }}>
+                        <div style={{ fontSize: 'var(--fs-13)', fontWeight: 600, color: textPrimary, marginBottom: 4 }}>
                           Session 2: Advanced
                         </div>
                         {course.session2Certified ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: accentGreen }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-13)', color: accentGreen }}>
                             <span>✅</span>
                             <span>Certified {course.session2CertifiedDate || ''}</span>
                           </div>
                         ) : (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: course.session2Date ? textPrimary : textSecondary }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-13)', color: course.session2Date ? textPrimary : textSecondary }}>
                             <span>📅</span>
                             <span>{course.session2Date || 'Not scheduled'}</span>
                           </div>
@@ -1072,7 +1072,7 @@ const StudentTeacherDashboard = ({
                               border: `1px solid ${borderColor}`,
                               borderRadius: 16,
                               color: textPrimary,
-                              fontSize: 13,
+                              fontSize: 'var(--fs-13)',
                               fontWeight: 600,
                               cursor: 'pointer'
                             }}
@@ -1102,7 +1102,7 @@ const StudentTeacherDashboard = ({
                                   border: 'none',
                                   borderRadius: 16,
                                   color: '#fff',
-                                  fontSize: 13,
+                                  fontSize: 'var(--fs-13)',
                                   fontWeight: 600,
                                   cursor: joiningSessionId === course.session2Id ? 'wait' : 'pointer'
                                 }}
@@ -1125,7 +1125,7 @@ const StudentTeacherDashboard = ({
                                 border: 'none',
                                 borderRadius: 16,
                                 color: '#fff',
-                                fontSize: 13,
+                                fontSize: 'var(--fs-13)',
                                 fontWeight: 600,
                                 cursor: 'pointer'
                               }}
@@ -1162,13 +1162,13 @@ const StudentTeacherDashboard = ({
         padding: 16,
         textAlign: 'center'
       }}>
-        <div style={{ fontSize: 13, color: textSecondary, marginBottom: 4 }}>
+        <div style={{ fontSize: 'var(--fs-13)', color: textSecondary, marginBottom: 4 }}>
           Pending Balance
         </div>
-        <div style={{ fontSize: 24, fontWeight: 700, color: textPrimary, marginBottom: 4 }}>
+        <div style={{ fontSize: 'var(--fs-24)', fontWeight: 700, color: textPrimary, marginBottom: 4 }}>
           ${pendingBalance.toFixed(2)}
         </div>
-        <div style={{ fontSize: 12, color: textSecondary }}>
+        <div style={{ fontSize: 'var(--fs-12)', color: textSecondary }}>
           (Released after student certification)
         </div>
       </div>
@@ -1196,7 +1196,7 @@ const StudentTeacherDashboard = ({
       }}>
         {/* Logo */}
         <div style={{
-          fontSize: 24,
+          fontSize: 'var(--fs-24)',
           fontWeight: 700,
           color: accentBlue
         }}>
@@ -1221,7 +1221,7 @@ const StudentTeacherDashboard = ({
                 border: 'none',
                 borderRadius: 8,
                 color: activeTab === tab.id ? accentBlue : textSecondary,
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 fontWeight: activeTab === tab.id ? 600 : 500,
                 cursor: 'pointer',
                 transition: 'all 0.2s'
@@ -1242,7 +1242,7 @@ const StudentTeacherDashboard = ({
           border: `1px solid ${borderColor}`,
           borderRadius: 20,
           color: textPrimary,
-          fontSize: 14,
+          fontSize: 'var(--fs-14)',
           fontWeight: 500,
           cursor: 'pointer'
         }}>
@@ -1255,13 +1255,13 @@ const StudentTeacherDashboard = ({
             alignItems: 'center',
             justifyContent: 'center',
             color: '#fff',
-            fontSize: 11,
+            fontSize: 'var(--fs-11)',
             fontWeight: 700
           }}>
             {stInfo.initials}
           </div>
           {stInfo.name.split(' ')[0]}
-          <FaChevronDown style={{ fontSize: 10, color: textSecondary }} />
+          <FaChevronDown style={{ fontSize: 'var(--fs-10)', color: textSecondary }} />
         </button>
       </div>
 
@@ -1301,7 +1301,7 @@ const StudentTeacherDashboard = ({
               borderBottom: `1px solid ${borderColor}`
             }}>
               <h2 style={{
-                fontSize: 18,
+                fontSize: 'var(--fs-18)',
                 fontWeight: 700,
                 color: textPrimary,
                 margin: 0
@@ -1317,7 +1317,7 @@ const StudentTeacherDashboard = ({
                   background: 'transparent',
                   border: 'none',
                   color: textSecondary,
-                  fontSize: 20,
+                  fontSize: 'var(--fs-20)',
                   cursor: 'pointer',
                   padding: 4
                 }}
@@ -1330,7 +1330,7 @@ const StudentTeacherDashboard = ({
             <div style={{ padding: 20 }}>
               {/* Course Name */}
               <div style={{
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 color: textSecondary,
                 marginBottom: 20
               }}>
@@ -1351,14 +1351,14 @@ const StudentTeacherDashboard = ({
                 <span style={{ color: accentGreen, fontSize: 20 }}>✓</span>
                 <div style={{ flex: 1 }}>
                   <div style={{
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     fontWeight: 600,
                     color: textPrimary
                   }}>
                     {selectedSessionNumber === 1 ? 'Session 1: Foundations & Frameworks' : 'Session 2: Advanced Techniques'}
                   </div>
                   <div style={{
-                    fontSize: 13,
+                    fontSize: 'var(--fs-13)',
                     color: textSecondary,
                     marginTop: 2
                   }}>
@@ -1370,7 +1370,7 @@ const StudentTeacherDashboard = ({
               {/* Certification Notes */}
               <div style={{ marginBottom: 20 }}>
                 <div style={{
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   color: textPrimary,
                   marginBottom: 8
@@ -1389,7 +1389,7 @@ const StudentTeacherDashboard = ({
                     border: `1px solid ${borderColor}`,
                     background: bgSecondary,
                     color: textPrimary,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     resize: 'vertical',
                     fontFamily: 'inherit',
                     boxSizing: 'border-box'
@@ -1408,7 +1408,7 @@ const StudentTeacherDashboard = ({
                 marginBottom: 20
               }}>
                 <span style={{ fontSize: 18 }}>⚠️</span>
-                <div style={{ fontSize: 13, color: textPrimary }}>
+                <div style={{ fontSize: 'var(--fs-13)', color: textPrimary }}>
                   Certifying all sessions will release <strong>$315</strong> to your earnings
                 </div>
               </div>
@@ -1430,7 +1430,7 @@ const StudentTeacherDashboard = ({
                     border: `1px solid ${borderColor}`,
                     borderRadius: 8,
                     color: textPrimary,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     fontWeight: 500,
                     cursor: 'pointer'
                   }}
@@ -1447,7 +1447,7 @@ const StudentTeacherDashboard = ({
                     border: 'none',
                     borderRadius: 8,
                     color: allModulesChecked ? '#fff' : textSecondary,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     fontWeight: 600,
                     cursor: allModulesChecked ? 'pointer' : 'not-allowed',
                     opacity: allModulesChecked ? 1 : 0.6

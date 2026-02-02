@@ -1154,7 +1154,7 @@ const DiscoverView = ({
                 border: 'none',
                 background: isDarkMode ? '#2f3336' : '#eff3f4',
                 color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                fontSize: 18,
+                fontSize: 'var(--fs-18)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -1177,7 +1177,7 @@ const DiscoverView = ({
                 Dive into your interests
               </h2>
               <p style={{
-                fontSize: 15,
+                fontSize: 'var(--fs-15)',
                 color: isDarkMode ? '#71767b' : '#374151',
                 margin: '0 0 24px 0',
                 textAlign: 'center'
@@ -1205,7 +1205,7 @@ const DiscoverView = ({
                         border: `1px solid ${isSelected ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#cfd9de')}`,
                         background: isSelected ? '#1d9bf0' : 'transparent',
                         color: isSelected ? '#fff' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         fontWeight: 500,
                         cursor: 'pointer',
                         transition: 'all 0.2s ease'
@@ -1232,7 +1232,7 @@ const DiscoverView = ({
                   border: 'none',
                   background: selectedInterests.length >= 3 ? '#1d9bf0' : (isDarkMode ? '#2f3336' : '#cfd9de'),
                   color: selectedInterests.length >= 3 ? '#fff' : (isDarkMode ? '#71767b' : '#374151'),
-                  fontSize: 15,
+                  fontSize: 'var(--fs-15)',
                   fontWeight: 600,
                   cursor: selectedInterests.length >= 3 ? 'pointer' : 'default',
                   transition: 'all 0.2s ease'
@@ -1290,7 +1290,7 @@ const DiscoverView = ({
                 Communities you may like
               </h2>
               <p style={{
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 color: isDarkMode ? '#71767b' : '#374151',
                 margin: '0 0 20px 0',
                 textAlign: 'center'
@@ -1309,7 +1309,7 @@ const DiscoverView = ({
                 }}
               >
                 <span style={{
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   color: '#1d9bf0',
                   fontWeight: 500
                 }}>
@@ -1348,7 +1348,7 @@ const DiscoverView = ({
                         justifyContent: 'center',
                         color: '#fff',
                         fontWeight: 700,
-                        fontSize: 18,
+                        fontSize: 'var(--fs-18)',
                         flexShrink: 0
                       }}>
                         {!community.avatar && community.name.charAt(0)}
@@ -1357,21 +1357,21 @@ const DiscoverView = ({
                       {/* Info */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{
-                          fontSize: 15,
+                          fontSize: 'var(--fs-15)',
                           fontWeight: 600,
                           color: isDarkMode ? '#e7e9ea' : '#0f1419'
                         }}>
                           {community.name}
                         </div>
                         <div style={{
-                          fontSize: 13,
+                          fontSize: 'var(--fs-13)',
                           color: isDarkMode ? '#71767b' : '#374151',
                           marginBottom: 4
                         }}>
                           by {community.author}
                         </div>
                         <div style={{
-                          fontSize: 13,
+                          fontSize: 'var(--fs-13)',
                           color: isDarkMode ? '#71767b' : '#374151',
                           lineHeight: 1.4
                         }}>
@@ -1393,7 +1393,7 @@ const DiscoverView = ({
                         marginTop: 2
                       }}>
                         {isSelected && (
-                          <span style={{ color: '#fff', fontSize: 14, fontWeight: 700 }}>✓</span>
+                          <span style={{ color: '#fff', fontSize: 'var(--fs-14)', fontWeight: 700 }}>✓</span>
                         )}
                       </div>
                     </div>
@@ -1434,7 +1434,7 @@ const DiscoverView = ({
                   border: 'none',
                   background: '#1d9bf0',
                   color: '#fff',
-                  fontSize: 15,
+                  fontSize: 'var(--fs-15)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.2s ease'
@@ -1698,7 +1698,7 @@ const DiscoverView = ({
                 <p style={{ fontSize: 17, color: isDarkMode ? '#71767b' : '#374151', margin: 0, fontWeight: 500 }}>
                   A peer-to-peer knowledge sharing community
                 </p>
-                <p style={{ fontSize: 16, color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '6px 0 0 0', lineHeight: 1.6 }}>
+                <p style={{ fontSize: 'var(--fs-16)', color: isDarkMode ? '#e7e9ea' : '#0f1419', margin: '6px 0 0 0', lineHeight: 1.6 }}>
                   Learn from people who've been where you are. Teach what you've mastered.
                   Follow creators, take courses, and share your own knowledge when you're ready.
                 </p>
@@ -1712,7 +1712,7 @@ const DiscoverView = ({
                     border: 'none',
                     borderRadius: 9999,
                     padding: '12px 28px',
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     fontWeight: 600,
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
@@ -1856,7 +1856,7 @@ const DiscoverView = ({
                               >
                                 <span
                                   style={{
-                                    fontSize: 16,
+                                    fontSize: 'var(--fs-16)',
                                     fontWeight: 700,
                                     color: isDarkMode ? '#f1f5f9' : '#1e293b',
                                     cursor: 'pointer',
@@ -1877,7 +1877,7 @@ const DiscoverView = ({
                                   {instructor.communityName || `${instructor.name} Community`}
                                 </span>
                               </CommunityHoverCard>
-                              <span style={{ fontSize: 13, color: isDarkMode ? '#64748b' : '#94a3b8' }}>
+                              <span style={{ fontSize: 'var(--fs-13)', color: isDarkMode ? '#64748b' : '#94a3b8' }}>
                                 @{handle}
                               </span>
                               {(() => {
@@ -1895,7 +1895,7 @@ const DiscoverView = ({
                                         handleFollowInstructor(instructor.id);
                                       }}
                                       style={{
-                                        fontSize: 13,
+                                        fontSize: 'var(--fs-13)',
                                         fontWeight: 600,
                                         color: '#0ea5e9',
                                         cursor: 'pointer',
@@ -1939,7 +1939,7 @@ const DiscoverView = ({
                                         );
                                       }}
                                       style={{
-                                        fontSize: 13,
+                                        fontSize: 'var(--fs-13)',
                                         fontWeight: 600,
                                         color: '#0ea5e9',
                                         cursor: 'pointer',
@@ -2004,14 +2004,14 @@ const DiscoverView = ({
                                                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                               >
                                                 <span style={{
-                                                  fontSize: 14,
+                                                  fontSize: 'var(--fs-14)',
                                                   color: isDarkMode ? '#e7e9ea' : '#0f1419',
                                                   fontWeight: 500
                                                 }}>
                                                   {instructor.communityName || `${instructor.name} Community`}
                                                 </span>
                                                 <span style={{
-                                                  fontSize: 12,
+                                                  fontSize: 'var(--fs-12)',
                                                   color: isFollowing ? '#00ba7c' : '#71767b',
                                                   fontWeight: 600
                                                 }}>
@@ -2060,7 +2060,7 @@ const DiscoverView = ({
                                                     onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                                   >
                                                     <span style={{
-                                                      fontSize: 14,
+                                                      fontSize: 'var(--fs-14)',
                                                       color: isDarkMode ? '#e7e9ea' : '#0f1419',
                                                       overflow: 'hidden',
                                                       textOverflow: 'ellipsis',
@@ -2070,7 +2070,7 @@ const DiscoverView = ({
                                                       {enrolledCourse.title}
                                                     </span>
                                                     <span style={{
-                                                      fontSize: 12,
+                                                      fontSize: 'var(--fs-12)',
                                                       color: courseFollowed ? '#00ba7c' : '#71767b',
                                                       fontWeight: 600
                                                     }}>
@@ -2105,7 +2105,7 @@ const DiscoverView = ({
                                                     }}
                                                     style={{
                                                       padding: '8px 16px',
-                                                      fontSize: 14,
+                                                      fontSize: 'var(--fs-14)',
                                                       color: '#f4212e',
                                                       fontWeight: 500,
                                                       cursor: 'pointer',
@@ -2131,7 +2131,7 @@ const DiscoverView = ({
 
                             {/* Meta Row */}
                             <div style={{
-                              fontSize: 13,
+                              fontSize: 'var(--fs-13)',
                               color: isDarkMode ? '#94a3b8' : '#64748b',
                               display: 'flex',
                               alignItems: 'center',
@@ -2176,7 +2176,7 @@ const DiscoverView = ({
 
                         {/* Community Description - 2 lines max */}
                         <div style={{
-                          fontSize: 14,
+                          fontSize: 'var(--fs-14)',
                           color: isDarkMode ? '#94a3b8' : '#64748b',
                           lineHeight: 1.4,
                           display: '-webkit-box',
@@ -2263,7 +2263,7 @@ const DiscoverView = ({
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   flexShrink: 0,
-                                  fontSize: 13,
+                                  fontSize: 'var(--fs-13)',
                                   fontWeight: 700,
                                   color: gradient.color
                                 }}>
@@ -2285,7 +2285,7 @@ const DiscoverView = ({
                                   >
                                     <div
                                       style={{
-                                        fontSize: 16,
+                                        fontSize: 'var(--fs-16)',
                                         fontWeight: 600,
                                         color: isDarkMode ? '#f1f5f9' : '#1e293b',
                                         marginBottom: 2,
@@ -2302,7 +2302,7 @@ const DiscoverView = ({
 
                                   {/* Course Description - 2 lines */}
                                   <div style={{
-                                    fontSize: 14,
+                                    fontSize: 'var(--fs-14)',
                                     color: isDarkMode ? '#94a3b8' : '#64748b',
                                     marginBottom: 3,
                                     lineHeight: 1.35,
@@ -2316,7 +2316,7 @@ const DiscoverView = ({
 
                                   {/* Course Meta */}
                                   <div style={{
-                                    fontSize: 13,
+                                    fontSize: 'var(--fs-13)',
                                     color: isDarkMode ? '#64748b' : '#94a3b8',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -2339,7 +2339,7 @@ const DiscoverView = ({
                                     color: isDarkMode ? '#f1f5f9' : '#1e293b',
                                     padding: '7px 14px',
                                     borderRadius: 16,
-                                    fontSize: 13,
+                                    fontSize: 'var(--fs-13)',
                                     fontWeight: 600,
                                     whiteSpace: 'nowrap',
                                     flexShrink: 0,
@@ -2356,7 +2356,7 @@ const DiscoverView = ({
                                     style={{
                                       background: '#22c55e',
                                       color: 'white',
-                                      fontSize: 13,
+                                      fontSize: 'var(--fs-13)',
                                       fontWeight: 600,
                                       padding: '7px 14px',
                                       borderRadius: 16,
@@ -2394,7 +2394,7 @@ const DiscoverView = ({
                                 onViewCommunity && onViewCommunity(instructor);
                               }}
                               style={{
-                                fontSize: 14,
+                                fontSize: 'var(--fs-14)',
                                 fontWeight: 600,
                                 color: '#0ea5e9',
                                 cursor: 'pointer',
@@ -2512,7 +2512,7 @@ const DiscoverView = ({
                             >
                               <span
                                 style={{
-                                  fontSize: 15,
+                                  fontSize: 'var(--fs-15)',
                                   fontWeight: 700,
                                   color: isDarkMode ? '#e7e9ea' : '#0f1419',
                                   cursor: 'pointer',
@@ -2534,7 +2534,7 @@ const DiscoverView = ({
                               </span>
                             </CommunityHoverCard>
                             <span style={{
-                              fontSize: 15,
+                              fontSize: 'var(--fs-15)',
                               color: isDarkMode ? '#71767b' : '#374151'
                             }}>
                               @{(instructor.communityName || instructor.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '')}
@@ -2557,7 +2557,7 @@ const DiscoverView = ({
                                     }}
                                     style={{
                                       color: '#1d9bf0',
-                                      fontSize: 15,
+                                      fontSize: 'var(--fs-15)',
                                       fontWeight: 600,
                                       cursor: 'pointer',
                                       textDecoration: 'underline',
@@ -2603,7 +2603,7 @@ const DiscoverView = ({
                                     }}
                                     style={{
                                       color: '#1d9bf0',
-                                      fontSize: 15,
+                                      fontSize: 'var(--fs-15)',
                                       fontWeight: 600,
                                       cursor: 'pointer',
                                       textDecoration: 'underline',
@@ -2652,7 +2652,7 @@ const DiscoverView = ({
                                               style={{
                                                 padding: '8px 16px',
                                                 cursor: 'pointer',
-                                                fontSize: 14,
+                                                fontSize: 'var(--fs-14)',
                                                 color: isFollowing ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                                                 fontWeight: isFollowing ? 500 : 400,
                                                 display: 'flex',
@@ -2695,7 +2695,7 @@ const DiscoverView = ({
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: 8,
-                                                    fontSize: 14,
+                                                    fontSize: 'var(--fs-14)',
                                                     color: isFollowed ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                                                     fontWeight: isFollowed ? 500 : 400
                                                   }}
@@ -2720,7 +2720,7 @@ const DiscoverView = ({
                                                   style={{
                                                     padding: '10px 16px',
                                                     cursor: 'pointer',
-                                                    fontSize: 13,
+                                                    fontSize: 'var(--fs-13)',
                                                     color: '#f4212e',
                                                     fontWeight: 500
                                                   }}
@@ -2756,7 +2756,7 @@ const DiscoverView = ({
                           </div>
                           {/* Creator + Meta Row (combined) */}
                           <div style={{
-                            fontSize: 13,
+                            fontSize: 'var(--fs-13)',
                             color: isDarkMode ? '#71767b' : '#374151',
                             marginTop: 0,
                             display: 'flex',
@@ -2800,7 +2800,7 @@ const DiscoverView = ({
                       {/* Bio - Indented under avatar */}
                       {instructor.bio && (
                         <div style={{
-                          fontSize: 14,
+                          fontSize: 'var(--fs-14)',
                           lineHeight: 1.6,
                           color: isDarkMode ? '#a0a0a0' : '#4b5563',
                           paddingLeft: 72
@@ -2901,7 +2901,7 @@ const DiscoverView = ({
                                   justifyContent: 'center',
                                   background: getCourseGradient(),
                                   color: 'white',
-                                  fontSize: 16,
+                                  fontSize: 'var(--fs-16)',
                                   fontWeight: 700
                                 }}>
                                   {getCourseAbbreviation(course.title)}
@@ -2911,7 +2911,7 @@ const DiscoverView = ({
                                 <div style={{ flex: 1, minWidth: 0, paddingRight: 100 }}>
                                   {/* Course Title */}
                                   <div style={{
-                                    fontSize: 15,
+                                    fontSize: 'var(--fs-15)',
                                     fontWeight: 600,
                                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
                                     marginBottom: 2,
@@ -2952,7 +2952,7 @@ const DiscoverView = ({
                                           }}
                                           style={{
                                             color: '#1d9bf0',
-                                            fontSize: 15,
+                                            fontSize: 'var(--fs-15)',
                                             fontWeight: 600,
                                             cursor: 'pointer',
                                             transition: 'color 0.15s'
@@ -2967,7 +2967,7 @@ const DiscoverView = ({
                                   </div>
                                   {/* Course Description */}
                                   <div style={{
-                                    fontSize: 14,
+                                    fontSize: 'var(--fs-14)',
                                     color: isDarkMode ? '#a0a0a0' : '#374151',
                                     lineHeight: 1.4,
                                     marginBottom: 6
@@ -2976,7 +2976,7 @@ const DiscoverView = ({
                                   </div>
                                   {/* Stats Line */}
                                   <div style={{
-                                    fontSize: 14,
+                                    fontSize: 'var(--fs-14)',
                                     color: isDarkMode ? '#71767b' : '#6b7280',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -2999,7 +2999,7 @@ const DiscoverView = ({
                                       color: isDarkMode ? '#e7e9ea' : '#0f1419',
                                       padding: '8px 16px',
                                       borderRadius: 20,
-                                      fontSize: 14,
+                                      fontSize: 'var(--fs-14)',
                                       fontWeight: 500,
                                       whiteSpace: 'nowrap'
                                     }}
@@ -3025,7 +3025,7 @@ const DiscoverView = ({
                                       color: 'white',
                                       padding: '8px 16px',
                                       borderRadius: 20,
-                                      fontSize: 14,
+                                      fontSize: 'var(--fs-14)',
                                       fontWeight: 600,
                                       cursor: 'pointer',
                                       whiteSpace: 'nowrap',
@@ -3059,7 +3059,7 @@ const DiscoverView = ({
                               padding: 12,
                               marginTop: 8,
                               color: '#1d9bf0',
-                              fontSize: 16,
+                              fontSize: 'var(--fs-16)',
                               fontWeight: 600,
                               cursor: 'pointer'
                             }}
@@ -3077,7 +3077,7 @@ const DiscoverView = ({
                         padding: '12px 16px',
                         background: isDarkMode ? '#1d1f23' : '#fafbfc',
                         color: isDarkMode ? '#71717a' : '#6b7280',
-                        fontSize: 13,
+                        fontSize: 'var(--fs-13)',
                         fontStyle: 'italic'
                       }}>
                         No courses match "{searchQuery}" — community name matches
@@ -3108,14 +3108,14 @@ const DiscoverView = ({
               marginBottom: 16
             }}>
               <span style={{
-                fontSize: 15,
+                fontSize: 'var(--fs-15)',
                 fontWeight: 700,
                 color: isDarkMode ? '#e7e9ea' : '#0f1419'
               }}>
                 Suggested Courses
               </span>
               <span style={{
-                fontSize: 13,
+                fontSize: 'var(--fs-13)',
                 color: '#1d9bf0',
                 cursor: 'pointer'
               }}>
@@ -3144,7 +3144,7 @@ const DiscoverView = ({
                 }}
               >
                 <div style={{
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   color: '#1d9bf0',
                   marginBottom: 4
@@ -3152,7 +3152,7 @@ const DiscoverView = ({
                   {course.title}
                 </div>
                 <div style={{
-                  fontSize: 12,
+                  fontSize: 'var(--fs-12)',
                   color: isDarkMode ? '#71767b' : '#374151',
                   marginBottom: 8
                 }}>
@@ -3170,7 +3170,7 @@ const DiscoverView = ({
                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
                     padding: '6px 14px',
                     borderRadius: 20,
-                    fontSize: 13,
+                    fontSize: 'var(--fs-13)',
                     fontWeight: 600,
                     cursor: 'pointer',
                     transition: 'all 0.2s'

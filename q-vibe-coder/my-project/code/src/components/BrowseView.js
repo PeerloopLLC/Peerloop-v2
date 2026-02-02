@@ -184,7 +184,7 @@ const BrowseView = ({
                   padding: '8px 16px',
                   borderRadius: 9999,
                   fontWeight: 700,
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   cursor: 'pointer'
                 }}
               >
@@ -196,7 +196,7 @@ const BrowseView = ({
             <div style={{ marginTop: 48 }}>
               <h1 style={{
                 margin: 0,
-                fontSize: 20,
+                fontSize: 'var(--fs-20)',
                 fontWeight: 800,
                 color: isDarkMode ? '#e7e9ea' : '#0f1419'
               }}>
@@ -216,7 +216,7 @@ const BrowseView = ({
                 color: '#a855f7',
                 padding: '4px 12px',
                 borderRadius: 9999,
-                fontSize: 13,
+                fontSize: 'var(--fs-13)',
                 fontWeight: 600
               }}>
                 Creator
@@ -226,7 +226,7 @@ const BrowseView = ({
             {/* Bio */}
             <p style={{
               margin: '12px 0',
-              fontSize: 15,
+              fontSize: 'var(--fs-15)',
               lineHeight: 1.5,
               color: isDarkMode ? '#e7e9ea' : '#0f1419'
             }}>
@@ -239,7 +239,7 @@ const BrowseView = ({
               flexWrap: 'wrap',
               gap: 16,
               color: isDarkMode ? '#71767b' : '#536471',
-              fontSize: 15,
+              fontSize: 'var(--fs-15)',
               marginBottom: 12
             }}>
               {creator.title && <span>💼 {creator.title}</span>}
@@ -255,7 +255,7 @@ const BrowseView = ({
                     alignItems: 'center',
                     gap: 8,
                     color: isDarkMode ? '#71767b' : '#536471',
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     marginBottom: 4
                   }}>
                     <span style={{ color: '#22c55e' }}>✓</span>
@@ -290,26 +290,26 @@ const BrowseView = ({
               borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
             }}>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                <div style={{ fontSize: 'var(--fs-18)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
                   {creatorCourses.length}
                 </div>
-                <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                <div style={{ fontSize: 'var(--fs-13)', color: isDarkMode ? '#71767b' : '#536471' }}>
                   Courses Created
                 </div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                <div style={{ fontSize: 'var(--fs-18)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
                   {(creator.stats?.studentsTaught || 0).toLocaleString()}
                 </div>
-                <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                <div style={{ fontSize: 'var(--fs-13)', color: isDarkMode ? '#71767b' : '#536471' }}>
                   Students Taught
                 </div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                <div style={{ fontSize: 'var(--fs-18)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
                   {creator.stats?.averageRating || '4.8'}
                 </div>
-                <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                <div style={{ fontSize: 'var(--fs-13)', color: isDarkMode ? '#71767b' : '#536471' }}>
                   Rating
                 </div>
               </div>
@@ -360,7 +360,7 @@ const BrowseView = ({
                     padding: '16px 0',
                     borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
                   }}>
-                    <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', marginBottom: 4 }}>
+                    <div style={{ fontSize: 'var(--fs-13)', color: isDarkMode ? '#71767b' : '#536471', marginBottom: 4 }}>
                       {post.time}
                     </div>
                     <div style={{
@@ -369,7 +369,7 @@ const BrowseView = ({
                       color: post.type === 'announcement' ? '#1d9bf0' : post.type === 'tip' ? '#22c55e' : '#f59e0b',
                       padding: '2px 8px',
                       borderRadius: 4,
-                      fontSize: 12,
+                      fontSize: 'var(--fs-12)',
                       fontWeight: 600,
                       marginBottom: 8
                     }}>
@@ -377,13 +377,13 @@ const BrowseView = ({
                       {post.type === 'tip' && '💡 TIP'}
                       {post.type === 'update' && '🔔 UPDATE'}
                     </div>
-                    <div style={{ fontSize: 13, color: isDarkMode ? '#71767b' : '#536471', marginBottom: 4 }}>
+                    <div style={{ fontSize: 'var(--fs-13)', color: isDarkMode ? '#71767b' : '#536471', marginBottom: 4 }}>
                       {post.context}
                     </div>
-                    <div style={{ fontSize: 15, color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 8 }}>
+                    <div style={{ fontSize: 'var(--fs-15)', color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 8 }}>
                       "{post.content}"
                     </div>
-                    <div style={{ display: 'flex', gap: 16, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                    <div style={{ display: 'flex', gap: 16, fontSize: 'var(--fs-13)', color: isDarkMode ? '#71767b' : '#536471' }}>
                       <span>👍 {post.stats.likes}</span>
                       <span>💬 {post.stats.replies}</span>
                     </div>
@@ -410,13 +410,13 @@ const BrowseView = ({
                       border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
                     }}
                   >
-                    <div style={{ fontWeight: 700, fontSize: 16, color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 4 }}>
+                    <div style={{ fontWeight: 700, fontSize: 'var(--fs-16)', color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 4 }}>
                       {course.title}
                     </div>
-                    <div style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#536471', marginBottom: 8 }}>
+                    <div style={{ fontSize: 'var(--fs-14)', color: isDarkMode ? '#71767b' : '#536471', marginBottom: 8 }}>
                       {course.description?.slice(0, 100)}...
                     </div>
-                    <div style={{ display: 'flex', gap: 12, fontSize: 13, color: isDarkMode ? '#71767b' : '#536471' }}>
+                    <div style={{ display: 'flex', gap: 12, fontSize: 'var(--fs-13)', color: isDarkMode ? '#71767b' : '#536471' }}>
                       <span>★ {course.stats?.rating || '4.8'}</span>
                       <span>•</span>
                       <span>{(course.stats?.students || 1250).toLocaleString()} students</span>
@@ -510,7 +510,7 @@ const BrowseView = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 28,
+                fontSize: 'var(--fs-28)',
                 flexShrink: 0
               }}
             >
@@ -518,7 +518,7 @@ const BrowseView = ({
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.communityName || `${creator.name} Community`}</h1>
+                <h1 style={{ margin: 0, fontSize: 'var(--fs-20)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.communityName || `${creator.name} Community`}</h1>
                 <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
                 {/* Follow/Following dropdown - same as Discover page */}
                 {(() => {
@@ -536,7 +536,7 @@ const BrowseView = ({
                         }}
                         style={{
                           color: '#1d9bf0',
-                          fontSize: 15,
+                          fontSize: 'var(--fs-15)',
                           fontWeight: 600,
                           cursor: 'pointer',
                           textDecoration: 'underline',
@@ -566,7 +566,7 @@ const BrowseView = ({
                         }}
                         style={{
                           color: '#1d9bf0',
-                          fontSize: 15,
+                          fontSize: 'var(--fs-15)',
                           fontWeight: 600,
                           cursor: 'pointer',
                           textDecoration: 'underline',
@@ -601,7 +601,7 @@ const BrowseView = ({
                                 {/* Community section label */}
                                 <div style={{
                                   padding: '6px 16px 2px',
-                                  fontSize: 11,
+                                  fontSize: 'var(--fs-11)',
                                   fontWeight: 600,
                                   color: isDarkMode ? '#71767b' : '#536471',
                                   textTransform: 'uppercase',
@@ -614,7 +614,7 @@ const BrowseView = ({
                                   style={{
                                     padding: '8px 16px',
                                     cursor: 'pointer',
-                                    fontSize: 14,
+                                    fontSize: 'var(--fs-14)',
                                     color: isFollowing ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                                     fontWeight: isFollowing ? 500 : 400,
                                     display: 'flex',
@@ -635,7 +635,7 @@ const BrowseView = ({
                                 {/* Courses section label */}
                                 <div style={{
                                   padding: '10px 16px 2px',
-                                  fontSize: 11,
+                                  fontSize: 'var(--fs-11)',
                                   fontWeight: 600,
                                   color: isDarkMode ? '#71767b' : '#536471',
                                   textTransform: 'uppercase',
@@ -657,7 +657,7 @@ const BrowseView = ({
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: 8,
-                                        fontSize: 14,
+                                        fontSize: 'var(--fs-14)',
                                         color: isFollowed ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                                         fontWeight: isFollowed ? 500 : 400
                                       }}
@@ -682,7 +682,7 @@ const BrowseView = ({
                                       style={{
                                         padding: '10px 16px',
                                         cursor: 'pointer',
-                                        fontSize: 13,
+                                        fontSize: 'var(--fs-13)',
                                         color: '#f4212e',
                                         fontWeight: 500
                                       }}
@@ -717,7 +717,7 @@ const BrowseView = ({
               </div>
               <p style={{ margin: '2px 0 0 0', color: isDarkMode ? '#71767b' : '#536471', fontSize: 17 }}>{creator.title}</p>
               {/* Inline Stats */}
-              <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 17, color: isDarkMode ? '#71767b' : '#536471', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 'var(--fs-17)', color: isDarkMode ? '#71767b' : '#536471', alignItems: 'center' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><AiOutlineStar /> {creator.stats?.averageRating || '4.8'}</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><AiOutlineTeam /> {(creator.stats?.studentsTaught || 0).toLocaleString()} students</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><FaBook style={{ fontSize: 14 }} /> {creator.stats?.coursesCreated || creatorCourses.length} courses</span>
@@ -731,7 +731,7 @@ const BrowseView = ({
             <p style={{
               margin: '0 0 12px 0',
               color: isDarkMode ? '#e7e9ea' : '#0f1419',
-              fontSize: 17,
+              fontSize: 'var(--fs-17)',
               lineHeight: 1.5
             }}>
               {creator.bio}
@@ -746,7 +746,7 @@ const BrowseView = ({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  fontSize: 17,
+                  fontSize: 'var(--fs-17)',
                   color: isDarkMode ? '#71767b' : '#536471'
                 }}>
                   <span style={{ color: '#1d9bf0' }}>✓</span>
@@ -785,7 +785,7 @@ const BrowseView = ({
               color: activeProfileTab === 'courses'
                 ? '#1d9bf0'
                 : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-              fontSize: 14,
+              fontSize: 'var(--fs-14)',
               fontWeight: 600,
               cursor: 'pointer',
               whiteSpace: 'nowrap'
@@ -818,7 +818,7 @@ const BrowseView = ({
               color: activeProfileTab === 'general-content'
                 ? '#1d9bf0'
                 : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-              fontSize: 14,
+              fontSize: 'var(--fs-14)',
               fontWeight: 600,
               cursor: 'pointer',
               whiteSpace: 'nowrap'
@@ -846,7 +846,7 @@ const BrowseView = ({
               color: activeProfileTab === 'community-calendar'
                 ? '#1d9bf0'
                 : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-              fontSize: 14,
+              fontSize: 'var(--fs-14)',
               fontWeight: 600,
               cursor: 'pointer',
               whiteSpace: 'nowrap'
@@ -949,7 +949,7 @@ const BrowseView = ({
                           justifyContent: 'center',
                           background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                           color: 'white',
-                          fontSize: 16,
+                          fontSize: 'var(--fs-16)',
                           fontWeight: 700
                         }}>
                           {getCourseAbbreviation(course.title)}
@@ -959,7 +959,7 @@ const BrowseView = ({
                         <div style={{ flex: 1, minWidth: 0 }}>
                           {/* Course Title - Black with inline Follow */}
                           <div style={{
-                            fontSize: 15,
+                            fontSize: 'var(--fs-15)',
                             fontWeight: 600,
                             color: isDarkMode ? '#e7e9ea' : '#0f1419',
                             marginBottom: 4,
@@ -979,7 +979,7 @@ const BrowseView = ({
                                   }}
                                   style={{
                                     color: '#1d9bf0',
-                                    fontSize: 15,
+                                    fontSize: 'var(--fs-15)',
                                     fontWeight: 600,
                                     cursor: 'pointer',
                                     transition: 'color 0.15s'
@@ -994,7 +994,7 @@ const BrowseView = ({
                           </div>
                           {/* Course Description */}
                           <div style={{
-                            fontSize: 14,
+                            fontSize: 'var(--fs-14)',
                             color: isDarkMode ? '#a0a0a0' : '#536471',
                             lineHeight: 1.4,
                             marginBottom: 6,
@@ -1007,7 +1007,7 @@ const BrowseView = ({
                           </div>
                           {/* Stats Line */}
                           <div style={{
-                            fontSize: 14,
+                            fontSize: 'var(--fs-14)',
                             color: isDarkMode ? '#71767b' : '#6b7280',
                             display: 'flex',
                             alignItems: 'center',
@@ -1029,7 +1029,7 @@ const BrowseView = ({
                               color: isDarkMode ? '#e7e9ea' : '#0f1419',
                               padding: '8px 16px',
                               borderRadius: 20,
-                              fontSize: 14,
+                              fontSize: 'var(--fs-14)',
                               fontWeight: 500,
                               whiteSpace: 'nowrap'
                             }}
@@ -1052,7 +1052,7 @@ const BrowseView = ({
                               color: 'white',
                               padding: '8px 16px',
                               borderRadius: 20,
-                              fontSize: 14,
+                              fontSize: 'var(--fs-14)',
                               fontWeight: 600,
                               cursor: 'pointer',
                               whiteSpace: 'nowrap',
@@ -1100,7 +1100,7 @@ const BrowseView = ({
                   {/* Section Header */}
                   <div style={{
                     padding: '12px 16px',
-                    fontSize: 12,
+                    fontSize: 'var(--fs-12)',
                     fontWeight: 700,
                     color: isDarkMode ? '#71767b' : '#536471',
                     textTransform: 'uppercase',
@@ -1140,11 +1140,11 @@ const BrowseView = ({
                       }}
                     >
                       {/* Icon based on type */}
-                      {item.type === 'video' && <FaPlay style={{ fontSize: 12, color: '#1d9bf0', flexShrink: 0 }} />}
-                      {item.type === 'file' && <FaFileAlt style={{ fontSize: 12, color: '#10b981', flexShrink: 0 }} />}
-                      {item.type === 'link' && <FaLink style={{ fontSize: 12, color: '#8b5cf6', flexShrink: 0 }} />}
+                      {item.type === 'video' && <FaPlay style={{ fontSize: 'var(--fs-12)', color: '#1d9bf0', flexShrink: 0 }} />}
+                      {item.type === 'file' && <FaFileAlt style={{ fontSize: 'var(--fs-12)', color: '#10b981', flexShrink: 0 }} />}
+                      {item.type === 'link' && <FaLink style={{ fontSize: 'var(--fs-12)', color: '#8b5cf6', flexShrink: 0 }} />}
                       <span style={{
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         color: selectedContentItem?.id === item.id
                           ? '#1d9bf0'
                           : (isDarkMode ? '#e7e9ea' : '#0f1419'),
@@ -1172,7 +1172,7 @@ const BrowseView = ({
                 <div>
                   {/* Content Title */}
                   <h2 style={{
-                    fontSize: 20,
+                    fontSize: 'var(--fs-20)',
                     fontWeight: 700,
                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
                     marginBottom: 16
@@ -1195,7 +1195,7 @@ const BrowseView = ({
                     }}>
                       <div style={{ textAlign: 'center' }}>
                         <FaPlay style={{ fontSize: 48, color: '#1d9bf0', marginBottom: 8 }} />
-                        <div style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#536471' }}>
+                        <div style={{ fontSize: 'var(--fs-14)', color: isDarkMode ? '#71767b' : '#536471' }}>
                           Duration: {selectedContentItem.duration}
                         </div>
                       </div>
@@ -1216,10 +1216,10 @@ const BrowseView = ({
                     }}>
                       <FaFileAlt style={{ fontSize: 40, color: '#10b981' }} />
                       <div>
-                        <div style={{ fontSize: 16, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                        <div style={{ fontSize: 'var(--fs-16)', fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
                           {selectedContentItem.title}
                         </div>
-                        <div style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#536471' }}>
+                        <div style={{ fontSize: 'var(--fs-14)', color: isDarkMode ? '#71767b' : '#536471' }}>
                           {selectedContentItem.fileType} File
                         </div>
                       </div>
@@ -1252,10 +1252,10 @@ const BrowseView = ({
                     }}>
                       <FaLink style={{ fontSize: 40, color: '#8b5cf6' }} />
                       <div>
-                        <div style={{ fontSize: 16, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                        <div style={{ fontSize: 'var(--fs-16)', fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
                           {selectedContentItem.title}
                         </div>
-                        <div style={{ fontSize: 14, color: '#1d9bf0' }}>
+                        <div style={{ fontSize: 'var(--fs-14)', color: '#1d9bf0' }}>
                           {selectedContentItem.url}
                         </div>
                       </div>
@@ -1276,7 +1276,7 @@ const BrowseView = ({
 
                   {/* Description */}
                   <p style={{
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     lineHeight: 1.6,
                     color: isDarkMode ? '#a1a1aa' : '#4b5563'
                   }}>
@@ -1312,7 +1312,7 @@ const BrowseView = ({
               marginBottom: 20
             }}>
               <h3 style={{
-                fontSize: 18,
+                fontSize: 'var(--fs-18)',
                 fontWeight: 600,
                 color: isDarkMode ? '#e7e9ea' : '#0f1419',
                 margin: 0
@@ -1320,7 +1320,7 @@ const BrowseView = ({
                 Upcoming Events
               </h3>
               <div style={{
-                fontSize: 13,
+                fontSize: 'var(--fs-13)',
                 color: isDarkMode ? '#71767b' : '#536471'
               }}>
                 {selectedInstructor?.communityName || selectedInstructor?.name}'s Community
@@ -1359,14 +1359,14 @@ const BrowseView = ({
                     textAlign: 'center',
                     minWidth: 60
                   }}>
-                    <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.9 }}>{event.date}</div>
-                    <div style={{ fontSize: 12, fontWeight: 600 }}>{event.time.split(' ')[0]}</div>
+                    <div style={{ fontSize: 'var(--fs-11)', fontWeight: 500, opacity: 0.9 }}>{event.date}</div>
+                    <div style={{ fontSize: 'var(--fs-12)', fontWeight: 600 }}>{event.time.split(' ')[0]}</div>
                   </div>
 
                   {/* Event Info */}
                   <div style={{ flex: 1 }}>
                     <div style={{
-                      fontSize: 15,
+                      fontSize: 'var(--fs-15)',
                       fontWeight: 600,
                       color: isDarkMode ? '#e7e9ea' : '#0f1419',
                       marginBottom: 4
@@ -1374,7 +1374,7 @@ const BrowseView = ({
                       {event.title}
                     </div>
                     <div style={{
-                      fontSize: 13,
+                      fontSize: 'var(--fs-13)',
                       color: isDarkMode ? '#71767b' : '#536471'
                     }}>
                       {event.attendees} attending • {event.time}
@@ -1387,7 +1387,7 @@ const BrowseView = ({
                     border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
                     borderRadius: 20,
                     padding: '8px 16px',
-                    fontSize: 13,
+                    fontSize: 'var(--fs-13)',
                     fontWeight: 600,
                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
                     cursor: 'pointer'
@@ -1409,7 +1409,7 @@ const BrowseView = ({
                 background: 'none',
                 border: 'none',
                 color: '#1d9bf0',
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 fontWeight: 600,
                 cursor: 'pointer'
               }}>
@@ -1475,7 +1475,7 @@ const BrowseView = ({
                 />
                 <div style={{
                   fontWeight: 700,
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   color: isDarkMode ? '#e7e9ea' : '#0f1419',
                   marginBottom: 1,
                   lineHeight: 1.2
@@ -1515,7 +1515,7 @@ const BrowseView = ({
                           padding: '6px 16px',
                           borderRadius: 20,
                           fontWeight: 600,
-                          fontSize: 12,
+                          fontSize: 'var(--fs-12)',
                           cursor: 'pointer',
                           width: '100%'
                         }}
@@ -1540,7 +1540,7 @@ const BrowseView = ({
                           padding: '6px 12px',
                           borderRadius: 20,
                           fontWeight: 600,
-                          fontSize: 12,
+                          fontSize: 'var(--fs-12)',
                           cursor: 'pointer',
                           width: '100%',
                           display: 'flex',
@@ -1571,7 +1571,7 @@ const BrowseView = ({
                             style={{
                               padding: '8px 12px',
                               cursor: 'pointer',
-                              fontSize: 12,
+                              fontSize: 'var(--fs-12)',
                               color: isFollowing ? '#dc2626' : '#1d9bf0',
                               fontWeight: 500,
                               background: 'transparent',
@@ -1596,7 +1596,7 @@ const BrowseView = ({
                                   style={{
                                     padding: '8px 12px',
                                     cursor: 'pointer',
-                                    fontSize: 11,
+                                    fontSize: 'var(--fs-11)',
                                     color: isFollowed ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#475569'),
                                     display: 'flex',
                                     justifyContent: 'space-between'
@@ -1624,10 +1624,10 @@ const BrowseView = ({
                 {/* Header Row */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                   <div>
-                    <div style={{ fontSize: 18, fontWeight: 600, color: isDarkMode ? '#f3f4f6' : '#0f1419', marginBottom: 1 }}>
+                    <div style={{ fontSize: 'var(--fs-18)', fontWeight: 600, color: isDarkMode ? '#f3f4f6' : '#0f1419', marginBottom: 1 }}>
                       About the Community
                     </div>
-                    <div style={{ fontSize: 15, color: isDarkMode ? '#d1d5db' : '#536471' }}>
+                    <div style={{ fontSize: 'var(--fs-15)', color: isDarkMode ? '#d1d5db' : '#536471' }}>
                       {creator.title}
                     </div>
                   </div>
@@ -1643,7 +1643,7 @@ const BrowseView = ({
                     style={{
                       color: '#1d9bf0',
                       fontWeight: 500,
-                      fontSize: 13,
+                      fontSize: 'var(--fs-13)',
                       cursor: 'pointer',
                       whiteSpace: 'nowrap'
                     }}
@@ -1655,7 +1655,7 @@ const BrowseView = ({
                 {/* Bio */}
                 <div style={{
                   color: isDarkMode ? '#e5e7eb' : '#4b5563',
-                  fontSize: 16,
+                  fontSize: 'var(--fs-16)',
                   lineHeight: 1.4,
                   marginBottom: 8,
                   fontStyle: 'italic'
@@ -1672,7 +1672,7 @@ const BrowseView = ({
                         color: isDarkMode ? '#d1d5db' : '#4b5563',
                         padding: '3px 8px',
                         borderRadius: 12,
-                        fontSize: 13,
+                        fontSize: 'var(--fs-13)',
                         fontWeight: 500
                       }}>
                         {tag}
@@ -1682,7 +1682,7 @@ const BrowseView = ({
                 )}
 
                 {/* Stats */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 14, color: isDarkMode ? '#d1d5db' : '#536471' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 'var(--fs-14)', color: isDarkMode ? '#d1d5db' : '#536471' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <AiOutlineTeam style={{ fontSize: 14 }} />
                     {(creator.stats?.studentsTaught || 0).toLocaleString()}
@@ -1744,7 +1744,7 @@ const BrowseView = ({
                 style={{
                   width: '100%',
                   padding: '14px 16px 14px 48px',
-                  fontSize: 16,
+                  fontSize: 'var(--fs-16)',
                   border: isDarkMode ? '2px solid #2f3336' : '2px solid #e2e8f0',
                   borderRadius: 9999,
                   background: isDarkMode ? '#16181c' : '#f7f9fa',
@@ -1859,7 +1859,7 @@ const BrowseView = ({
                                          course.badge === 'Featured' ? '#7c3aed' : '#374151',
                                   padding: '4px 10px',
                                   borderRadius: 4,
-                                  fontSize: 11,
+                                  fontSize: 'var(--fs-11)',
                                   fontWeight: 700,
                                   textTransform: 'uppercase',
                                   letterSpacing: '0.5px',
@@ -1871,7 +1871,7 @@ const BrowseView = ({
 
                               {/* Title */}
                               <h3 style={{
-                                fontSize: 18,
+                                fontSize: 'var(--fs-18)',
                                 fontWeight: 700,
                                 color: isDarkMode ? '#e7e9ea' : '#111827',
                                 margin: '0 0 4px 0',
@@ -1885,7 +1885,7 @@ const BrowseView = ({
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 8,
-                                fontSize: 14,
+                                fontSize: 'var(--fs-14)',
                                 color: isDarkMode ? '#9ca3af' : '#6b7280',
                                 marginBottom: 8
                               }}>
@@ -1938,7 +1938,7 @@ const BrowseView = ({
 
                               {/* Description */}
                               <p style={{
-                                fontSize: 15,
+                                fontSize: 'var(--fs-15)',
                                 lineHeight: 1.6,
                                 color: isDarkMode ? '#d1d5db' : '#374151',
                                 margin: '0 0 10px 0',
@@ -1970,7 +1970,7 @@ const BrowseView = ({
                                   ))}
                                   <span style={{
                                     marginLeft: 4,
-                                    fontSize: 14,
+                                    fontSize: 'var(--fs-14)',
                                     color: isDarkMode ? '#9ca3af' : '#6b7280'
                                   }}>
                                     {course.rating})
@@ -1982,7 +1982,7 @@ const BrowseView = ({
                                   display: 'flex',
                                   alignItems: 'center',
                                   gap: 4,
-                                  fontSize: 14,
+                                  fontSize: 'var(--fs-14)',
                                   color: isDarkMode ? '#9ca3af' : '#6b7280'
                                 }}>
                                   <AiOutlineTeam style={{ fontSize: 16 }} />
@@ -1995,7 +1995,7 @@ const BrowseView = ({
                                   color: isDarkMode ? '#9ca3af' : '#0369a1',
                                   padding: '4px 12px',
                                   borderRadius: 20,
-                                  fontSize: 12,
+                                  fontSize: 'var(--fs-12)',
                                   fontWeight: 500
                                 }}>
                                   {course.level || 'Intermediate'}
@@ -2016,7 +2016,7 @@ const BrowseView = ({
                                 flexDirection: 'column'
                               }}>
                               <h4 style={{
-                                fontSize: 13,
+                                fontSize: 'var(--fs-13)',
                                 fontWeight: 600,
                                 color: isDarkMode ? '#9ca3af' : '#6b7280',
                                 margin: '0 0 12px 0',
@@ -2028,7 +2028,7 @@ const BrowseView = ({
 
                               {/* Bio Quote */}
                               <p style={{
-                                fontSize: 14,
+                                fontSize: 'var(--fs-14)',
                                 lineHeight: 1.5,
                                 color: isDarkMode ? '#d1d5db' : '#374151',
                                 fontStyle: 'italic',
@@ -2069,13 +2069,13 @@ const BrowseView = ({
                                 <div>
                                   <div style={{
                                     fontWeight: 600,
-                                    fontSize: 15,
+                                    fontSize: 'var(--fs-15)',
                                     color: isDarkMode ? '#e7e9ea' : '#111827'
                                   }}>
                                     {instructorData?.name}
                                   </div>
                                   <div style={{
-                                    fontSize: 13,
+                                    fontSize: 'var(--fs-13)',
                                     color: isDarkMode ? '#9ca3af' : '#6b7280',
                                     display: '-webkit-box',
                                     WebkitLineClamp: 2,
@@ -2121,7 +2121,7 @@ const BrowseView = ({
                                   color: followedCommunities.some(c => c.id === `creator-${instructorData?.id}`)
                                     ? '#1d9bf0'
                                     : '#fff',
-                                  fontSize: 14,
+                                  fontSize: 'var(--fs-14)',
                                   fontWeight: 600,
                                   cursor: 'pointer',
                                   border: followedCommunities.some(c => c.id === `creator-${instructorData?.id}`)

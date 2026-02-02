@@ -159,7 +159,7 @@ const CourseCalendar = ({ isDarkMode, scheduledDates, selectedDate, onSelectDate
           <FaChevronLeft />
         </button>
         <span style={{
-          fontSize: 13,
+          fontSize: 'var(--fs-13)',
           fontWeight: 600,
           color: isDarkMode ? '#e7e9ea' : '#0f1419'
         }}>
@@ -249,7 +249,7 @@ const CourseCalendar = ({ isDarkMode, scheduledDates, selectedDate, onSelectDate
               }}
             >
               <span style={{
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 fontWeight: today || selected ? 600 : 400,
                 color: selected
                   ? '#fff'
@@ -882,14 +882,14 @@ const MyCoursesView = ({
                     justifyContent: 'center',
                     color: '#fff',
                     fontWeight: 700,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     flexShrink: 0
                   }}>
                     {getCourseAbbreviation(course.title)}
                   </div>
                   <div>
                     <div style={{
-                      fontSize: 15,
+                      fontSize: 'var(--fs-15)',
                       fontWeight: 600,
                       color: isDarkMode ? '#e7e9ea' : '#0f1419',
                       marginBottom: 4
@@ -897,7 +897,7 @@ const MyCoursesView = ({
                       {course.title}
                     </div>
                     <div style={{
-                      fontSize: 13,
+                      fontSize: 'var(--fs-13)',
                       color: isDarkMode ? '#71767b' : '#536471'
                     }}>
                       by {instructor?.name || 'Unknown'}
@@ -910,7 +910,7 @@ const MyCoursesView = ({
                       color: '#15803d',
                       padding: '4px 10px',
                       borderRadius: 20,
-                      fontSize: 12,
+                      fontSize: 'var(--fs-12)',
                       fontWeight: 600,
                       marginTop: 8
                     }}>
@@ -931,7 +931,7 @@ const MyCoursesView = ({
                       alignItems: 'center',
                       gap: 10,
                       padding: '10px 0',
-                      fontSize: 14,
+                      fontSize: 'var(--fs-14)',
                       color: isDarkMode ? '#e7e9ea' : '#0f1419'
                     }}>
                       <span style={{
@@ -961,7 +961,7 @@ const MyCoursesView = ({
                   textAlign: 'center'
                 }}>
                   <div style={{
-                    fontSize: 12,
+                    fontSize: 'var(--fs-12)',
                     color: '#92400e',
                     fontWeight: 600,
                     textTransform: 'uppercase',
@@ -978,7 +978,7 @@ const MyCoursesView = ({
                     $35/session
                   </div>
                   <div style={{
-                    fontSize: 12,
+                    fontSize: 'var(--fs-12)',
                     color: '#a16207',
                     marginTop: 4
                   }}>
@@ -993,7 +993,7 @@ const MyCoursesView = ({
                     width: '100%',
                     padding: '14px 20px',
                     borderRadius: 25,
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     fontWeight: 700,
                     cursor: 'pointer',
                     border: 'none',
@@ -1010,7 +1010,7 @@ const MyCoursesView = ({
                     width: '100%',
                     padding: '14px 20px',
                     borderRadius: 25,
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     fontWeight: 700,
                     cursor: 'pointer',
                     border: 'none',
@@ -1036,7 +1036,7 @@ const MyCoursesView = ({
                 }}>
                   <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
                   <div style={{
-                    fontSize: 18,
+                    fontSize: 'var(--fs-18)',
                     fontWeight: 700,
                     color: '#15803d'
                   }}>
@@ -1063,14 +1063,14 @@ const MyCoursesView = ({
                     justifyContent: 'center',
                     color: '#fff',
                     fontWeight: 700,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     flexShrink: 0
                   }}>
                     {getCourseAbbreviation(course.title)}
                   </div>
                   <div>
                     <div style={{
-                      fontSize: 15,
+                      fontSize: 'var(--fs-15)',
                       fontWeight: 600,
                       color: isDarkMode ? '#e7e9ea' : '#0f1419',
                       marginBottom: 4
@@ -1078,7 +1078,7 @@ const MyCoursesView = ({
                       {course.title}
                     </div>
                     <div style={{
-                      fontSize: 13,
+                      fontSize: 'var(--fs-13)',
                       color: isDarkMode ? '#71767b' : '#536471'
                     }}>
                       by {instructor?.name || 'Unknown'}
@@ -1097,7 +1097,7 @@ const MyCoursesView = ({
                     width: '100%',
                     padding: '14px 20px',
                     borderRadius: 25,
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     fontWeight: 700,
                     cursor: 'pointer',
                     border: 'none',
@@ -1112,7 +1112,7 @@ const MyCoursesView = ({
                 {/* Notification Note */}
                 <p style={{
                   textAlign: 'center',
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   color: isDarkMode ? '#71767b' : '#536471',
                   marginTop: 12,
                   marginBottom: 0
@@ -1207,14 +1207,14 @@ const MyCoursesView = ({
                 marginBottom: 1
               }}>
                 <span style={{
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 700,
                   color: isDarkMode ? '#e7e9ea' : '#1e293b'
                 }}>
                   {highlightMatch(instructor?.communityName || `${instructor?.name} Community`, searchQuery)}
                 </span>
                 <span style={{
-                  fontSize: 12,
+                  fontSize: 'var(--fs-12)',
                   color: isDarkMode ? '#71767b' : '#94a3b8'
                 }}>
                   @{(instructor?.communityName || instructor?.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '') || 'unknown'}
@@ -1293,7 +1293,7 @@ const MyCoursesView = ({
                               style={{
                                 padding: '8px 16px',
                                 cursor: 'pointer',
-                                fontSize: 14,
+                                fontSize: 'var(--fs-14)',
                                 color: isFollowing ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                                 fontWeight: isFollowing ? 500 : 400,
                                 display: 'flex',
@@ -1335,7 +1335,7 @@ const MyCoursesView = ({
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 8,
-                                    fontSize: 14,
+                                    fontSize: 'var(--fs-14)',
                                     color: isCourseFollowedState ? '#1d9bf0' : (isDarkMode ? '#e7e9ea' : '#0f1419'),
                                     fontWeight: isCourseFollowedState ? 500 : 400
                                   }}
@@ -1360,7 +1360,7 @@ const MyCoursesView = ({
                                   style={{
                                     padding: '10px 16px',
                                     cursor: 'pointer',
-                                    fontSize: 13,
+                                    fontSize: 'var(--fs-13)',
                                     color: '#f4212e',
                                     fontWeight: 500
                                   }}
@@ -1422,7 +1422,7 @@ const MyCoursesView = ({
           {/* Row 3: Single-line description with ellipsis */}
           {instructor?.bio && (
             <div style={{
-              fontSize: 12,
+              fontSize: 'var(--fs-12)',
               lineHeight: 1.4,
               color: isDarkMode ? '#a1a1aa' : '#64748b',
               whiteSpace: 'nowrap',
@@ -1485,7 +1485,7 @@ const MyCoursesView = ({
                   position: 'relative'
                 }}>
                   <span style={{
-                    fontSize: 13,
+                    fontSize: 'var(--fs-13)',
                     fontWeight: 700,
                     color: '#0c4a6e'
                   }}>
@@ -1515,7 +1515,7 @@ const MyCoursesView = ({
                 {/* Course Content - Title + Meta only */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     fontWeight: 600,
                     color: isDarkMode ? '#e7e9ea' : '#1e293b',
                     marginBottom: 3,
@@ -1525,7 +1525,7 @@ const MyCoursesView = ({
                   </div>
                   {/* Meta: Next session or completed date */}
                   <div style={{
-                    fontSize: 12,
+                    fontSize: 'var(--fs-12)',
                     color: isDarkMode ? '#71767b' : '#94a3b8',
                     display: 'flex',
                     alignItems: 'center',
@@ -1566,7 +1566,7 @@ const MyCoursesView = ({
                             cursor: 'default',
                             padding: '7px 14px',
                             borderRadius: 16,
-                            fontSize: 12,
+                            fontSize: 'var(--fs-12)',
                             fontWeight: 600,
                             whiteSpace: 'nowrap'
                           }}
@@ -1587,7 +1587,7 @@ const MyCoursesView = ({
                             cursor: 'default',
                             padding: '7px 14px',
                             borderRadius: 16,
-                            fontSize: 12,
+                            fontSize: 'var(--fs-12)',
                             fontWeight: 600,
                             whiteSpace: 'nowrap'
                           }}
@@ -1610,7 +1610,7 @@ const MyCoursesView = ({
                           cursor: 'pointer',
                           padding: '7px 14px',
                           borderRadius: 16,
-                          fontSize: 12,
+                          fontSize: 'var(--fs-12)',
                           fontWeight: 600,
                           whiteSpace: 'nowrap',
                           transition: 'all 0.2s'
@@ -1645,7 +1645,7 @@ const MyCoursesView = ({
                           cursor: 'pointer',
                           padding: '7px 14px',
                           borderRadius: 16,
-                          fontSize: 12,
+                          fontSize: 'var(--fs-12)',
                           fontWeight: 600,
                           whiteSpace: 'nowrap',
                           transition: 'all 0.2s'
@@ -1673,7 +1673,7 @@ const MyCoursesView = ({
                           cursor: 'pointer',
                           padding: '7px 14px',
                           borderRadius: 16,
-                          fontSize: 12,
+                          fontSize: 'var(--fs-12)',
                           fontWeight: 600,
                           whiteSpace: 'nowrap',
                           transition: 'all 0.2s'
@@ -1704,7 +1704,7 @@ const MyCoursesView = ({
                         cursor: 'pointer',
                         padding: '7px 14px',
                         borderRadius: 16,
-                        fontSize: 12,
+                        fontSize: 'var(--fs-12)',
                         fontWeight: 600,
                         whiteSpace: 'nowrap',
                         transition: 'all 0.2s'
@@ -1754,7 +1754,7 @@ const MyCoursesView = ({
                 No courses yet
               </h2>
               <p style={{
-                fontSize: 16,
+                fontSize: 'var(--fs-16)',
                 color: isDarkMode ? '#9ca3af' : '#6b7280',
                 marginBottom: 24
               }}>
@@ -1769,7 +1769,7 @@ const MyCoursesView = ({
                   padding: '12px 24px',
                   borderRadius: 24,
                   fontWeight: 600,
-                  fontSize: 15,
+                  fontSize: 'var(--fs-15)',
                   cursor: 'pointer'
                 }}
               >
@@ -1802,7 +1802,7 @@ const MyCoursesView = ({
           }}>
             {/* Title */}
             <h1 style={{
-              fontSize: 18,
+              fontSize: 'var(--fs-18)',
               fontWeight: 700,
               color: isDarkMode ? '#e7e9ea' : '#0f1419',
               margin: 0
@@ -1863,7 +1863,7 @@ const MyCoursesView = ({
                   color: courseMode === 'taking'
                     ? '#1d9bf0'
                     : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
@@ -1887,7 +1887,7 @@ const MyCoursesView = ({
                   color: courseMode === 'teaching'
                     ? '#10b981'
                     : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
@@ -1911,7 +1911,7 @@ const MyCoursesView = ({
                   color: courseMode === 'took'
                     ? '#8b5cf6'
                     : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
@@ -1935,7 +1935,7 @@ const MyCoursesView = ({
                   color: courseMode === 'taught'
                     ? '#f59e0b'
                     : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
@@ -1992,7 +1992,7 @@ const MyCoursesView = ({
                     </div>
                     <div>
                       <div style={{
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         fontWeight: 700,
                         color: isDarkMode ? '#93c5fd' : '#1e40af'
                       }}>
@@ -2040,7 +2040,7 @@ const MyCoursesView = ({
                         >
                           {/* Session Time */}
                           <div style={{
-                            fontSize: 12,
+                            fontSize: 'var(--fs-12)',
                             fontWeight: 700,
                             color: isDarkMode ? '#60a5fa' : '#1d4ed8',
                             minWidth: 60
@@ -2051,7 +2051,7 @@ const MyCoursesView = ({
                           {/* Session Info */}
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{
-                              fontSize: 13,
+                              fontSize: 'var(--fs-13)',
                               fontWeight: 600,
                               color: isDarkMode ? '#e7e9ea' : '#0f1419',
                               whiteSpace: 'nowrap',
@@ -2135,7 +2135,7 @@ const MyCoursesView = ({
                 {/* All My Courses Header */}
                 <div style={{
                   padding: '16px 20px 8px',
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   fontWeight: 600,
                   color: isDarkMode ? '#71767b' : '#536471',
                   textTransform: 'uppercase',
@@ -2161,7 +2161,7 @@ const MyCoursesView = ({
                     <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
                   </svg>
                   <p>No teaching assignments yet.</p>
-                  <p style={{ fontSize: 12, marginTop: 8 }}>When an instructor schedules you as a student-teacher, courses will appear here.</p>
+                  <p style={{ fontSize: 'var(--fs-12)', marginTop: 8 }}>When an instructor schedules you as a student-teacher, courses will appear here.</p>
                 </div>
               ) : (
                 teachingCoursesGroups.map(group => (
@@ -2181,10 +2181,10 @@ const MyCoursesView = ({
                         style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
                       />
                       <div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                        <div style={{ fontSize: 'var(--fs-14)', fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
                           {group.instructor?.communityName || group.instructor?.name || 'Unknown Instructor'}
                         </div>
-                        <div style={{ fontSize: 12, color: '#10b981' }}>
+                        <div style={{ fontSize: 'var(--fs-12)', color: '#10b981' }}>
                           Teaching {group.courses.length} course{group.courses.length > 1 ? 's' : ''}
                         </div>
                       </div>
@@ -2210,11 +2210,11 @@ const MyCoursesView = ({
                             style={{ width: 80, height: 45, borderRadius: 6, objectFit: 'cover' }}
                           />
                           <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 14, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 4 }}>
+                            <div style={{ fontSize: 'var(--fs-14)', fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 4 }}>
                               {course.title}
                             </div>
                             {course.teachingSessions && course.teachingSessions.length > 0 && (
-                              <div style={{ fontSize: 12, color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <div style={{ fontSize: 'var(--fs-12)', color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
                                 <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: 'currentColor' }}>
                                   <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
                                 </svg>
@@ -2283,7 +2283,7 @@ const MyCoursesView = ({
                   <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
                 </svg>
                 <p>No past teaching sessions yet.</p>
-                <p style={{ fontSize: 12, marginTop: 8 }}>Completed teaching assignments will appear here.</p>
+                <p style={{ fontSize: 'var(--fs-12)', marginTop: 8 }}>Completed teaching assignments will appear here.</p>
               </div>
             )}
           </div>

@@ -40,6 +40,12 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     return saved ? parseFloat(saved) : 1.0;
   });
 
+  // Global font size preference (0-4, like X.com: Extra small to Extra large)
+  const [fontSizeLevel, setFontSizeLevel] = useState(() => {
+    const saved = localStorage.getItem('fontSizeLevel');
+    return saved ? parseInt(saved, 10) : 2; // Default is level 2 (15px)
+  });
+
   // Save community navigation preference when it changes
   useEffect(() => {
     localStorage.setItem('communityNavStyle', communityNavStyle);
@@ -57,6 +63,23 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     localStorage.setItem('compactTextScale', compactTextScale.toString());
     window.dispatchEvent(new CustomEvent('compactTextScaleChanged', { detail: compactTextScale }));
   }, [compactTextScale]);
+
+  // Font size levels (like X.com): 13px, 14px, 15px, 17px, 19px
+  const fontSizeLevels = [
+    { level: 0, label: 'Extra small', size: 13 },
+    { level: 1, label: 'Small', size: 14 },
+    { level: 2, label: 'Default', size: 15 },
+    { level: 3, label: 'Large', size: 17 },
+    { level: 4, label: 'Extra large', size: 19 }
+  ];
+
+  // Save and apply font size preference when it changes
+  useEffect(() => {
+    localStorage.setItem('fontSizeLevel', fontSizeLevel.toString());
+    const size = fontSizeLevels[fontSizeLevel]?.size || 15;
+    document.documentElement.style.fontSize = `${size}px`;
+    window.dispatchEvent(new CustomEvent('fontSizeChanged', { detail: { level: fontSizeLevel, size } }));
+  }, [fontSizeLevel]);
 
   const settingsSections = [
     { id: 'settings', label: 'Settings', icon: <FaCog /> },
@@ -83,7 +106,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
           background: 'none',
           border: 'none',
           color: 'var(--text-primary, #e7e9ea)',
-          fontSize: 20,
+          fontSize: 'var(--fs-20)',
           cursor: 'pointer',
           padding: 8,
           borderRadius: '50%',
@@ -98,7 +121,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
       >
         ←
       </button>
-      <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--text-primary, #e7e9ea)' }}>
+      <h1 style={{ margin: 0, fontSize: 'var(--fs-20)', fontWeight: 700, color: 'var(--text-primary, #e7e9ea)' }}>
         Settings
       </h1>
     </div>
@@ -131,7 +154,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
             color: activeSection === section.id 
               ? '#1d9bf0' 
               : 'var(--text-primary, #e7e9ea)',
-            fontSize: 15,
+            fontSize: 'var(--fs-15)',
             fontWeight: activeSection === section.id ? 700 : 400,
             cursor: 'pointer',
             transition: 'all 0.15s'
@@ -165,7 +188,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
             background: 'transparent',
             border: 'none',
             color: 'var(--text-secondary, #71767b)',
-            fontSize: 15,
+            fontSize: 'var(--fs-15)',
             cursor: 'pointer'
           }}
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
@@ -180,13 +203,13 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
 
   const renderSettings = () => (
     <div style={{ padding: 24 }}>
-      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, color: 'var(--text-primary, #e7e9ea)' }}>
+      <h2 style={{ fontSize: 'var(--fs-20)', fontWeight: 700, marginBottom: 24, color: 'var(--text-primary, #e7e9ea)' }}>
         Account Settings
       </h2>
       
       {/* Appearance Section */}
       <div style={{ marginBottom: 32 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+        <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
           Appearance
         </h3>
         <div style={{ 
@@ -230,12 +253,70 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
               }} />
             </button>
           </div>
+
+          {/* Font Size Setting */}
+          <div style={{
+            padding: '16px 20px',
+            borderBottom: '1px solid var(--border-color, #2f3336)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 16
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 16 }}>Aa</span>
+                <span style={{ color: 'var(--text-primary, #e7e9ea)' }}>Font Size</span>
+              </div>
+              <span style={{
+                color: '#1d9bf0',
+                fontWeight: 600,
+                fontSize: 13
+              }}>
+                {fontSizeLevels[fontSizeLevel]?.label}
+              </span>
+            </div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12
+            }}>
+              <span style={{ fontSize: 'var(--fs-12)', color: 'var(--text-secondary, #71767b)' }}>Aa</span>
+              <input
+                type="range"
+                min="0"
+                max="4"
+                step="1"
+                value={fontSizeLevel}
+                onChange={(e) => setFontSizeLevel(parseInt(e.target.value, 10))}
+                style={{
+                  flex: 1,
+                  height: 4,
+                  borderRadius: 2,
+                  appearance: 'none',
+                  background: `linear-gradient(to right, #1d9bf0 0%, #1d9bf0 ${(fontSizeLevel / 4) * 100}%, var(--border-color, #2f3336) ${(fontSizeLevel / 4) * 100}%, var(--border-color, #2f3336) 100%)`,
+                  cursor: 'pointer'
+                }}
+              />
+              <span style={{ fontSize: 'var(--fs-18)', color: 'var(--text-secondary, #71767b)' }}>Aa</span>
+            </div>
+            <p style={{
+              color: 'var(--text-secondary, #71767b)',
+              fontSize: 'var(--fs-12)',
+              marginTop: 12,
+              marginBottom: 0
+            }}>
+              Adjusts text size across the app. Components using CSS variables will scale with this setting.
+            </p>
+          </div>
+
         </div>
       </div>
 
       {/* Community Navigation Section */}
       <div style={{ marginBottom: 32 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+        <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
           Community Navigation
         </h3>
         <div style={{
@@ -245,7 +326,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
         }}>
           <p style={{
             color: 'var(--text-secondary, #71767b)',
-            fontSize: 13,
+            fontSize: 'var(--fs-13)',
             marginBottom: 12,
             marginTop: 0
           }}>
@@ -273,7 +354,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
                   color: communityNavStyle === option.value
                     ? '#1d9bf0'
                     : 'var(--text-primary, #e7e9ea)',
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   fontWeight: communityNavStyle === option.value ? 600 : 400,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
@@ -288,7 +369,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
 
       {/* Discover Listing Format Section */}
       <div style={{ marginBottom: 32 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+        <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
           Discover Listing Format
         </h3>
         <div style={{
@@ -298,7 +379,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
         }}>
           <p style={{
             color: 'var(--text-secondary, #71767b)',
-            fontSize: 13,
+            fontSize: 'var(--fs-13)',
             marginBottom: 12,
             marginTop: 0
           }}>
@@ -345,7 +426,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
                   <div style={{
                     color: discoverListingFormat === option.value ? '#1d9bf0' : 'var(--text-primary, #e7e9ea)',
                     fontWeight: discoverListingFormat === option.value ? 600 : 400,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     marginBottom: 2
                   }}>
                     {option.label}
@@ -366,7 +447,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
       {/* Compact View Text Size (only shown when compact is selected) */}
       {discoverListingFormat === 'compact' && (
         <div style={{ marginBottom: 32 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+          <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
             Compact View Text Size
           </h3>
           <div style={{
@@ -386,7 +467,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
               <span style={{
                 color: '#1d9bf0',
                 fontWeight: 600,
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 minWidth: 50,
                 textAlign: 'right'
               }}>
@@ -414,7 +495,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
               display: 'flex',
               justifyContent: 'space-between',
               marginTop: 8,
-              fontSize: 11,
+              fontSize: 'var(--fs-11)',
               color: 'var(--text-secondary, #71767b)'
             }}>
               <span>Small (80%)</span>
@@ -427,7 +508,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
 
       {/* Notifications Section */}
       <div style={{ marginBottom: 32 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+        <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
           Notifications
         </h3>
         <div style={{
@@ -469,7 +550,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
 
       {/* Account Actions */}
       <div>
-        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+        <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
           Account
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -482,7 +563,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
             border: 'none',
             borderRadius: 12,
             color: 'var(--text-primary, #e7e9ea)',
-            fontSize: 15,
+            fontSize: 'var(--fs-15)',
             cursor: 'pointer'
           }}>
             <FaDownload style={{ color: '#1d9bf0' }} />
@@ -497,7 +578,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
             border: 'none',
             borderRadius: 12,
             color: '#f43f5e',
-            fontSize: 15,
+            fontSize: 'var(--fs-15)',
             cursor: 'pointer'
           }}>
             <FaTrash />
@@ -510,7 +591,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
 
   const renderBookmarks = () => (
     <div style={{ padding: 24 }}>
-      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, color: 'var(--text-primary, #e7e9ea)' }}>
+      <h2 style={{ fontSize: 'var(--fs-20)', fontWeight: 700, marginBottom: 24, color: 'var(--text-primary, #e7e9ea)' }}>
         Bookmarked Content
       </h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -529,10 +610,10 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
             alignItems: 'center'
           }}>
             <div>
-              <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: 'var(--text-primary, #e7e9ea)' }}>
+              <h3 style={{ fontSize: 'var(--fs-15)', fontWeight: 600, marginBottom: 4, color: 'var(--text-primary, #e7e9ea)' }}>
                 {item.title}
               </h3>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary, #71767b)', margin: 0 }}>
+              <p style={{ fontSize: 'var(--fs-13)', color: 'var(--text-secondary, #71767b)', margin: 0 }}>
                 {item.type} • Saved {item.date}
               </p>
             </div>
@@ -553,7 +634,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
 
   const renderHistory = () => (
     <div style={{ padding: 24 }}>
-      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, color: 'var(--text-primary, #e7e9ea)' }}>
+      <h2 style={{ fontSize: 'var(--fs-20)', fontWeight: 700, marginBottom: 24, color: 'var(--text-primary, #e7e9ea)' }}>
         Learning History
       </h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -569,13 +650,13 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
             borderLeft: item.status === 'Completed' ? '4px solid #10b981' : '4px solid #1d9bf0'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary, #e7e9ea)', margin: 0 }}>
+              <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, color: 'var(--text-primary, #e7e9ea)', margin: 0 }}>
                 {item.title}
               </h3>
               <span style={{
                 padding: '4px 10px',
                 borderRadius: 12,
-                fontSize: 12,
+                fontSize: 'var(--fs-12)',
                 fontWeight: 600,
                 background: item.status === 'Completed' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(29, 155, 240, 0.1)',
                 color: item.status === 'Completed' ? '#10b981' : '#1d9bf0'
@@ -583,11 +664,11 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
                 {item.status}
               </span>
             </div>
-            <p style={{ fontSize: 13, color: 'var(--text-secondary, #71767b)', margin: '0 0 12px 0' }}>
+            <p style={{ fontSize: 'var(--fs-13)', color: 'var(--text-secondary, #71767b)', margin: '0 0 12px 0' }}>
               {item.date} • {item.hours} hours
             </p>
             {item.status === 'Completed' ? (
-              <span style={{ fontSize: 14, fontWeight: 600, color: '#10b981' }}>Grade: {item.grade}</span>
+              <span style={{ fontSize: 'var(--fs-14)', fontWeight: 600, color: '#10b981' }}>Grade: {item.grade}</span>
             ) : (
               <div>
                 <div style={{ 
@@ -603,7 +684,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
                     borderRadius: 3
                   }} />
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--text-secondary, #71767b)', marginTop: 4, display: 'block' }}>
+                <span style={{ fontSize: 'var(--fs-12)', color: 'var(--text-secondary, #71767b)', marginTop: 4, display: 'block' }}>
                   {item.progress}% complete
                 </span>
               </div>
@@ -616,13 +697,13 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
 
   const renderPrivacy = () => (
     <div style={{ padding: 24 }}>
-      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, color: 'var(--text-primary, #e7e9ea)' }}>
+      <h2 style={{ fontSize: 'var(--fs-20)', fontWeight: 700, marginBottom: 24, color: 'var(--text-primary, #e7e9ea)' }}>
         Privacy & Security
       </h2>
       
       {/* Profile Visibility */}
       <div style={{ marginBottom: 32 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+        <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
           Profile Visibility
         </h3>
         <div style={{ 
@@ -657,7 +738,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
 
       {/* Security */}
       <div>
-        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+        <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
           Security
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -678,7 +759,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
             <span style={{ 
               padding: '4px 10px', 
               borderRadius: 12, 
-              fontSize: 12, 
+              fontSize: 'var(--fs-12)', 
               fontWeight: 600,
               background: 'rgba(244, 63, 94, 0.1)',
               color: '#f43f5e'
@@ -707,7 +788,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
 
   const renderHelp = () => (
     <div style={{ padding: 24 }}>
-      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, color: 'var(--text-primary, #e7e9ea)' }}>
+      <h2 style={{ fontSize: 'var(--fs-20)', fontWeight: 700, marginBottom: 24, color: 'var(--text-primary, #e7e9ea)' }}>
         Help & Support
       </h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -731,10 +812,10 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
           }}>
             <span style={{ fontSize: 28 }}>{item.icon}</span>
             <div>
-              <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4, color: 'var(--text-primary, #e7e9ea)' }}>
+              <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 4, color: 'var(--text-primary, #e7e9ea)' }}>
                 {item.title}
               </h3>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary, #71767b)', margin: 0 }}>
+              <p style={{ fontSize: 'var(--fs-13)', color: 'var(--text-secondary, #71767b)', margin: 0 }}>
                 {item.description}
               </p>
             </div>

@@ -346,13 +346,13 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
           <div style={{ flex: 1 }}>
             <span style={{
               fontWeight: 500,
-              fontSize: 14,
+              fontSize: 'var(--fs-14)',
               color: isDarkMode ? '#e7e9ea' : '#0f1419'
             }}>
               {title}
             </span>
             <div style={{
-              fontSize: 13,
+              fontSize: 'var(--fs-13)',
               color: isDarkMode ? '#71767b' : '#536471',
               marginTop: 2
             }}>
@@ -361,7 +361,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
 
             {/* Description / Learning Objectives */}
             <div style={{
-              fontSize: 14,
+              fontSize: 'var(--fs-14)',
               color: isDarkMode ? '#a1a1aa' : '#536471',
               lineHeight: 1.5,
               marginTop: 8
@@ -380,8 +380,8 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
               }}>
                 {/* Left: Label */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <FaFileAlt style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#374151' }}>Lesson Document</span>
+                  <FaFileAlt style={{ fontSize: 'var(--fs-12)', color: isDarkMode ? '#71767b' : '#536471' }} />
+                  <span style={{ fontSize: 'var(--fs-13)', fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#374151' }}>Lesson Document</span>
                 </div>
 
                 {/* Right: File links */}
@@ -394,7 +394,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                       onClick={(e) => handleDownloadFile(file, e)}
                       style={{
                         color: '#1d9bf0',
-                        fontSize: 13,
+                        fontSize: 'var(--fs-13)',
                         textDecoration: 'underline',
                         cursor: 'pointer'
                       }}
@@ -411,7 +411,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                         onClick={(e) => handleDownloadFile(file, e)}
                         style={{
                           color: '#1d9bf0',
-                          fontSize: 13,
+                          fontSize: 'var(--fs-13)',
                           textDecoration: 'underline',
                           cursor: 'pointer'
                         }}
@@ -425,7 +425,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                             background: 'transparent',
                             color: isDarkMode ? '#ff6b6b' : '#dc3545',
                             padding: '2px 6px',
-                            fontSize: 12,
+                            fontSize: 'var(--fs-12)',
                             border: 'none',
                             cursor: 'pointer'
                           }}
@@ -447,7 +447,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                         color: isDarkMode ? '#71767b' : '#64748b',
                         border: isDarkMode ? '1px solid #2f3336' : '1px solid #d1d5db',
                         borderRadius: 12,
-                        fontSize: 12,
+                        fontSize: 'var(--fs-12)',
                         cursor: 'pointer'
                       }}
                     >
@@ -496,7 +496,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
           onClick={(e) => e.stopPropagation()}
         >
           <h3 style={{
-            fontSize: 18,
+            fontSize: 'var(--fs-18)',
             fontWeight: 700,
             marginBottom: 16,
             color: isDarkMode ? '#e7e9ea' : '#0f1419'
@@ -518,7 +518,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
               style={{
                 flex: 1,
                 padding: '8px 16px',
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 fontWeight: 500,
                 border: 'none',
                 borderRadius: 9999,
@@ -538,7 +538,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
               style={{
                 flex: 1,
                 padding: '8px 16px',
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 fontWeight: 500,
                 border: 'none',
                 borderRadius: 9999,
@@ -583,7 +583,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                     <div style={{ fontWeight: 500, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
                       {selectedFile.name}
                     </div>
-                    <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471', marginTop: 4 }}>
+                    <div style={{ fontSize: 'var(--fs-12)', color: isDarkMode ? '#71767b' : '#536471', marginTop: 4 }}>
                       {formatFileSize(selectedFile.size)} • Click to change
                     </div>
                   </div>
@@ -593,7 +593,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                     <div style={{ fontWeight: 500, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
                       Click to select file
                     </div>
-                    <div style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471', marginTop: 4 }}>
+                    <div style={{ fontSize: 'var(--fs-12)', color: isDarkMode ? '#71767b' : '#536471', marginTop: 4 }}>
                       PDF, DOC, PPT, images, videos (max 50MB)
                     </div>
                   </div>
@@ -609,7 +609,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
               <div style={{ marginBottom: 16 }}>
                 <label style={{
                   display: 'block',
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 500,
                   marginBottom: 6,
                   color: isDarkMode ? '#e7e9ea' : '#0f1419'
@@ -624,7 +624,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                   style={{
                     width: '100%',
                     padding: '10px 12px',
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
                     borderRadius: 8,
                     background: isDarkMode ? '#000' : '#fff',
@@ -639,7 +639,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
               <div style={{ marginBottom: 16 }}>
                 <label style={{
                   display: 'block',
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 500,
                   marginBottom: 6,
                   color: isDarkMode ? '#e7e9ea' : '#0f1419'
@@ -654,7 +654,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                   style={{
                     width: '100%',
                     padding: '10px 12px',
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
                     borderRadius: 8,
                     background: isDarkMode ? '#000' : '#fff',
@@ -664,7 +664,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                   }}
                 />
                 <div style={{
-                  fontSize: 12,
+                  fontSize: 'var(--fs-12)',
                   color: isDarkMode ? '#71767b' : '#536471',
                   marginTop: 4
                 }}>
@@ -678,7 +678,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
           <div style={{ marginBottom: 20 }}>
             <label style={{
               display: 'block',
-              fontSize: 14,
+              fontSize: 'var(--fs-14)',
               fontWeight: 500,
               marginBottom: 6,
               color: isDarkMode ? '#e7e9ea' : '#0f1419'
@@ -691,7 +691,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
               style={{
                 width: '100%',
                 padding: '10px 12px',
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
                 borderRadius: 8,
                 background: isDarkMode ? '#000' : '#fff',
@@ -714,7 +714,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
               disabled={isUploading}
               style={{
                 padding: '10px 20px',
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 fontWeight: 600,
                 border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
                 borderRadius: 9999,
@@ -731,7 +731,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
               disabled={!canSave || isUploading}
               style={{
                 padding: '10px 20px',
-                fontSize: 14,
+                fontSize: 'var(--fs-14)',
                 fontWeight: 600,
                 border: 'none',
                 borderRadius: 9999,
@@ -764,7 +764,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
           border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
         }}>
           <h3 style={{
-            fontSize: 18,
+            fontSize: 'var(--fs-18)',
             fontWeight: 700,
             marginBottom: 20,
             color: isDarkMode ? '#e7e9ea' : '#0f1419'
@@ -805,7 +805,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 13,
+                    fontSize: 'var(--fs-13)',
                     fontWeight: 700,
                     flexShrink: 0
                   }}>
@@ -820,7 +820,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                   >
                     <span style={{
                       fontWeight: 700,
-                      fontSize: 15,
+                      fontSize: 'var(--fs-15)',
                       color: isDarkMode ? '#e7e9ea' : '#0f1419',
                       textDecoration: hoveredSession === session.number ? 'underline' : 'none',
                       cursor: 'pointer'
@@ -828,7 +828,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                       Session {session.number}: {session.title}
                     </span>
                     <div style={{
-                      fontSize: 12,
+                      fontSize: 'var(--fs-12)',
                       color: isDarkMode ? '#71767b' : '#536471',
                       marginTop: 2
                     }}>
@@ -846,7 +846,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                             display: 'flex',
                             alignItems: 'center',
                             gap: 6,
-                            fontSize: 12,
+                            fontSize: 'var(--fs-12)',
                             color: '#1d9bf0',
                             marginTop: 4
                           }}>
@@ -872,7 +872,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                           background: isDarkMode ? '#1a3a1a' : '#dcfce7',
                           color: '#22c55e',
                           borderRadius: 20,
-                          fontSize: 12,
+                          fontSize: 'var(--fs-12)',
                           fontWeight: 600,
                           display: 'flex',
                           alignItems: 'center',
@@ -896,7 +896,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                               color: '#fff',
                               border: 'none',
                               borderRadius: 20,
-                              fontSize: 13,
+                              fontSize: 'var(--fs-13)',
                               fontWeight: 600,
                               cursor: 'pointer'
                             }}
@@ -911,7 +911,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                               color: isDarkMode ? '#71767b' : '#536471',
                               border: isDarkMode ? '1px solid #2f3336' : '1px solid #d1d5db',
                               borderRadius: 20,
-                              fontSize: 13,
+                              fontSize: 'var(--fs-13)',
                               fontWeight: 500,
                               cursor: 'pointer'
                             }}
@@ -932,7 +932,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                           color: '#fff',
                           border: 'none',
                           borderRadius: 20,
-                          fontSize: 13,
+                          fontSize: 'var(--fs-13)',
                           fontWeight: 600,
                           cursor: 'pointer'
                         }}
@@ -996,8 +996,8 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                                   gap: 12
                                 }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <FaCheck style={{ fontSize: 12, color: isDarkMode ? '#e7e9ea' : '#374151' }} />
-                                    <span style={{ fontSize: 13, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#374151' }}>Homework Submitted</span>
+                                    <FaCheck style={{ fontSize: 'var(--fs-12)', color: isDarkMode ? '#e7e9ea' : '#374151' }} />
+                                    <span style={{ fontSize: 'var(--fs-13)', fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#374151' }}>Homework Submitted</span>
                                   </div>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                                     <a
@@ -1006,7 +1006,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                                       rel="noopener noreferrer"
                                       style={{
                                         color: isDarkMode ? '#1d9bf0' : '#1d9bf0',
-                                        fontSize: 15,
+                                        fontSize: 'var(--fs-15)',
                                         fontWeight: 500,
                                         textDecoration: 'underline'
                                       }}
@@ -1022,7 +1022,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                                         color: isDarkMode ? '#71767b' : '#64748b',
                                         border: isDarkMode ? '1px solid #2f3336' : '1px solid #d1d5db',
                                         borderRadius: 12,
-                                        fontSize: 12,
+                                        fontSize: 'var(--fs-12)',
                                         cursor: isUploadingHomework ? 'not-allowed' : 'pointer',
                                         opacity: isUploadingHomework ? 0.6 : 1
                                       }}
@@ -1037,7 +1037,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                                   display: 'flex',
                                   alignItems: 'center',
                                   gap: 8,
-                                  fontSize: 13,
+                                  fontSize: 'var(--fs-13)',
                                   fontWeight: 600,
                                   color: '#ca8a04',
                                   marginBottom: 12
@@ -1076,7 +1076,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                                       color: '#fff',
                                       border: 'none',
                                       borderRadius: 20,
-                                      fontSize: 14,
+                                      fontSize: 'var(--fs-14)',
                                       fontWeight: 600,
                                       cursor: isUploadingHomework ? 'not-allowed' : 'pointer',
                                       opacity: isUploadingHomework ? 0.8 : 1
@@ -1112,7 +1112,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
         border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
       }}>
         <h3 style={{
-          fontSize: 18,
+          fontSize: 'var(--fs-18)',
           fontWeight: 700,
           marginBottom: 20,
           color: isDarkMode ? '#e7e9ea' : '#0f1419'
@@ -1152,7 +1152,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                 <div style={{ flex: 1 }}>
                   <span style={{
                     fontWeight: 600,
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     color: isDarkMode ? '#e7e9ea' : '#0f1419'
                   }}>
                     {title}
@@ -1165,7 +1165,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                   color: isDarkMode ? '#9ca3af' : '#536471',
                   padding: '4px 10px',
                   borderRadius: 12,
-                  fontSize: 12,
+                  fontSize: 'var(--fs-12)',
                   fontWeight: 500
                 }}>
                   {duration}
@@ -1181,7 +1181,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                   gap: 16
                 }}>
                   <div style={{
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
                     lineHeight: 1.5
                   }}>
@@ -1525,7 +1525,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
               background: 'none',
               border: 'none',
               color: isDarkMode ? '#e7e9ea' : '#0f1419',
-              fontSize: 20,
+              fontSize: 'var(--fs-20)',
               cursor: 'pointer',
               padding: 8,
               borderRadius: '50%'
@@ -1533,7 +1533,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
           >
             ←
           </button>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+          <h1 style={{ margin: 0, fontSize: 'var(--fs-20)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
             Course
           </h1>
         </div>
@@ -1682,7 +1682,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                 borderRadius: '50%',
                 border: 'none',
                 background: 'transparent',
-                fontSize: 20,
+                fontSize: 'var(--fs-20)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -1693,7 +1693,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
               ×
             </button>
             <h3 style={{
-              fontSize: 20,
+              fontSize: 'var(--fs-20)',
               fontWeight: 700,
               color: isDarkMode ? '#e7e9ea' : '#0f1419',
               margin: 0
@@ -1725,14 +1725,14 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     justifyContent: 'center',
                     color: '#fff',
                     fontWeight: 700,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     flexShrink: 0
                   }}>
                     {getCourseAbbreviation(course?.name || course?.title)}
                   </div>
                   <div>
                     <div style={{
-                      fontSize: 15,
+                      fontSize: 'var(--fs-15)',
                       fontWeight: 600,
                       color: isDarkMode ? '#e7e9ea' : '#0f1419',
                       marginBottom: 4
@@ -1740,7 +1740,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                       {course?.name || course?.title}
                     </div>
                     <div style={{
-                      fontSize: 13,
+                      fontSize: 'var(--fs-13)',
                       color: isDarkMode ? '#71767b' : '#536471'
                     }}>
                       by {instructor?.name || 'Unknown'}
@@ -1753,7 +1753,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                       color: '#15803d',
                       padding: '4px 10px',
                       borderRadius: 20,
-                      fontSize: 12,
+                      fontSize: 'var(--fs-12)',
                       fontWeight: 600,
                       marginTop: 8
                     }}>
@@ -1774,7 +1774,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                       alignItems: 'center',
                       gap: 10,
                       padding: '10px 0',
-                      fontSize: 14,
+                      fontSize: 'var(--fs-14)',
                       color: isDarkMode ? '#e7e9ea' : '#0f1419'
                     }}>
                       <span style={{
@@ -1804,7 +1804,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                   textAlign: 'center'
                 }}>
                   <div style={{
-                    fontSize: 12,
+                    fontSize: 'var(--fs-12)',
                     color: '#92400e',
                     fontWeight: 600,
                     textTransform: 'uppercase',
@@ -1814,14 +1814,14 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     Potential Earnings
                   </div>
                   <div style={{
-                    fontSize: 24,
+                    fontSize: 'var(--fs-24)',
                     fontWeight: 700,
                     color: '#78350f'
                   }}>
                     $35/session
                   </div>
                   <div style={{
-                    fontSize: 12,
+                    fontSize: 'var(--fs-12)',
                     color: '#a16207',
                     marginTop: 4
                   }}>
@@ -1836,7 +1836,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     width: '100%',
                     padding: '14px 20px',
                     borderRadius: 25,
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     fontWeight: 700,
                     cursor: 'pointer',
                     border: 'none',
@@ -1852,7 +1852,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     width: '100%',
                     padding: '14px 20px',
                     borderRadius: 25,
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     fontWeight: 700,
                     cursor: 'pointer',
                     border: 'none',
@@ -1877,7 +1877,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                 }}>
                   <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
                   <div style={{
-                    fontSize: 18,
+                    fontSize: 'var(--fs-18)',
                     fontWeight: 700,
                     color: '#15803d'
                   }}>
@@ -1904,14 +1904,14 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     justifyContent: 'center',
                     color: '#fff',
                     fontWeight: 700,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     flexShrink: 0
                   }}>
                     {getCourseAbbreviation(course?.name || course?.title)}
                   </div>
                   <div>
                     <div style={{
-                      fontSize: 15,
+                      fontSize: 'var(--fs-15)',
                       fontWeight: 600,
                       color: isDarkMode ? '#e7e9ea' : '#0f1419',
                       marginBottom: 4
@@ -1919,7 +1919,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                       {course?.name || course?.title}
                     </div>
                     <div style={{
-                      fontSize: 13,
+                      fontSize: 'var(--fs-13)',
                       color: isDarkMode ? '#71767b' : '#536471'
                     }}>
                       by {instructor?.name || 'Unknown'}
@@ -1937,7 +1937,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     width: '100%',
                     padding: '14px 20px',
                     borderRadius: 25,
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     fontWeight: 700,
                     cursor: 'pointer',
                     border: 'none',
@@ -1951,7 +1951,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                 {/* Notification Note */}
                 <p style={{
                   textAlign: 'center',
-                  fontSize: 13,
+                  fontSize: 'var(--fs-13)',
                   color: isDarkMode ? '#71767b' : '#536471',
                   marginTop: 12,
                   marginBottom: 0
@@ -2006,7 +2006,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
           <span style={{ fontSize: 18 }}>👥</span>
           <span style={{
             fontWeight: 600,
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             color: isDarkMode ? '#e7e9ea' : '#0f1419',
             flex: 1
           }}>
@@ -2069,7 +2069,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
               <span
                 style={{
                   color: '#1d9bf0',
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 500
                 }}
                 onMouseEnter={e => e.target.style.textDecoration = 'underline'}
@@ -2092,7 +2092,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                   border: 'none',
                   padding: '12px 28px',
                   borderRadius: 8,
-                  fontSize: 15,
+                  fontSize: 'var(--fs-15)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap'
@@ -2110,7 +2110,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                   color: '#0f1419',
                   padding: '10px 20px',
                   borderRadius: 20,
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 600,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
@@ -2170,7 +2170,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     ...buttonStyle,
                     padding: '10px 20px',
                     borderRadius: 20,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     fontWeight: 600,
                     whiteSpace: 'nowrap',
                     transition: 'all 0.2s'
@@ -2185,7 +2185,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
 
         {/* Description - Full Width */}
         <p style={{
-          fontSize: 16,
+          fontSize: 'var(--fs-16)',
           color: isDarkMode ? '#71767b' : '#536471',
           margin: '0 0 8px 0'
         }}>
@@ -2194,7 +2194,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
 
         {/* Stats Line - Right below description */}
         <div style={{
-          fontSize: 15,
+          fontSize: 'var(--fs-15)',
           color: isDarkMode ? '#e7e9ea' : '#0f1419',
           marginBottom: 16
         }}>
@@ -2233,7 +2233,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
               justifyContent: 'center',
               cursor: 'pointer'
             }}>
-              <FaPlay style={{ color: '#fff', fontSize: 24, marginLeft: 4 }} />
+              <FaPlay style={{ color: '#fff', fontSize: 'var(--fs-24)', marginLeft: 4 }} />
             </div>
             {/* Video controls bar */}
             <div style={{
@@ -2266,7 +2266,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
             border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
           }}>
             <h3 style={{
-              fontSize: 16,
+              fontSize: 'var(--fs-16)',
               fontWeight: 700,
               marginBottom: 16,
               color: isDarkMode ? '#e7e9ea' : '#0f1419',
@@ -2283,15 +2283,15 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: 10,
-                    fontSize: 14,
+                    fontSize: 'var(--fs-14)',
                     color: isDarkMode ? '#e7e9ea' : '#0f1419'
                   }}>
-                    <FaCheck style={{ color: '#10b981', fontSize: 12, marginTop: 4, flexShrink: 0 }} />
+                    <FaCheck style={{ color: '#10b981', fontSize: 'var(--fs-12)', marginTop: 4, flexShrink: 0 }} />
                     <span>{item}</span>
                   </div>
                 ))
               ) : (
-                <div style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#6b7280' }}>
+                <div style={{ fontSize: 'var(--fs-14)', color: isDarkMode ? '#71767b' : '#6b7280' }}>
                   No learning objectives specified yet.
                 </div>
               )}
@@ -2304,7 +2304,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
         {!isCoursePurchased && (
         <div style={{ marginTop: 16, marginBottom: 16 }}>
           <h4 style={{
-            fontSize: 14,
+            fontSize: 'var(--fs-14)',
             fontWeight: 700,
             color: isDarkMode ? '#71767b' : '#6b7280',
             textTransform: 'uppercase',
@@ -2314,7 +2314,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
             What's Included
           </h4>
           <div style={{
-            fontSize: 15,
+            fontSize: 'var(--fs-15)',
             color: isDarkMode ? '#e7e9ea' : '#0f1419',
             display: 'flex',
             flexWrap: 'wrap',
@@ -2364,7 +2364,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
               color: activeTab === tab.id
                 ? '#1d9bf0'
                 : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-              fontSize: 14,
+              fontSize: 'var(--fs-14)',
               fontWeight: 600,
               cursor: 'pointer',
               whiteSpace: 'nowrap'
@@ -2396,7 +2396,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                 borderBottom: 'none'
               }}>
                 <h3 style={{
-                  fontSize: 16,
+                  fontSize: 'var(--fs-16)',
                   fontWeight: 700,
                   margin: 0,
                   color: isDarkMode ? '#e7e9ea' : '#0f1419',
@@ -2441,7 +2441,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         {/* Expand/Collapse Arrow */}
                         <div style={{
                           color: isDarkMode ? '#71767b' : '#536471',
-                          fontSize: 12,
+                          fontSize: 'var(--fs-12)',
                           transition: 'transform 0.2s',
                           transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'
                         }}>
@@ -2452,7 +2452,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         <div style={{ flex: 1 }}>
                           <span style={{
                             fontWeight: 600,
-                            fontSize: 15,
+                            fontSize: 'var(--fs-15)',
                             color: isDarkMode ? '#e7e9ea' : '#0f1419'
                           }}>
                             Session {sessionNum}: {sessionData?.title || 'Foundation & Core Concepts'}
@@ -2461,7 +2461,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
 
                         {/* Status Badge */}
                         <span style={{
-                          fontSize: 12,
+                          fontSize: 'var(--fs-12)',
                           padding: '6px 12px',
                           borderRadius: 20,
                           background: isCompleted
@@ -2485,7 +2485,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                           {/* RECORDING Section */}
                           <div>
                             <div style={{
-                              fontSize: 12,
+                              fontSize: 'var(--fs-12)',
                               fontWeight: 700,
                               color: isDarkMode ? '#71767b' : '#536471',
                               textTransform: 'uppercase',
@@ -2512,7 +2512,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                                   Session Recording (Jan 20, 2026)
                                 </div>
                                 <div style={{
-                                  fontSize: 13,
+                                  fontSize: 'var(--fs-13)',
                                   color: isDarkMode ? '#71767b' : '#536471',
                                   marginTop: 2
                                 }}>
@@ -2528,7 +2528,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                                 border: 'none',
                                 padding: '8px 16px',
                                 borderRadius: 6,
-                                fontSize: 13,
+                                fontSize: 'var(--fs-13)',
                                 fontWeight: 600,
                                 cursor: 'pointer'
                               }}>
@@ -2540,7 +2540,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                           {/* DOCUMENTS Section */}
                           <div>
                             <div style={{
-                              fontSize: 12,
+                              fontSize: 'var(--fs-12)',
                               fontWeight: 700,
                               color: isDarkMode ? '#71767b' : '#536471',
                               textTransform: 'uppercase',
@@ -2616,7 +2616,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                           {/* HOMEWORK Section */}
                           <div>
                             <div style={{
-                              fontSize: 12,
+                              fontSize: 'var(--fs-12)',
                               fontWeight: 700,
                               color: isDarkMode ? '#71767b' : '#536471',
                               textTransform: 'uppercase',
@@ -2641,13 +2641,13 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                                   <div style={{
                                     fontWeight: 600,
                                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                                    fontSize: 14,
+                                    fontSize: 'var(--fs-14)',
                                     marginBottom: 2
                                   }}>
                                     Assignment: Build 3 Custom Prompts
                                   </div>
                                   <div style={{
-                                    fontSize: 13,
+                                    fontSize: 'var(--fs-13)',
                                     color: isDarkMode ? '#71767b' : '#536471'
                                   }}>
                                     Due: Jan 27, 2026
@@ -2662,7 +2662,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                                   border: '1px solid #1d9bf0',
                                   padding: '8px 16px',
                                   borderRadius: 6,
-                                  fontSize: 13,
+                                  fontSize: 'var(--fs-13)',
                                   fontWeight: 600,
                                   cursor: 'pointer'
                                 }}>
@@ -2679,7 +2679,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                               {/* Submission */}
                               <div>
                                 <div style={{
-                                  fontSize: 13,
+                                  fontSize: 'var(--fs-13)',
                                   color: isDarkMode ? '#71767b' : '#536471',
                                   marginBottom: 8
                                 }}>
@@ -2737,7 +2737,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                                   border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
                                   padding: '8px 16px',
                                   borderRadius: 6,
-                                  fontSize: 13,
+                                  fontSize: 'var(--fs-13)',
                                   cursor: 'pointer'
                                 }}>
                                   Upload New Version
@@ -2778,7 +2778,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         {/* Expand/Collapse Arrow or Lock */}
                         <div style={{
                           color: isDarkMode ? '#71767b' : '#536471',
-                          fontSize: 12,
+                          fontSize: 'var(--fs-12)',
                           transition: 'transform 0.2s',
                           transform: isExpanded && !isLocked ? 'rotate(90deg)' : 'rotate(0deg)'
                         }}>
@@ -2789,7 +2789,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         <div style={{ flex: 1 }}>
                           <span style={{
                             fontWeight: 600,
-                            fontSize: 15,
+                            fontSize: 'var(--fs-15)',
                             color: isLocked
                               ? (isDarkMode ? '#71767b' : '#9ca3af')
                               : (isDarkMode ? '#e7e9ea' : '#0f1419')
@@ -2801,14 +2801,14 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         {/* Status */}
                         {isLocked ? (
                           <span style={{
-                            fontSize: 13,
+                            fontSize: 'var(--fs-13)',
                             color: isDarkMode ? '#71767b' : '#9ca3af'
                           }}>
                             Complete Session 1 first
                           </span>
                         ) : (
                           <span style={{
-                            fontSize: 12,
+                            fontSize: 'var(--fs-12)',
                             padding: '6px 12px',
                             borderRadius: 20,
                             background: isDarkMode ? '#2f3336' : '#e5e7eb',
@@ -2831,7 +2831,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                           {/* RECORDING Section - Not available yet */}
                           <div>
                             <div style={{
-                              fontSize: 12,
+                              fontSize: 'var(--fs-12)',
                               fontWeight: 700,
                               color: isDarkMode ? '#71767b' : '#536471',
                               textTransform: 'uppercase',
@@ -2846,7 +2846,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                               border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
                               borderRadius: 8,
                               color: isDarkMode ? '#71767b' : '#536471',
-                              fontSize: 14,
+                              fontSize: 'var(--fs-14)',
                               fontStyle: 'italic'
                             }}>
                               Recording will be available after the session is completed.
@@ -2856,7 +2856,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                           {/* DOCUMENTS Section */}
                           <div>
                             <div style={{
-                              fontSize: 12,
+                              fontSize: 'var(--fs-12)',
                               fontWeight: 700,
                               color: isDarkMode ? '#71767b' : '#536471',
                               textTransform: 'uppercase',
@@ -2919,7 +2919,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                           {/* HOMEWORK Section */}
                           <div>
                             <div style={{
-                              fontSize: 12,
+                              fontSize: 'var(--fs-12)',
                               fontWeight: 700,
                               color: isDarkMode ? '#71767b' : '#536471',
                               textTransform: 'uppercase',
@@ -2943,13 +2943,13 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                                   <div style={{
                                     fontWeight: 600,
                                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                                    fontSize: 14,
+                                    fontSize: 'var(--fs-14)',
                                     marginBottom: 2
                                   }}>
                                     Assignment: Build a Prompt Library
                                   </div>
                                   <div style={{
-                                    fontSize: 13,
+                                    fontSize: 'var(--fs-13)',
                                     color: isDarkMode ? '#71767b' : '#536471'
                                   }}>
                                     Due date will be set after session
@@ -2964,7 +2964,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                                   border: '1px solid #1d9bf0',
                                   padding: '8px 16px',
                                   borderRadius: 6,
-                                  fontSize: 13,
+                                  fontSize: 'var(--fs-13)',
                                   fontWeight: 600,
                                   cursor: 'pointer'
                                 }}>
@@ -2981,7 +2981,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                               {/* No submission yet */}
                               <div>
                                 <div style={{
-                                  fontSize: 13,
+                                  fontSize: 'var(--fs-13)',
                                   color: isDarkMode ? '#71767b' : '#536471',
                                   marginBottom: 8
                                 }}>
@@ -2993,7 +2993,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                                   border: 'none',
                                   padding: '10px 20px',
                                   borderRadius: 6,
-                                  fontSize: 14,
+                                  fontSize: 'var(--fs-14)',
                                   fontWeight: 600,
                                   cursor: 'pointer'
                                 }}>
@@ -3055,7 +3055,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     justifyContent: 'center',
                     cursor: 'pointer'
                   }}>
-                    <FaPlay style={{ color: '#fff', fontSize: 24, marginLeft: 4 }} />
+                    <FaPlay style={{ color: '#fff', fontSize: 'var(--fs-24)', marginLeft: 4 }} />
                   </div>
                   {/* Video controls bar */}
                   <div style={{
@@ -3088,7 +3088,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                   border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
                 }}>
                   <h3 style={{
-                    fontSize: 16,
+                    fontSize: 'var(--fs-16)',
                     fontWeight: 700,
                     marginBottom: 16,
                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
@@ -3105,15 +3105,15 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                           display: 'flex',
                           alignItems: 'flex-start',
                           gap: 10,
-                          fontSize: 14,
+                          fontSize: 'var(--fs-14)',
                           color: isDarkMode ? '#e7e9ea' : '#0f1419'
                         }}>
-                          <FaCheck style={{ color: '#10b981', fontSize: 12, marginTop: 4, flexShrink: 0 }} />
+                          <FaCheck style={{ color: '#10b981', fontSize: 'var(--fs-12)', marginTop: 4, flexShrink: 0 }} />
                           <span>{item}</span>
                         </div>
                       ))
                     ) : (
-                      <div style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#6b7280' }}>
+                      <div style={{ fontSize: 'var(--fs-14)', color: isDarkMode ? '#71767b' : '#6b7280' }}>
                         No learning objectives specified yet.
                       </div>
                     )}
@@ -3124,7 +3124,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
               {/* What's Included */}
               <div style={{ marginTop: 24 }}>
                 <h4 style={{
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 700,
                   color: isDarkMode ? '#71767b' : '#6b7280',
                   textTransform: 'uppercase',
@@ -3148,7 +3148,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
                   }}>
                     <span style={{ fontSize: 18 }}>👥</span>
-                    <span style={{ fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>1-on-1 sessions with Student-Teacher</span>
+                    <span style={{ fontSize: 'var(--fs-14)', color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>1-on-1 sessions with Student-Teacher</span>
                   </div>
                   <div style={{
                     display: 'flex',
@@ -3160,7 +3160,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
                   }}>
                     <span style={{ fontSize: 18 }}>💬</span>
-                    <span style={{ fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Access to AI Prompters Community</span>
+                    <span style={{ fontSize: 'var(--fs-14)', color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Access to AI Prompters Community</span>
                   </div>
                   <div style={{
                     display: 'flex',
@@ -3172,7 +3172,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
                   }}>
                     <span style={{ fontSize: 18 }}>🏆</span>
-                    <span style={{ fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Certificate</span>
+                    <span style={{ fontSize: 'var(--fs-14)', color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>Certificate</span>
                   </div>
                 </div>
               </div>
@@ -3194,14 +3194,14 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                   <span style={{ fontSize: 48, display: 'block', marginBottom: 16 }}>🔒</span>
                   <div style={{
                     fontWeight: 600,
-                    fontSize: 18,
+                    fontSize: 'var(--fs-18)',
                     color: isDarkMode ? '#e7e9ea' : '#0f1419',
                     marginBottom: 8
                   }}>
                     Enrollment Required
                   </div>
                   <div style={{
-                    fontSize: 15,
+                    fontSize: 'var(--fs-15)',
                     color: isDarkMode ? '#9ca3af' : '#536471',
                     marginBottom: 16
                   }}>
@@ -3215,7 +3215,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                       border: 'none',
                       padding: '12px 28px',
                       borderRadius: 8,
-                      fontSize: 15,
+                      fontSize: 'var(--fs-15)',
                       fontWeight: 600,
                       cursor: 'pointer'
                     }}
@@ -3270,7 +3270,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: 12,
+                        fontSize: 'var(--fs-12)',
                         fontWeight: 700,
                         flexShrink: 0,
                         marginTop: 2
@@ -3287,7 +3287,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         border: 'none',
                         outline: 'none',
                         resize: 'none',
-                        fontSize: 15,
+                        fontSize: 'var(--fs-15)',
                         fontWeight: 400,
                         lineHeight: 1.5,
                         background: 'transparent',
@@ -3376,7 +3376,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         borderRadius: 20,
                         padding: '8px 20px',
                         fontWeight: 600,
-                        fontSize: 14,
+                        fontSize: 'var(--fs-14)',
                         cursor: (newPostText.trim() && !isPosting) ? 'pointer' : 'not-allowed',
                         opacity: (newPostText.trim() && !isPosting) ? 1 : 0.5
                       }}
@@ -3463,7 +3463,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                       <p style={{ 
                         margin: '0 0 12px 0', 
                         color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                        fontSize: 15,
+                        fontSize: 'var(--fs-15)',
                         lineHeight: 1.5
                       }}>
                         {post.content}
@@ -3534,7 +3534,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
       {((activeTab === 'about' && isCoursePurchased) || (activeTab === 'curriculum' && !isCoursePurchased)) && course.tags && course.tags.length > 0 && (
         <div style={{ padding: '0 24px 16px 24px', maxWidth: 1200, margin: '0 auto' }}>
           <h3 style={{
-            fontSize: 18,
+            fontSize: 'var(--fs-18)',
             fontWeight: 700,
             marginBottom: 16,
             color: isDarkMode ? '#e7e9ea' : '#0f1419'
@@ -3589,7 +3589,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                 borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
               }}>
                 <h3 style={{
-                  fontSize: 16,
+                  fontSize: 'var(--fs-16)',
                   fontWeight: 700,
                   margin: 0,
                   color: isDarkMode ? '#e7e9ea' : '#0f1419',
@@ -3627,7 +3627,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         </div>
                         {file.size && (
                           <div style={{
-                            fontSize: 12,
+                            fontSize: 'var(--fs-12)',
                             color: isDarkMode ? '#71767b' : '#536471',
                             marginTop: 2
                           }}>
@@ -3649,7 +3649,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         border: 'none',
                         padding: '8px 16px',
                         borderRadius: 6,
-                        fontSize: 13,
+                        fontSize: 'var(--fs-13)',
                         fontWeight: 600,
                         textDecoration: 'none',
                         cursor: 'pointer'
@@ -3698,7 +3698,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                   borderRadius: 6,
                   padding: '8px 16px',
                   cursor: 'pointer',
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 500,
                   transition: 'background 0.2s',
                   whiteSpace: 'nowrap'
@@ -3706,7 +3706,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
               >
                 {showHelpPanel ? 'Close Outside Help Window' : 'Open Outside Help Window'}
               </button>
-              <div style={{ color: '#fff', fontSize: 16, fontWeight: 600 }}>
+              <div style={{ color: '#fff', fontSize: 'var(--fs-16)', fontWeight: 600 }}>
                 {course?.title} - Live Session
               </div>
             </div>
@@ -3720,7 +3720,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                   borderRadius: 6,
                   padding: '8px 16px',
                   cursor: 'pointer',
-                  fontSize: 14,
+                  fontSize: 'var(--fs-14)',
                   fontWeight: 500
                 }}
               >
@@ -3780,14 +3780,14 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                 justifyContent: 'space-between',
                 alignItems: 'center'
               }}>
-                <span style={{ color: '#fff', fontSize: 16, fontWeight: 600 }}>Help Panel</span>
+                <span style={{ color: '#fff', fontSize: 'var(--fs-16)', fontWeight: 600 }}>Help Panel</span>
                 <button
                   onClick={() => setShowHelpPanel(false)}
                   style={{
                     background: 'transparent',
                     border: 'none',
                     color: '#71767b',
-                    fontSize: 20,
+                    fontSize: 'var(--fs-20)',
                     cursor: 'pointer',
                     padding: 0,
                     lineHeight: 1
@@ -3833,7 +3833,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: 11,
+                        fontSize: 'var(--fs-11)',
                         fontWeight: 700
                       }}>
                         {getUserInitials()}
@@ -3849,7 +3849,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         borderRadius: 16,
                         padding: '8px 12px',
                         color: '#e7e9ea',
-                        fontSize: 13,
+                        fontSize: 'var(--fs-13)',
                         outline: 'none'
                       }}
                     />
@@ -3914,7 +3914,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                         <p style={{
                           margin: '0 0 8px 0',
                           color: '#e7e9ea',
-                          fontSize: 13,
+                          fontSize: 'var(--fs-13)',
                           lineHeight: 1.4
                         }}>
                           {post.content}
@@ -3928,7 +3928,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                             alignItems: 'center',
                             gap: 4,
                             cursor: 'pointer',
-                            fontSize: 12,
+                            fontSize: 'var(--fs-12)',
                             padding: 0
                           }}>
                             <FaComment style={{ fontSize: 11 }} /> Reply
@@ -3941,7 +3941,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                             alignItems: 'center',
                             gap: 4,
                             cursor: 'pointer',
-                            fontSize: 12,
+                            fontSize: 'var(--fs-12)',
                             padding: 0
                           }}>
                             <FaHeart style={{ fontSize: 11 }} /> {post.likes}

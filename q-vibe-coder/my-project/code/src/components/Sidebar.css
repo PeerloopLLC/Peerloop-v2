@@ -155,7 +155,7 @@
   margin-bottom: 2px;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
-  font-size: 21px;
+  font-size: 1.4rem;
   font-weight: 400;
   color: var(--text-darkness, #536471);
   position: relative;
@@ -185,7 +185,7 @@
 }
 
 .nav-label {
-  font-size: 21px;
+  font-size: 1.4rem;
   color: var(--text-darkness, inherit);
   white-space: nowrap;
   overflow: hidden;
@@ -202,7 +202,7 @@
   border-radius: 20px;
   background: #f7f9f9;
   color: #0f1419;
-  font-size: 21px;
+  font-size: 1.4rem;
   font-weight: 400;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -290,7 +290,7 @@
   border: none;
   border-radius: 9999px;
   padding: 14px 28px;
-  font-size: 16px;
+  font-size: 1.067rem;
   font-weight: 700;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -348,7 +348,7 @@
 
 .profile-name {
   font-weight: 700;
-  font-size: 15px;
+  font-size: 1rem;
   color: var(--text-darkness, #000000);
   white-space: nowrap;
   overflow: hidden;
@@ -358,7 +358,7 @@
 
 .profile-handle {
   color: var(--text-darkness, #536471);
-  font-size: 15px;
+  font-size: 1rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -504,7 +504,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   color: var(--text-secondary, #536471);
-  font-size: 16px;
+  font-size: 1.067rem;
 }
 
 .dark-mode-toggle:hover {
@@ -545,7 +545,7 @@
 
 .dark-mode .nav-item {
   color: #e7e9ea;
-  font-size: 21px;
+  font-size: 1.4rem;
   font-weight: 400;
 }
 
@@ -565,7 +565,7 @@
 
 .dark-mode .nav-label {
   color: #e7e9ea;
-  font-size: 21px;
+  font-size: 1.4rem;
 }
 
 .dark-mode .nav-item.active .nav-label {
@@ -654,7 +654,7 @@
 }
 
 .communities-title {
-  font-size: 18px;
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-darkness, #0f1419);
   letter-spacing: 0;
@@ -717,7 +717,7 @@
 }
 
 .community-name {
-  font-size: 14px;
+  font-size: 0.933rem;
   font-weight: 500;
   color: var(--text-darkness, #0f1419);
   white-space: nowrap;
@@ -1169,7 +1169,7 @@
 }
 
 .feeds-flyout-item .community-name {
-  font-size: 14px;
+  font-size: 0.933rem;
   font-weight: 500;
   color: var(--text-darkness, #0f1419);
   white-space: nowrap;
@@ -1400,7 +1400,7 @@
 }
 
 .selected-community-name {
-  font-size: 18px;
+  font-size: 1.2rem;
   font-weight: 500;
   color: var(--text-darkness, #0f1419);
   white-space: nowrap;
@@ -1410,7 +1410,7 @@
 
 .dark-mode .selected-community-name {
   color: #e7e9ea;
-  font-size: 20px;
+  font-size: 1.333rem;
 }
 
 /* Hide feeds-group on collapsed sidebar - show compact button instead */
@@ -1478,7 +1478,7 @@
 }
 
 .community-selector-name {
-  font-size: 18px;
+  font-size: 1.2rem;
   font-weight: 400;
   color: #0f1419;
   white-space: nowrap;
@@ -1538,7 +1538,7 @@
 }
 
 .dark-mode .community-selector-name {
-  font-size: 20px;
+  font-size: 1.333rem;
   font-weight: 400;
   color: #e7e9ea;
 }
@@ -1591,7 +1591,7 @@
   padding: 14px 20px;
   cursor: pointer;
   transition: background-color 0.15s;
-  font-size: 15px;
+  font-size: 1rem;
   font-weight: 500;
   color: #0f1419;
 }
