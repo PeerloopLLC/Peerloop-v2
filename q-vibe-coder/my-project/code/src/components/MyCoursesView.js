@@ -1731,51 +1731,293 @@ const MyCoursesView = ({
   };
 
   // Empty state - only show if no learning courses AND no teaching courses
+  // Get featured courses from Guy Rymberg (instructor ID 8) for promotion
+  const featuredCourses = useMemo(() => {
+    const guyCourses = indexedCourses.filter(c => c.instructorId === 8);
+    return guyCourses.slice(0, 3); // Show up to 3 featured courses
+  }, [indexedCourses]);
+
   if (myCoursesData.length === 0 && teachingCoursesData.length === 0) {
+    const guyInstructor = getInstructorById(8);
+
     return (
       <div className="main-content">
+        {/* Breadcrumb Navigation */}
+        {breadcrumbItems && <Breadcrumb items={breadcrumbItems} onBack={onBack} isDarkMode={isDarkMode} />}
         <div className="three-column-layout browse-layout">
           <div className="center-column">
+            {/* Promotional Header */}
             <div style={{
-              padding: '60px 20px',
+              background: isDarkMode
+                ? 'linear-gradient(135deg, #1a3d5c 0%, #0f2940 100%)'
+                : '#1d9bf0',
+              padding: '32px 24px',
+              borderRadius: 0,
+              marginBottom: 0,
               textAlign: 'center'
             }}>
-              <FaBook style={{
-                fontSize: 64,
-                color: isDarkMode ? '#374151' : '#d1d5db',
-                marginBottom: 16
-              }} />
-              <h2 style={{
-                fontSize: 24,
+              <h1 style={{
+                fontSize: 'var(--fs-24)',
                 fontWeight: 700,
-                color: isDarkMode ? '#e7e9ea' : '#111827',
+                color: '#fff',
                 marginBottom: 8
               }}>
-                No courses yet
-              </h2>
+                Start Your Learning Journey
+              </h1>
               <p style={{
                 fontSize: 'var(--fs-16)',
-                color: isDarkMode ? '#9ca3af' : '#6b7280',
-                marginBottom: 24
+                color: 'rgba(255, 255, 255, 0.9)',
+                margin: 0
               }}>
-                Browse our catalog and enroll in your first course!
+                Master AI tools and workflows with hands-on courses
               </p>
-              <button
-                onClick={() => onMenuChange && onMenuChange('Discover')}
-                style={{
-                  background: '#1d9bf0',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '12px 24px',
-                  borderRadius: 24,
-                  fontWeight: 600,
-                  fontSize: 'var(--fs-15)',
-                  cursor: 'pointer'
-                }}
-              >
-                Discover Courses
-              </button>
             </div>
+
+            {/* Featured Courses Section */}
+            {featuredCourses.length > 0 ? (
+              <div style={{ padding: '24px 16px' }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: 16
+                }}>
+                  <h2 style={{
+                    fontSize: 'var(--fs-18)',
+                    fontWeight: 700,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    margin: 0
+                  }}>
+                    Featured Courses
+                  </h2>
+                  <button
+                    onClick={() => onMenuChange && onMenuChange('Discover')}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#1d9bf0',
+                      fontSize: 'var(--fs-14)',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      padding: '4px 8px'
+                    }}
+                  >
+                    See all courses
+                  </button>
+                </div>
+
+                {/* Course Cards */}
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16
+                }}>
+                  {featuredCourses.map(course => (
+                    <div
+                      key={course.id}
+                      onClick={() => onViewCourse && onViewCourse(course.id)}
+                      style={{
+                        background: isDarkMode ? '#16181c' : '#fff',
+                        border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                        borderRadius: 16,
+                        padding: 16,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = isDarkMode ? '#1c1f23' : '#f7f9f9';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = isDarkMode
+                          ? '0 4px 12px rgba(0,0,0,0.3)'
+                          : '0 4px 12px rgba(0,0,0,0.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = isDarkMode ? '#16181c' : '#fff';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      <div style={{ display: 'flex', gap: 16 }}>
+                        {/* Course Abbreviation Badge */}
+                        <div style={{
+                          width: 56,
+                          height: 56,
+                          borderRadius: 12,
+                          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0
+                        }}>
+                          <span style={{
+                            color: '#fff',
+                            fontWeight: 700,
+                            fontSize: 'var(--fs-16)'
+                          }}>
+                            {getCourseAbbreviation(course.title)}
+                          </span>
+                        </div>
+
+                        {/* Course Info */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <h3 style={{
+                            fontSize: 'var(--fs-16)',
+                            fontWeight: 700,
+                            color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                            marginBottom: 4,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {course.title}
+                          </h3>
+                          <p style={{
+                            fontSize: 'var(--fs-14)',
+                            color: isDarkMode ? '#71767b' : '#536471',
+                            marginBottom: 8,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            lineHeight: 1.4
+                          }}>
+                            {course.description}
+                          </p>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 12,
+                            fontSize: 'var(--fs-13)',
+                            color: isDarkMode ? '#71767b' : '#536471'
+                          }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <AiOutlineStar style={{ color: '#fbbf24' }} />
+                              {course.rating || '4.7'}
+                            </span>
+                            <span>{course.students?.toLocaleString() || '980'} students</span>
+                            <span>{course.duration || '3 hours'}</span>
+                          </div>
+                        </div>
+
+                        {/* Price/Enroll Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onViewCourse && onViewCourse(course.id);
+                          }}
+                          style={{
+                            background: '#00ba7c',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '10px 16px',
+                            borderRadius: 20,
+                            fontWeight: 700,
+                            fontSize: 'var(--fs-14)',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            alignSelf: 'center'
+                          }}
+                        >
+                          Enroll {course.price || '$249'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Instructor Attribution */}
+                {guyInstructor && (
+                  <div
+                    onClick={() => onViewCreatorProfile && onViewCreatorProfile(guyInstructor)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      marginTop: 20,
+                      padding: '12px 16px',
+                      background: isDarkMode ? '#16181c' : '#f7f9f9',
+                      borderRadius: 12,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <img
+                      src={guyInstructor.avatar}
+                      alt={guyInstructor.name}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{
+                        fontSize: 'var(--fs-14)',
+                        fontWeight: 600,
+                        color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                      }}>
+                        {guyInstructor.name}
+                      </div>
+                      <div style={{
+                        fontSize: 'var(--fs-13)',
+                        color: isDarkMode ? '#71767b' : '#536471'
+                      }}>
+                        {guyInstructor.title}
+                      </div>
+                    </div>
+                    <span style={{
+                      fontSize: 'var(--fs-13)',
+                      color: '#1d9bf0',
+                      fontWeight: 600
+                    }}>
+                      View Profile
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Fallback if no featured courses */
+              <div style={{
+                padding: '60px 20px',
+                textAlign: 'center'
+              }}>
+                <FaBook style={{
+                  fontSize: 64,
+                  color: isDarkMode ? '#374151' : '#d1d5db',
+                  marginBottom: 16
+                }} />
+                <h2 style={{
+                  fontSize: 24,
+                  fontWeight: 700,
+                  color: isDarkMode ? '#e7e9ea' : '#111827',
+                  marginBottom: 8
+                }}>
+                  No courses yet
+                </h2>
+                <p style={{
+                  fontSize: 'var(--fs-16)',
+                  color: isDarkMode ? '#9ca3af' : '#6b7280',
+                  marginBottom: 24
+                }}>
+                  Browse our catalog and enroll in your first course!
+                </p>
+                <button
+                  onClick={() => onMenuChange && onMenuChange('Discover')}
+                  style={{
+                    background: '#1d9bf0',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '12px 24px',
+                    borderRadius: 24,
+                    fontWeight: 600,
+                    fontSize: 'var(--fs-15)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Discover Courses
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
