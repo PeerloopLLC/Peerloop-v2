@@ -673,41 +673,44 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
   }, [isProfileCollapsed]);
 
   useEffect(() => {
-    const COLLAPSE_THRESHOLD = 1; // Collapse immediately when scrolling
-    const EXPAND_THRESHOLD = 1; // Expand when back at top
-    const TOGGLE_COOLDOWN = 200; // Reduced cooldown for more responsive expand
+    const COLLAPSE_THRESHOLD = 120;  // How far down before collapse is allowed
+    const SCROLL_UP_DELTA = -20;     // Minimum upward scroll to trigger expand (negative)
+    const SCROLL_DOWN_DELTA = 20;    // Minimum downward scroll to trigger collapse
+    const TOGGLE_COOLDOWN = 300;     // Cooldown between toggles (prevents jitter)
 
     const handleScroll = () => {
       const container = feedContainerRef.current;
       if (!container) return;
 
       const currentScrollY = container.scrollTop;
+      const scrollDelta = currentScrollY - lastScrollY.current;
       const now = Date.now();
 
-      // Always expand when at the very top (scrollTop <= 5), bypass cooldown
-      if (isProfileCollapsedRef.current && currentScrollY <= 5) {
+      // Always expand when at the very top
+      if (isProfileCollapsedRef.current && currentScrollY <= 10) {
         setIsProfileCollapsed(false);
         isProfileCollapsedRef.current = false;
+        lastScrollY.current = currentScrollY;
         lastToggleTime.current = now;
+        return;
+      }
+
+      // Skip if we recently toggled (prevents jitter)
+      if (now - lastToggleTime.current < TOGGLE_COOLDOWN) {
         lastScrollY.current = currentScrollY;
         return;
       }
 
-      // Skip if we recently toggled (prevents jitter from layout shifts)
-      if (now - lastToggleTime.current < TOGGLE_COOLDOWN) {
-        return;
-      }
-
-      // Collapse: when scrolled down past threshold
-      if (!isProfileCollapsedRef.current && currentScrollY > COLLAPSE_THRESHOLD) {
-        setIsProfileCollapsed(true);
-        isProfileCollapsedRef.current = true;
-        lastToggleTime.current = now;
-      }
-      // Expand: when scrolled back near the top
-      else if (isProfileCollapsedRef.current && currentScrollY < EXPAND_THRESHOLD) {
+      // SCROLLING UP - expand when scrolling up with significant movement
+      if (scrollDelta < SCROLL_UP_DELTA && isProfileCollapsedRef.current) {
         setIsProfileCollapsed(false);
         isProfileCollapsedRef.current = false;
+        lastToggleTime.current = now;
+      }
+      // SCROLLING DOWN - collapse when past threshold with significant movement
+      else if (scrollDelta > SCROLL_DOWN_DELTA && currentScrollY > COLLAPSE_THRESHOLD && !isProfileCollapsedRef.current) {
+        setIsProfileCollapsed(true);
+        isProfileCollapsedRef.current = true;
         lastToggleTime.current = now;
       }
 
