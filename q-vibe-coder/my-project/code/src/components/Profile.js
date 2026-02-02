@@ -264,9 +264,146 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
     // Reset to original data
   };
 
+  // Reset demo data - clears localStorage and removes user from GetStream channels
+  const [isResetting, setIsResetting] = useState(false);
+
+  const handleResetDemoData = async () => {
+    if (!window.confirm('This will clear all local demo data and remove you from chat channels. Continue?')) {
+      return;
+    }
+
+    setIsResetting(true);
+    let chatResetNote = '';
+
+    try {
+      // 1. Gather course IDs from localStorage BEFORE clearing
+      const userId = currentUser?.id;
+      let courseChannelIds = [];
+
+      try {
+        // Get purchased courses
+        const purchasedCourses = JSON.parse(localStorage.getItem(`purchasedCourses_${userId}`) || '[]');
+        purchasedCourses.forEach(c => {
+          const id = c.courseId || c.id || c;
+          if (id) courseChannelIds.push(`course-${id}`);
+        });
+
+        // Also check scheduledSessions for additional courses
+        const scheduledSessions = JSON.parse(localStorage.getItem(`scheduledSessions_${userId}`) || '[]');
+        scheduledSessions.forEach(s => {
+          if (s.courseId) {
+            const channelId = `course-${s.courseId}`;
+            if (!courseChannelIds.includes(channelId)) {
+              courseChannelIds.push(channelId);
+            }
+          }
+        });
+
+        // Scan ALL localStorage keys for course-related data
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (key.includes('course') || key.includes('Course'))) {
+            try {
+              const val = localStorage.getItem(key);
+              if (val) {
+                const data = JSON.parse(val);
+                // Handle arrays
+                if (Array.isArray(data)) {
+                  data.forEach(item => {
+                    const id = item?.courseId || item?.id;
+                    if (id) {
+                      const channelId = `course-${id}`;
+                      if (!courseChannelIds.includes(channelId)) {
+                        courseChannelIds.push(channelId);
+                      }
+                    }
+                  });
+                }
+                // Handle objects with courseId
+                else if (data?.courseId) {
+                  const channelId = `course-${data.courseId}`;
+                  if (!courseChannelIds.includes(channelId)) {
+                    courseChannelIds.push(channelId);
+                  }
+                }
+              }
+            } catch (e) { /* ignore parse errors */ }
+          }
+        }
+
+        // Add known test channels as fallback (for prototype)
+        ['course-1', 'course-6'].forEach(ch => {
+          if (!courseChannelIds.includes(ch)) {
+            courseChannelIds.push(ch);
+          }
+        });
+
+        console.log('Course channels to remove user from:', courseChannelIds);
+      } catch (parseErr) {
+        console.warn('Could not parse course data:', parseErr);
+        // Fallback to known test channels
+        courseChannelIds = ['course-1', 'course-6'];
+      }
+
+      // 2. Remove user from GetStream channels
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_SUPABASE_URL}/functions/v1/getstream-token`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${process.env.REACT_APP_SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({
+              userId: userId,
+              action: 'reset',
+              channelIds: courseChannelIds
+            }),
+          }
+        );
+
+        const result = await response.json();
+        console.log('GetStream reset result:', result);
+
+        if (result.error) {
+          chatResetNote = '\n\nNote: Some chat channels could not be cleared automatically.';
+        } else if (result.removedCount > 0) {
+          chatResetNote = `\n\nRemoved from ${result.removedCount} chat channel(s).`;
+        }
+      } catch (chatErr) {
+        console.warn('GetStream reset failed (non-blocking):', chatErr);
+        chatResetNote = '\n\nNote: Chat channels could not be cleared automatically.';
+      }
+
+      // 3. Clear localStorage (preserve some settings)
+      const preserveKeys = ['darkMode', 'textDarknessLevel', 'communityNavStyle', 'profileBannerColor'];
+      const preserved = {};
+      preserveKeys.forEach(key => {
+        const val = localStorage.getItem(key);
+        if (val) preserved[key] = val;
+      });
+
+      localStorage.clear();
+
+      // Restore preserved settings
+      Object.entries(preserved).forEach(([key, val]) => {
+        localStorage.setItem(key, val);
+      });
+
+      alert('Demo data reset! The page will now reload.' + chatResetNote);
+      window.location.reload();
+    } catch (err) {
+      console.error('Reset error:', err);
+      alert('Error resetting demo data: ' + err.message);
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   // Log out button
   const renderLogoutButton = () => (
-    <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+    <div style={{ marginTop: '2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
       <button
         onClick={onSwitchUser}
         style={{
@@ -286,6 +423,31 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
         <FaSignOutAlt />
         Log Out
       </button>
+
+      {/* Reset Demo Data button */}
+      <button
+        onClick={handleResetDemoData}
+        disabled={isResetting}
+        style={{
+          background: isDarkMode ? '#1f2937' : '#fef2f2',
+          color: isDarkMode ? '#fbbf24' : '#b45309',
+          border: isDarkMode ? '1px solid #374151' : '1px solid #fcd34d',
+          borderRadius: '8px',
+          padding: '0.5rem 1.5rem',
+          fontSize: '0.85rem',
+          cursor: isResetting ? 'wait' : 'pointer',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          fontWeight: '500',
+          opacity: isResetting ? 0.6 : 1
+        }}
+      >
+        {isResetting ? '⏳ Resetting...' : '🗑️ Reset Demo Data'}
+      </button>
+      <span style={{ fontSize: '11px', color: isDarkMode ? '#6b7280' : '#9ca3af' }}>
+        Clears enrollments, chat channels, and local data
+      </span>
     </div>
   );
 
@@ -1022,6 +1184,9 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
           {profileSubTab === 'courses-taken' && renderCoursesTakenTab()}
           {profileSubTab === 'courses-taught' && showTeachingTab && renderCoursesTaughtTab()}
         </div>
+
+        {/* Logout and Reset buttons */}
+        {!isViewingOther && renderLogoutButton()}
       </div>
     );
   };

@@ -271,6 +271,7 @@ export const instructorsDatabase = [
   },
   {
     id: 8,
+    userId: 'GuyRymberg', // Maps to user ID for GetStream messaging
     name: "Guy Rymberg",
     communityName: "Prompt Masters",
     title: "AI Prompting Specialist & Business AI Expert",
@@ -1479,7 +1480,8 @@ const convertBuilderToDbFormat = (builderData, instructorId) => {
         module: moduleNum++,
         title: lesson.name,
         duration: lesson.duration || '30 min',
-        description: lesson.description || ''
+        description: lesson.description || '',
+        allowHomework: lesson.allowHomework || false
       });
     });
   });

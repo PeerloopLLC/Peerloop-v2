@@ -26,6 +26,7 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
           id: sessionNum,
           name: sessionInfo?.title || `Session ${sessionNum}`,
           isOpen: true,
+          allowHomework: sessionInfo?.allowHomework || false,
           lessons: []
         };
       }
@@ -42,7 +43,7 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
 
     const sessions = Object.values(sessionsMap);
     if (sessions.length === 0) {
-      sessions.push({ id: 1, name: 'Session 1', isOpen: true, lessons: [] });
+      sessions.push({ id: 1, name: 'Session 1', isOpen: true, allowHomework: false, lessons: [] });
     }
 
     return {
@@ -51,6 +52,7 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
       duration: dbCourse.duration || '',
       level: dbCourse.level || 'Beginner',
       thumbnailGradient: dbCourse.thumbnailGradient || 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      introVideo: dbCourse.introVideo || { enabled: false, fileName: '', fileUrl: '' },
       learningObjectives: dbCourse.learningObjectives?.length ? dbCourse.learningObjectives : [''],
       includes: dbCourse.includes?.length ? dbCourse.includes : ['Full course access', 'Certificate of completion'],
       sessions: sessions,
@@ -80,9 +82,10 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
     duration: '',
     level: 'Beginner',
     thumbnailGradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    introVideo: { enabled: false, fileName: '', fileUrl: '' },
     learningObjectives: [''],
     includes: ['Full course access', 'Certificate of completion'],
-    sessions: [{ id: 1, name: 'Session 1', isOpen: true, lessons: [] }],
+    sessions: [{ id: 1, name: 'Session 1', isOpen: true, allowHomework: false, lessons: [] }],
     price: 249,
     pricingOptions: { content: true, community: true, sessions: false, certificate: true, earlybird: false, memberdiscount: false },
     category: 'AI Tools',
@@ -118,6 +121,8 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
   const sessionFileInputRef = useRef(null);
+  const videoInputRef = useRef(null);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
 
   // Load existing files when editing a course
   useEffect(() => {
@@ -200,7 +205,7 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
 
   // Sessions
   const addSession = () => {
-    const newSession = { id: nextSessionId, name: `Session ${nextSessionId}`, isOpen: true, lessons: [] };
+    const newSession = { id: nextSessionId, name: `Session ${nextSessionId}`, isOpen: true, allowHomework: false, lessons: [] };
     setCourseData(prev => ({ ...prev, sessions: [...prev.sessions, newSession] }));
     setNextSessionId(prev => prev + 1);
     setSelectedSession(newSession.id);
@@ -221,6 +226,12 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
   const updateSessionName = (sessionId, name) => {
     setCourseData(prev => ({ ...prev, sessions: prev.sessions.map(s => s.id === sessionId ? { ...s, name } : s) }));
   };
+
+  const updateSessionAllowHomework = (sessionId, allowHomework) => {
+    setCourseData(prev => ({ ...prev, sessions: prev.sessions.map(s => s.id === sessionId ? { ...s, allowHomework } : s) }));
+  };
+
+  const getSelectedSession = () => courseData.sessions.find(s => s.id === selectedSession);
 
   // Lessons
   const addLesson = (sessionId) => {
@@ -383,63 +394,107 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
     }
   };
 
-  const inputStyle = { width: '100%', padding: '12px 14px', background: bgInput, border: `1px solid ${border}`, borderRadius: 8, color: textPrimary, fontSize: 14, outline: 'none' };
-  const labelStyle = { display: 'block', marginBottom: 8, fontSize: 14, fontWeight: 500, color: textPrimary };
-  const sectionStyle = { background: bgCard, borderRadius: 12, padding: 24, marginBottom: 24, border: `1px solid ${border}` };
-  const sectionTitleStyle = { fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: textMuted, marginBottom: 16 };
+  const inputStyle = { width: '100%', padding: '10px 12px', background: bgInput, border: `1px solid ${border}`, borderRadius: 6, color: textPrimary, fontSize: 14, outline: 'none' };
+  const labelStyle = { display: 'block', marginBottom: 6, fontSize: 13, fontWeight: 500, color: textPrimary };
+  const sectionStyle = { marginBottom: 16 };
+  const sectionTitleStyle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: textMuted, marginBottom: 8 };
 
-  // INTRO TAB
+  // INTRO TAB - Compact layout
   const renderIntroTab = () => (
-    <div style={{ padding: 24, overflowY: 'auto', minHeight: 500 }}>
+    <div style={{ padding: 16, overflowY: 'auto' }}>
+      {/* Title & Description in one row */}
       <div style={sectionStyle}>
         <div style={sectionTitleStyle}>Course Title</div>
-        <input type="text" value={courseData.title} onChange={(e) => updateCourse('title', e.target.value)} placeholder="Enter course title..." style={{ ...inputStyle, fontSize: 18, fontWeight: 600 }} />
+        <input type="text" value={courseData.title} onChange={(e) => updateCourse('title', e.target.value)} placeholder="Enter course title..." style={{ ...inputStyle, fontSize: 16, fontWeight: 600 }} />
       </div>
 
       <div style={sectionStyle}>
         <div style={sectionTitleStyle}>Short Description</div>
-        <textarea value={courseData.description} onChange={(e) => updateCourse('description', e.target.value)} placeholder="Describe what students will learn..." style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} />
-        <div style={{ fontSize: 12, color: textMuted, marginTop: 8 }}>{courseData.description.length}/150 characters</div>
+        <textarea value={courseData.description} onChange={(e) => updateCourse('description', e.target.value)} placeholder="Describe what students will learn..." style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} />
+        <div style={{ fontSize: 11, color: textMuted, marginTop: 4 }}>{courseData.description.length}/150</div>
       </div>
 
+      {/* Intro Video Toggle - Compact */}
       <div style={sectionStyle}>
-        <div style={sectionTitleStyle}>Course Thumbnail</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
-          {gradientOptions.map((g) => (
-            <div key={g.name} onClick={() => updateCourse('thumbnailGradient', g.value)} style={{ height: 60, borderRadius: 8, background: g.value, cursor: 'pointer', border: courseData.thumbnailGradient === g.value ? `3px solid ${accentBlue}` : '3px solid transparent', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 4 }}>
-              <span style={{ fontSize: 10, color: 'white', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{g.name}</span>
-            </div>
-          ))}
+        <div style={sectionTitleStyle}>Intro Video</div>
+        <div
+          onClick={() => updateCourse('introVideo', { ...courseData.introVideo, enabled: !courseData.introVideo.enabled })}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '10px 14px',
+            background: courseData.introVideo.enabled ? '#f0fdfa' : bgInput,
+            borderRadius: 6,
+            border: `1px solid ${courseData.introVideo.enabled ? '#5eead4' : border}`,
+            cursor: 'pointer'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 16 }}>🎬</span>
+            <span style={{ fontSize: 14, fontWeight: 500, color: courseData.introVideo.enabled ? '#14b8a6' : textPrimary }}>Include intro video</span>
+          </div>
+          <div style={{ width: 40, height: 22, borderRadius: 11, background: courseData.introVideo.enabled ? '#14b8a6' : (isDarkMode ? '#3f3f46' : '#d1d5db'), position: 'relative' }}>
+            <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#fff', position: 'absolute', top: 2, left: courseData.introVideo.enabled ? 20 : 2, transition: 'left 0.2s ease', boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }} />
+          </div>
         </div>
+
+        {courseData.introVideo.enabled && (
+          <div style={{ marginTop: 8 }}>
+            <input ref={videoInputRef} type="file" accept="video/mp4,video/webm,video/quicktime" style={{ display: 'none' }} onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setIsUploadingVideo(true);
+              try {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                updateCourse('introVideo', { enabled: true, fileName: file.name, fileUrl: URL.createObjectURL(file), fileSize: file.size });
+              } finally { setIsUploadingVideo(false); }
+              e.target.value = '';
+            }} />
+            {courseData.introVideo.fileName ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: bgInput, borderRadius: 6, border: `1px solid ${border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><span>✓</span><span style={{ fontSize: 13, color: textPrimary }}>{courseData.introVideo.fileName}</span></div>
+                <button onClick={() => videoInputRef.current?.click()} style={{ padding: '4px 10px', background: 'transparent', border: `1px solid ${border}`, borderRadius: 4, color: textSecondary, fontSize: 12, cursor: 'pointer' }}>Replace</button>
+              </div>
+            ) : (
+              <div onClick={() => !isUploadingVideo && videoInputRef.current?.click()} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px', border: `2px dashed ${border}`, borderRadius: 6, cursor: 'pointer', background: bgInput }}>
+                {isUploadingVideo ? <FaSpinner style={{ fontSize: 18, color: accentBlue, animation: 'spin 1s linear infinite' }} /> : <><FaUpload style={{ fontSize: 18, color: accentBlue }} /><span style={{ fontSize: 13, color: textSecondary }}><strong style={{ color: accentBlue }}>Upload video</strong> — MP4, WebM, max 100MB</span></>}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* Duration & Level on one line */}
       <div style={sectionStyle}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div><label style={labelStyle}>Duration</label><input type="text" value={courseData.duration} onChange={(e) => updateCourse('duration', e.target.value)} placeholder="e.g., 3 hours" style={inputStyle} /></div>
           <div><label style={labelStyle}>Level</label><select value={courseData.level} onChange={(e) => updateCourse('level', e.target.value)} style={inputStyle}>{levels.map(l => <option key={l} value={l}>{l}</option>)}</select></div>
         </div>
       </div>
 
+      {/* Learning Objectives - Compact */}
       <div style={sectionStyle}>
         <div style={sectionTitleStyle}>What Students Will Learn</div>
         {courseData.learningObjectives.map((obj, i) => (
-          <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-            <input type="text" value={obj} onChange={(e) => updateObjective(i, e.target.value)} placeholder="Enter a learning objective..." style={{ ...inputStyle, flex: 1 }} />
-            <button onClick={() => removeObjective(i)} style={{ padding: '8px 12px', background: 'transparent', border: `1px solid ${border}`, borderRadius: 8, color: '#ef4444', cursor: 'pointer' }}><FaTrash size={12} /></button>
+          <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+            <input type="text" value={obj} onChange={(e) => updateObjective(i, e.target.value)} placeholder="Learning objective..." style={{ ...inputStyle, flex: 1, padding: '8px 10px' }} />
+            <button onClick={() => removeObjective(i)} style={{ padding: '6px 10px', background: 'transparent', border: `1px solid ${border}`, borderRadius: 4, color: '#ef4444', cursor: 'pointer' }}><FaTrash size={10} /></button>
           </div>
         ))}
-        <button onClick={addObjective} style={{ padding: '10px 16px', background: 'transparent', border: `2px dashed ${border}`, borderRadius: 8, color: accentBlue, cursor: 'pointer', width: '100%', fontSize: 14, fontWeight: 500 }}>+ Add Learning Objective</button>
+        <button onClick={addObjective} style={{ padding: '8px 12px', background: 'transparent', border: `1px dashed ${border}`, borderRadius: 4, color: accentBlue, cursor: 'pointer', width: '100%', fontSize: 13 }}>+ Add</button>
       </div>
 
+      {/* What's Included - Compact */}
       <div style={sectionStyle}>
         <div style={sectionTitleStyle}>What's Included</div>
         {courseData.includes.map((item, i) => (
-          <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-            <input type="text" value={item} onChange={(e) => updateInclude(i, e.target.value)} placeholder="e.g., Full course access" style={{ ...inputStyle, flex: 1 }} />
-            <button onClick={() => removeInclude(i)} style={{ padding: '8px 12px', background: 'transparent', border: `1px solid ${border}`, borderRadius: 8, color: '#ef4444', cursor: 'pointer' }}><FaTrash size={12} /></button>
+          <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+            <input type="text" value={item} onChange={(e) => updateInclude(i, e.target.value)} placeholder="e.g., Full course access" style={{ ...inputStyle, flex: 1, padding: '8px 10px' }} />
+            <button onClick={() => removeInclude(i)} style={{ padding: '6px 10px', background: 'transparent', border: `1px solid ${border}`, borderRadius: 4, color: '#ef4444', cursor: 'pointer' }}><FaTrash size={10} /></button>
           </div>
         ))}
-        <button onClick={addInclude} style={{ padding: '10px 16px', background: 'transparent', border: `2px dashed ${border}`, borderRadius: 8, color: accentBlue, cursor: 'pointer', width: '100%', fontSize: 14, fontWeight: 500 }}>+ Add Item</button>
+        <button onClick={addInclude} style={{ padding: '8px 12px', background: 'transparent', border: `1px dashed ${border}`, borderRadius: 4, color: accentBlue, cursor: 'pointer', width: '100%', fontSize: 13 }}>+ Add</button>
       </div>
     </div>
   );
@@ -453,11 +508,13 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
           {courseData.sessions.map((session, idx) => (
             <div key={session.id} style={{ marginBottom: 12 }}>
               <div onClick={() => { setSelectedSession(session.id); setSelectedLesson(null); }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', background: selectedSession === session.id && !selectedLesson ? accentBlue + '20' : bgInput, borderRadius: 8, cursor: 'pointer', border: selectedSession === session.id && !selectedLesson ? `2px solid ${accentBlue}` : '2px solid transparent' }}>
-                <FaGripVertical style={{ color: textMuted, cursor: 'grab' }} />
-                <span onClick={(e) => { e.stopPropagation(); toggleSession(session.id); }} style={{ color: textMuted, cursor: 'pointer' }}>{session.isOpen ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />}</span>
-                <span style={{ width: 24, height: 24, background: accentBlue, color: 'white', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600 }}>{idx + 1}</span>
-                <div style={{ flex: 1 }}>
-                  <input type="text" value={session.name} onChange={(e) => updateSessionName(session.id, e.target.value)} onClick={(e) => e.stopPropagation()} style={{ background: 'transparent', border: 'none', color: textPrimary, fontSize: 14, fontWeight: 500, width: '100%', outline: 'none' }} />
+                <span onClick={(e) => { e.stopPropagation(); toggleSession(session.id); }} style={{ color: textMuted, cursor: 'pointer', padding: 4 }}>{session.isOpen ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                  <span style={{ fontSize: 9, fontWeight: 600, color: accentBlue, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Session</span>
+                  <span style={{ width: 24, height: 24, background: accentBlue, color: 'white', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600 }}>{idx + 1}</span>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{session.name}</div>
                   <div style={{ fontSize: 12, color: textMuted }}>{session.lessons.length} lessons</div>
                 </div>
                 <span onClick={(e) => { e.stopPropagation(); deleteSession(session.id); }} style={{ color: '#ef4444', cursor: 'pointer', padding: 4, opacity: courseData.sessions.length > 1 ? 1 : 0.3 }}><FaTimes size={12} /></span>
@@ -483,79 +540,110 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
 
       {/* Right Panel */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '16px 24px', borderBottom: `1px solid ${border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: bgCard }}>
-          <div style={{ color: textSecondary, fontSize: 14 }}>{selectedLesson ? <>{getSelectedSessionName()} → <strong style={{ color: textPrimary }}>{getSelectedLesson()?.name}</strong></> : selectedSession ? <strong style={{ color: textPrimary }}>{getSelectedSessionName()}</strong> : 'Select a lesson to edit'}</div>
-        </div>
+        {/* Only show header when a lesson is selected */}
+        {selectedLesson && (
+          <div style={{ padding: '12px 24px', borderBottom: `1px solid ${border}`, background: bgCard }}>
+            <div style={{ color: textSecondary, fontSize: 14 }}>{getSelectedSessionName()} → <strong style={{ color: textPrimary }}>{getSelectedLesson()?.name}</strong></div>
+          </div>
+        )}
         <div style={{ flex: 1, padding: 24, overflowY: 'auto' }}>
           {selectedLesson ? (
             <>
               <div style={sectionStyle}>
-                <div style={sectionTitleStyle}>Lesson Details</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: 12 }}>
                   <div><label style={labelStyle}>Lesson Title</label><input type="text" value={getSelectedLesson()?.name || ''} onChange={(e) => updateLesson(selectedSession, selectedLesson, 'name', e.target.value)} style={inputStyle} /></div>
-                  <div><label style={labelStyle}>Duration</label><input type="text" value={getSelectedLesson()?.duration || ''} onChange={(e) => updateLesson(selectedSession, selectedLesson, 'duration', e.target.value)} placeholder="e.g., 30 min" style={inputStyle} /></div>
+                  <div><label style={labelStyle}>Duration</label><input type="text" value={getSelectedLesson()?.duration || ''} onChange={(e) => updateLesson(selectedSession, selectedLesson, 'duration', e.target.value)} placeholder="5" style={inputStyle} /></div>
                 </div>
-                <div style={{ marginTop: 16 }}><label style={labelStyle}>Description</label><textarea value={getSelectedLesson()?.description || ''} onChange={(e) => updateLesson(selectedSession, selectedLesson, 'description', e.target.value)} placeholder="What will students learn?" style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} /></div>
-              </div>
-              <div style={sectionStyle}>
-                <div style={sectionTitleStyle}>Content Type</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-                  {[{ type: 'video', icon: '🎬', label: 'Video' }, { type: 'document', icon: '📄', label: 'Document' }, { type: 'quiz', icon: '✏️', label: 'Quiz' }, { type: 'link', icon: '🔗', label: 'Link' }].map(({ type, icon, label }) => (
-                    <button key={type} onClick={() => updateLesson(selectedSession, selectedLesson, 'type', type)} style={{ padding: '20px 16px', border: getSelectedLesson()?.type === type ? `2px solid ${accentBlue}` : `2px solid ${border}`, borderRadius: 10, background: getSelectedLesson()?.type === type ? accentBlue + '20' : bgCard, cursor: 'pointer', textAlign: 'center' }}>
-                      <div style={{ fontSize: 28, marginBottom: 8 }}>{icon}</div><div style={{ fontSize: 13, fontWeight: 500, color: textPrimary }}>{label}</div>
-                    </button>
-                  ))}
-                </div>
-                <div style={sectionStyle}>
-                  <div style={sectionTitleStyle}>Lesson Files</div>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                    onChange={(e) => handleFileUpload(e, 'lesson')}
-                  />
-                  <div
-                    onClick={() => !isUploading && fileInputRef.current?.click()}
-                    style={{ border: `2px dashed ${border}`, borderRadius: 10, padding: '32px 24px', textAlign: 'center', cursor: isUploading ? 'wait' : 'pointer', background: bgInput }}
-                  >
-                    {isUploading ? (
-                      <>
-                        <FaSpinner style={{ fontSize: 32, marginBottom: 12, color: accentBlue, animation: 'spin 1s linear infinite' }} />
-                        <div style={{ fontSize: 14, color: textSecondary }}>Uploading...</div>
-                      </>
-                    ) : (
-                      <>
-                        <FaUpload style={{ fontSize: 32, marginBottom: 12, color: textMuted }} />
-                        <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4, color: textPrimary }}>Upload {getSelectedLesson()?.type || 'content'} for this lesson</div>
-                        <div style={{ fontSize: 13, color: textSecondary }}>Click to browse or drag & drop</div>
-                      </>
-                    )}
-                  </div>
-                  {/* Display uploaded files */}
-                  {getFilesForLesson().length > 0 && (
-                    <div style={{ marginTop: 16 }}>
-                      {getFilesForLesson().map(file => (
-                        <div key={file.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: bgInput, borderRadius: 8, marginBottom: 8, border: `1px solid ${border}` }}>
-                          <span style={{ fontSize: 20 }}>{getFileIcon(file.file_type)}</span>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 13, fontWeight: 500, color: textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.file_name}</div>
-                            <div style={{ fontSize: 11, color: textMuted }}>{formatFileSize(file.file_size)}</div>
-                          </div>
-                          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: textSecondary, cursor: 'pointer' }}>
-                            <input
-                              type="checkbox"
-                              checked={file.load_in_bbb !== false}
-                              onChange={() => handleToggleLoadInBbb(file.id, file.load_in_bbb !== false, getLessonModuleIndex())}
-                              style={{ cursor: 'pointer' }}
-                            />
-                            BBB
-                          </label>
-                          <a href={file.file_url} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 12px', background: accentBlue + '20', color: accentBlue, borderRadius: 6, fontSize: 12, textDecoration: 'none' }}>View</a>
-                          <button onClick={() => handleDeleteFile(file.id, file.file_path, getLessonModuleIndex())} style={{ padding: 6, background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><FaTrash size={12} /></button>
-                        </div>
-                      ))}
-                    </div>
+                <div style={{ marginTop: 12 }}><label style={labelStyle}>Description</label><textarea value={getSelectedLesson()?.description || ''} onChange={(e) => updateLesson(selectedSession, selectedLesson, 'description', e.target.value)} placeholder="What will students learn?" style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} /></div>
+
+                <div style={{ height: 1, background: border, margin: '16px 0' }} />
+
+                <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: textMuted, marginBottom: 10 }}>Lesson Files</div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={(e) => handleFileUpload(e, 'lesson')}
+                />
+                <div
+                  onClick={() => !isUploading && fileInputRef.current?.click()}
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, border: `2px dashed ${border}`, borderRadius: 6, padding: '12px 14px', cursor: isUploading ? 'wait' : 'pointer', background: bgInput }}
+                >
+                  {isUploading ? (
+                    <>
+                      <FaSpinner style={{ fontSize: 18, color: accentBlue, animation: 'spin 1s linear infinite', flexShrink: 0 }} />
+                      <span style={{ fontSize: 14, color: textSecondary }}>Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaUpload style={{ fontSize: 18, color: accentBlue, flexShrink: 0 }} />
+                      <span style={{ fontSize: 14, color: textSecondary }}><strong style={{ color: accentBlue }}>Add files</strong> — drag & drop or click</span>
+                    </>
                   )}
+                </div>
+                {/* Display uploaded files */}
+                {getFilesForLesson().length > 0 && (
+                  <div style={{ marginTop: 10 }}>
+                    {getFilesForLesson().map(file => (
+                      <div key={file.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: isDarkMode ? '#1a1d21' : '#fff', borderRadius: 6, marginBottom: 8, border: `1px solid ${border}` }}>
+                        <span style={{ fontSize: 18 }}>{getFileIcon(file.file_type)}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 13, fontWeight: 500, color: textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.file_name}</div>
+                          <div style={{ fontSize: 11, color: textMuted }}>{formatFileSize(file.file_size)}</div>
+                        </div>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: textMuted, cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={file.load_in_bbb !== false}
+                            onChange={() => handleToggleLoadInBbb(file.id, file.load_in_bbb !== false, getLessonModuleIndex())}
+                            style={{ cursor: 'pointer', width: 14, height: 14 }}
+                          />
+                          BBB
+                        </label>
+                        <a href={file.file_url} target="_blank" rel="noopener noreferrer" style={{ padding: '4px 10px', border: `1px solid ${accentBlue}`, color: accentBlue, borderRadius: 4, fontSize: 12, textDecoration: 'none' }}>View</a>
+                        <button onClick={() => handleDeleteFile(file.id, file.file_path, getLessonModuleIndex())} style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', border: 'none', borderRadius: 4, color: '#ef4444', cursor: 'pointer' }}><FaTrash size={12} /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div style={{ height: 1, background: border, margin: '16px 0' }} />
+
+                {/* Allow Homework Upload Toggle - Compact */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: getSelectedLesson()?.allowHomework ? '#f0fdfa' : bgInput, borderRadius: 6, border: `1px solid ${getSelectedLesson()?.allowHomework ? '#5eead4' : border}` }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <FaUpload style={{ fontSize: 16, color: getSelectedLesson()?.allowHomework ? '#14b8a6' : textMuted }} />
+                    <span style={{ fontSize: 14, fontWeight: 500, color: getSelectedLesson()?.allowHomework ? '#14b8a6' : textPrimary }}>Allow Homework Upload</span>
+                  </div>
+                  <label style={{ position: 'relative', display: 'inline-block', width: 44, height: 24, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={getSelectedLesson()?.allowHomework || false}
+                      onChange={(e) => updateLesson(selectedSession, selectedLesson, 'allowHomework', e.target.checked)}
+                      style={{ opacity: 0, width: 0, height: 0 }}
+                    />
+                    <span style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background: getSelectedLesson()?.allowHomework ? '#14b8a6' : (isDarkMode ? '#4a5568' : '#d1d5db'),
+                      borderRadius: 12,
+                      transition: 'background 0.3s'
+                    }} />
+                    <span style={{
+                      position: 'absolute',
+                      height: 20,
+                      width: 20,
+                      left: getSelectedLesson()?.allowHomework ? 22 : 2,
+                      top: 2,
+                      background: 'white',
+                      borderRadius: '50%',
+                      transition: 'left 0.3s',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                    }} />
+                  </label>
                 </div>
               </div>
             </>

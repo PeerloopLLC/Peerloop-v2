@@ -4,14 +4,17 @@ import { FaStar, FaUsers, FaClock, FaPlay, FaBook, FaCertificate, FaChalkboardTe
 import { getInstructorById } from '../data/database';
 import SessionTimelineCards from './SessionTimelineCards';
 import { getCourseFiles, uploadCourseFile, addCourseFileLink, deleteCourseFile, formatFileSize } from '../services/courseFiles';
+import { uploadHomework, getStudentHomework, replaceHomework, formatFileSize as formatHomeworkSize } from '../services/homeworkFiles';
+import CourseMessages from './CourseMessages';
 import './MainContent.css';
 
 /**
  * CourseCurriculumSection - Expandable module accordion grouped by sessions
  * Now includes file download links and "+ Add File" button for creators
  */
-const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpandedModules, isCreator = false, isEnrolled = false, currentUser }) => {
-  const [expandedSessions, setExpandedSessions] = useState({ 1: true, 2: true });
+const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpandedModules, isCreator = false, isEnrolled = false, currentUser, scheduledSessions = [], sessionCompletion = {}, onScheduleSession, onJoinSession, onRescheduleSession }) => {
+  const [expandedSessions, setExpandedSessions] = useState({});
+  const [hoveredSession, setHoveredSession] = useState(null);
 
   // File upload modal state
   const [showAddFileModal, setShowAddFileModal] = useState(false);
@@ -27,6 +30,11 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
   // Supabase files state
   const [uploadedFiles, setUploadedFiles] = useState({});
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
+
+  // Homework submissions state - keyed by session number
+  const [homeworkSubmissions, setHomeworkSubmissions] = useState({});
+  const [isUploadingHomework, setIsUploadingHomework] = useState(false);
+  const homeworkInputRef = useRef(null);
 
   // Load files from Supabase on mount
   useEffect(() => {
@@ -64,6 +72,81 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
     };
     loadFiles();
   }, [course?.id]);
+
+  // Load homework submissions for enrolled students - now at lesson level
+  useEffect(() => {
+    const loadHomework = async () => {
+      if (!course?.id || !currentUser?.id || !isEnrolled || isCreator) return;
+
+      // Get all lessons (modules) that allow homework from curriculum
+      const lessonsWithHomework = (course.curriculum || [])
+        .map((item, idx) => ({ ...item, originalIndex: idx }))
+        .filter(item => item.allowHomework);
+
+      // Load homework for each lesson
+      const submissions = {};
+      for (const lesson of lessonsWithHomework) {
+        const lessonKey = `${lesson.session}_${lesson.originalIndex}`;
+        const { data, error } = await getStudentHomework(currentUser.id, course.id, lesson.session, lesson.originalIndex);
+        if (!error && data) {
+          submissions[lessonKey] = data;
+        }
+      }
+      setHomeworkSubmissions(submissions);
+    };
+    loadHomework();
+  }, [course?.id, currentUser?.id, isEnrolled, isCreator, course?.curriculum]);
+
+  // Handle homework file upload - now includes lessonIndex
+  const handleHomeworkUpload = async (sessionNumber, lessonIndex, file) => {
+    if (!file || !currentUser?.id) return;
+
+    const lessonKey = `${sessionNumber}_${lessonIndex}`;
+    setIsUploadingHomework(true);
+    try {
+      const existingSubmission = homeworkSubmissions[lessonKey];
+
+      let result;
+      if (existingSubmission) {
+        // Replace existing homework
+        result = await replaceHomework(
+          existingSubmission.id,
+          existingSubmission.file_path,
+          file,
+          currentUser.id,
+          currentUser.name || 'Student',
+          course.id,
+          sessionNumber,
+          lessonIndex
+        );
+      } else {
+        // New homework upload
+        result = await uploadHomework(
+          file,
+          currentUser.id,
+          currentUser.name || 'Student',
+          course.id,
+          sessionNumber,
+          lessonIndex
+        );
+      }
+
+      if (result.error) {
+        console.error('Homework upload failed:', result.error);
+        alert('Failed to upload homework. Please try again.');
+      } else {
+        // Update local state
+        setHomeworkSubmissions(prev => ({
+          ...prev,
+          [lessonKey]: result.data
+        }));
+      }
+    } catch (err) {
+      console.error('Homework upload error:', err);
+      alert('Failed to upload homework. Please try again.');
+    }
+    setIsUploadingHomework(false);
+  };
 
   // Handle file upload click - opens modal
   const handleAddFile = (moduleIndex, e) => {
@@ -254,24 +337,11 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
       <div key={originalIdx} style={{
         borderBottom: !isLastInGroup
           ? (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb')
-          : 'none'
+          : 'none',
+        padding: '12px 0 12px 20px'
       }}>
-        {/* Module Header - Clickable */}
-        <div
-          onClick={() => toggleModule(originalIdx)}
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 12,
-            padding: '12px 0 12px 20px',
-            cursor: 'pointer'
-          }}
-        >
-          {/* Expand/Collapse Icon */}
-          <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 12, marginTop: 4 }}>
-            {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
-          </div>
-
+        {/* Module Header */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
           {/* Module Info */}
           <div style={{ flex: 1 }}>
             <span style={{
@@ -289,92 +359,74 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
               {duration}
             </div>
 
+            {/* Description / Learning Objectives */}
+            <div style={{
+              fontSize: 14,
+              color: isDarkMode ? '#a1a1aa' : '#536471',
+              lineHeight: 1.5,
+              marginTop: 8
+            }}>
+              {details.learningObjectives}
+            </div>
+
             {/* File Links Row - Only visible to enrolled users or creator */}
             {(isCreator || isEnrolled) && (moduleFiles.length > 0 || userUploadedFiles.length > 0 || isCreator) && (
               <div style={{
                 display: 'flex',
-                flexWrap: 'wrap',
-                gap: 6,
                 alignItems: 'center',
-                marginTop: 8
+                justifyContent: 'space-between',
+                gap: 12,
+                marginTop: 12
               }}>
-                {/* Existing File Download Buttons */}
-                {moduleFiles.map((file, fileIdx) => (
-                  <button
-                    key={`existing-${fileIdx}`}
-                    onClick={(e) => handleDownloadFile(file, e)}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      background: isDarkMode ? '#2f3336' : '#eff3f4',
-                      color: isDarkMode ? '#a1a1aa' : '#536471',
-                      padding: '6px 12px',
-                      borderRadius: 8,
-                      fontSize: 13,
-                      fontWeight: 500,
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = isDarkMode ? '#3a3f45' : '#cfd9de';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = isDarkMode ? '#2f3336' : '#eff3f4';
-                    }}
-                  >
-                    <FaDownload style={{ fontSize: 11 }} />
-                    {file.name}
-                    {file.size && <span style={{ opacity: 0.7, fontSize: 11 }}>{file.size}</span>}
-                  </button>
-                ))}
+                {/* Left: Label */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <FaFileAlt style={{ fontSize: 12, color: isDarkMode ? '#71767b' : '#536471' }} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#374151' }}>Lesson Document</span>
+                </div>
 
-                {/* User Uploaded Files */}
-                {userUploadedFiles.map((file) => {
-                  const FileIcon = getFileTypeIcon(file.type);
-                  return (
-                    <div
-                      key={`uploaded-${file.id}`}
+                {/* Right: File links */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  {/* Existing Files */}
+                  {moduleFiles.map((file, fileIdx) => (
+                    <a
+                      key={`existing-${fileIdx}`}
+                      href={file.url || '#'}
+                      onClick={(e) => handleDownloadFile(file, e)}
                       style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 0,
-                        background: isDarkMode ? '#1d4a1d' : '#d4edda',
-                        borderRadius: 8,
-                        overflow: 'hidden'
+                        color: '#1d9bf0',
+                        fontSize: 13,
+                        textDecoration: 'underline',
+                        cursor: 'pointer'
                       }}
                     >
-                      <button
+                      {file.name}
+                    </a>
+                  ))}
+
+                  {/* User Uploaded Files */}
+                  {userUploadedFiles.map((file) => (
+                    <div key={`uploaded-${file.id}`} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <a
+                        href={file.url || '#'}
                         onClick={(e) => handleDownloadFile(file, e)}
                         style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          background: 'transparent',
-                          color: isDarkMode ? '#90ee90' : '#155724',
-                          padding: '6px 8px 6px 12px',
+                          color: '#1d9bf0',
                           fontSize: 13,
-                          fontWeight: 500,
-                          border: 'none',
+                          textDecoration: 'underline',
                           cursor: 'pointer'
                         }}
                       >
-                        <FileIcon style={{ fontSize: 11 }} />
                         {file.name}
-                      </button>
+                      </a>
                       {isCreator && (
                         <button
                           onClick={(e) => handleDeleteUploadedFile(encodedIdx, file, e)}
                           style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
                             background: 'transparent',
                             color: isDarkMode ? '#ff6b6b' : '#dc3545',
-                            padding: '6px 10px',
-                            fontSize: 11,
+                            padding: '2px 6px',
+                            fontSize: 12,
                             border: 'none',
-                            borderLeft: isDarkMode ? '1px solid #2d5a2d' : '1px solid #b8dabd',
                             cursor: 'pointer'
                           }}
                           title="Delete file"
@@ -383,66 +435,30 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                         </button>
                       )}
                     </div>
-                  );
-                })}
+                  ))}
 
-                {/* Add File Button - Creator Only */}
-                {isCreator && (
-                  <button
-                    onClick={(e) => handleAddFile(encodedIdx, e)}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      background: isDarkMode ? '#16181c' : 'white',
-                      color: isDarkMode ? '#71767b' : '#536471',
-                      border: isDarkMode ? '1px dashed #2f3336' : '1px dashed #cfd9de',
-                      padding: '6px 12px',
-                      borderRadius: 8,
-                      fontSize: 13,
-                      fontWeight: 500,
-                      cursor: 'pointer'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = '#1d9bf0';
-                      e.currentTarget.style.color = '#1d9bf0';
-                      e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : '#e8f4fd';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#cfd9de';
-                      e.currentTarget.style.color = isDarkMode ? '#71767b' : '#536471';
-                      e.currentTarget.style.background = isDarkMode ? '#16181c' : 'white';
-                    }}
-                  >
-                    <FaPlus style={{ fontSize: 10 }} />
-                    Add File
-                  </button>
-                )}
+                  {/* Add File Button - Creator Only */}
+                  {isCreator && (
+                    <button
+                      onClick={(e) => handleAddFile(encodedIdx, e)}
+                      style={{
+                        padding: '4px 10px',
+                        background: 'transparent',
+                        color: isDarkMode ? '#71767b' : '#64748b',
+                        border: isDarkMode ? '1px solid #2f3336' : '1px solid #d1d5db',
+                        borderRadius: 12,
+                        fontSize: 12,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      + Add
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
-
-          {/* Duration Badge - Hidden now since duration is inline */}
         </div>
-
-        {/* Expanded Content */}
-        {isExpanded && (
-          <div style={{
-            padding: '0 0 16px 48px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12
-          }}>
-            {/* Description / Learning Objectives */}
-            <div style={{
-              fontSize: 14,
-              color: isDarkMode ? '#a1a1aa' : '#536471',
-              lineHeight: 1.5
-            }}>
-              {details.learningObjectives}
-            </div>
-          </div>
-        )}
       </div>
     );
   };
@@ -797,11 +813,17 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                   </div>
 
                   {/* Session Title */}
-                  <div style={{ flex: 1 }}>
+                  <div
+                    style={{ flex: 1 }}
+                    onMouseEnter={() => setHoveredSession(session.number)}
+                    onMouseLeave={() => setHoveredSession(null)}
+                  >
                     <span style={{
                       fontWeight: 700,
                       fontSize: 15,
-                      color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                      textDecoration: hoveredSession === session.number ? 'underline' : 'none',
+                      cursor: 'pointer'
                     }}>
                       Session {session.number}: {session.title}
                     </span>
@@ -812,7 +834,113 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                     }}>
                       {session.duration} • {sessionModules.length} modules
                     </div>
+                    {/* Scheduled session info - show date/time if scheduled */}
+                    {isEnrolled && (() => {
+                      const scheduled = scheduledSessions.find(s => s.sessionNumber === session.number);
+                      if (scheduled) {
+                        const sessionDate = new Date(scheduled.date);
+                        const dateStr = sessionDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                        const timeStr = sessionDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                        return (
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            fontSize: 12,
+                            color: '#1d9bf0',
+                            marginTop: 4
+                          }}>
+                            <FaCalendar style={{ fontSize: 10 }} />
+                            {dateStr} at {timeStr}
+                            {scheduled.teacherName && <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>with {scheduled.teacherName}</span>}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                   </div>
+
+                  {/* Session Action Buttons - Only for enrolled users */}
+                  {isEnrolled && !isCreator && (() => {
+                    const scheduled = scheduledSessions.find(s => s.sessionNumber === session.number);
+                    const isComplete = sessionCompletion[course?.id]?.[session.number]?.completed;
+
+                    if (isComplete) {
+                      return (
+                        <div style={{
+                          padding: '6px 12px',
+                          background: isDarkMode ? '#1a3a1a' : '#dcfce7',
+                          color: '#22c55e',
+                          borderRadius: 20,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        >
+                          <FaCheck style={{ fontSize: 10 }} /> Complete
+                        </div>
+                      );
+                    }
+
+                    if (scheduled) {
+                      return (
+                        <div style={{ display: 'flex', gap: 8 }} onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onJoinSession && onJoinSession(scheduled); }}
+                            style={{
+                              padding: '8px 16px',
+                              background: '#22c55e',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: 20,
+                              fontSize: 13,
+                              fontWeight: 600,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Join
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onRescheduleSession && onRescheduleSession(scheduled); }}
+                            style={{
+                              padding: '8px 12px',
+                              background: 'transparent',
+                              color: isDarkMode ? '#71767b' : '#536471',
+                              border: isDarkMode ? '1px solid #2f3336' : '1px solid #d1d5db',
+                              borderRadius: 20,
+                              fontSize: 13,
+                              fontWeight: 500,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Reschedule
+                          </button>
+                        </div>
+                      );
+                    }
+
+                    // Not scheduled - show Schedule button (any session can be scheduled)
+                    return (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onScheduleSession && onScheduleSession(session.number); }}
+                        style={{
+                          padding: '8px 14px',
+                          background: '#1d9bf0',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 20,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Schedule Session
+                      </button>
+                    );
+                  })()}
 
                   {/* Expand/Collapse Icon */}
                   <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 12 }}>
@@ -826,11 +954,143 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                     border: isDarkMode ? '1px solid #2f3336' : '1px solid #dce3e8',
                     borderTop: 'none',
                     borderRadius: '0 0 8px 8px',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    animation: 'slideDown 0.2s ease-out'
                   }}>
-                    {sessionModules.map((module, idx) =>
-                      renderModule(module, idx, idx === sessionModules.length - 1, session.number, idx)
-                    )}
+                    {sessionModules.map((module, idx) => {
+                      const lessonKey = `${session.number}_${module.originalIndex}`;
+                      const submission = homeworkSubmissions[lessonKey];
+                      const isLastModule = idx === sessionModules.length - 1;
+                      const showHomework = module.allowHomework && isEnrolled && !isCreator;
+
+                      return (
+                        <React.Fragment key={module.originalIndex}>
+                          {renderModule(module, idx, isLastModule && !showHomework, session.number, idx)}
+
+                          {/* Homework Submission Section - Shown after lesson if enabled */}
+                          {showHomework && (
+                            <div style={{
+                              padding: 16,
+                              borderBottom: !isLastModule ? (isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb') : 'none',
+                              background: 'transparent'
+                            }}>
+                              {/* Hidden file input for homework */}
+                              <input
+                                type="file"
+                                id={`homework-input-${lessonKey}`}
+                                style={{ display: 'none' }}
+                                accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.mp4,.webm,.zip"
+                                onChange={(e) => {
+                                  const file = e.target.files[0];
+                                  if (file) handleHomeworkUpload(session.number, module.originalIndex, file);
+                                  e.target.value = ''; // Reset for re-upload
+                                }}
+                              />
+
+                              {submission ? (
+                                /* Submitted state - single line with link on right */
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  gap: 12
+                                }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <FaCheck style={{ fontSize: 12, color: isDarkMode ? '#e7e9ea' : '#374151' }} />
+                                    <span style={{ fontSize: 13, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#374151' }}>Homework Submitted</span>
+                                  </div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <a
+                                      href={submission.file_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        color: isDarkMode ? '#1d9bf0' : '#1d9bf0',
+                                        fontSize: 15,
+                                        fontWeight: 500,
+                                        textDecoration: 'underline'
+                                      }}
+                                    >
+                                      {submission.file_name}
+                                    </a>
+                                    <button
+                                      onClick={() => document.getElementById(`homework-input-${lessonKey}`).click()}
+                                      disabled={isUploadingHomework}
+                                      style={{
+                                        padding: '4px 10px',
+                                        background: 'transparent',
+                                        color: isDarkMode ? '#71767b' : '#64748b',
+                                        border: isDarkMode ? '1px solid #2f3336' : '1px solid #d1d5db',
+                                        borderRadius: 12,
+                                        fontSize: 12,
+                                        cursor: isUploadingHomework ? 'not-allowed' : 'pointer',
+                                        opacity: isUploadingHomework ? 0.6 : 1
+                                      }}
+                                    >
+                                      {isUploadingHomework ? <FaSpinner className="spin" /> : 'Replace'}
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                /* Upload state header */
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 8,
+                                  fontSize: 13,
+                                  fontWeight: 600,
+                                  color: '#ca8a04',
+                                  marginBottom: 12
+                                }}>
+                                  <FaUpload style={{ fontSize: 12 }} />
+                                  Homework Upload
+                                </div>
+                              )}
+
+                              {!submission && (
+                                /* Not submitted state - show upload button */
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  padding: '12px 16px',
+                                  background: isDarkMode ? '#0d1520' : '#fff',
+                                  borderRadius: 8,
+                                  border: isDarkMode ? '1px dashed #3a4553' : '1px dashed #d97706'
+                                }}>
+                                  <span style={{
+                                    color: isDarkMode ? '#71767b' : '#536471',
+                                    fontSize: 14
+                                  }}>
+                                    No file submitted yet
+                                  </span>
+                                  <button
+                                    onClick={() => document.getElementById(`homework-input-${lessonKey}`).click()}
+                                    disabled={isUploadingHomework}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 6,
+                                      padding: '8px 16px',
+                                      background: '#ca8a04',
+                                      color: '#fff',
+                                      border: 'none',
+                                      borderRadius: 20,
+                                      fontSize: 14,
+                                      fontWeight: 600,
+                                      cursor: isUploadingHomework ? 'not-allowed' : 'pointer',
+                                      opacity: isUploadingHomework ? 0.8 : 1
+                                    }}
+                                  >
+                                    {isUploadingHomework ? <><FaSpinner className="spin" /> Uploading...</> : '+ Upload'}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -1712,12 +1972,12 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
   const tabs = isCoursePurchased ? [
     { id: 'curriculum', label: 'Curriculum' },
     { id: 'feed', label: 'Course Feed' },
-    { id: 'reviews', label: 'Reviews' },
+    { id: 'messages', label: 'Messages' },
     { id: 'about', label: 'About Course' }
   ] : [
     { id: 'curriculum', label: 'Curriculum' },
     { id: 'feed', label: 'Course Feed' },
-    { id: 'reviews', label: 'Reviews' }
+    { id: 'messages', label: 'Messages' }
   ];
 
   return (
@@ -2017,25 +2277,24 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
               <span style={{ fontSize: 18 }}>🎯</span> What You'll Learn
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[
-                'Fundamentals of prompt engineering',
-                'Advanced techniques for business apps',
-                'Building your own prompt library',
-                'Iteration and refinement',
-                'Context and constraint design',
-                'Real-world use cases'
-              ].map((item, idx) => (
-                <div key={idx} style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  fontSize: 14,
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                }}>
-                  <FaCheck style={{ color: '#10b981', fontSize: 12, marginTop: 4, flexShrink: 0 }} />
-                  <span>{item}</span>
+              {(course.learningObjectives && course.learningObjectives.length > 0) ? (
+                course.learningObjectives.map((item, idx) => (
+                  <div key={idx} style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 10,
+                    fontSize: 14,
+                    color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                  }}>
+                    <FaCheck style={{ color: '#10b981', fontSize: 12, marginTop: 4, flexShrink: 0 }} />
+                    <span>{item}</span>
+                  </div>
+                ))
+              ) : (
+                <div style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#6b7280' }}>
+                  No learning objectives specified yet.
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -2752,11 +3011,14 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
             </div>
           )}
 
-          {activeTab === 'reviews' && (
-            <div style={{ textAlign: 'center', padding: 48 }}>
-              <div style={{ fontSize: 48, marginBottom: 16 }}>⭐</div>
-              <h3 style={{ color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 8 }}>No Reviews Yet</h3>
-              <p style={{ color: isDarkMode ? '#71767b' : '#536471' }}>Be the first to review this course!</p>
+          {activeTab === 'messages' && (
+            <div style={{ padding: '24px 0' }}>
+              <CourseMessages
+                course={course}
+                currentUser={currentUser}
+                isDarkMode={isDarkMode}
+                scheduledSessions={scheduledSessions}
+              />
             </div>
           )}
 
@@ -2837,25 +3099,24 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                     <span style={{ fontSize: 18 }}>🎯</span> What You'll Learn
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {[
-                      'Fundamentals of prompt engineering',
-                      'Advanced techniques for business apps',
-                      'Building your own prompt library',
-                      'Iteration and refinement',
-                      'Context and constraint design',
-                      'Real-world use cases'
-                    ].map((item, idx) => (
-                      <div key={idx} style={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: 10,
-                        fontSize: 14,
-                        color: isDarkMode ? '#e7e9ea' : '#0f1419'
-                      }}>
-                        <FaCheck style={{ color: '#10b981', fontSize: 12, marginTop: 4, flexShrink: 0 }} />
-                        <span>{item}</span>
+                    {(course.learningObjectives && course.learningObjectives.length > 0) ? (
+                      course.learningObjectives.map((item, idx) => (
+                        <div key={idx} style={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: 10,
+                          fontSize: 14,
+                          color: isDarkMode ? '#e7e9ea' : '#0f1419'
+                        }}>
+                          <FaCheck style={{ color: '#10b981', fontSize: 12, marginTop: 4, flexShrink: 0 }} />
+                          <span>{item}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#6b7280' }}>
+                        No learning objectives specified yet.
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               </div>
@@ -3299,20 +3560,6 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
       {/* Course Curriculum - Full Width Below Topics */}
       {activeTab === 'curriculum' && (
         <div style={{ padding: '0 24px 24px 24px', maxWidth: 1200, margin: '0 auto' }}>
-          {/* Your Sessions Card - Only for enrolled users */}
-          {isCoursePurchased && course?.sessions?.list && (
-            <div style={{ marginBottom: 20 }}>
-              <SessionTimelineCards
-                course={course}
-                scheduledSessions={courseScheduledSessions}
-                sessionCompletion={sessionCompletion}
-                onScheduleSession={(sessionNum) => onBrowseStudentTeachers && onBrowseStudentTeachers(course, sessionNum)}
-                onJoinSession={handleJoinSession}
-                onRescheduleSession={onRescheduleSession}
-                isDarkMode={isDarkMode}
-              />
-            </div>
-          )}
           <CourseCurriculumSection
             course={course}
             isDarkMode={isDarkMode}
@@ -3321,6 +3568,11 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
             isCreator={currentUser?.name === instructor?.name}
             isEnrolled={isCoursePurchased}
             currentUser={currentUser}
+            scheduledSessions={courseScheduledSessions}
+            sessionCompletion={sessionCompletion}
+            onScheduleSession={(sessionNum) => onBrowseStudentTeachers && onBrowseStudentTeachers(course, sessionNum)}
+            onJoinSession={handleJoinSession}
+            onRescheduleSession={onRescheduleSession}
           />
 
           {/* Course Materials Section - Only show to enrolled users or course creator */}

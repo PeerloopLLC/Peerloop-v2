@@ -22,6 +22,7 @@ import {
   updateCourseSessionFilesSupabase
 } from '../data/database';
 import CourseBuilder from './CourseBuilder';
+import CourseDetailView from './CourseDetailView';
 
 // Initialize Supabase client for file uploads
 const supabase = createClient(
@@ -655,16 +656,12 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
               <div key={course.id}>
                 {/* Course Row */}
                 <div
-                  onClick={() => setSelectedCourse(isExpanded ? null : course)}
                   style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr 100px 100px 180px',
                     padding: '14px 20px',
-                    borderBottom: !isExpanded && index < courses.length - 1 ? `1px solid ${borderColor}` : 'none',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    background: isExpanded ? (isDarkMode ? '#1a1f2e' : '#f8fafc') : 'transparent',
-                    transition: 'background 0.15s ease'
+                    borderBottom: index < courses.length - 1 ? `1px solid ${borderColor}` : 'none',
+                    alignItems: 'center'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -684,17 +681,11 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                       {course.title?.substring(0, 2).toUpperCase() || 'CO'}
                     </div>
                     <div>
-                      <div style={{ fontSize: 14, color: textPrimary, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{
-                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.2s ease',
-                          fontSize: 10,
-                          color: textSecondary
-                        }}>▶</span>
+                      <div style={{ fontSize: 14, color: textPrimary, fontWeight: 500 }}>
                         {course.title}
                       </div>
-                      <div style={{ fontSize: 12, color: textSecondary, marginLeft: 16 }}>
-                        {course.price || '$0'} • {courseFiles.length} file{courseFiles.length !== 1 ? 's' : ''}
+                      <div style={{ fontSize: 12, color: textSecondary }}>
+                        {course.price || '$0'}
                       </div>
                     </div>
                   </div>
@@ -749,156 +740,6 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
                     </button>
                   </div>
                 </div>
-
-                {/* Expanded Section - File Upload */}
-                {isExpanded && (
-                  <div style={{
-                    padding: '20px 24px',
-                    background: isDarkMode ? '#0d1117' : '#f1f5f9',
-                    borderBottom: index < courses.length - 1 ? `1px solid ${borderColor}` : 'none'
-                  }}>
-                    <h4 style={{
-                      fontSize: 13,
-                      fontWeight: 600,
-                      color: textSecondary,
-                      margin: '0 0 12px 0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6
-                    }}>
-                      📎 Session Presentation Files
-                    </h4>
-                    <p style={{ fontSize: 12, color: textSecondary, marginBottom: 16 }}>
-                      Upload PDF or PowerPoint files for BigBlueButton sessions (max 30MB)
-                    </p>
-
-                    {/* Upload Button */}
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      marginBottom: 16,
-                      flexWrap: 'wrap'
-                    }}>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".pdf,.ppt,.pptx"
-                        onChange={(e) => {
-                          handleFileUpload(e);
-                          // After upload, we need to update the course
-                        }}
-                        style={{ display: 'none' }}
-                        id={`file-upload-${course.id}`}
-                      />
-                      <label
-                        htmlFor={`file-upload-${course.id}`}
-                        style={{
-                          padding: '8px 16px',
-                          background: accentBlue,
-                          border: 'none',
-                          borderRadius: 6,
-                          color: '#fff',
-                          fontSize: 13,
-                          fontWeight: 500,
-                          cursor: isUploading ? 'not-allowed' : 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          opacity: isUploading ? 0.6 : 1
-                        }}
-                      >
-                        <FaUpload style={{ fontSize: 12 }} />
-                        {isUploading ? 'Uploading...' : 'Upload File'}
-                      </label>
-                      {uploadSuccess && (
-                        <span style={{ fontSize: 12, color: accentGreen }}>✓ {uploadSuccess}</span>
-                      )}
-                      {uploadError && (
-                        <span style={{ fontSize: 12, color: accentRed }}>✗ {uploadError}</span>
-                      )}
-                    </div>
-
-                    {/* Files List */}
-                    {courseFiles.length === 0 ? (
-                      <div style={{
-                        padding: 16,
-                        background: bgCard,
-                        borderRadius: 8,
-                        border: `1px dashed ${borderColor}`,
-                        textAlign: 'center',
-                        color: textSecondary,
-                        fontSize: 13
-                      }}>
-                        No files yet. Upload a PDF or PowerPoint to get started.
-                      </div>
-                    ) : (
-                      <div style={{
-                        background: bgCard,
-                        borderRadius: 8,
-                        border: `1px solid ${borderColor}`,
-                        overflow: 'hidden'
-                      }}>
-                        {courseFiles.map((file, fileIndex) => (
-                          <div
-                            key={file.filename}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              padding: '10px 14px',
-                              borderBottom: fileIndex < courseFiles.length - 1 ? `1px solid ${borderColor}` : 'none'
-                            }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                              {file.filename?.endsWith('.pdf') ? (
-                                <FaFilePdf style={{ fontSize: 16, color: '#ef4444' }} />
-                              ) : (
-                                <FaFileAlt style={{ fontSize: 16, color: '#f97316' }} />
-                              )}
-                              <div>
-                                <div style={{ fontSize: 13, color: textPrimary }}>{file.name}</div>
-                                <div style={{ fontSize: 11, color: textSecondary }}>{file.filename}</div>
-                              </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: 8 }}>
-                              <a
-                                href={file.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                  padding: '4px 10px',
-                                  background: 'transparent',
-                                  border: `1px solid ${accentBlue}`,
-                                  borderRadius: 4,
-                                  color: accentBlue,
-                                  fontSize: 11,
-                                  textDecoration: 'none'
-                                }}
-                              >
-                                View
-                              </a>
-                              <button
-                                onClick={() => handleDeleteFile(file)}
-                                style={{
-                                  padding: '4px 8px',
-                                  background: 'transparent',
-                                  border: `1px solid ${accentRed}`,
-                                  borderRadius: 4,
-                                  color: accentRed,
-                                  fontSize: 11,
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <FaTrash style={{ fontSize: 10 }} />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             )});
           })()}
@@ -2495,6 +2336,98 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
     );
   };
 
+  // Full-page preview mode - uses the real CourseDetailView
+  if (previewCourse) {
+    return (
+      <div style={{
+        background: bgPrimary,
+        minHeight: '100vh',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      }}>
+        {/* Preview Header with Breadcrumb */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 24px',
+          height: 56,
+          borderBottom: `1px solid ${borderColor}`,
+          background: bgSecondary,
+          position: 'sticky',
+          top: 0,
+          zIndex: 100
+        }}>
+          {/* Back Link */}
+          <button
+            onClick={() => { setPreviewCourse(null); setPreviewTab('card'); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 16px',
+              background: 'transparent',
+              border: 'none',
+              color: accentBlue,
+              fontSize: 14,
+              fontWeight: 500,
+              cursor: 'pointer'
+            }}
+          >
+            ← Back to Content
+          </button>
+
+          {/* Breadcrumb */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            fontSize: 14,
+            color: textSecondary
+          }}>
+            <span>Workspace</span>
+            <span style={{ opacity: 0.5 }}>›</span>
+            <span>Content</span>
+            <span style={{ opacity: 0.5 }}>›</span>
+            <span style={{ color: textPrimary, fontWeight: 500 }}>{previewCourse.title}</span>
+          </div>
+
+          {/* Edit Button */}
+          <button
+            onClick={() => {
+              setEditingCourse(previewCourse);
+              setPreviewCourse(null);
+              setPreviewTab('card');
+              setShowCourseBuilder(true);
+            }}
+            style={{
+              padding: '8px 16px',
+              background: accentBlue,
+              border: 'none',
+              borderRadius: 6,
+              color: '#fff',
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: 'pointer'
+            }}
+          >
+            Edit Course
+          </button>
+        </div>
+
+        {/* Real CourseDetailView Preview */}
+        <div style={{ height: 'calc(100vh - 56px)', overflow: 'auto' }}>
+          <CourseDetailView
+            course={previewCourse}
+            onBack={() => { setPreviewCourse(null); setPreviewTab('card'); }}
+            isDarkMode={isDarkMode}
+            currentUser={currentUser}
+            isCoursePurchased={false}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{
       background: bgPrimary,
@@ -2726,8 +2659,8 @@ const CreatorDashboard = ({ isDarkMode = true, currentUser = null, onMenuChange 
         </div>
       )}
 
-      {/* Course Preview Modal - Card View & Detail View */}
-      {previewCourse && (
+      {/* Old preview modal removed - now using full-page preview */}
+      {false && (
         <div
           style={{
             position: 'fixed',

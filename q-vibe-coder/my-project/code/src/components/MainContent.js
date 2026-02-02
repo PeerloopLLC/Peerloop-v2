@@ -31,6 +31,7 @@ import PurchaseModal from './PurchaseModal';
 import FindTeacherView from './FindTeacherView';
 import RescheduleModal from './RescheduleModal';
 import Notifications from './Notifications';
+import MessagesPage from './MessagesPage';
 import AboutView from './AboutView';
 import DiscoverView from './DiscoverView';
 import Breadcrumb from './Breadcrumb';
@@ -3222,6 +3223,11 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
   // Show Notifications when Notifications is active
   if (activeMenu === 'Notifications') {
     return <Notifications isDarkMode={isDarkMode} />;
+  }
+
+  // Show Messages when Messages is active
+  if (activeMenu === 'Messages') {
+    return <MessagesPage currentUser={currentUser} isDarkMode={isDarkMode} />;
   }
 
   // Show Profile when Profile is active

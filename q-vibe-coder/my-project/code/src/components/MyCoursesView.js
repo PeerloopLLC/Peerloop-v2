@@ -348,7 +348,7 @@ const MyCoursesView = ({
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'inprogress', or 'completed'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState(null); // Selected date for filtering
-  const [courseViewTab, setCourseViewTab] = useState('active'); // 'active' or 'completed'
+  const [courseMode, setCourseMode] = useState('taking'); // 'taking', 'teaching', 'took', 'taught'
 
   // Dropdown state for community follow menu
   const [openCommunityFollowDropdown, setOpenCommunityFollowDropdown] = useState(null);
@@ -657,6 +657,82 @@ const MyCoursesView = ({
   // Count active and completed courses
   const activeCoursesCount = activeCoursesGroups.reduce((sum, g) => sum + g.courses.length, 0);
   const completedCoursesCount = completedCoursesGroups.reduce((sum, g) => sum + g.courses.length, 0);
+
+  // Find courses where current user is scheduled as a student-teacher (Teaching mode)
+  const teachingCoursesData = useMemo(() => {
+    if (!currentUser?.id) return [];
+
+    const teachingSessions = [];
+
+    // Scan all scheduledSessions_* in localStorage to find sessions where we are the teacher
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('scheduledSessions_') && !key.endsWith(currentUser.id)) {
+          const sessions = JSON.parse(localStorage.getItem(key) || '[]');
+          sessions.forEach(session => {
+            // Check if this session has us as the teacher (handles both field naming conventions)
+            if (session.studentTeacherId === currentUser.id ||
+                session.studentTeacherId === currentUser.name ||
+                session.studentTeacherName === currentUser.name ||
+                session.teacherId === currentUser.id ||
+                session.teacherId === currentUser.name ||
+                session.teacherName === currentUser.name) {
+              // Get the student's ID from the storage key
+              const studentId = key.replace('scheduledSessions_', '');
+              teachingSessions.push({
+                ...session,
+                studentId,
+                studentName: session.studentName || studentId
+              });
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Error scanning teaching sessions:', e);
+    }
+
+    // Group by course and get course data
+    const courseMap = {};
+    teachingSessions.forEach(session => {
+      if (!courseMap[session.courseId]) {
+        const course = indexedCourses.find(c => c.id === session.courseId);
+        if (course) {
+          courseMap[session.courseId] = {
+            ...course,
+            teachingSessions: []
+          };
+        }
+      }
+      if (courseMap[session.courseId]) {
+        courseMap[session.courseId].teachingSessions.push(session);
+      }
+    });
+
+    return Object.values(courseMap);
+  }, [currentUser?.id, currentUser?.name, indexedCourses]);
+
+  // Group teaching courses by instructor
+  const teachingCoursesGroups = useMemo(() => {
+    const groups = {};
+
+    teachingCoursesData.forEach(course => {
+      const instructorId = course.instructorId;
+      if (!groups[instructorId]) {
+        const instructor = getInstructorById(instructorId);
+        groups[instructorId] = {
+          instructor,
+          courses: []
+        };
+      }
+      groups[instructorId].courses.push(course);
+    });
+
+    return Object.values(groups);
+  }, [teachingCoursesData]);
+
+  const teachingCoursesCount = teachingCoursesData.length;
 
   // Highlight search matches
   const highlightMatch = (text, query) => {
@@ -1654,8 +1730,8 @@ const MyCoursesView = ({
     );
   };
 
-  // Empty state
-  if (myCoursesData.length === 0) {
+  // Empty state - only show if no learning courses AND no teaching courses
+  if (myCoursesData.length === 0 && teachingCoursesData.length === 0) {
     return (
       <div className="main-content">
         <div className="three-column-layout browse-layout">
@@ -1734,12 +1810,8 @@ const MyCoursesView = ({
               My Courses
             </h1>
 
-            {/* Search box on right */}
-            <div style={{
-              width: 150,
-              display: 'flex',
-              alignItems: 'center'
-            }}>
+            {/* Search box */}
+            <div style={{ width: 120 }}>
               <div className="search-container" style={{ width: '100%', marginLeft: 0 }}>
                 <FaSearch className="search-icon" />
                 <input
@@ -1762,7 +1834,7 @@ const MyCoursesView = ({
             onSelectDate={setSelectedDate}
           />
 
-          {/* Active/Completed Tabs - STICKY (stays visible) */}
+          {/* Course Mode Pills - STICKY */}
           <div style={{
             position: 'sticky',
             top: 0,
@@ -1771,68 +1843,112 @@ const MyCoursesView = ({
             borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
             background: isDarkMode ? '#000' : '#fff'
           }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8
-              }}>
-                <button
-                  onClick={() => setCourseViewTab('active')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '8px 16px',
-                    borderRadius: 20,
-                    border: courseViewTab === 'active'
-                      ? '2px solid #1d9bf0'
-                      : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                    background: courseViewTab === 'active'
-                      ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                      : (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                    color: courseViewTab === 'active'
-                      ? '#1d9bf0'
-                      : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  Active Courses ({activeCoursesCount})
-                </button>
-                <button
-                  onClick={() => setCourseViewTab('completed')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '8px 16px',
-                    borderRadius: 20,
-                    border: courseViewTab === 'completed'
-                      ? '2px solid #1d9bf0'
-                      : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-                    background: courseViewTab === 'completed'
-                      ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                      : (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                    color: courseViewTab === 'completed'
-                      ? '#1d9bf0'
-                      : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  Completed Courses ({completedCoursesCount})
-                </button>
-              </div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              {/* Taking pill */}
+              <button
+                onClick={() => setCourseMode('taking')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 20,
+                  border: courseMode === 'taking'
+                    ? '2px solid #1d9bf0'
+                    : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                  background: courseMode === 'taking'
+                    ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
+                    : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                  color: courseMode === 'taking'
+                    ? '#1d9bf0'
+                    : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Taking ({activeCoursesCount})
+              </button>
+              {/* Teaching pill */}
+              <button
+                onClick={() => setCourseMode('teaching')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 20,
+                  border: courseMode === 'teaching'
+                    ? '2px solid #10b981'
+                    : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                  background: courseMode === 'teaching'
+                    ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+                    : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                  color: courseMode === 'teaching'
+                    ? '#10b981'
+                    : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Teaching ({teachingCoursesCount})
+              </button>
+              {/* Took pill */}
+              <button
+                onClick={() => setCourseMode('took')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 20,
+                  border: courseMode === 'took'
+                    ? '2px solid #8b5cf6'
+                    : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                  background: courseMode === 'took'
+                    ? (isDarkMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.1)')
+                    : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                  color: courseMode === 'took'
+                    ? '#8b5cf6'
+                    : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Took ({completedCoursesCount})
+              </button>
+              {/* Taught pill */}
+              <button
+                onClick={() => setCourseMode('taught')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 20,
+                  border: courseMode === 'taught'
+                    ? '2px solid #f59e0b'
+                    : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                  background: courseMode === 'taught'
+                    ? (isDarkMode ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.1)')
+                    : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                  color: courseMode === 'taught'
+                    ? '#f59e0b'
+                    : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Taught (0)
+              </button>
             </div>
+          </div>
 
-          {/* Today's Sessions / Selected Date Sessions - Highlighted Box - Only show on Active tab */}
-          {courseViewTab === 'active' && (() => {
+          {/* Today's Sessions / Selected Date Sessions - Highlighted Box - Only show in Taking mode */}
+          {courseMode === 'taking' && (() => {
             // Determine which sessions to show
             const displayDate = selectedDate || (sessionsForToday.length > 0 ? todayDateKey : null);
             const displaySessions = selectedDate ? sessionsForSelectedDate : sessionsForToday;
@@ -2025,16 +2141,111 @@ const MyCoursesView = ({
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
                 }}>
-                  All My Courses
+                  Courses I'm Taking
                 </div>
               </>
             );
           })()}
 
-          {/* Course List - Based on Selected Tab */}
+          {/* Course List - Based on Selected Tab and Mode */}
           <div>
-            {courseViewTab === 'active' ? (
-              // ACTIVE COURSES
+            {courseMode === 'teaching' ? (
+              // TEACHING COURSES
+              teachingCoursesGroups.length === 0 ? (
+                <div style={{
+                  padding: 48,
+                  textAlign: 'center',
+                  color: isDarkMode ? '#71717a' : '#9ca3af'
+                }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, marginBottom: 16, opacity: 0.5, fill: 'currentColor' }}>
+                    <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+                  </svg>
+                  <p>No teaching assignments yet.</p>
+                  <p style={{ fontSize: 12, marginTop: 8 }}>When an instructor schedules you as a student-teacher, courses will appear here.</p>
+                </div>
+              ) : (
+                teachingCoursesGroups.map(group => (
+                  <div key={group.instructorId} style={{ marginBottom: 16 }}>
+                    {/* Instructor Header */}
+                    <div style={{
+                      padding: '12px 20px',
+                      background: isDarkMode ? '#16181c' : '#f7f9f9',
+                      borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12
+                    }}>
+                      <img
+                        src={group.instructor?.avatar || '/default-avatar.png'}
+                        alt={group.instructor?.name}
+                        style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
+                      />
+                      <div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>
+                          {group.instructor?.communityName || group.instructor?.name || 'Unknown Instructor'}
+                        </div>
+                        <div style={{ fontSize: 12, color: '#10b981' }}>
+                          Teaching {group.courses.length} course{group.courses.length > 1 ? 's' : ''}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Course Cards */}
+                    {group.courses.map(course => (
+                      <div
+                        key={course.id}
+                        onClick={() => onViewCourse && onViewCourse(course.id)}
+                        style={{
+                          padding: '16px 20px',
+                          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f7f9f9'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <div style={{ display: 'flex', gap: 12 }}>
+                          <img
+                            src={course.image || course.thumbnail}
+                            alt={course.title}
+                            style={{ width: 80, height: 45, borderRadius: 6, objectFit: 'cover' }}
+                          />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: isDarkMode ? '#e7e9ea' : '#0f1419', marginBottom: 4 }}>
+                              {course.title}
+                            </div>
+                            {course.teachingSessions && course.teachingSessions.length > 0 && (
+                              <div style={{ fontSize: 12, color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: 'currentColor' }}>
+                                  <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+                                </svg>
+                                {course.teachingSessions.length} session{course.teachingSessions.length > 1 ? 's' : ''} scheduled
+                                {course.teachingSessions[0]?.studentName && (
+                                  <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>
+                                    {' '}with {course.teachingSessions[0].studentName}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div style={{
+                            background: '#10b981',
+                            color: '#fff',
+                            padding: '4px 10px',
+                            borderRadius: 12,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            alignSelf: 'center'
+                          }}>
+                            Teaching
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))
+              )
+            ) : courseMode === 'taking' ? (
+              // TAKING COURSES (active learning)
               activeCoursesGroups.length === 0 ? (
                 <div style={{
                   padding: 48,
@@ -2047,8 +2258,8 @@ const MyCoursesView = ({
               ) : (
                 activeCoursesGroups.map(group => renderInstructorGroup(group, 'active', false))
               )
-            ) : (
-              // COMPLETED COURSES
+            ) : courseMode === 'took' ? (
+              // TOOK COURSES (completed learning)
               completedCoursesGroups.length === 0 ? (
                 <div style={{
                   padding: 48,
@@ -2061,6 +2272,19 @@ const MyCoursesView = ({
               ) : (
                 completedCoursesGroups.map(group => renderInstructorGroup(group, 'completed', true))
               )
+            ) : (
+              // TAUGHT COURSES (past teaching - placeholder for now)
+              <div style={{
+                padding: 48,
+                textAlign: 'center',
+                color: isDarkMode ? '#71717a' : '#9ca3af'
+              }}>
+                <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, marginBottom: 16, opacity: 0.5, fill: 'currentColor' }}>
+                  <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+                </svg>
+                <p>No past teaching sessions yet.</p>
+                <p style={{ fontSize: 12, marginTop: 8 }}>Completed teaching assignments will appear here.</p>
+              </div>
             )}
           </div>
         </div>
