@@ -127,9 +127,29 @@ const CourseMessages = ({ course, currentUser, isDarkMode, scheduledSessions = [
 
         setChatClient(client);
 
-        // Now just watch the channel (it was created server-side)
-        const courseChannel = client.channel('messaging', `course-${courseId}`);
+        // Create or get the channel
+        const courseChannel = client.channel('messaging', `course-${courseId}`, {
+          name: `${courseName} Discussion`,
+        });
+
+        // Create if doesn't exist, then watch
+        try {
+          await courseChannel.create();
+        } catch (createErr) {
+          // Channel may already exist - that's fine
+          console.log('Channel exists or create skipped:', createErr.message);
+        }
         await courseChannel.watch();
+
+        // Add current user as a member (server-side is broken, so do it client-side)
+        // This ensures the channel appears in the main Messages page
+        try {
+          await courseChannel.addMembers([currentUser.id]);
+          console.log('✅ Added self to channel members');
+        } catch (memberErr) {
+          // May fail if no permission or already a member - that's OK
+          console.log('ℹ️ Member status:', memberErr.message);
+        }
 
         setChannel(courseChannel);
         setIsLoading(false);

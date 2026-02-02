@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { StreamChat } from 'stream-chat';
 import './Profile.css';
 import { getCourseById, getInstructorById } from '../data/database';
 import {
@@ -274,109 +275,89 @@ const Profile = ({ currentUser, onSwitchUser, onMenuChange, isDarkMode, toggleDa
 
     setIsResetting(true);
     let chatResetNote = '';
+    const userId = currentUser?.id;
 
     try {
-      // 1. Gather course IDs from localStorage BEFORE clearing
-      const userId = currentUser?.id;
-      let courseChannelIds = [];
+      // 1. Query GetStream CLIENT-SIDE and remove user from channels directly
+      // Client-side works because the user is authenticated with their token
+      let removedCount = 0;
+      let removalErrors = [];
 
       try {
-        // Get purchased courses
-        const purchasedCourses = JSON.parse(localStorage.getItem(`purchasedCourses_${userId}`) || '[]');
-        purchasedCourses.forEach(c => {
-          const id = c.courseId || c.id || c;
-          if (id) courseChannelIds.push(`course-${id}`);
-        });
+        const apiKey = process.env.REACT_APP_GETSTREAM_API_KEY;
+        if (apiKey && userId) {
+          console.log('🔍 Connecting to GetStream client-side...');
 
-        // Also check scheduledSessions for additional courses
-        const scheduledSessions = JSON.parse(localStorage.getItem(`scheduledSessions_${userId}`) || '[]');
-        scheduledSessions.forEach(s => {
-          if (s.courseId) {
-            const channelId = `course-${s.courseId}`;
-            if (!courseChannelIds.includes(channelId)) {
-              courseChannelIds.push(channelId);
+          // Get a token first
+          const tokenResponse = await fetch(
+            `${process.env.REACT_APP_SUPABASE_URL}/functions/v1/getstream-token`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.REACT_APP_SUPABASE_ANON_KEY}`,
+              },
+              body: JSON.stringify({ userId }),
+            }
+          );
+          const { token } = await tokenResponse.json();
+
+          // Create client and connect
+          const client = StreamChat.getInstance(apiKey);
+          await client.connectUser({ id: userId }, token);
+
+          // Query channels where user is a member
+          const filter = { members: { $in: [userId] }, type: 'messaging' };
+          const channels = await client.queryChannels(filter, {}, { limit: 30 });
+
+          console.log(`📋 Found ${channels.length} channels client-side:`, channels.map(c => c.id));
+
+          // Try to truncate (delete messages) then remove user from each channel
+          for (const channel of channels) {
+            try {
+              // First try to truncate - this deletes all messages
+              console.log(`🗑️ Truncating messages in channel ${channel.id}...`);
+              await channel.truncate();
+              console.log(`✅ Truncated messages in ${channel.id}`);
+
+              // Then remove user from channel
+              await channel.removeMembers([userId]);
+              console.log(`✅ Removed from ${channel.id}`);
+              removedCount++;
+            } catch (truncateErr) {
+              console.warn(`⚠️ Could not truncate ${channel.id}:`, truncateErr.message);
+              // Fall back to just removing user (messages will remain)
+              try {
+                await channel.removeMembers([userId]);
+                console.log(`✅ Removed from ${channel.id} (messages remain)`);
+                removedCount++;
+                removalErrors.push(`${channel.id}: messages not deleted`);
+              } catch (removeErr) {
+                console.warn(`❌ Could not remove from ${channel.id}:`, removeErr.message);
+                removalErrors.push(`${channel.id}: ${removeErr.message}`);
+              }
             }
           }
-        });
 
-        // Scan ALL localStorage keys for course-related data
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key && (key.includes('course') || key.includes('Course'))) {
-            try {
-              const val = localStorage.getItem(key);
-              if (val) {
-                const data = JSON.parse(val);
-                // Handle arrays
-                if (Array.isArray(data)) {
-                  data.forEach(item => {
-                    const id = item?.courseId || item?.id;
-                    if (id) {
-                      const channelId = `course-${id}`;
-                      if (!courseChannelIds.includes(channelId)) {
-                        courseChannelIds.push(channelId);
-                      }
-                    }
-                  });
-                }
-                // Handle objects with courseId
-                else if (data?.courseId) {
-                  const channelId = `course-${data.courseId}`;
-                  if (!courseChannelIds.includes(channelId)) {
-                    courseChannelIds.push(channelId);
-                  }
-                }
-              }
-            } catch (e) { /* ignore parse errors */ }
-          }
+          // Skip disconnect - page reloads immediately, and disconnecting
+          // while React components are still mounted causes errors
         }
-
-        // Add known test channels as fallback (for prototype)
-        ['course-1', 'course-6'].forEach(ch => {
-          if (!courseChannelIds.includes(ch)) {
-            courseChannelIds.push(ch);
-          }
-        });
-
-        console.log('Course channels to remove user from:', courseChannelIds);
-      } catch (parseErr) {
-        console.warn('Could not parse course data:', parseErr);
-        // Fallback to known test channels
-        courseChannelIds = ['course-1', 'course-6'];
+      } catch (queryErr) {
+        console.warn('Client-side channel removal failed:', queryErr.message);
+        removalErrors.push(`connection: ${queryErr.message}`);
       }
 
-      // 2. Remove user from GetStream channels
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_SUPABASE_URL}/functions/v1/getstream-token`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${process.env.REACT_APP_SUPABASE_ANON_KEY}`,
-            },
-            body: JSON.stringify({
-              userId: userId,
-              action: 'reset',
-              channelIds: courseChannelIds
-            }),
-          }
-        );
-
-        const result = await response.json();
-        console.log('GetStream reset result:', result);
-
-        if (result.error) {
-          chatResetNote = '\n\nNote: Some chat channels could not be cleared automatically.';
-        } else if (result.removedCount > 0) {
-          chatResetNote = `\n\nRemoved from ${result.removedCount} chat channel(s).`;
+      // Set the chat reset note based on results
+      if (removedCount > 0) {
+        chatResetNote = `\n\nCleared ${removedCount} chat channel(s).`;
+        if (removalErrors.length > 0) {
+          chatResetNote += ` Note: ${removalErrors.join(', ')}`;
         }
-      } catch (chatErr) {
-        console.warn('GetStream reset failed (non-blocking):', chatErr);
-        chatResetNote = '\n\nNote: Chat channels could not be cleared automatically.';
+      } else if (removalErrors.length > 0) {
+        chatResetNote = `\n\nCould not clear channels: ${removalErrors.join(', ')}`;
       }
 
-      // 3. Clear localStorage (preserve some settings)
+      // 4. Clear localStorage (preserve some settings)
       const preserveKeys = ['darkMode', 'textDarknessLevel', 'communityNavStyle', 'profileBannerColor'];
       const preserved = {};
       preserveKeys.forEach(key => {

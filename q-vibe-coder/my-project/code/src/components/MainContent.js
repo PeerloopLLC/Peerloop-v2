@@ -1572,9 +1572,10 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       }
     }, [activeMenu]);
 
-    // Reset course viewing state when navigating to Feeds (My Community)
+    // Reset course viewing state when navigating to main menus (Messages, Profile, etc.)
     React.useEffect(() => {
-      if (activeMenu === 'My Community') {
+      const mainMenus = ['My Community', 'Messages', 'Profile', 'Notifications', 'Settings', 'Job Exchange'];
+      if (mainMenus.includes(activeMenu)) {
         setViewingCourseFromCommunity(null);
       }
     }, [activeMenu]);
@@ -2113,7 +2114,9 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
 
   // Show Course when viewing a course (from community, dashboard, or My Courses)
   // This check must come BEFORE My Courses check so clicking a course shows detail
-  if (viewingCourseFromCommunity) {
+  // BUT skip this if user clicked a main menu item (Messages, Profile, etc.) - those take priority
+  const mainMenuOverrides = ['Messages', 'Profile', 'Notifications', 'Settings', 'Job Exchange'];
+  if (viewingCourseFromCommunity && !mainMenuOverrides.includes(activeMenu)) {
     // Check if the course is purchased - show PurchasedCourseDetail instead
     const isPurchased = isCoursePurchased(viewingCourseFromCommunity?.id);
 

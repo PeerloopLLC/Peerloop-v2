@@ -36,10 +36,10 @@ serve(async (req) => {
       );
     }
 
-    // Initialize server-side client
-    const serverClient = StreamChat.getInstance(apiKey, apiSecret);
+    // Initialize server-side client (use 'new' for fresh instance, not getInstance which may cache)
+    const serverClient = new StreamChat(apiKey, apiSecret);
 
-    // Handle reset action - remove user from ALL channels they're a member of
+    // Handle reset action - remove user from ALL channels
     if (action === 'reset') {
       console.log(`🔄 Reset action for user: ${userId}`);
 
@@ -47,33 +47,36 @@ serve(async (req) => {
       const errors: string[] = [];
       const removedFrom: string[] = [];
 
+      // APPROACH: Delete and recreate the user - this removes them from ALL channels
       try {
-        // First, upsert the user so we can query their channels
+        // First, try to delete the user (removes from all channels)
+        console.log(`🗑️ Attempting to delete user ${userId} from GetStream...`);
+        await serverClient.deleteUsers([userId], {
+          user: 'soft', // soft delete preserves messages but removes user
+          messages: 'soft',
+          conversations: 'soft',
+        });
+        console.log(`✅ User ${userId} deleted from GetStream`);
+
+        // Small delay to ensure deletion is processed
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Recreate the user fresh
+        console.log(`🔄 Recreating user ${userId}...`);
         await serverClient.upsertUsers([{ id: userId }]);
+        console.log(`✅ User ${userId} recreated in GetStream`);
 
-        // Query ALL channels where user is a member (server-side)
-        const filter = { members: { $in: [userId] } };
-        const channels = await serverClient.queryChannels(filter, {}, { limit: 30 });
-        console.log(`Found ${channels.length} channels for user ${userId}`);
+        removedCount = 1; // Indicate success
+        removedFrom.push('all-channels-via-user-delete');
+      } catch (deleteErr) {
+        const errMsg = (deleteErr as Error).message;
+        console.error(`❌ User delete/recreate failed:`, errMsg);
+        errors.push(`user-delete: ${errMsg}`);
 
-        // Remove user from each channel
-        for (const channel of channels) {
-          const chId = channel.id || 'unknown';
-          try {
-            await channel.removeMembers([userId]);
-            console.log(`✅ Removed ${userId} from channel ${chId}`);
-            removedCount++;
-            removedFrom.push(chId);
-          } catch (removeErr) {
-            const errMsg = (removeErr as Error).message;
-            console.warn(`Could not remove from ${chId}:`, errMsg);
-            errors.push(chId);
-          }
-        }
-      } catch (queryErr) {
-        console.error('Error querying channels:', (queryErr as Error).message);
-        // Fall back to trying specified channel IDs if query fails
+        // Fallback: try the channel-by-channel approach
+        console.log(`📋 Falling back to channel-by-channel removal...`);
         const channelIds = body.channelIds || [];
+
         for (const chId of channelIds) {
           try {
             const channel = serverClient.channel('messaging', chId);
@@ -82,9 +85,10 @@ serve(async (req) => {
             removedCount++;
             removedFrom.push(chId);
           } catch (removeErr) {
-            const errMsg = (removeErr as Error).message;
-            if (!errMsg.includes('is not a member')) {
-              errors.push(chId);
+            const rmErrMsg = (removeErr as Error).message;
+            if (!rmErrMsg.includes('is not a member')) {
+              console.warn(`❌ Could not remove from ${chId}:`, rmErrMsg);
+              errors.push(`${chId}: ${rmErrMsg}`);
             }
           }
         }
