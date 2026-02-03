@@ -389,7 +389,8 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
             {[
               { value: 'standard', label: 'Standard Listing', description: 'Community header and course cards shown separately' },
               { value: 'compact', label: 'Compact Listing', description: 'Combined community + course in single card' },
-              { value: 'thirdtry', label: 'Third Try', description: 'Card-based layout with gradient headers and timeline' }
+              { value: 'thirdtry', label: 'Third Try', description: 'Card-based layout with gradient headers and timeline' },
+              { value: 'combined', label: 'Combined Card', description: 'Course info with glassmorphism community badge' }
             ].map(option => (
               <label
                 key={option.value}

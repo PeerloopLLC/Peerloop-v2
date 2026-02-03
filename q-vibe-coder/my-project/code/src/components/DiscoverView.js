@@ -2347,6 +2347,306 @@ const DiscoverView = ({
                   );
                 }
 
+                // Combined Card Format - Course info LEFT, Glassmorphism community badge RIGHT
+                if (discoverListingFormat === 'combined') {
+                  const handle = (instructor.communityName || instructor.name)?.toLowerCase().replace(/\s+/g, '').replace(/\./g, '');
+
+                  return (
+                    <React.Fragment key={`combined-group-${instructor.id}`}>
+                      {matchingCourses.map((course, courseIndex) => {
+                        const isPurchased = isCoursePurchased && isCoursePurchased(course.id);
+                        const courseGradients = [
+                          'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                          'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                          'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                          'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+                        ];
+                        const courseGradient = courseGradients[courseIndex % courseGradients.length];
+                        const initials = course.title?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'CC';
+
+                        return (
+                          <div
+                            key={`combined-${course.id}`}
+                            style={{
+                              borderRadius: 14,
+                              overflow: 'hidden',
+                              background: isDarkMode ? '#16181c' : '#fff',
+                              border: isDarkMode ? '1px solid #2f3336' : 'none',
+                              boxShadow: isDarkMode ? 'none' : '0 2px 8px rgba(0,0,0,0.08)',
+                              marginBottom: 14,
+                              display: 'flex',
+                              transition: 'box-shadow 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isDarkMode) e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.12)';
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!isDarkMode) e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                            }}
+                          >
+                            {/* Course Content - LEFT */}
+                            <div
+                              onClick={() => {
+                                saveScrollPosition();
+                                onViewCourse && onViewCourse(course, instructor);
+                              }}
+                              style={{
+                                flex: 1,
+                                padding: '16px 18px',
+                                display: 'flex',
+                                gap: 14,
+                                cursor: 'pointer',
+                                transition: 'background 0.15s ease',
+                                background: isDarkMode ? '#16181c' : '#f0f0f0'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.03)' : '#e8e8e8';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f0f0f0';
+                              }}
+                            >
+                              {/* Course Icon */}
+                              <div style={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: 12,
+                                background: courseGradient,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                                fontSize: 16,
+                                color: 'white',
+                                flexShrink: 0
+                              }}>
+                                {initials}
+                              </div>
+
+                              {/* Course Info */}
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <CourseHoverCard
+                                  course={{
+                                    ...course,
+                                    instructorName: instructor.name,
+                                    instructorTitle: instructor.title
+                                  }}
+                                  onViewCourse={() => {
+                                    saveScrollPosition();
+                                    onViewCourse && onViewCourse(course, instructor);
+                                  }}
+                                  onEnroll={() => handleEnrollClick(course, instructor)}
+                                >
+                                  <div
+                                    style={{
+                                      fontSize: 'var(--fs-16)',
+                                      fontWeight: 600,
+                                      color: isDarkMode ? '#e7e9ea' : '#1a1a1a',
+                                      marginBottom: 6,
+                                      transition: 'color 0.15s',
+                                      cursor: 'pointer'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = '#1d9bf0'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = isDarkMode ? '#e7e9ea' : '#1a1a1a'}
+                                  >
+                                    {course.title}
+                                  </div>
+                                </CourseHoverCard>
+
+                                <p style={{
+                                  fontSize: 'var(--fs-14)',
+                                  color: isDarkMode ? '#8b98a5' : '#536471',
+                                  lineHeight: 1.45,
+                                  marginBottom: 10,
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 3,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                  margin: '0 0 10px 0'
+                                }}>
+                                  {course.description}
+                                </p>
+
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 10,
+                                  fontSize: 'var(--fs-13)',
+                                  color: isDarkMode ? '#71767b' : '#71767b',
+                                  flexWrap: 'wrap'
+                                }}>
+                                  <span><span style={{ color: '#ffc107' }}>★</span> {course.rating?.toFixed(1) || '4.5'} ({course.reviews || 0})</span>
+                                  <span>{course.level || 'Beginner'}</span>
+                                  <span>{course.sessions?.length || 0} sessions</span>
+                                  <span>{course.duration || '3 hrs'}</span>
+                                  <span style={{
+                                    color: course.price === 0 || course.price === 'Free' ? '#00ba7c' : (isDarkMode ? '#e7e9ea' : '#1a1a1a'),
+                                    fontWeight: 600
+                                  }}>
+                                    {course.price === 0 || course.price === 'Free' ? 'Free' : `$${course.price}`}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Enroll Button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEnrollClick(course, instructor);
+                                }}
+                                style={{
+                                  background: isPurchased ? 'transparent' : '#22c55e',
+                                  color: isPurchased ? '#22c55e' : 'white',
+                                  border: isPurchased ? '2px solid #22c55e' : 'none',
+                                  padding: '9px 18px',
+                                  borderRadius: 20,
+                                  fontSize: 'var(--fs-14)',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  whiteSpace: 'nowrap',
+                                  transition: 'all 0.2s',
+                                  flexShrink: 0,
+                                  alignSelf: 'flex-start',
+                                  marginTop: 2
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!isPurchased) e.currentTarget.style.background = '#16a34a';
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (!isPurchased) e.currentTarget.style.background = '#22c55e';
+                                }}
+                              >
+                                {isPurchased ? 'Enrolled' : (course.price === 0 || course.price === 'Free' ? 'Enroll' : `$${course.price}`)}
+                              </button>
+                            </div>
+
+                            {/* Community Badge - RIGHT - Blue Glassmorphism */}
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                saveScrollPosition();
+                                onViewCommunity && onViewCommunity(instructor);
+                              }}
+                              style={{
+                                width: 180,
+                                flexShrink: 0,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center',
+                                padding: '16px 14px',
+                                cursor: 'pointer',
+                                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.9) 100%)',
+                                position: 'relative',
+                                overflow: 'hidden',
+                                transition: 'filter 0.15s'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.1)'}
+                              onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
+                            >
+                              {/* Blur circles */}
+                              <div style={{
+                                position: 'absolute',
+                                top: -15,
+                                left: -15,
+                                width: 60,
+                                height: 60,
+                                borderRadius: '50%',
+                                background: 'rgba(255,255,255,0.2)',
+                                filter: 'blur(12px)'
+                              }} />
+                              <div style={{
+                                position: 'absolute',
+                                bottom: -20,
+                                right: -20,
+                                width: 70,
+                                height: 70,
+                                borderRadius: '50%',
+                                background: 'rgba(255,255,255,0.15)',
+                                filter: 'blur(15px)'
+                              }} />
+
+                              {/* Community Icon */}
+                              <div style={{
+                                width: 44,
+                                height: 44,
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 18,
+                                background: 'rgba(255,255,255,0.25)',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(255,255,255,0.3)',
+                                marginBottom: 10,
+                                position: 'relative',
+                                zIndex: 1,
+                                fontWeight: 600,
+                                color: 'white'
+                              }}>
+                                {(instructor.communityName || instructor.name)?.slice(0, 2).toUpperCase()}
+                              </div>
+
+                              <CommunityHoverCard
+                                community={{
+                                  communityName: instructor.communityName || `${instructor.name} Community`,
+                                  handle: `@${handle}`,
+                                  creatorName: instructor.name,
+                                  bio: instructor.bio,
+                                  followers: instructor.stats?.studentsTaught || 0,
+                                  coursesCount: instructor.courses?.length || 0,
+                                  id: instructor.id
+                                }}
+                                isFollowing={isFollowing}
+                                onFollow={() => handleFollowInstructor(instructor.id)}
+                                onViewCommunity={() => onViewCommunity && onViewCommunity(instructor)}
+                              >
+                                <div style={{
+                                  fontSize: 'var(--fs-14)',
+                                  fontWeight: 600,
+                                  color: '#fff',
+                                  marginBottom: 3,
+                                  position: 'relative',
+                                  zIndex: 1,
+                                  cursor: 'pointer'
+                                }}>
+                                  {instructor.communityName || `${instructor.name}`}
+                                </div>
+                              </CommunityHoverCard>
+
+                              <div style={{
+                                fontSize: 'var(--fs-12)',
+                                color: 'rgba(255,255,255,0.75)',
+                                marginBottom: 8,
+                                position: 'relative',
+                                zIndex: 1
+                              }}>
+                                {instructor.stats?.studentsTaught?.toLocaleString() || 0} followers
+                              </div>
+
+                              <div style={{
+                                fontSize: 11,
+                                color: 'rgba(255,255,255,0.85)',
+                                lineHeight: 1.4,
+                                position: 'relative',
+                                zIndex: 1,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden'
+                              }}>
+                                {instructor.bio || `Learn from ${instructor.name}`}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </React.Fragment>
+                  );
+                }
+
                 // Standard Listing Format - existing layout
                 return (
                   <div
