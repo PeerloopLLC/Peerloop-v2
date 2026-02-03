@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Card with Community Sidebar - Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 40px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 900px;
+        }
+
+        /* Course Card - Side by Side Layout */
+        .course-card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .course-card:hover {
+            border-color: #10b981;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+        }
+
+        /* Left Column - Course Info */
+        .course-info {
+            flex: 1;
+            padding: 16px;
+            min-width: 0;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #dbeafe;
+            color: #3b82f6;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .status-badge.completed {
+            background: #dcfce7;
+            color: #22c55e;
+        }
+
+        .course-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 4px 0;
+            line-height: 1.3;
+        }
+
+        .course-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .go-to-community {
+            color: #10b981;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .go-to-community:hover {
+            text-decoration: underline;
+        }
+
+        .course-description {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #374151;
+            margin: 0 0 10px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .stats-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .star {
+            color: #fbbf24;
+            font-size: 16px;
+        }
+
+        .star.empty {
+            color: #d1d5db;
+        }
+
+        .rating-value {
+            margin-left: 4px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .students {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            margin-bottom: 12px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .progress-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .progress-lessons {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.completed {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+        }
+
+        /* Action Button */
+        .continue-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .continue-btn:hover {
+            background: #2563eb;
+        }
+
+        /* Right Column - Community Sidebar */
+        .community-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            padding: 24px;
+            background: #f9fafb;
+            border-left: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bio-quote {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #374151;
+            font-style: italic;
+            margin: 0 0 16px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .creator-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .creator-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e5e7eb;
+        }
+
+        .creator-avatar-placeholder {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .creator-details {
+            flex: 1;
+        }
+
+        .creator-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #111827;
+        }
+
+        .creator-title {
+            font-size: 13px;
+            color: #6b7280;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .view-profile-btn {
+            margin-top: 12px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: transparent;
+            color: #1d9bf0;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #1d9bf0;
+            transition: all 0.2s ease;
+        }
+
+        .view-profile-btn:hover {
+            background: #1d9bf0;
+            color: white;
+        }
+
+        /* Dark mode */
+        .dark {
+            background: #000;
+        }
+
+        .dark .course-card {
+            background: #16181c;
+            border-color: #2f3336;
+        }
+
+        .dark .course-card:hover {
+            border-color: #10b981;
+        }
+
+        .dark .status-badge {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .dark .status-badge.completed {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .dark .course-title {
+            color: #e7e9ea;
+        }
+
+        .dark .course-meta {
+            color: #9ca3af;
+        }
+
+        .dark .course-description {
+            color: #d1d5db;
+        }
+
+        .dark .star.empty {
+            color: #4b5563;
+        }
+
+        .dark .rating-value,
+        .dark .students {
+            color: #9ca3af;
+        }
+
+        .dark .progress-label {
+            color: #e7e9ea;
+        }
+
+        .dark .progress-lessons {
+            color: #9ca3af;
+        }
+
+        .dark .progress-bar {
+            background: #374151;
+        }
+
+        .dark .community-sidebar {
+            background: #1f2937;
+            border-left-color: #374151;
+        }
+
+        .dark .sidebar-title {
+            color: #9ca3af;
+        }
+
+        .dark .bio-quote {
+            color: #d1d5db;
+        }
+
+        .dark .creator-avatar,
+        .dark .creator-avatar-placeholder {
+            border-color: #374151;
+        }
+
+        .dark .creator-name {
+            color: #e7e9ea;
+        }
+
+        .dark .creator-title {
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <h2>Light Mode - Course Card with Community Sidebar</h2>
+    <div class="cards-container">
+        <!-- Card 1 - In Progress -->
+        <div class="course-card">
+            <div class="course-info">
+                <span class="status-badge">
+                    ▶ IN PROGRESS
+                </span>
+                <h3 class="course-title">AI Prompting Mastery</h3>
+                <div class="course-meta">
+                    <span>Guy Rymberg</span>
+                    <span>·</span>
+                    <span>⏱ 8 hours</span>
+                    <span>·</span>
+                    <span class="go-to-community">Go to Community →</span>
+                </div>
+                <p class="course-description">Master the art of AI prompting with hands-on exercises. Learn chain-of-thought reasoning, few-shot learning, and advanced prompt patterns used by professionals.</p>
+                <div class="stats-row">
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="rating-value">4.8</span>
+                    </div>
+                    <div class="students">
+                        👥 1,250 students
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Progress: 75%</span>
+                        <span class="progress-lessons">15/20 lessons</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+                <button class="continue-btn">Continue →</button>
+            </div>
+            <div class="community-sidebar">
+                <h4 class="sidebar-title">About the Community</h4>
+                <p class="bio-quote">"AI teaching specialist with 15 years experience. Passionate about the PeerLoop model - Learn, Teach, Earn. Former AI Lead at Google."</p>
+                <div class="creator-info">
+                    <div class="creator-avatar-placeholder">GR</div>
+                    <div class="creator-details">
+                        <div class="creator-name">Guy Rymberg</div>
+                        <div class="creator-title">AI Prompting Specialist</div>
+                    </div>
+                </div>
+                <button class="view-profile-btn">View Profile</button>
+            </div>
+        </div>
+
+        <!-- Card 2 - Completed -->
+        <div class="course-card">
+            <div class="course-info">
+                <span class="status-badge completed">
+                    ✓ COMPLETED
+                </span>
+                <h3 class="course-title">Deep Learning Fundamentals</h3>
+                <div class="course-meta">
+                    <span>Jane Doe</span>
+                    <span>·</span>
+                    <span>⏱ 12 hours</span>
+                    <span>·</span>
+                    <span class="go-to-community">Go to Community →</span>
+                </div>
+                <p class="course-description">Build neural networks from scratch. Understand backpropagation, optimization, and modern architectures like transformers and CNNs.</p>
+                <div class="stats-row">
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="rating-value">4.9</span>
+                    </div>
+                    <div class="students">
+                        👥 2,340 students
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Progress: 100%</span>
+                        <span class="progress-lessons">20/20 lessons</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill completed" style="width: 100%"></div>
+                    </div>
+                </div>
+                <button class="continue-btn" style="background: #22c55e;">Review Course →</button>
+            </div>
+            <div class="community-sidebar">
+                <h4 class="sidebar-title">About the Community</h4>
+                <p class="bio-quote">"Leading AI Strategist helping product managers and developers understand machine learning. Author of 'AI for Everyone'."</p>
+                <div class="creator-info">
+                    <div class="creator-avatar-placeholder" style="background: linear-gradient(135deg, #9333ea, #c026d3);">JD</div>
+                    <div class="creator-details">
+                        <div class="creator-name">Jane Doe</div>
+                        <div class="creator-title">Leading AI Strategist at TechCorp</div>
+                    </div>
+                </div>
+                <button class="view-profile-btn">View Profile</button>
+            </div>
+        </div>
+
+        <!-- Card 3 - Early Progress -->
+        <div class="course-card">
+            <div class="course-info">
+                <span class="status-badge">
+                    ▶ IN PROGRESS
+                </span>
+                <h3 class="course-title">Full-Stack Web Development</h3>
+                <div class="course-meta">
+                    <span>James Wilson</span>
+                    <span>·</span>
+                    <span>⏱ 24 hours</span>
+                    <span>·</span>
+                    <span class="go-to-community">Go to Community →</span>
+                </div>
+                <p class="course-description">Learn React, Node.js, and PostgreSQL to build complete web applications. From frontend to backend to deployment.</p>
+                <div class="stats-row">
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="rating-value">4.7</span>
+                    </div>
+                    <div class="students">
+                        👥 3,120 students
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Progress: 25%</span>
+                        <span class="progress-lessons">5/20 lessons</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%"></div>
+                    </div>
+                </div>
+                <button class="continue-btn">Continue →</button>
+            </div>
+            <div class="community-sidebar">
+                <h4 class="sidebar-title">About the Community</h4>
+                <p class="bio-quote">"Full-stack developer with 10+ years building scalable applications. I love breaking down complex concepts into digestible lessons."</p>
+                <div class="creator-info">
+                    <div class="creator-avatar-placeholder" style="background: linear-gradient(135deg, #10b981, #059669);">JW</div>
+                    <div class="creator-details">
+                        <div class="creator-name">James Wilson</div>
+                        <div class="creator-title">Full-Stack & DevOps Engineer</div>
+                    </div>
+                </div>
+                <button class="view-profile-btn">View Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 60px;">Dark Mode</h2>
+    <div class="cards-container dark">
+        <!-- Dark Card 1 -->
+        <div class="course-card">
+            <div class="course-info">
+                <span class="status-badge">
+                    ▶ IN PROGRESS
+                </span>
+                <h3 class="course-title">AI Prompting Mastery</h3>
+                <div class="course-meta">
+                    <span>Guy Rymberg</span>
+                    <span>·</span>
+                    <span>⏱ 8 hours</span>
+                    <span>·</span>
+                    <span class="go-to-community">Go to Community →</span>
+                </div>
+                <p class="course-description">Master the art of AI prompting with hands-on exercises. Learn chain-of-thought reasoning, few-shot learning, and advanced prompt patterns used by professionals.</p>
+                <div class="stats-row">
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="rating-value">4.8</span>
+                    </div>
+                    <div class="students">
+                        👥 1,250 students
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Progress: 75%</span>
+                        <span class="progress-lessons">15/20 lessons</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+                <button class="continue-btn">Continue →</button>
+            </div>
+            <div class="community-sidebar">
+                <h4 class="sidebar-title">About the Community</h4>
+                <p class="bio-quote">"AI teaching specialist with 15 years experience. Passionate about the PeerLoop model - Learn, Teach, Earn. Former AI Lead at Google."</p>
+                <div class="creator-info">
+                    <div class="creator-avatar-placeholder">GR</div>
+                    <div class="creator-details">
+                        <div class="creator-name">Guy Rymberg</div>
+                        <div class="creator-title">AI Prompting Specialist</div>
+                    </div>
+                </div>
+                <button class="view-profile-btn">View Profile</button>
+            </div>
+        </div>
+
+        <!-- Dark Card 2 - Completed -->
+        <div class="course-card">
+            <div class="course-info">
+                <span class="status-badge completed">
+                    ✓ COMPLETED
+                </span>
+                <h3 class="course-title">Deep Learning Fundamentals</h3>
+                <div class="course-meta">
+                    <span>Jane Doe</span>
+                    <span>·</span>
+                    <span>⏱ 12 hours</span>
+                    <span>·</span>
+                    <span class="go-to-community">Go to Community →</span>
+                </div>
+                <p class="course-description">Build neural networks from scratch. Understand backpropagation, optimization, and modern architectures like transformers and CNNs.</p>
+                <div class="stats-row">
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="rating-value">4.9</span>
+                    </div>
+                    <div class="students">
+                        👥 2,340 students
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Progress: 100%</span>
+                        <span class="progress-lessons">20/20 lessons</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill completed" style="width: 100%"></div>
+                    </div>
+                </div>
+                <button class="continue-btn" style="background: #22c55e;">Review Course →</button>
+            </div>
+            <div class="community-sidebar">
+                <h4 class="sidebar-title">About the Community</h4>
+                <p class="bio-quote">"Leading AI Strategist helping product managers and developers understand machine learning. Author of 'AI for Everyone'."</p>
+                <div class="creator-info">
+                    <div class="creator-avatar-placeholder" style="background: linear-gradient(135deg, #9333ea, #c026d3);">JD</div>
+                    <div class="creator-details">
+                        <div class="creator-name">Jane Doe</div>
+                        <div class="creator-title">Leading AI Strategist at TechCorp</div>
+                    </div>
+                </div>
+                <button class="view-profile-btn">View Profile</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
