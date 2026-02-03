@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Courses - Before/After Wireframe</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #1e40af;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 40px;
+    }
+    .comparison {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .section {
+      flex: 1;
+      min-width: 350px;
+      max-width: 450px;
+    }
+    .section-title {
+      text-align: center;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .before .section-title {
+      background: #fecaca;
+      color: #991b1b;
+    }
+    .after .section-title {
+      background: #bbf7d0;
+      color: #166534;
+    }
+
+    /* Current My Courses Card Style */
+    .current-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+    }
+    .current-card .header {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .current-card .initials {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .current-card .content {
+      flex: 1;
+    }
+    .current-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    .current-card .description {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .current-card .stats {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: #888;
+      align-items: center;
+    }
+    .current-card .rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .current-card .rating .star {
+      color: #fbbf24;
+    }
+    .current-card .enroll-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 12px;
+      cursor: pointer;
+    }
+
+    /* New Combined Card Style (from Discover) */
+    .combined-card {
+      margin-bottom: 20px;
+    }
+    .combined-card .course-section {
+      background: white;
+      border-radius: 12px 12px 0 0;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .combined-card .course-header {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .combined-card .initials {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .combined-card .course-content {
+      flex: 1;
+    }
+    .combined-card .course-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    .combined-card .course-desc {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .combined-card .course-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11px;
+      color: #888;
+    }
+    .combined-card .course-stats span {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .combined-card .level-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+    .combined-card .price-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .combined-card .course-section {
+      position: relative;
+    }
+
+    /* Community Badge - 3B Geometric Pattern */
+    .community-badge {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      padding: 12px 16px;
+      border-radius: 0 0 12px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .community-badge .geometric-square {
+      position: absolute;
+      top: -10px;
+      right: 30px;
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      transform: rotate(15deg);
+    }
+    .community-badge .geometric-circle {
+      position: absolute;
+      bottom: -15px;
+      left: 20px;
+      width: 35px;
+      height: 35px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+    .community-badge .geometric-diamond {
+      position: absolute;
+      top: 5px;
+      right: -10px;
+      width: 25px;
+      height: 25px;
+      background: rgba(255,255,255,0.08);
+      transform: rotate(45deg);
+    }
+    .community-badge .comm-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .community-badge .comm-info {
+      position: relative;
+      z-index: 1;
+    }
+    .community-badge .comm-name {
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .community-badge .comm-followers {
+      color: rgba(255,255,255,0.8);
+      font-size: 11px;
+    }
+    .community-badge .comm-creator {
+      color: rgba(255,255,255,0.7);
+      font-size: 11px;
+    }
+
+    /* Arrow indicator */
+    .arrow {
+      text-align: center;
+      font-size: 48px;
+      color: #3b82f6;
+      padding: 20px;
+      display: none;
+    }
+    @media (min-width: 900px) {
+      .arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    /* Legend */
+    .legend {
+      margin-top: 40px;
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .legend h3 {
+      color: #1e40af;
+      margin-bottom: 16px;
+      font-size: 16px;
+    }
+    .legend ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .legend li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #444;
+    }
+    .legend .bullet {
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .legend .bullet.stats {
+      background: #e0f2fe;
+    }
+    .legend .bullet.card {
+      background: white;
+      border: 2px solid #e5e7eb;
+    }
+
+    /* Highlight new elements */
+    .new-element {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(30, 64, 175, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(30, 64, 175, 0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>My Courses Page - Proposed Changes</h1>
+    <p class="subtitle">Adopting the Combined Card format from Discover with 3B Geometric Pattern</p>
+
+    <div class="comparison">
+      <!-- BEFORE -->
+      <div class="section before">
+        <div class="section-title">CURRENT FORMAT</div>
+
+        <div class="current-card">
+          <div class="header">
+            <div class="initials">CC</div>
+            <div class="content">
+              <h3>Intro to Claude Code</h3>
+              <p class="description">Harness AI-assisted development with Claude's terminal tool. Build real applications through natural conversation with AI.</p>
+              <div class="stats">
+                <span class="rating"><span class="star">★</span> 4.7</span>
+                <span>0 students</span>
+                <span>3 hours</span>
+              </div>
+              <button class="enroll-btn">Enroll $249</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="current-card">
+          <div class="header">
+            <div class="initials">VC</div>
+            <div class="content">
+              <h3>Vibe Coding 101</h3>
+              <p class="description">Build and deploy real websites using AI as your partner. Master the 6-phase methodology from idea to production.</p>
+              <div class="stats">
+                <span class="rating"><span class="star">★</span> 4.7</span>
+                <span>0 students</span>
+                <span>3 hours</span>
+              </div>
+              <button class="enroll-btn">Enroll $249</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARROW -->
+      <div class="arrow">→</div>
+
+      <!-- AFTER -->
+      <div class="section after">
+        <div class="section-title">PROPOSED FORMAT (Discover Style)</div>
+
+        <div class="combined-card new-element">
+          <div class="course-section">
+            <div class="course-header">
+              <div class="initials">IT</div>
+              <div class="course-content">
+                <div class="course-title">Intro to Claude Code</div>
+                <p class="course-desc">Harness AI-assisted development with Claude's terminal tool. Build real applications through natural conversation with AI.</p>
+                <div class="course-stats">
+                  <span>★ 4.7 (0)</span>
+                  <span class="level-badge">Beginner</span>
+                  <span>0 sessions</span>
+                  <span>3 hours</span>
+                  <span>$249</span>
+                </div>
+              </div>
+            </div>
+            <button class="price-btn">$249</button>
+          </div>
+          <div class="community-badge">
+            <div class="geometric-square"></div>
+            <div class="geometric-circle"></div>
+            <div class="geometric-diamond"></div>
+            <div class="comm-icon">PR</div>
+            <div class="comm-info">
+              <div class="comm-name">Prompt Masters</div>
+              <div class="comm-followers">527 followers</div>
+              <div class="comm-creator">Created by Guy Rymberg</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="combined-card new-element">
+          <div class="course-section">
+            <div class="course-header">
+              <div class="initials">VC</div>
+              <div class="course-content">
+                <div class="course-title">Vibe Coding 101</div>
+                <p class="course-desc">Build and deploy real websites using AI as your partner. Master the 6-phase methodology from idea to production.</p>
+                <div class="course-stats">
+                  <span>★ 4.7 (0)</span>
+                  <span class="level-badge">Intermediate</span>
+                  <span>0 sessions</span>
+                  <span>3 hours</span>
+                  <span>$249</span>
+                </div>
+              </div>
+            </div>
+            <button class="price-btn">$249</button>
+          </div>
+          <div class="community-badge">
+            <div class="geometric-square"></div>
+            <div class="geometric-circle"></div>
+            <div class="geometric-diamond"></div>
+            <div class="comm-icon">PR</div>
+            <div class="comm-info">
+              <div class="comm-name">Prompt Masters</div>
+              <div class="comm-followers">527 followers</div>
+              <div class="comm-creator">Created by Guy Rymberg</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <h3>Key Changes</h3>
+      <ul>
+        <li>
+          <div class="bullet"></div>
+          <span><strong>Add Community Badge:</strong> 3B Geometric Pattern (gradient #1e40af → #3b82f6) with community name, followers, and creator</span>
+        </li>
+        <li>
+          <div class="bullet stats"></div>
+          <span><strong>Update Stats Row:</strong> Match Discover format - Rating (count), Level badge, Sessions, Duration, Price</span>
+        </li>
+        <li>
+          <div class="bullet card"></div>
+          <span><strong>Card Structure:</strong> Use Combined Card component from DiscoverView.js for consistency</span>
+        </li>
+        <li>
+          <div class="bullet"></div>
+          <span><strong>Geometric Shapes:</strong> Rotated square, circle outline, and diamond decorations on community badge</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

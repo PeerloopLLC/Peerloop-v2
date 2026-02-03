@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Courses - Using Discover Format</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+    }
+    .page {
+      display: flex;
+      min-height: 100vh;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: white;
+      padding: 20px;
+      border-right: 1px solid #e5e7eb;
+    }
+    .logo {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo span { font-size: 24px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 30px;
+      margin-bottom: 4px;
+      color: #1a1a1a;
+      font-size: 15px;
+    }
+    .nav-item.active {
+      background: #e0f2fe;
+      color: #0284c7;
+      font-weight: 600;
+    }
+    /* Main content */
+    .main {
+      flex: 1;
+      padding: 20px 40px;
+      max-width: 900px;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+    .breadcrumb a { color: #3b82f6; text-decoration: none; }
+    h1 {
+      font-size: 13px;
+      color: #888;
+      font-weight: 500;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Course listing - EXACT Discover format */
+    .course-listing {
+      display: flex;
+      margin-bottom: 16px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    /* Left: Course card */
+    .course-card {
+      flex: 1;
+      background: white;
+      padding: 16px 20px;
+      display: flex;
+      gap: 16px;
+      position: relative;
+    }
+    .course-initials {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .course-content { flex: 1; }
+    .course-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    .course-desc {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .course-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+      color: #888;
+      align-items: center;
+    }
+    .course-stats .rating { color: #fbbf24; }
+    .level-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .price-btn {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Right: Community badge - 3B Geometric Pattern */
+    .community-badge {
+      width: 200px;
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Geometric shapes */
+    .community-badge::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      transform: rotate(15deg);
+    }
+    .community-badge::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 10px;
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+    .comm-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .comm-name {
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+      position: relative;
+      z-index: 1;
+    }
+    .comm-followers {
+      color: rgba(255,255,255,0.8);
+      font-size: 11px;
+      position: relative;
+      z-index: 1;
+    }
+    .comm-creator {
+      color: rgba(255,255,255,0.7);
+      font-size: 10px;
+      margin-top: 2px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Page Header - 3B Blue Geometric Pattern */
+    .page-header {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      color: white;
+      padding: 24px 28px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      right: 80px;
+      width: 60px;
+      height: 60px;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      transform: rotate(15deg);
+    }
+    .page-header::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 40px;
+      width: 50px;
+      height: 50px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+    .page-header .diamond {
+      position: absolute;
+      top: 10px;
+      right: 30px;
+      width: 30px;
+      height: 30px;
+      background: rgba(255,255,255,0.08);
+      transform: rotate(45deg);
+    }
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+      text-transform: none;
+      letter-spacing: 0;
+      color: white;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.85);
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <span>&#8734;</span><br>PEERLOOP
+      </div>
+      <div class="nav-item">The Commons</div>
+      <div class="nav-item">My Feeds</div>
+      <div class="nav-item active">My Courses</div>
+      <div class="nav-item">Discover</div>
+      <div class="nav-item">Messages</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+      <div class="breadcrumb">
+        <span>&#127968;</span>
+        <a href="#">PeerLoop</a>
+        <span>\</span>
+        <span>My Courses</span>
+      </div>
+
+      <div class="page-header">
+        <div class="diamond"></div>
+        <h1>Start Your Learning Journey</h1>
+        <p>Master AI tools and workflows with hands-on courses</p>
+      </div>
+
+      <h1 style="font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px;">Featured Courses</h1>
+
+      <!-- Course 1 -->
+      <div class="course-listing">
+        <div class="course-card">
+          <div class="course-initials">IT</div>
+          <div class="course-content">
+            <div class="course-title">Intro to Claude Code</div>
+            <p class="course-desc">Harness AI-assisted development with Claude's terminal tool. Build real applications through natural conversation with AI.</p>
+            <div class="course-stats">
+              <span><span class="rating">★</span> 4.7 (0)</span>
+              <span class="level-badge">Beginner</span>
+              <span>0 sessions</span>
+              <span>3 hours</span>
+              <span>$249</span>
+            </div>
+          </div>
+          <button class="price-btn">$249</button>
+        </div>
+        <div class="community-badge">
+          <div class="comm-icon">PR</div>
+          <div class="comm-name">Prompt Masters</div>
+          <div class="comm-followers">527 followers</div>
+          <div class="comm-creator">Created by Guy Rymberg</div>
+        </div>
+      </div>
+
+      <!-- Course 2 -->
+      <div class="course-listing">
+        <div class="course-card">
+          <div class="course-initials">VC</div>
+          <div class="course-content">
+            <div class="course-title">Vibe Coding 101</div>
+            <p class="course-desc">Build and deploy real websites using AI as your partner. Master the 6-phase methodology from idea to production.</p>
+            <div class="course-stats">
+              <span><span class="rating">★</span> 4.7 (0)</span>
+              <span class="level-badge">Intermediate</span>
+              <span>0 sessions</span>
+              <span>3 hours</span>
+              <span>$249</span>
+            </div>
+          </div>
+          <button class="price-btn">$249</button>
+        </div>
+        <div class="community-badge">
+          <div class="comm-icon">PR</div>
+          <div class="comm-name">Prompt Masters</div>
+          <div class="comm-followers">527 followers</div>
+          <div class="comm-creator">Created by Guy Rymberg</div>
+        </div>
+      </div>
+
+      <!-- Course 3 -->
+      <div class="course-listing">
+        <div class="course-card">
+          <div class="course-initials">IT</div>
+          <div class="course-content">
+            <div class="course-title">Intro to n8n</div>
+            <p class="course-desc">Automate workflows and connect apps without writing code. Build automations through a simple drag-and-drop interface.</p>
+            <div class="course-stats">
+              <span><span class="rating">★</span> 4.7 (0)</span>
+              <span class="level-badge">Beginner</span>
+              <span>0 sessions</span>
+              <span>3 hours</span>
+              <span>$249</span>
+            </div>
+          </div>
+          <button class="price-btn">$249</button>
+        </div>
+        <div class="community-badge">
+          <div class="comm-icon">PR</div>
+          <div class="comm-name">Prompt Masters</div>
+          <div class="comm-followers">527 followers</div>
+          <div class="comm-creator">Created by Guy Rymberg</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
