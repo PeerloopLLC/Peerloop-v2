@@ -6,6 +6,7 @@ import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
 import { getInstructorWithCourses, getAllCourses, getInstructorById } from '../data/database';
 import CommunityHoverCard from './CommunityHoverCard';
 import CourseHoverCard from './CourseHoverCard';
+import UserHoverCard from './UserHoverCard';
 import Breadcrumb from './Breadcrumb';
 import { useHeaderCollapse } from '../hooks/useHeaderCollapse';
 
@@ -47,6 +48,12 @@ const DiscoverView = ({
   const [compactTextScale, setCompactTextScale] = useState(() => {
     const saved = localStorage.getItem('compactTextScale');
     return saved ? parseFloat(saved) : 1.0;
+  });
+
+  // Combined card gray level preference (0-100)
+  const [combinedCardGrayLevel, setCombinedCardGrayLevel] = useState(() => {
+    const saved = localStorage.getItem('combinedCardGrayLevel');
+    return saved ? parseInt(saved, 10) : 25; // Default 25 matches original #f0f0f0
   });
 
   // Dropdown state for community follow menu
@@ -214,6 +221,15 @@ const DiscoverView = ({
     };
     window.addEventListener('compactTextScaleChanged', handleScaleChange);
     return () => window.removeEventListener('compactTextScaleChanged', handleScaleChange);
+  }, []);
+
+  // Listen for combined card gray level changes from Settings
+  useEffect(() => {
+    const handleGrayLevelChange = (e) => {
+      setCombinedCardGrayLevel(e.detail);
+    };
+    window.addEventListener('combinedCardGrayLevelChanged', handleGrayLevelChange);
+    return () => window.removeEventListener('combinedCardGrayLevelChanged', handleGrayLevelChange);
   }, []);
 
   // Restore scroll position on mount - only if returning from a detail view
@@ -2386,6 +2402,13 @@ const DiscoverView = ({
                             }}
                           >
                             {/* Course Content - LEFT */}
+                            {(() => {
+                              // Calculate gray colors from setting (0-100)
+                              const grayValue = 255 - Math.round(combinedCardGrayLevel * 0.6);
+                              const hoverGrayValue = Math.max(0, grayValue - 15);
+                              const bgColor = `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
+                              const hoverColor = `rgb(${hoverGrayValue}, ${hoverGrayValue}, ${hoverGrayValue})`;
+                              return (
                             <div
                               onClick={() => {
                                 saveScrollPosition();
@@ -2398,13 +2421,13 @@ const DiscoverView = ({
                                 gap: 14,
                                 cursor: 'pointer',
                                 transition: 'background 0.15s ease',
-                                background: isDarkMode ? '#16181c' : '#f0f0f0'
+                                background: isDarkMode ? '#16181c' : bgColor
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.03)' : '#e8e8e8';
+                                e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.03)' : hoverColor;
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f0f0f0';
+                                e.currentTarget.style.background = isDarkMode ? '#16181c' : bgColor;
                               }}
                             >
                               {/* Course Icon */}
@@ -2520,6 +2543,8 @@ const DiscoverView = ({
                                 {isPurchased ? 'Enrolled' : (course.price === 0 || course.price === 'Free' ? 'Enroll' : `$${course.price}`)}
                               </button>
                             </div>
+                              );
+                            })()}
 
                             {/* Community Badge - RIGHT - Blue Glassmorphism */}
                             <div
@@ -2619,26 +2644,49 @@ const DiscoverView = ({
                               <div style={{
                                 fontSize: 'var(--fs-12)',
                                 color: 'rgba(255,255,255,0.75)',
-                                marginBottom: 8,
+                                marginBottom: 4,
                                 position: 'relative',
                                 zIndex: 1
                               }}>
                                 {instructor.stats?.studentsTaught?.toLocaleString() || 0} followers
                               </div>
 
-                              <div style={{
-                                fontSize: 11,
-                                color: 'rgba(255,255,255,0.85)',
-                                lineHeight: 1.4,
-                                position: 'relative',
-                                zIndex: 1,
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden'
-                              }}>
-                                {instructor.bio || `Learn from ${instructor.name}`}
-                              </div>
+                              <UserHoverCard
+                                user={{
+                                  id: instructor.id,
+                                  name: instructor.name,
+                                  handle: `@${(instructor.name || '').toLowerCase().replace(/[^a-z0-9]/g, '')}`,
+                                  avatar: instructor.avatar,
+                                  bio: instructor.bio,
+                                  stats: instructor.stats
+                                }}
+                                onViewProfile={() => {
+                                  saveScrollPosition();
+                                  onViewCreatorProfile && onViewCreatorProfile(instructor);
+                                }}
+                                isFollowing={isCreatorFollowed ? isCreatorFollowed(instructor.id) : false}
+                                onFollow={() => handleFollowInstructor && handleFollowInstructor(instructor.id)}
+                              >
+                                <div
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    saveScrollPosition();
+                                    onViewCreatorProfile && onViewCreatorProfile(instructor);
+                                  }}
+                                  style={{
+                                    fontSize: 'var(--fs-11)',
+                                    color: 'rgba(255,255,255,0.85)',
+                                    marginBottom: 6,
+                                    position: 'relative',
+                                    zIndex: 1,
+                                    cursor: 'pointer'
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.querySelector('span').style.textDecoration = 'underline'}
+                                  onMouseLeave={(e) => e.currentTarget.querySelector('span').style.textDecoration = 'none'}
+                                >
+                                  Created by <span style={{ fontWeight: 600 }}>{instructor.name}</span>
+                                </div>
+                              </UserHoverCard>
                             </div>
                           </div>
                         );

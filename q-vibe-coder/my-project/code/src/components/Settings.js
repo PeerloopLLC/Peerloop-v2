@@ -46,6 +46,12 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     return saved ? parseInt(saved, 10) : 2; // Default is level 2 (15px)
   });
 
+  // Combined Card gray level (0-100, where 0 = white, 100 = darker gray)
+  const [combinedCardGrayLevel, setCombinedCardGrayLevel] = useState(() => {
+    const saved = localStorage.getItem('combinedCardGrayLevel');
+    return saved ? parseInt(saved, 10) : 25; // Default 25 matches original #f0f0f0
+  });
+
   // Save community navigation preference when it changes
   useEffect(() => {
     localStorage.setItem('communityNavStyle', communityNavStyle);
@@ -63,6 +69,12 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     localStorage.setItem('compactTextScale', compactTextScale.toString());
     window.dispatchEvent(new CustomEvent('compactTextScaleChanged', { detail: compactTextScale }));
   }, [compactTextScale]);
+
+  // Save combined card gray level preference when it changes
+  useEffect(() => {
+    localStorage.setItem('combinedCardGrayLevel', combinedCardGrayLevel.toString());
+    window.dispatchEvent(new CustomEvent('combinedCardGrayLevelChanged', { detail: combinedCardGrayLevel }));
+  }, [combinedCardGrayLevel]);
 
   // Font size levels (like X.com): 13px, 14px, 15px, 17px, 19px
   const fontSizeLevels = [
@@ -444,6 +456,81 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
           </div>
         </div>
       </div>
+
+      {/* Combined Card Gray Level (only shown when combined is selected) */}
+      {discoverListingFormat === 'combined' && (
+        <div style={{ marginBottom: 32 }}>
+          <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+            Combined Card Background
+          </h3>
+          <div style={{
+            background: 'var(--bg-secondary, #16181c)',
+            borderRadius: 12,
+            padding: '16px 20px'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 12
+            }}>
+              <span style={{ color: 'var(--text-secondary, #71767b)', fontSize: 13 }}>
+                Adjust gray level for card background
+              </span>
+              <span style={{
+                color: '#1d9bf0',
+                fontWeight: 600,
+                fontSize: 'var(--fs-14)',
+                minWidth: 50,
+                textAlign: 'right'
+              }}>
+                {combinedCardGrayLevel}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value={combinedCardGrayLevel}
+              onChange={(e) => setCombinedCardGrayLevel(parseInt(e.target.value, 10))}
+              style={{
+                width: '100%',
+                height: 6,
+                borderRadius: 3,
+                appearance: 'none',
+                background: `linear-gradient(to right, #1d9bf0 0%, #1d9bf0 ${combinedCardGrayLevel}%, var(--border-color, #2f3336) ${combinedCardGrayLevel}%, var(--border-color, #2f3336) 100%)`,
+                cursor: 'pointer',
+                accentColor: '#1d9bf0'
+              }}
+            />
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginTop: 8,
+              fontSize: 'var(--fs-11)',
+              color: 'var(--text-secondary, #71767b)'
+            }}>
+              <span>White (0%)</span>
+              <span>Light gray (50%)</span>
+              <span>Dark gray (100%)</span>
+            </div>
+            {/* Preview swatch */}
+            <div style={{
+              marginTop: 16,
+              padding: 12,
+              borderRadius: 8,
+              background: `rgb(${255 - Math.round(combinedCardGrayLevel * 0.6)}, ${255 - Math.round(combinedCardGrayLevel * 0.6)}, ${255 - Math.round(combinedCardGrayLevel * 0.6)})`,
+              border: '1px solid var(--border-color, #2f3336)',
+              textAlign: 'center',
+              color: combinedCardGrayLevel > 50 ? '#fff' : '#333',
+              fontSize: 'var(--fs-12)'
+            }}>
+              Preview: Background color
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Compact View Text Size (only shown when compact is selected) */}
       {discoverListingFormat === 'compact' && (

@@ -421,8 +421,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
                 }
               }}
             >
-              <div className="feeds-compact-main-icon"><FaUsers /></div>
-              <div className="feeds-compact-count">{allCommunities.length}</div>
+              <div className="feeds-compact-main-icon" style={{ fontSize: 18 }}>🏛️</div>
               {hasFollowedCommunities && (communityNavStyle === 'dropdown' || communityNavStyle === 'slideout') && <div className="feeds-compact-arrow">{isFlyoutOpen ? '◀' : '▶'}</div>}
             </div>
           ) : (

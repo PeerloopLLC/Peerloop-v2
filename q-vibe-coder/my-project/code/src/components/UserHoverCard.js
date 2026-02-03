@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { FaEnvelope } from 'react-icons/fa';
 import './UserHoverCard.css';
 
@@ -114,7 +115,7 @@ const UserHoverCard = ({
         {children}
       </span>
 
-      {isVisible && (
+      {isVisible && ReactDOM.createPortal(
         <div
           ref={cardRef}
           className="user-hover-card"
@@ -173,7 +174,8 @@ const UserHoverCard = ({
             <span><strong>{followers}</strong> Followers</span>
             <span><strong>{following}</strong> Following</span>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

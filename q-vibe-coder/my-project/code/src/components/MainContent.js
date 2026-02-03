@@ -1869,6 +1869,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           setShowEnrollmentFlow(false);
           setEnrollingCourse(null);
           setViewingCourseFromCommunity(null);
+          // Clear creator profile flag so community view shows, not profile
+          localStorage.removeItem('viewingCreatorProfile');
           onMenuChange('Browse_Communities');
         }}
         onViewCreatorProfile={(instructor) => {
