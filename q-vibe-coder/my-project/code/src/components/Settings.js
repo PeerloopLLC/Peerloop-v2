@@ -52,6 +52,12 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     return saved ? parseInt(saved, 10) : 25; // Default 25 matches original #f0f0f0
   });
 
+  // Breadcrumb font size preference (11-18px)
+  const [breadcrumbFontSize, setBreadcrumbFontSize] = useState(() => {
+    const saved = localStorage.getItem('breadcrumbFontSize');
+    return saved ? parseInt(saved, 10) : 14; // Default 14px
+  });
+
   // Save community navigation preference when it changes
   useEffect(() => {
     localStorage.setItem('communityNavStyle', communityNavStyle);
@@ -75,6 +81,12 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     localStorage.setItem('combinedCardGrayLevel', combinedCardGrayLevel.toString());
     window.dispatchEvent(new CustomEvent('combinedCardGrayLevelChanged', { detail: combinedCardGrayLevel }));
   }, [combinedCardGrayLevel]);
+
+  // Save breadcrumb font size preference when it changes
+  useEffect(() => {
+    localStorage.setItem('breadcrumbFontSize', breadcrumbFontSize.toString());
+    window.dispatchEvent(new CustomEvent('breadcrumbFontSizeChanged', { detail: breadcrumbFontSize }));
+  }, [breadcrumbFontSize]);
 
   // Font size levels (like X.com): 13px, 14px, 15px, 17px, 19px
   const fontSizeLevels = [
@@ -320,6 +332,69 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
               marginBottom: 0
             }}>
               Adjusts text size across the app. Components using CSS variables will scale with this setting.
+            </p>
+          </div>
+
+          {/* Breadcrumb Font Size Setting */}
+          <div style={{
+            padding: '16px 20px'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 16
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 14 }}>🔗</span>
+                <span style={{ color: 'var(--text-primary, #e7e9ea)' }}>Breadcrumb Link Size</span>
+              </div>
+              <span style={{
+                color: '#1d9bf0',
+                fontWeight: 600,
+                fontSize: 13
+              }}>
+                {breadcrumbFontSize}px
+              </span>
+            </div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              {[11, 12, 13, 14, 15, 16, 18].map(size => (
+                <button
+                  key={size}
+                  onClick={() => setBreadcrumbFontSize(size)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: 8,
+                    border: breadcrumbFontSize === size
+                      ? '2px solid #1d9bf0'
+                      : '1px solid var(--border-color, #2f3336)',
+                    background: breadcrumbFontSize === size
+                      ? 'rgba(29, 155, 240, 0.15)'
+                      : 'transparent',
+                    color: breadcrumbFontSize === size
+                      ? '#1d9bf0'
+                      : 'var(--text-primary, #e7e9ea)',
+                    fontSize: size,
+                    fontWeight: breadcrumbFontSize === size ? 600 : 400,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  Aa
+                </button>
+              ))}
+            </div>
+            <p style={{
+              color: 'var(--text-secondary, #71767b)',
+              fontSize: 'var(--fs-12)',
+              marginTop: 12,
+              marginBottom: 0
+            }}>
+              Adjusts the font size of the navigation breadcrumb (e.g., PeerLoop \ My Feeds).
             </p>
           </div>
 

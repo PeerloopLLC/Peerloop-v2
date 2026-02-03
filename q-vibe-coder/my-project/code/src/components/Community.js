@@ -673,9 +673,9 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
   }, [isProfileCollapsed]);
 
   useEffect(() => {
-    const COLLAPSE_THRESHOLD = 120;  // How far down before collapse is allowed
-    const SCROLL_UP_DELTA = -20;     // Minimum upward scroll to trigger expand (negative)
-    const SCROLL_DOWN_DELTA = 20;    // Minimum downward scroll to trigger collapse
+    const COLLAPSE_THRESHOLD = 10;   // How far down before collapse is allowed (low = immediate)
+    const SCROLL_UP_DELTA = -10;     // Minimum upward scroll to trigger expand (negative)
+    const SCROLL_DOWN_DELTA = 10;    // Minimum downward scroll to trigger collapse
     const TOGGLE_COOLDOWN = 300;     // Cooldown between toggles (prevents jitter)
 
     const handleScroll = () => {
@@ -2819,14 +2819,15 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   ? 'linear-gradient(135deg, #0a1628 0%, #1e293b 100%)'
                   : 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
                 borderRadius: 16,
-                padding: '20px',
+                padding: isProfileCollapsed ? '12px 16px' : '20px',
                 margin: '8px 16px 0 16px',
                 position: 'sticky',
                 top: communityNavStyle === 'pills' ? 57 : 0,
                 zIndex: 10,
                 border: 'none',
                 boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.12)',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                transition: 'padding 0.3s ease-out'
               }}>
                 {/* Geometric Patterns */}
                 <div style={{
@@ -2886,13 +2887,14 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
 
                   {/* Community Name */}
                   <div style={{
-                      fontSize: 18,
+                      fontSize: isProfileCollapsed ? 16 : 18,
                       fontWeight: 700,
                       color: '#ffffff',
                       display: 'inline-block',
                       lineHeight: 1.2,
                       position: 'relative',
-                      zIndex: 1
+                      zIndex: 1,
+                      transition: 'font-size 0.3s ease-out'
                     }}
                   >
                     {instructor.communityName || `${instructor.name} Community`}
@@ -3005,11 +3007,15 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   </button>
                 </div>
 
-                {/* Details Section */}
+                {/* Details Section - Collapsible */}
                 <div style={{
-                  marginTop: 4,
+                  marginTop: isProfileCollapsed ? 0 : 4,
                   position: 'relative',
-                  zIndex: 1
+                  zIndex: 1,
+                  maxHeight: isProfileCollapsed ? 0 : 200,
+                  opacity: isProfileCollapsed ? 0 : 1,
+                  overflow: 'hidden',
+                  transition: 'all 0.3s ease-out'
                 }}>
                   <div style={{
                     fontSize: 'var(--fs-14)',
@@ -3056,20 +3062,25 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     <>
                       {purchasedCourses.length > 0 && (
                         <div style={{
-                          marginTop: 12,
+                          marginTop: isProfileCollapsed ? 0 : 12,
                           fontSize: 'var(--fs-13)',
                           fontWeight: 500,
-                          color: 'rgba(255,255,255,0.7)'
+                          color: 'rgba(255,255,255,0.7)',
+                          maxHeight: isProfileCollapsed ? 0 : 20,
+                          opacity: isProfileCollapsed ? 0 : 1,
+                          overflow: 'hidden',
+                          transition: 'all 0.3s ease-out'
                         }}>
                           Choose a feed:
                         </div>
                       )}
                       <div style={{
-                        marginTop: purchasedCourses.length > 0 ? 6 : 12,
+                        marginTop: isProfileCollapsed ? 4 : (purchasedCourses.length > 0 ? 6 : 12),
                         position: 'relative',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 4
+                        gap: 4,
+                        transition: 'margin 0.3s ease-out'
                       }}>
                       {/* Left Arrow */}
                       {showPillsLeftArrow && (
@@ -3125,8 +3136,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                             display: 'flex',
                             alignItems: 'center',
                             gap: 6,
-                            padding: '8px 16px',
-                            borderRadius: 20,
+                            padding: isProfileCollapsed ? '6px 12px' : '8px 16px',
+                            borderRadius: isProfileCollapsed ? 16 : 20,
                             border: isHubSelected
                               ? '2px solid rgba(255,255,255,1)'
                               : '2px solid rgba(255,255,255,0.8)',
@@ -3134,12 +3145,12 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                               ? 'rgba(255,255,255,0.25)'
                               : 'rgba(255,255,255,0.1)',
                             color: '#ffffff',
-                            fontSize: 'var(--fs-14)',
+                            fontSize: isProfileCollapsed ? 13 : 14,
                             fontWeight: 600,
                             cursor: 'pointer',
                             whiteSpace: 'nowrap',
                             flexShrink: 0,
-                            transition: 'all 0.2s ease',
+                            transition: 'all 0.3s ease-out',
                             boxShadow: isHubSelected
                               ? 'inset 0 0 20px rgba(255,255,255,0.1), 0 0 0 3px rgba(255,255,255,0.2)'
                               : 'none'
@@ -3163,8 +3174,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 6,
-                                padding: '8px 16px',
-                                borderRadius: 20,
+                                padding: isProfileCollapsed ? '6px 12px' : '8px 16px',
+                                borderRadius: isProfileCollapsed ? 16 : 20,
                                 border: isSelected
                                   ? '2px solid rgba(255,255,255,1)'
                                   : '2px solid rgba(255,255,255,0.8)',
@@ -3172,12 +3183,12 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                                   ? 'rgba(255,255,255,0.25)'
                                   : 'rgba(255,255,255,0.1)',
                                 color: '#ffffff',
-                                fontSize: 'var(--fs-14)',
+                                fontSize: isProfileCollapsed ? 13 : 14,
                                 fontWeight: 600,
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
                                 flexShrink: 0,
-                                transition: 'all 0.2s ease',
+                                transition: 'all 0.3s ease-out',
                                 boxShadow: isSelected
                                   ? 'inset 0 0 20px rgba(255,255,255,0.1), 0 0 0 3px rgba(255,255,255,0.2)'
                                   : 'none'

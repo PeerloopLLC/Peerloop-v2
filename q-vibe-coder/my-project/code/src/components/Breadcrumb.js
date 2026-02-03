@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaHome, FaArrowLeft } from 'react-icons/fa';
 
 /**
@@ -15,6 +15,23 @@ import { FaHome, FaArrowLeft } from 'react-icons/fa';
  * - onBack: function - if provided, shows Back button before home icon
  */
 const Breadcrumb = ({ items = [], isDarkMode = false, onBack = null }) => {
+  // Breadcrumb font size from settings
+  const [fontSize, setFontSize] = useState(() => {
+    const saved = localStorage.getItem('breadcrumbFontSize');
+    return saved ? parseInt(saved, 10) : 14;
+  });
+
+  // Listen for font size changes from settings
+  useEffect(() => {
+    const handleFontSizeChange = (e) => {
+      setFontSize(e.detail);
+    };
+    window.addEventListener('breadcrumbFontSizeChanged', handleFontSizeChange);
+    return () => {
+      window.removeEventListener('breadcrumbFontSizeChanged', handleFontSizeChange);
+    };
+  }, []);
+
   if (!items || items.length === 0) return null;
 
   const styles = {
@@ -25,7 +42,7 @@ const Breadcrumb = ({ items = [], isDarkMode = false, onBack = null }) => {
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
-      fontSize: '14px',
+      fontSize: `${fontSize}px`,
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       position: 'sticky',
       top: 0,
@@ -50,7 +67,7 @@ const Breadcrumb = ({ items = [], isDarkMode = false, onBack = null }) => {
     },
     separator: {
       color: isDarkMode ? '#6e7b8a' : '#536471',
-      fontSize: '13px',
+      fontSize: `${fontSize - 1}px`,
       fontWeight: '400',
     },
     current: {
@@ -66,7 +83,7 @@ const Breadcrumb = ({ items = [], isDarkMode = false, onBack = null }) => {
       border: 'none',
       borderRadius: '9999px',
       color: isDarkMode ? '#e7e9ea' : '#0f1419',
-      fontSize: '14px',
+      fontSize: `${fontSize}px`,
       fontWeight: '500',
       cursor: 'pointer',
       transition: 'background 0.2s ease',
