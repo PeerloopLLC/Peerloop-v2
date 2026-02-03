@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student View - Course Detail with Homework Submission</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      color: #0f1419;
+    }
+
+    .container {
+      max-width: 810px;
+      margin: 0 auto;
+      background: #fff;
+      min-height: 100vh;
+      border-left: 1px solid #e2e8f0;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    /* Wireframe Note */
+    .wireframe-note {
+      background: #fff3cd;
+      border-bottom: 1px solid #ffc107;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #856404;
+      text-align: center;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid #e2e8f0;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .breadcrumb a {
+      color: #1d9bf0;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .breadcrumb .separator {
+      color: #536471;
+    }
+
+    .breadcrumb .current {
+      color: #0f1419;
+      font-weight: 500;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #0f1419;
+      text-decoration: none;
+      font-weight: 500;
+      margin-right: 8px;
+    }
+
+    /* Course Header */
+    .course-header {
+      padding: 20px 16px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .course-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #0f1419;
+    }
+
+    .course-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .instructor {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #536471;
+    }
+
+    .instructor-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1d9bf0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .course-stats {
+      font-size: 13px;
+      color: #536471;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 16px;
+    }
+
+    .tab {
+      padding: 16px 20px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #536471;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 4px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .tab:hover {
+      color: #0f1419;
+    }
+
+    .tab.active {
+      color: #0f1419;
+      font-weight: 700;
+      border-bottom-color: #1d9bf0;
+    }
+
+    /* Main Content Area */
+    .content-area {
+      padding: 16px;
+    }
+
+    /* Sessions Section */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #536471;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-progress {
+      font-size: 12px;
+      color: #536471;
+    }
+
+    /* Session Card */
+    .session-card {
+      background: #f8fafc;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .session-header {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      cursor: pointer;
+    }
+
+    .session-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1d9bf0;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .session-number.completed {
+      background: #00ba7c;
+    }
+
+    .session-info {
+      flex: 1;
+    }
+
+    .session-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f1419;
+      margin-bottom: 4px;
+    }
+
+    .session-meta {
+      font-size: 13px;
+      color: #536471;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .session-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #1d9bf0;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #1a8cd8;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #1d9bf0;
+      border: 1px solid #cfd9de;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(29, 155, 240, 0.1);
+    }
+
+    .chevron {
+      color: #536471;
+      margin-left: 8px;
+    }
+
+    /* Expanded Session Content */
+    .session-content {
+      padding: 0 16px 16px 60px;
+    }
+
+    /* Lesson Item */
+    .lesson-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .lesson-item:last-child {
+      border-bottom: none;
+    }
+
+    .lesson-icon {
+      width: 20px;
+      color: #536471;
+      margin-right: 12px;
+    }
+
+    .lesson-title {
+      flex: 1;
+      font-size: 14px;
+      color: #0f1419;
+    }
+
+    .lesson-duration {
+      font-size: 13px;
+      color: #1d9bf0;
+    }
+
+    /* HOMEWORK SUBMISSION SECTION - NEW FEATURE */
+    .homework-section {
+      margin-top: 16px;
+      padding: 16px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .homework-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1d9bf0;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .homework-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px dashed #cfd9de;
+    }
+
+    .homework-box.submitted {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+    }
+
+    .homework-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .homework-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #00ba7c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .homework-file-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .homework-filename {
+      font-size: 14px;
+      font-weight: 500;
+      color: #0f1419;
+    }
+
+    .homework-date {
+      font-size: 12px;
+      color: #536471;
+    }
+
+    .homework-empty {
+      color: #536471;
+      font-size: 14px;
+    }
+
+    .btn-upload {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: #1d9bf0;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-upload:hover {
+      background: #1a8cd8;
+    }
+
+    .btn-replace {
+      padding: 8px 16px;
+      background: transparent;
+      color: #536471;
+      border: 1px solid #cfd9de;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-replace:hover {
+      background: #f8fafc;
+    }
+
+    /* No homework indicator */
+    .no-homework {
+      padding: 8px 0;
+      font-size: 13px;
+      color: #9ca3af;
+      font-style: italic;
+    }
+
+    /* Course Curriculum Section */
+    .curriculum-section {
+      margin-top: 24px;
+    }
+
+    .curriculum-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f1419;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="wireframe-note">
+      WIREFRAME: Student View - Course Detail with Homework Submission Feature
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="#" class="back-btn">← Back</a>
+      <span class="separator">|</span>
+      <a href="#">PeerLoop</a>
+      <span class="separator">\</span>
+      <a href="#">My Courses</a>
+      <span class="separator">\</span>
+      <span class="current">AI Tools Overview</span>
+    </div>
+
+    <!-- Course Header -->
+    <div class="course-header">
+      <h1 class="course-title">AI Tools Overview</h1>
+      <div class="course-meta">
+        <div class="instructor">
+          <div class="instructor-avatar">G</div>
+          <span>Guy Rymberg</span>
+        </div>
+      </div>
+      <div class="course-stats">★ 4.8 (234) • 1,250 students • 6 Modules • 24 Lessons • 12 hours</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active">Curriculum</button>
+      <button class="tab">Course Feed</button>
+      <button class="tab">Reviews</button>
+      <button class="tab">About Course</button>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content-area">
+
+      <!-- Your Sessions Section -->
+      <div class="section-header">
+        <span class="section-title">Your Sessions</span>
+        <span class="section-progress">(1 of 3 complete)</span>
+      </div>
+
+      <!-- Session 1: Completed with submitted homework -->
+      <div class="session-card">
+        <div class="session-header">
+          <div class="session-number completed">✓</div>
+          <div class="session-info">
+            <div class="session-title">Session 1: Introduction to AI Tools</div>
+            <div class="session-meta">
+              <span>📅 Completed Jan 28</span>
+              <span>with Alex Sanders</span>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="session-content">
+          <div class="lesson-item">
+            <span class="lesson-icon">▶</span>
+            <span class="lesson-title">What is AI and Why It Matters</span>
+            <span class="lesson-duration">15 min</span>
+          </div>
+          <div class="lesson-item">
+            <span class="lesson-icon">▶</span>
+            <span class="lesson-title">The AI Landscape: ChatGPT, Claude, and Beyond</span>
+            <span class="lesson-duration">20 min</span>
+          </div>
+
+          <!-- HOMEWORK - SUBMITTED -->
+          <div class="homework-section">
+            <div class="homework-label">📎 Homework Submission</div>
+            <div class="homework-box submitted">
+              <div class="homework-info">
+                <div class="homework-check">✓</div>
+                <div class="homework-file-info">
+                  <span class="homework-filename">session1-homework.pdf</span>
+                  <span class="homework-date">Submitted Jan 29, 2026</span>
+                </div>
+              </div>
+              <button class="btn-replace">Replace</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 2: Scheduled, homework not submitted -->
+      <div class="session-card">
+        <div class="session-header">
+          <div class="session-number">2</div>
+          <div class="session-info">
+            <div class="session-title">Session 2: Mastering Prompts</div>
+            <div class="session-meta">
+              <span>📅 Wed, Feb 5 at 2:00 PM</span>
+              <span>with Alex Sanders</span>
+            </div>
+          </div>
+          <div class="session-actions">
+            <button class="btn btn-primary">Join</button>
+            <button class="btn btn-secondary">Reschedule</button>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="session-content">
+          <div class="lesson-item">
+            <span class="lesson-icon">▶</span>
+            <span class="lesson-title">The Anatomy of a Great Prompt</span>
+            <span class="lesson-duration">25 min</span>
+          </div>
+          <div class="lesson-item">
+            <span class="lesson-icon">▶</span>
+            <span class="lesson-title">Advanced Prompting Techniques</span>
+            <span class="lesson-duration">30 min</span>
+          </div>
+
+          <!-- HOMEWORK - NOT SUBMITTED -->
+          <div class="homework-section">
+            <div class="homework-label">📎 Homework Submission</div>
+            <div class="homework-box">
+              <span class="homework-empty">No file submitted yet</span>
+              <button class="btn-upload">+ Upload Homework</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 3: Not scheduled, NO homework required -->
+      <div class="session-card">
+        <div class="session-header">
+          <div class="session-number">3</div>
+          <div class="session-info">
+            <div class="session-title">Session 3: Practical AI Workflows</div>
+            <div class="session-meta">90 min each • 2 modules</div>
+          </div>
+          <div class="session-actions">
+            <button class="btn btn-primary">Schedule Session</button>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+        <!-- Collapsed - no content shown -->
+      </div>
+
+      <!-- Course Curriculum Section -->
+      <div class="curriculum-section">
+        <h3 class="curriculum-title">Course Curriculum</h3>
+
+        <!-- Curriculum mirrors sessions above but in list form -->
+        <div class="session-card">
+          <div class="session-header">
+            <div class="session-number completed">✓</div>
+            <div class="session-info">
+              <div class="session-title">Session 1: Introduction to AI Tools</div>
+              <div class="session-meta">90 min each • 2 modules</div>
+            </div>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="session-content">
+            <div class="lesson-item">
+              <span class="lesson-icon">▶</span>
+              <span class="lesson-title">What is AI and Why It Matters</span>
+              <span class="lesson-duration">15 min</span>
+            </div>
+            <div class="lesson-item">
+              <span class="lesson-icon">▶</span>
+              <span class="lesson-title">The AI Landscape: ChatGPT, Claude, and Beyond</span>
+              <span class="lesson-duration">20 min</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="session-card">
+          <div class="session-header">
+            <div class="session-number">2</div>
+            <div class="session-info">
+              <div class="session-title">Session 2: Mastering Prompts</div>
+              <div class="session-meta">90 min each • 2 modules</div>
+            </div>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="session-content">
+            <div class="lesson-item">
+              <span class="lesson-icon">▶</span>
+              <span class="lesson-title">The Anatomy of a Great Prompt</span>
+              <span class="lesson-duration">25 min</span>
+            </div>
+            <div class="lesson-item">
+              <span class="lesson-icon">▶</span>
+              <span class="lesson-title">Advanced Prompting Techniques</span>
+              <span class="lesson-duration">30 min</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="session-card">
+          <div class="session-header">
+            <div class="session-number">3</div>
+            <div class="session-info">
+              <div class="session-title">Session 3: Practical AI Workflows</div>
+              <div class="session-meta">90 min each • 2 modules</div>
+            </div>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

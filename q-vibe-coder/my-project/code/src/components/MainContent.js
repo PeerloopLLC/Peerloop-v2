@@ -306,6 +306,23 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     onMenuChange(previousPage);
   };
 
+  // Shared handler for viewing a community - used by Discover and CourseDetailView
+  const handleViewCommunity = (instructor, previousContext = { type: 'discover' }) => {
+    const fullData = getInstructorWithCourses(instructor.id);
+    setSelectedInstructor(fullData || instructor);
+    setSelectedCourse(null);
+    setActiveTopMenu('creators');
+    setPreviousBrowseContext(previousContext);
+    // Reset all enrollment/modal states
+    setShowEnrollmentFlow(false);
+    setShowEnrollOptions(false);
+    setShowPurchaseModal(false);
+    setEnrollingCourse(null);
+    setViewingCourseFromCommunity(null);
+    localStorage.removeItem('viewingCreatorProfile');
+    onMenuChange('Browse_Communities');
+  };
+
   // Build breadcrumb items based on current navigation state
   const buildBreadcrumbItems = () => {
     const items = [];
@@ -1533,8 +1550,8 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         setActiveTopMenu('courses');
         setSearchQuery('');
       } else if (activeMenu === 'Browse_Communities') {
-        // Only reset if NOT coming from Discover or Feeds with a specific instructor
-        if (previousBrowseContext?.type !== 'discover' && previousBrowseContext?.type !== 'feeds') {
+        // Only reset if NOT coming from Discover, Feeds, or Course with a specific instructor
+        if (previousBrowseContext?.type !== 'discover' && previousBrowseContext?.type !== 'feeds' && previousBrowseContext?.type !== 'course') {
           setSelectedInstructor(null);
           setSelectedCourse(null);
         }
@@ -1852,26 +1869,13 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         }}
         onViewCommunity={(instructor) => {
           // Push current Discover state to history BEFORE navigating
-          // This ensures back button returns to Discover
           window.history.pushState({
             activeMenu: 'Discover',
             viewingCourse: null,
             selectedInstructor: null,
             activeTopMenu
           }, '', '');
-
-          const fullData = getInstructorWithCourses(instructor.id);
-          setSelectedInstructor(fullData || instructor);
-          setSelectedCourse(null); // Clear any previously selected course
-          setActiveTopMenu('creators');
-          setPreviousBrowseContext({ type: 'discover' }); // Track that we came from Discover
-          // Reset enrollment flow state
-          setShowEnrollmentFlow(false);
-          setEnrollingCourse(null);
-          setViewingCourseFromCommunity(null);
-          // Clear creator profile flag so community view shows, not profile
-          localStorage.removeItem('viewingCreatorProfile');
-          onMenuChange('Browse_Communities');
+          handleViewCommunity(instructor, { type: 'discover' });
         }}
         onViewCreatorProfile={(instructor) => {
           // Navigate to creator profile view
@@ -2284,6 +2288,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
               setViewingCourseFromCommunity(null);
               onMenuChange('Browse');
             }}
+            onViewCommunity={(instructor) => handleViewCommunity(instructor, { type: 'course', course: viewingCourseFromCommunity })}
             isCoursePurchased={true}
             purchasedCourses={purchasedCourses}
             currentUser={currentUser}
@@ -2448,6 +2453,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             onMenuChange={onMenuChange}
             scheduledSessions={scheduledSessions}
             onEnroll={() => {}} // Disabled since we're already showing options
+            onViewCommunity={(instructor) => handleViewCommunity(instructor, { type: 'course', course: enrollingCourse })}
           />
           <EnrollOptionsModal
             course={enrollingCourse}
@@ -2496,6 +2502,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             onMenuChange={onMenuChange}
             scheduledSessions={scheduledSessions}
             onEnroll={() => {}} // Disabled since we're in purchase flow
+            onViewCommunity={(instructor) => handleViewCommunity(instructor, { type: 'course', course: enrollingCourse })}
           />
           <PurchaseModal
             course={enrollingCourse}
@@ -2710,6 +2717,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
             setViewingCourseFromCommunity(null);
             onMenuChange('Browse');
           }}
+          onViewCommunity={(instructor) => handleViewCommunity(instructor, { type: 'course', course: viewingCourseFromCommunity })}
           isCoursePurchased={false}
           purchasedCourses={purchasedCourses}
           currentUser={currentUser}

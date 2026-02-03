@@ -1204,7 +1204,7 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
  * Shows detailed view of a course with tabs and two-column layout
  * Merged design: combines marketing view (pre-enrollment) with learning dashboard (post-enrollment)
  */
-const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, followedCommunities = [], setFollowedCommunities, onViewInstructor, onEnroll, isCoursePurchased = false, purchasedCourses = [], currentUser, onMenuChange, scheduledSessions = [], sessionCompletion = {}, onBrowseStudentTeachers, onRescheduleSession }) => {
+const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, followedCommunities = [], setFollowedCommunities, onViewInstructor, onViewCommunity, onEnroll, isCoursePurchased = false, purchasedCourses = [], currentUser, onMenuChange, scheduledSessions = [], sessionCompletion = {}, onBrowseStudentTeachers, onRescheduleSession }) => {
   // Check if this specific course is being followed (within creator's followedCourseIds)
   const [isFollowing, setIsFollowing] = useState(() => {
     if (!course) return false;
@@ -1933,31 +1933,143 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
     }}>
       {/* Course Header Content - scrolls away */}
       <div ref={headerRef}>
-        {/* Community Mini-Header Card */}
+        {/* Community Header - Option A: Full-Width Blue Geometric Header Bar */}
         <div
+          onClick={() => onViewCommunity && onViewCommunity(instructor)}
           style={{
-            margin: '0 24px',
             marginTop: 16,
-            padding: '10px 16px',
+            padding: '20px 24px',
             background: isDarkMode
-              ? 'linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.08) 100%)'
-              : 'linear-gradient(135deg, rgba(79, 172, 254, 0.12) 0%, rgba(0, 242, 254, 0.06) 100%)',
-            borderRadius: 10,
+              ? 'linear-gradient(135deg, #0a1628 0%, #1e293b 100%)'
+              : 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
             display: 'flex',
             alignItems: 'center',
-            gap: 10,
-            border: isDarkMode ? '1px solid rgba(79, 172, 254, 0.2)' : '1px solid rgba(79, 172, 254, 0.15)'
+            justifyContent: 'space-between',
+            position: 'relative',
+            overflow: 'hidden',
+            cursor: 'pointer',
+            transition: 'filter 0.15s'
           }}
+          onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
         >
-          <span style={{ fontSize: 18 }}>👥</span>
-          <span style={{
-            fontWeight: 600,
-            fontSize: 'var(--fs-14)',
-            color: isDarkMode ? '#e7e9ea' : '#0f1419',
-            flex: 1
-          }}>
-            {instructor?.communityName || `${instructor?.name} Community`}
-          </span>
+          {/* Geometric Patterns */}
+          {!isDarkMode && (
+            <>
+              <div style={{
+                position: 'absolute',
+                top: -20,
+                right: 60,
+                width: 70,
+                height: 70,
+                border: '2px solid rgba(255,255,255,0.15)',
+                borderRadius: 14,
+                transform: 'rotate(15deg)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: 20,
+                right: -10,
+                width: 50,
+                height: 50,
+                border: '2px solid rgba(255,255,255,0.1)',
+                borderRadius: '50%',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                position: 'absolute',
+                bottom: -15,
+                right: 120,
+                width: 40,
+                height: 40,
+                background: 'rgba(255,255,255,0.08)',
+                transform: 'rotate(45deg)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                position: 'absolute',
+                bottom: 10,
+                left: 30,
+                width: 60,
+                height: 60,
+                border: '2px solid rgba(255,255,255,0.1)',
+                borderRadius: '50%',
+                pointerEvents: 'none'
+              }} />
+            </>
+          )}
+
+          {/* Left: Community Info */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, position: 'relative', zIndex: 1 }}>
+            {/* Community Icon */}
+            <div style={{
+              width: 48,
+              height: 48,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 22,
+              flexShrink: 0
+            }}>
+              👥
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 18, fontWeight: 700, color: 'white' }}>
+                  {instructor?.communityName || `${instructor?.name} Community`}
+                </span>
+                <span style={{
+                  fontSize: 11,
+                  color: 'rgba(255,255,255,0.9)',
+                  background: 'rgba(255,255,255,0.2)',
+                  padding: '4px 10px',
+                  borderRadius: 12
+                }}>
+                  {instructor?.courses?.length || 0} courses
+                </span>
+              </div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.9)', marginTop: 4 }}>
+                {instructor?.title || 'Creator Community'}
+              </div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 4 }}>
+                {(instructor?.stats?.studentsTaught || 0).toLocaleString()} followers · Created by {instructor?.name}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: View Community Button */}
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewCommunity && onViewCommunity(instructor);
+            }}
+            style={{
+              fontSize: 13,
+              color: 'white',
+              padding: '10px 18px',
+              border: '1.5px solid rgba(255,255,255,0.4)',
+              borderRadius: 20,
+              fontWeight: 600,
+              position: 'relative',
+              zIndex: 1,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.15s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+            }}
+          >
+            View Community →
+          </div>
         </div>
 
         {/* Header Section - Course Info */}

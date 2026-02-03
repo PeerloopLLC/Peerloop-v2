@@ -2563,7 +2563,7 @@ const DiscoverView = ({
                                 textAlign: 'center',
                                 padding: '16px 14px',
                                 cursor: 'pointer',
-                                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.9) 100%)',
+                                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
                                 position: 'relative',
                                 overflow: 'hidden',
                                 transition: 'filter 0.15s'
@@ -2571,26 +2571,34 @@ const DiscoverView = ({
                               onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.1)'}
                               onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
                             >
-                              {/* Blur circles */}
+                              {/* Geometric shapes - 3B Pattern */}
                               <div style={{
                                 position: 'absolute',
-                                top: -15,
-                                left: -15,
-                                width: 60,
-                                height: 60,
-                                borderRadius: '50%',
-                                background: 'rgba(255,255,255,0.2)',
-                                filter: 'blur(12px)'
+                                top: 10,
+                                right: 10,
+                                width: 50,
+                                height: 50,
+                                border: '2px solid rgba(255,255,255,0.15)',
+                                borderRadius: 10,
+                                transform: 'rotate(15deg)'
                               }} />
                               <div style={{
                                 position: 'absolute',
-                                bottom: -20,
-                                right: -20,
-                                width: 70,
-                                height: 70,
-                                borderRadius: '50%',
-                                background: 'rgba(255,255,255,0.15)',
-                                filter: 'blur(15px)'
+                                bottom: 15,
+                                left: -10,
+                                width: 60,
+                                height: 60,
+                                border: '2px solid rgba(255,255,255,0.1)',
+                                borderRadius: '50%'
+                              }} />
+                              <div style={{
+                                position: 'absolute',
+                                top: '50%',
+                                right: -15,
+                                width: 30,
+                                height: 30,
+                                background: 'rgba(255,255,255,0.08)',
+                                transform: 'rotate(45deg)'
                               }} />
 
                               {/* Community Icon */}
@@ -2602,9 +2610,7 @@ const DiscoverView = ({
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: 18,
-                                background: 'rgba(255,255,255,0.25)',
-                                backdropFilter: 'blur(10px)',
-                                border: '1px solid rgba(255,255,255,0.3)',
+                                background: 'rgba(255,255,255,0.2)',
                                 marginBottom: 10,
                                 position: 'relative',
                                 zIndex: 1,

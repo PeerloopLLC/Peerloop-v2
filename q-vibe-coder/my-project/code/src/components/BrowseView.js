@@ -484,28 +484,65 @@ const BrowseView = ({
 
     return (
       <div style={{ background: isDarkMode ? '#000' : '#f8fafc', minHeight: '100vh', padding: '0' }}>
-        {/* Creator Header with Action Buttons - Floating Card */}
+        {/* Creator Header with Action Buttons - Floating Card - 3B Geometric Pattern */}
         <div style={{
-          background: isDarkMode ? '#0a0a0a' : getUserBannerGradient(),
+          background: isDarkMode ? '#0a0a0a' : 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
           borderRadius: 16,
           padding: '20px',
           margin: '12px 16px',
           position: 'relative',
           zIndex: 1,
-          border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden',
+          border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
           boxShadow: isDarkMode
             ? '0 0 0 1px rgba(255, 255, 255, 0.05), 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 30px 60px -15px rgba(0, 0, 0, 0.6)'
-            : '0 4px 12px rgba(0, 0, 0, 0.08)'
+            : '0 4px 12px rgba(0, 0, 0, 0.15)'
         }}>
+          {/* Geometric shapes - 3B Pattern */}
+          {!isDarkMode && (
+            <>
+              <div style={{
+                position: 'absolute',
+                top: 10,
+                right: 10,
+                width: 60,
+                height: 60,
+                border: '2px solid rgba(255,255,255,0.15)',
+                borderRadius: 12,
+                transform: 'rotate(15deg)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                position: 'absolute',
+                bottom: 20,
+                left: -10,
+                width: 80,
+                height: 80,
+                border: '2px solid rgba(255,255,255,0.1)',
+                borderRadius: '50%',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                right: -20,
+                width: 40,
+                height: 40,
+                background: 'rgba(255,255,255,0.08)',
+                transform: 'rotate(45deg)',
+                pointerEvents: 'none'
+              }} />
+            </>
+          )}
           {/* Top Row: Avatar + Name + Buttons */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12, position: 'relative', zIndex: 1 }}>
             {/* Community Circle Avatar */}
             <div
               style={{
                 width: 64,
                 height: 64,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                background: isDarkMode ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' : 'rgba(255,255,255,0.2)',
                 border: '3px solid rgba(255,255,255,0.3)',
                 display: 'flex',
                 alignItems: 'center',
@@ -516,10 +553,10 @@ const BrowseView = ({
             >
               👥
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <h1 style={{ margin: 0, fontSize: 'var(--fs-20)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{creator.communityName || `${creator.name} Community`}</h1>
-                <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
+                <h1 style={{ margin: 0, fontSize: 'var(--fs-20)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#ffffff' }}>{creator.communityName || `${creator.name} Community`}</h1>
+                <span style={{ color: isDarkMode ? '#71767b' : 'rgba(255,255,255,0.7)' }}>·</span>
                 {/* Follow/Following dropdown - same as Discover page */}
                 {(() => {
                   const purchasedCreatorCourses = creatorCourses.filter(course => isCoursePurchased(course.id));
@@ -715,9 +752,9 @@ const BrowseView = ({
                   );
                 })()}
               </div>
-              <p style={{ margin: '2px 0 0 0', color: isDarkMode ? '#71767b' : '#536471', fontSize: 17 }}>{creator.title}</p>
+              <p style={{ margin: '2px 0 0 0', color: isDarkMode ? '#71767b' : 'rgba(255,255,255,0.85)', fontSize: 17 }}>{creator.title}</p>
               {/* Inline Stats */}
-              <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 'var(--fs-17)', color: isDarkMode ? '#71767b' : '#536471', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 'var(--fs-17)', color: isDarkMode ? '#71767b' : 'rgba(255,255,255,0.75)', alignItems: 'center' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><AiOutlineStar /> {creator.stats?.averageRating || '4.8'}</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><AiOutlineTeam /> {(creator.stats?.studentsTaught || 0).toLocaleString()} students</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><FaBook style={{ fontSize: 14 }} /> {creator.stats?.coursesCreated || creatorCourses.length} courses</span>
@@ -730,9 +767,11 @@ const BrowseView = ({
           {creator.bio && (
             <p style={{
               margin: '0 0 12px 0',
-              color: isDarkMode ? '#e7e9ea' : '#0f1419',
+              color: isDarkMode ? '#e7e9ea' : 'rgba(255,255,255,0.9)',
               fontSize: 'var(--fs-17)',
-              lineHeight: 1.5
+              lineHeight: 1.5,
+              position: 'relative',
+              zIndex: 1
             }}>
               {creator.bio}
             </p>
@@ -740,16 +779,16 @@ const BrowseView = ({
 
           {/* Credentials */}
           {creator.qualifications && creator.qualifications.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, position: 'relative', zIndex: 1 }}>
               {creator.qualifications.slice(0, 3).map((qual, index) => (
                 <span key={index} style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
                   fontSize: 'var(--fs-17)',
-                  color: isDarkMode ? '#71767b' : '#536471'
+                  color: isDarkMode ? '#71767b' : 'rgba(255,255,255,0.8)'
                 }}>
-                  <span style={{ color: '#1d9bf0' }}>✓</span>
+                  <span style={{ color: isDarkMode ? '#1d9bf0' : 'rgba(255,255,255,0.9)' }}>✓</span>
                   {qual.sentence}
                 </span>
               ))}

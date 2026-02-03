@@ -1747,27 +1747,70 @@ const MyCoursesView = ({
         <div className="three-column-layout browse-layout">
           <div className="center-column">
             {/* Promotional Header */}
+            {/* Page Header - 3B Blue Geometric Pattern */}
             <div style={{
               background: isDarkMode
-                ? 'linear-gradient(135deg, #1a3d5c 0%, #0f2940 100%)'
-                : '#1d9bf0',
-              padding: '32px 24px',
+                ? 'linear-gradient(135deg, #0a1628 0%, #1e293b 100%)'
+                : 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+              padding: '28px 24px',
               borderRadius: 0,
               marginBottom: 0,
-              textAlign: 'center'
+              textAlign: 'center',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
+              {/* Geometric Shapes */}
+              {!isDarkMode && (
+                <>
+                  <div style={{
+                    position: 'absolute',
+                    top: -15,
+                    right: 80,
+                    width: 70,
+                    height: 70,
+                    border: '2px solid rgba(255,255,255,0.15)',
+                    borderRadius: 14,
+                    transform: 'rotate(15deg)',
+                    pointerEvents: 'none'
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    bottom: -25,
+                    left: 60,
+                    width: 60,
+                    height: 60,
+                    border: '2px solid rgba(255,255,255,0.1)',
+                    borderRadius: '50%',
+                    pointerEvents: 'none'
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    top: 20,
+                    right: 40,
+                    width: 35,
+                    height: 35,
+                    background: 'rgba(255,255,255,0.08)',
+                    transform: 'rotate(45deg)',
+                    pointerEvents: 'none'
+                  }} />
+                </>
+              )}
               <h1 style={{
                 fontSize: 'var(--fs-24)',
                 fontWeight: 700,
                 color: '#fff',
-                marginBottom: 8
+                marginBottom: 8,
+                position: 'relative',
+                zIndex: 1
               }}>
                 Start Your Learning Journey
               </h1>
               <p style={{
                 fontSize: 'var(--fs-16)',
-                color: 'rgba(255, 255, 255, 0.9)',
-                margin: 0
+                color: 'rgba(255, 255, 255, 0.85)',
+                margin: 0,
+                position: 'relative',
+                zIndex: 1
               }}>
                 Master AI tools and workflows with hands-on courses
               </p>
@@ -1806,123 +1849,277 @@ const MyCoursesView = ({
                   </button>
                 </div>
 
-                {/* Course Cards */}
+                {/* Course Cards - Combined Card Format (matching Discover) */}
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 16
+                  gap: 14
                 }}>
-                  {featuredCourses.map(course => (
-                    <div
-                      key={course.id}
-                      onClick={() => onViewCourse && onViewCourse(course.id)}
-                      style={{
-                        background: isDarkMode ? '#16181c' : '#fff',
-                        border: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-                        borderRadius: 16,
-                        padding: 16,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = isDarkMode ? '#1c1f23' : '#f7f9f9';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = isDarkMode
-                          ? '0 4px 12px rgba(0,0,0,0.3)'
-                          : '0 4px 12px rgba(0,0,0,0.1)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = isDarkMode ? '#16181c' : '#fff';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
-                    >
-                      <div style={{ display: 'flex', gap: 16 }}>
-                        {/* Course Abbreviation Badge */}
-                        <div style={{
-                          width: 56,
-                          height: 56,
-                          borderRadius: 12,
-                          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                  {featuredCourses.map((course, index) => {
+                    const courseGradients = [
+                      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+                    ];
+                    const courseGradient = courseGradients[index % courseGradients.length];
+                    const initials = course.title?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'CC';
+
+                    return (
+                      <div
+                        key={course.id}
+                        style={{
+                          borderRadius: 14,
+                          overflow: 'hidden',
+                          background: isDarkMode ? '#16181c' : '#fff',
+                          border: isDarkMode ? '1px solid #2f3336' : 'none',
+                          boxShadow: isDarkMode ? 'none' : '0 2px 8px rgba(0,0,0,0.08)',
                           display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0
-                        }}>
-                          <span style={{
-                            color: '#fff',
-                            fontWeight: 700,
-                            fontSize: 'var(--fs-16)'
-                          }}>
-                            {getCourseAbbreviation(course.title)}
-                          </span>
-                        </div>
-
-                        {/* Course Info */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <h3 style={{
-                            fontSize: 'var(--fs-16)',
-                            fontWeight: 700,
-                            color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                            marginBottom: 4,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                          }}>
-                            {course.title}
-                          </h3>
-                          <p style={{
-                            fontSize: 'var(--fs-14)',
-                            color: isDarkMode ? '#71767b' : '#536471',
-                            marginBottom: 8,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            lineHeight: 1.4
-                          }}>
-                            {course.description}
-                          </p>
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 12,
-                            fontSize: 'var(--fs-13)',
-                            color: isDarkMode ? '#71767b' : '#536471'
-                          }}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                              <AiOutlineStar style={{ color: '#fbbf24' }} />
-                              {course.rating || '4.7'}
-                            </span>
-                            <span>{course.students?.toLocaleString() || '980'} students</span>
-                            <span>{course.duration || '3 hours'}</span>
-                          </div>
-                        </div>
-
-                        {/* Price/Enroll Button */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onViewCourse && onViewCourse(course.id);
-                          }}
+                          transition: 'box-shadow 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isDarkMode) e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.12)';
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isDarkMode) e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                        }}
+                      >
+                        {/* Course Content - LEFT */}
+                        <div
+                          onClick={() => onViewCourse && onViewCourse(course.id)}
                           style={{
-                            background: '#00ba7c',
-                            color: '#fff',
-                            border: 'none',
-                            padding: '10px 16px',
-                            borderRadius: 20,
-                            fontWeight: 700,
-                            fontSize: 'var(--fs-14)',
+                            flex: 1,
+                            padding: '16px 18px',
+                            display: 'flex',
+                            gap: 14,
                             cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                            alignSelf: 'center'
+                            transition: 'background 0.15s ease',
+                            background: isDarkMode ? '#16181c' : '#fff'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.03)' : '#f8f9fa';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = isDarkMode ? '#16181c' : '#fff';
                           }}
                         >
-                          Enroll {course.price || '$249'}
-                        </button>
+                          {/* Course Icon */}
+                          <div style={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 12,
+                            background: courseGradient,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 700,
+                            fontSize: 16,
+                            color: 'white',
+                            flexShrink: 0
+                          }}>
+                            {initials}
+                          </div>
+
+                          {/* Course Info */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div
+                              style={{
+                                fontSize: 'var(--fs-16)',
+                                fontWeight: 600,
+                                color: isDarkMode ? '#e7e9ea' : '#1a1a1a',
+                                marginBottom: 6,
+                                transition: 'color 0.15s'
+                              }}
+                            >
+                              {course.title}
+                            </div>
+
+                            <p style={{
+                              fontSize: 'var(--fs-14)',
+                              color: isDarkMode ? '#8b98a5' : '#536471',
+                              lineHeight: 1.45,
+                              marginBottom: 10,
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                              overflow: 'hidden',
+                              margin: '0 0 10px 0'
+                            }}>
+                              {course.description}
+                            </p>
+
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 10,
+                              fontSize: 'var(--fs-13)',
+                              color: isDarkMode ? '#71767b' : '#71767b',
+                              flexWrap: 'wrap'
+                            }}>
+                              <span><span style={{ color: '#ffc107' }}>★</span> {course.rating?.toFixed?.(1) || '4.7'} (0)</span>
+                              <span style={{
+                                background: isDarkMode ? '#2d3748' : '#e0f2fe',
+                                color: isDarkMode ? '#90cdf4' : '#0369a1',
+                                padding: '2px 10px',
+                                borderRadius: 12,
+                                fontSize: 'var(--fs-11)',
+                                fontWeight: 500
+                              }}>{course.level || 'Beginner'}</span>
+                              <span>0 sessions</span>
+                              <span>{course.duration || '3 hours'}</span>
+                              <span style={{
+                                color: isDarkMode ? '#e7e9ea' : '#1a1a1a',
+                                fontWeight: 600
+                              }}>
+                                ${course.price || 249}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Enroll Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onViewCourse && onViewCourse(course.id);
+                            }}
+                            style={{
+                              background: '#22c55e',
+                              color: 'white',
+                              border: 'none',
+                              padding: '9px 18px',
+                              borderRadius: 20,
+                              fontSize: 'var(--fs-14)',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                              transition: 'all 0.2s',
+                              flexShrink: 0,
+                              alignSelf: 'flex-start',
+                              marginTop: 2
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = '#16a34a'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = '#22c55e'}
+                          >
+                            ${course.price || 249}
+                          </button>
+                        </div>
+
+                        {/* Community Badge - RIGHT - 3B Blue Geometric Pattern */}
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (guyInstructor && onViewCreatorProfile) {
+                              onViewCreatorProfile(guyInstructor);
+                            }
+                          }}
+                          style={{
+                            width: 180,
+                            flexShrink: 0,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            padding: '16px 14px',
+                            cursor: 'pointer',
+                            background: isDarkMode
+                              ? 'linear-gradient(135deg, #0a1628 0%, #1e293b 100%)'
+                              : 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            transition: 'filter 0.15s'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.1)'}
+                          onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
+                        >
+                          {/* Geometric shapes - 3B Pattern */}
+                          {!isDarkMode && (
+                            <>
+                              <div style={{
+                                position: 'absolute',
+                                top: 10,
+                                right: 10,
+                                width: 50,
+                                height: 50,
+                                border: '2px solid rgba(255,255,255,0.15)',
+                                borderRadius: 10,
+                                transform: 'rotate(15deg)',
+                                pointerEvents: 'none'
+                              }} />
+                              <div style={{
+                                position: 'absolute',
+                                bottom: 15,
+                                left: -10,
+                                width: 60,
+                                height: 60,
+                                border: '2px solid rgba(255,255,255,0.1)',
+                                borderRadius: '50%',
+                                pointerEvents: 'none'
+                              }} />
+                              <div style={{
+                                position: 'absolute',
+                                top: '50%',
+                                right: -15,
+                                width: 30,
+                                height: 30,
+                                background: 'rgba(255,255,255,0.08)',
+                                transform: 'rotate(45deg)',
+                                pointerEvents: 'none'
+                              }} />
+                            </>
+                          )}
+
+                          {/* Community Icon */}
+                          <div style={{
+                            width: 44,
+                            height: 44,
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 18,
+                            background: 'rgba(255,255,255,0.2)',
+                            marginBottom: 10,
+                            position: 'relative',
+                            zIndex: 1,
+                            fontWeight: 600,
+                            color: 'white'
+                          }}>
+                            PR
+                          </div>
+
+                          <div style={{
+                            fontSize: 'var(--fs-14)',
+                            fontWeight: 600,
+                            color: '#fff',
+                            marginBottom: 3,
+                            position: 'relative',
+                            zIndex: 1
+                          }}>
+                            {guyInstructor?.communityName || 'Prompt Masters'}
+                          </div>
+
+                          <div style={{
+                            fontSize: 'var(--fs-12)',
+                            color: 'rgba(255,255,255,0.75)',
+                            marginBottom: 4,
+                            position: 'relative',
+                            zIndex: 1
+                          }}>
+                            {guyInstructor?.stats?.studentsTaught?.toLocaleString() || 527} followers
+                          </div>
+
+                          <div style={{
+                            fontSize: 'var(--fs-11)',
+                            color: 'rgba(255,255,255,0.6)',
+                            position: 'relative',
+                            zIndex: 1
+                          }}>
+                            Created by {guyInstructor?.name || 'Guy Rymberg'}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Instructor Attribution */}

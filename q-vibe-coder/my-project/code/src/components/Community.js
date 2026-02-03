@@ -2265,7 +2265,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                         background: commonsActiveFeed === 'main'
                           ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                          : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                          : (isDarkMode ? '#2f3336' : '#e8ebee'),
                         color: commonsActiveFeed === 'main'
                           ? '#1d9bf0'
                           : (isDarkMode ? '#e7e9ea' : '#0f1419'),
@@ -2291,7 +2291,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                         background: commonsActiveFeed === 'Member Search'
                           ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                          : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                          : (isDarkMode ? '#2f3336' : '#e8ebee'),
                         color: commonsActiveFeed === 'Member Search'
                           ? '#1d9bf0'
                           : (isDarkMode ? '#e7e9ea' : '#0f1419'),
@@ -2317,7 +2317,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                         background: commonsActiveFeed === 'App Tour'
                           ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                          : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                          : (isDarkMode ? '#2f3336' : '#e8ebee'),
                         color: commonsActiveFeed === 'App Tour'
                           ? '#1d9bf0'
                           : (isDarkMode ? '#e7e9ea' : '#0f1419'),
@@ -2576,7 +2576,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                             : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                           background: isHubSelected
                             ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                            : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                            : (isDarkMode ? '#2f3336' : '#e8ebee'),
                           color: isHubSelected
                             ? '#1d9bf0'
                             : (isDarkMode ? '#e7e9ea' : '#0f1419'),
@@ -2613,7 +2613,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                                 : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                               background: isSelected
                                 ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                                : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                                : (isDarkMode ? '#2f3336' : '#e8ebee'),
                               color: isSelected
                                 ? '#1d9bf0'
                                 : (isDarkMode ? '#e7e9ea' : '#0f1419'),
@@ -2635,7 +2635,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       <button
                         onClick={() => scrollPills('right')}
                         style={{
-                          background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                          background: isDarkMode ? '#2f3336' : '#e8ebee',
                           border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
                           borderRadius: '50%',
                           width: 28,
@@ -2675,23 +2675,6 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
               boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.08)',
               overflow: 'hidden'
             }}>
-              {/* Collapsible Banner Section - animates height */}
-              <div style={{
-                maxHeight: isProfileCollapsed ? 0 : 140,
-                overflow: 'hidden',
-                transition: 'max-height 0.3s ease-out'
-              }}>
-                <img
-                  src={process.env.PUBLIC_URL + '/commons-banner.png'}
-                  alt="The Commons"
-                  style={{
-                    width: '100%',
-                    height: 140,
-                    objectFit: 'cover'
-                  }}
-                />
-              </div>
-
               {/* Header - always visible, adjusts padding */}
               <div style={{
                 padding: isProfileCollapsed ? '12px 16px 8px 16px' : '16px 20px 0 20px',
@@ -2702,21 +2685,6 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   alignItems: 'center',
                   gap: 12
                 }}>
-                  {/* Small avatar only shows when collapsed */}
-                  <img
-                    src={process.env.PUBLIC_URL + '/commons-banner.png'}
-                    alt="The Commons"
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 8,
-                      objectFit: 'cover',
-                      opacity: isProfileCollapsed ? 1 : 0,
-                      maxWidth: isProfileCollapsed ? 36 : 0,
-                      marginRight: isProfileCollapsed ? 0 : -12,
-                      transition: 'opacity 0.3s ease-out, max-width 0.3s ease-out, margin-right 0.3s ease-out'
-                    }}
-                  />
                   <div style={{
                     fontSize: isProfileCollapsed ? 16 : 20,
                     fontWeight: 700,
@@ -2776,7 +2744,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                     background: commonsActiveFeed === 'main'
                       ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                      : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                      : (isDarkMode ? '#2f3336' : '#e8ebee'),
                     color: commonsActiveFeed === 'main'
                       ? '#1d9bf0'
                       : (isDarkMode ? '#e7e9ea' : '#0f1419'),
@@ -2806,7 +2774,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
                       background: commonsActiveFeed === num
                         ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                        : (isDarkMode ? '#2f3336' : '#f7f9f9'),
+                        : (isDarkMode ? '#2f3336' : '#e8ebee'),
                       color: commonsActiveFeed === num
                         ? '#1d9bf0'
                         : (isDarkMode ? '#e7e9ea' : '#0f1419'),
@@ -2848,18 +2816,50 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
             return (
               <div style={{
                 background: isDarkMode
-                  ? 'linear-gradient(135deg, #1a2332 0%, #1e293b 100%)'
-                  : getUserBannerGradient(),
+                  ? 'linear-gradient(135deg, #0a1628 0%, #1e293b 100%)'
+                  : 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
                 borderRadius: 16,
-                padding: isProfileCollapsed ? '12px 16px' : '20px',
+                padding: '20px',
                 margin: '8px 16px 0 16px',
                 position: 'sticky',
                 top: communityNavStyle === 'pills' ? 57 : 0,
                 zIndex: 10,
                 border: 'none',
-                boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.06)',
-                transition: 'padding 0.3s ease-out'
+                boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.12)',
+                overflow: 'hidden'
               }}>
+                {/* Geometric Patterns */}
+                <div style={{
+                  position: 'absolute',
+                  top: -10,
+                  right: 80,
+                  width: 50,
+                  height: 50,
+                  border: '2px solid rgba(255,255,255,0.15)',
+                  borderRadius: 10,
+                  transform: 'rotate(15deg)',
+                  pointerEvents: 'none'
+                }} />
+                <div style={{
+                  position: 'absolute',
+                  bottom: -15,
+                  left: 40,
+                  width: 40,
+                  height: 40,
+                  border: '2px solid rgba(255,255,255,0.1)',
+                  borderRadius: '50%',
+                  pointerEvents: 'none'
+                }} />
+                <div style={{
+                  position: 'absolute',
+                  top: 10,
+                  right: 30,
+                  width: 25,
+                  height: 25,
+                  background: 'rgba(255,255,255,0.08)',
+                  transform: 'rotate(45deg)',
+                  pointerEvents: 'none'
+                }} />
                 {/* Header Row - Always visible, shows avatar + name */}
                 <div style={{
                   display: 'flex',
@@ -2868,47 +2868,48 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 }}>
                   {/* Community Badge Icon - 👥 group icon */}
                   <div style={{
-                    width: isProfileCollapsed ? 32 : 44,
-                    height: isProfileCollapsed ? 32 : 44,
+                    width: 44,
+                    height: 44,
                     borderRadius: 10,
-                    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                    background: 'rgba(255,255,255,0.35)',
+                    border: '2px solid rgba(255,255,255,0.5)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: isProfileCollapsed ? 16 : 22,
+                    fontSize: 22,
                     flexShrink: 0,
-                    transition: 'width 0.3s ease-out, height 0.3s ease-out, font-size 0.3s ease-out'
+                    position: 'relative',
+                    zIndex: 1
                   }}>
                     👥
                   </div>
 
-                  {/* Community Name - always visible */}
+                  {/* Community Name */}
                   <div style={{
-                      fontSize: isProfileCollapsed ? 16 : 18,
+                      fontSize: 18,
                       fontWeight: 700,
-                      color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                      color: '#ffffff',
                       display: 'inline-block',
                       lineHeight: 1.2,
-                      transition: 'font-size 0.3s ease-out'
+                      position: 'relative',
+                      zIndex: 1
                     }}
                   >
                     {instructor.communityName || `${instructor.name} Community`}
                   </div>
 
-                  {/* Created by Creator - hidden when collapsed */}
+                  {/* Created by Creator */}
                   <div style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 6,
-                      opacity: isProfileCollapsed ? 0 : 1,
-                      maxWidth: isProfileCollapsed ? 0 : 300,
-                      overflow: 'hidden',
-                      transition: 'opacity 0.3s ease-out, max-width 0.3s ease-out'
+                      position: 'relative',
+                      zIndex: 1
                     }}
                   >
                     <span style={{
                       fontSize: 'var(--fs-13)',
-                      color: isDarkMode ? '#9ca3af' : '#536471'
+                      color: 'rgba(255,255,255,0.8)'
                     }}>
                       Created by
                     </span>
@@ -2924,7 +2925,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         gap: 6,
                         fontSize: 'var(--fs-13)',
                         fontWeight: 600,
-                        color: '#1d9bf0',
+                        color: '#ffffff',
                         cursor: 'pointer'
                       }}
                       onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
@@ -2967,7 +2968,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   {/* Spacer */}
                   <div style={{ flex: 1 }} />
 
-                  {/* View All Courses Button - hidden when collapsed */}
+                  {/* View All Courses Button */}
                   <button
                     onClick={() => {
                       if (onViewCommunity) {
@@ -2980,50 +2981,45 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       gap: 6,
                       padding: '6px 14px',
                       borderRadius: 16,
-                      border: '2px solid #6366f1',
-                      background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
-                      color: '#6366f1',
+                      border: '2px solid rgba(255,255,255,0.8)',
+                      background: 'rgba(255,255,255,0.1)',
+                      color: '#ffffff',
                       fontSize: 'var(--fs-13)',
                       fontWeight: 600,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
                       flexShrink: 0,
-                      opacity: isProfileCollapsed ? 0 : 1,
-                      maxWidth: isProfileCollapsed ? 0 : 200,
-                      overflow: 'hidden',
-                      padding: isProfileCollapsed ? 0 : '6px 14px',
-                      transition: 'all 0.3s ease-out'
+                      position: 'relative',
+                      zIndex: 1
                     }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.background = '#6366f1';
-                      e.currentTarget.style.color = '#fff';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                      e.currentTarget.style.borderColor = '#ffffff';
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.background = isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)';
-                      e.currentTarget.style.color = '#6366f1';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)';
                     }}
                   >
                     View All Courses
                   </button>
                 </div>
 
-                {/* Collapsible Details Section */}
+                {/* Details Section */}
                 <div style={{
-                  maxHeight: isProfileCollapsed ? 0 : 150,
-                  overflow: 'hidden',
-                  opacity: isProfileCollapsed ? 0 : 1,
-                  transition: 'max-height 0.3s ease-out, opacity 0.2s ease-out',
-                  marginTop: isProfileCollapsed ? 0 : 4
+                  marginTop: 4,
+                  position: 'relative',
+                  zIndex: 1
                 }}>
                   <div style={{
                     fontSize: 'var(--fs-14)',
-                    color: isDarkMode ? '#9ca3af' : '#536471'
+                    color: 'rgba(255,255,255,0.85)'
                   }}>
                     {instructor.title}
                   </div>
                   <div style={{
                     fontSize: 'var(--fs-12)',
-                    color: isDarkMode ? '#9ca3af' : '#536471',
+                    color: 'rgba(255,255,255,0.7)',
                     marginTop: 2
                   }}>
                     {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · 189 Posts
@@ -3031,7 +3027,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   {instructor.bio && (
                     <div style={{
                       fontSize: 'var(--fs-14)',
-                      color: isDarkMode ? '#d1d5db' : '#374151',
+                      color: 'rgba(255,255,255,0.9)',
                       marginTop: 8,
                       lineHeight: 1.4
                     }}>
@@ -3060,16 +3056,16 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     <>
                       {purchasedCourses.length > 0 && (
                         <div style={{
-                          marginTop: isProfileCollapsed ? 0 : 12,
+                          marginTop: 12,
                           fontSize: 'var(--fs-13)',
                           fontWeight: 500,
-                          color: isDarkMode ? '#9ca3af' : '#6b7280'
+                          color: 'rgba(255,255,255,0.7)'
                         }}>
                           Choose a feed:
                         </div>
                       )}
                       <div style={{
-                        marginTop: purchasedCourses.length > 0 ? 6 : (isProfileCollapsed ? 0 : 12),
+                        marginTop: purchasedCourses.length > 0 ? 6 : 12,
                         position: 'relative',
                         display: 'flex',
                         alignItems: 'center',
@@ -3132,20 +3128,21 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                             padding: '8px 16px',
                             borderRadius: 20,
                             border: isHubSelected
-                              ? '2px solid #1d9bf0'
-                              : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                              ? '2px solid rgba(255,255,255,1)'
+                              : '2px solid rgba(255,255,255,0.8)',
                             background: isHubSelected
-                              ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                              : (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                            color: isHubSelected
-                              ? '#1d9bf0'
-                              : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                              ? 'rgba(255,255,255,0.25)'
+                              : 'rgba(255,255,255,0.1)',
+                            color: '#ffffff',
                             fontSize: 'var(--fs-14)',
                             fontWeight: 600,
                             cursor: 'pointer',
                             whiteSpace: 'nowrap',
                             flexShrink: 0,
-                            transition: 'all 0.2s ease'
+                            transition: 'all 0.2s ease',
+                            boxShadow: isHubSelected
+                              ? 'inset 0 0 20px rgba(255,255,255,0.1), 0 0 0 3px rgba(255,255,255,0.2)'
+                              : 'none'
                           }}
                         >
                           Main Hall
@@ -3169,20 +3166,21 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                                 padding: '8px 16px',
                                 borderRadius: 20,
                                 border: isSelected
-                                  ? '2px solid #1d9bf0'
-                                  : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
+                                  ? '2px solid rgba(255,255,255,1)'
+                                  : '2px solid rgba(255,255,255,0.8)',
                                 background: isSelected
-                                  ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                                  : (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                                color: isSelected
-                                  ? '#1d9bf0'
-                                  : (isDarkMode ? '#e7e9ea' : '#0f1419'),
+                                  ? 'rgba(255,255,255,0.25)'
+                                  : 'rgba(255,255,255,0.1)',
+                                color: '#ffffff',
                                 fontSize: 'var(--fs-14)',
                                 fontWeight: 600,
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
                                 flexShrink: 0,
-                                transition: 'all 0.2s ease'
+                                transition: 'all 0.2s ease',
+                                boxShadow: isSelected
+                                  ? 'inset 0 0 20px rgba(255,255,255,0.1), 0 0 0 3px rgba(255,255,255,0.2)'
+                                  : 'none'
                               }}
                             >
                               {course.title}
@@ -3197,7 +3195,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         <button
                           onClick={() => scrollPills('right')}
                           style={{
-                            background: isDarkMode ? '#2f3336' : '#f7f9f9',
+                            background: isDarkMode ? '#2f3336' : '#e8ebee',
                             border: isDarkMode ? '1px solid #536471' : '1px solid #cfd9de',
                             borderRadius: '50%',
                             width: 28,
