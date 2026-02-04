@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curriculum Builder - Option C (Light Theme)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #fff;
+      color: #0f1419;
+    }
+
+    .app-container {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: 240px;
+      background: #fff;
+      border-right: 1px solid #eff3f4;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      font-size: 20px;
+      color: #1d9bf0;
+      font-weight: bold;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      border-radius: 24px;
+      font-size: 15px;
+      color: #0f1419;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .sidebar-item:hover { background: #f7f9f9; }
+    .sidebar-item.active {
+      color: #1d9bf0;
+      font-weight: 600;
+    }
+    .sidebar-icon { font-size: 20px; }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f7f9fa;
+      border-left: 1px solid #eff3f4;
+    }
+
+    /* Top Header Bar */
+    .top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: #fff;
+      border-bottom: 1px solid #eff3f4;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .back-btn {
+      background: transparent;
+      border: none;
+      color: #536471;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-btn:hover { color: #1d9bf0; }
+    .course-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f1419;
+    }
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-outline {
+      background: #fff;
+      border: 1px solid #cfd9de;
+      color: #0f1419;
+    }
+    .btn-outline:hover { background: #f7f9f9; }
+    .btn-primary {
+      background: #1d9bf0;
+      border: none;
+      color: white;
+    }
+    .btn-primary:hover { background: #1a8cd8; }
+
+    /* Tab Bar */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      padding: 0 24px;
+      background: #fff;
+      border-bottom: 1px solid #eff3f4;
+    }
+    .tab {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #536471;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .tab:hover {
+      color: #0f1419;
+      background: #f7f9f9;
+    }
+    .tab.active {
+      color: #1d9bf0;
+      border-bottom-color: #1d9bf0;
+      font-weight: 600;
+    }
+
+    /* Curriculum Container */
+    .curriculum-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Left Panel - Sessions */
+    .sessions-panel {
+      width: 320px;
+      background: #fff;
+      border-right: 1px solid #eff3f4;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-header {
+      padding: 16px 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #536471;
+      border-bottom: 1px solid #eff3f4;
+    }
+    .sessions-list {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    /* Session Card */
+    .session-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: #f7f9fa;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: all 0.15s ease;
+    }
+    .session-card:hover {
+      background: #eff3f4;
+    }
+    .session-card.selected {
+      border-color: #1d9bf0;
+      background: #e8f5fd;
+    }
+    .session-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .session-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #1d9bf0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .session-number {
+      width: 36px;
+      height: 36px;
+      background: #1d9bf0;
+      color: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .session-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .session-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f1419;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .session-meta {
+      font-size: 13px;
+      color: #536471;
+      margin-top: 2px;
+    }
+    .delete-btn {
+      color: #536471;
+      font-size: 16px;
+      padding: 4px 8px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .session-card:hover .delete-btn { opacity: 1; }
+    .delete-btn:hover { color: #f4212e; }
+
+    .add-session-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px;
+      background: #fff;
+      border: 2px dashed #cfd9de;
+      border-radius: 12px;
+      color: #536471;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 4px;
+    }
+    .add-session-btn:hover {
+      border-color: #1d9bf0;
+      color: #1d9bf0;
+      background: #e8f5fd;
+    }
+
+    /* Right Panel - Details */
+    .details-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f7f9fa;
+      overflow: hidden;
+    }
+    .details-header {
+      padding: 20px 24px;
+      background: #fff;
+      border-bottom: 1px solid #eff3f4;
+    }
+    .details-header small {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1d9bf0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .details-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f1419;
+      margin-top: 4px;
+    }
+    .details-content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    /* Form Sections */
+    .section {
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #536471;
+      margin-bottom: 10px;
+    }
+    .input-field {
+      width: 100%;
+      padding: 12px 14px;
+      background: #fff;
+      border: 1px solid #cfd9de;
+      border-radius: 8px;
+      color: #0f1419;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .input-field:focus {
+      border-color: #1d9bf0;
+      box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.1);
+    }
+    .input-field::placeholder {
+      color: #8899a6;
+    }
+
+    /* Lessons List */
+    .lessons-container {
+      background: #fff;
+      border: 1px solid #eff3f4;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .lesson-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid #eff3f4;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .lesson-item:last-of-type {
+      border-bottom: none;
+    }
+    .lesson-item:hover {
+      background: #f7f9fa;
+    }
+    .lesson-item.selected {
+      background: #e8f5fd;
+    }
+    .lesson-number {
+      width: 32px;
+      height: 32px;
+      background: #eff3f4;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f1419;
+      flex-shrink: 0;
+    }
+    .lesson-item.selected .lesson-number {
+      background: #1d9bf0;
+      color: #fff;
+    }
+    .lesson-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .lesson-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #0f1419;
+    }
+    .lesson-duration {
+      font-size: 13px;
+      color: #536471;
+      margin-top: 2px;
+    }
+    .lesson-delete {
+      color: #536471;
+      font-size: 14px;
+      padding: 4px;
+      cursor: pointer;
+      opacity: 0;
+    }
+    .lesson-item:hover .lesson-delete { opacity: 1; }
+    .lesson-delete:hover { color: #f4212e; }
+
+    .add-lesson-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 16px;
+      background: transparent;
+      border: none;
+      border-top: 1px solid #eff3f4;
+      color: #1d9bf0;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+    }
+    .add-lesson-btn:hover {
+      background: #f7f9fa;
+    }
+
+    /* Lesson Edit Panel */
+    .lesson-edit {
+      margin-top: 20px;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #eff3f4;
+      border-radius: 12px;
+    }
+    .lesson-edit-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eff3f4;
+    }
+    .lesson-edit-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f1419;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: #536471;
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .close-btn:hover { color: #0f1419; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 100px;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f1419;
+      margin-bottom: 6px;
+    }
+    textarea.input-field {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    /* Upload Zone */
+    .upload-zone {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border: 2px dashed #cfd9de;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: #f7f9fa;
+    }
+    .upload-zone:hover {
+      border-color: #1d9bf0;
+      background: #e8f5fd;
+    }
+    .upload-icon {
+      font-size: 24px;
+      color: #1d9bf0;
+    }
+    .upload-text {
+      font-size: 14px;
+      color: #536471;
+    }
+    .upload-text strong {
+      color: #1d9bf0;
+    }
+
+    /* Hint */
+    .hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: #e8f5fd;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #1d9bf0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <span>∞</span> PeerLoop
+      </div>
+      <div class="sidebar-item"><span class="sidebar-icon">👥</span> The Commons</div>
+      <div class="sidebar-item"><span class="sidebar-icon">📰</span> My Feeds</div>
+      <div class="sidebar-item"><span class="sidebar-icon">📚</span> My Courses</div>
+      <div class="sidebar-item"><span class="sidebar-icon">🔍</span> Discover</div>
+      <div class="sidebar-item active"><span class="sidebar-icon">💼</span> Workspace</div>
+      <div class="sidebar-item"><span class="sidebar-icon">👤</span> Profile</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Top Header -->
+      <div class="top-header">
+        <div class="header-left">
+          <button class="back-btn">← Back to Content</button>
+          <span class="course-title">Brian's Course</span>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline">Save Draft</button>
+          <button class="btn btn-primary">Publish</button>
+        </div>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab">Intro</div>
+        <div class="tab active">Curriculum</div>
+        <div class="tab">Pricing</div>
+        <div class="tab">Settings</div>
+      </div>
+
+      <!-- Curriculum Container -->
+      <div class="curriculum-container">
+        <!-- Left: Sessions Panel -->
+        <div class="sessions-panel">
+          <div class="panel-header">Sessions</div>
+          <div class="sessions-list">
+            <!-- Session 1 - Selected -->
+            <div class="session-card selected" onclick="selectSession(this)">
+              <div class="session-badge">
+                <span class="session-label">Session</span>
+                <span class="session-number">1</span>
+              </div>
+              <div class="session-info">
+                <div class="session-name">Working with Peerloop</div>
+                <div class="session-meta">3 lessons</div>
+              </div>
+              <span class="delete-btn">×</span>
+            </div>
+
+            <!-- Session 2 -->
+            <div class="session-card" onclick="selectSession(this)">
+              <div class="session-badge">
+                <span class="session-label">Session</span>
+                <span class="session-number">2</span>
+              </div>
+              <div class="session-info">
+                <div class="session-name">Test file upload</div>
+                <div class="session-meta">1 lesson</div>
+              </div>
+              <span class="delete-btn">×</span>
+            </div>
+
+            <button class="add-session-btn">+ Add Session</button>
+          </div>
+        </div>
+
+        <!-- Right: Details Panel -->
+        <div class="details-panel">
+          <div class="details-header">
+            <small>Session 1</small>
+            <h2>Working with Peerloop</h2>
+          </div>
+
+          <div class="details-content">
+            <!-- Session Name -->
+            <div class="section">
+              <div class="section-title">Session Name</div>
+              <input type="text" class="input-field" value="Working with Peerloop">
+            </div>
+
+            <!-- Lessons -->
+            <div class="section">
+              <div class="section-title">Lessons</div>
+              <div class="lessons-container">
+                <div class="lesson-item" onclick="selectLesson(this)">
+                  <span class="lesson-number">1</span>
+                  <div class="lesson-info">
+                    <div class="lesson-name">Lesson detail line goes here</div>
+                    <div class="lesson-duration">5 min</div>
+                  </div>
+                  <span class="lesson-delete">×</span>
+                </div>
+                <div class="lesson-item selected" onclick="selectLesson(this)">
+                  <span class="lesson-number">2</span>
+                  <div class="lesson-info">
+                    <div class="lesson-name">Getting Started</div>
+                    <div class="lesson-duration">20 min</div>
+                  </div>
+                  <span class="lesson-delete">×</span>
+                </div>
+                <div class="lesson-item" onclick="selectLesson(this)">
+                  <span class="lesson-number">3</span>
+                  <div class="lesson-info">
+                    <div class="lesson-name">Advanced Tips</div>
+                    <div class="lesson-duration">25 min</div>
+                  </div>
+                  <span class="lesson-delete">×</span>
+                </div>
+                <button class="add-lesson-btn">+ Add Lesson</button>
+              </div>
+
+              <div class="hint">
+                💡 Click a lesson to edit its details below
+              </div>
+            </div>
+
+            <!-- Lesson Edit Panel -->
+            <div class="lesson-edit">
+              <div class="lesson-edit-header">
+                <span class="lesson-edit-title">Editing: Lesson 2 - Getting Started</span>
+                <button class="close-btn">×</button>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Lesson Title</label>
+                  <input type="text" class="input-field" value="Getting Started">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Duration</label>
+                  <input type="text" class="input-field" value="20 min">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="input-field" placeholder="What will students learn in this lesson?">Learn how to set up your first Peerloop project and navigate the interface.</textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Lesson Files</label>
+                <div class="upload-zone">
+                  <span class="upload-icon">📤</span>
+                  <span class="upload-text"><strong>Upload files</strong> — drag & drop or click</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function selectSession(el) {
+      document.querySelectorAll('.session-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+    function selectLesson(el) {
+      document.querySelectorAll('.lesson-item').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+  </script>
+</body>
+</html>

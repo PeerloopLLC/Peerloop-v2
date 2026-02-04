@@ -140,7 +140,10 @@
       "Bash(Write-Output \"TIMESTAMP: $TIMESTAMP\")",
       "Bash(npm install:*)",
       "Bash(unzip:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(xargs -I {} sh -c 'git show {} --stat 2>/dev/null | head -10 | grep -l \"\"Discover\\\\|course.*list\\\\|summary\"\" && echo {}')",
+      "mcp__plugin_playwright_playwright__browser_navigate_back",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

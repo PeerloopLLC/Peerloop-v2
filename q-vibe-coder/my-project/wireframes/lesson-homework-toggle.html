@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe: Lesson-Level Homework Toggle</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
+
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { margin-bottom: 10px; color: #1a1a1a; }
+    .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
+
+    .wireframe-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-desc {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Course Builder Layout */
+    .builder-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr 320px;
+      gap: 20px;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 500px;
+    }
+
+    /* Left Panel - Sessions */
+    .sessions-panel {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+    }
+    .panel-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .session-item {
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .session-item.active {
+      background: #eff6ff;
+      border: 1px solid #3b82f6;
+      color: #1d4ed8;
+    }
+    .session-item:not(.active) {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      color: #374151;
+    }
+    .lesson-list {
+      margin-left: 16px;
+      margin-top: 8px;
+    }
+    .lesson-item {
+      padding: 8px 10px;
+      font-size: 12px;
+      color: #6b7280;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lesson-item.selected {
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 500;
+    }
+    .lesson-item .hw-badge {
+      background: #10b981;
+      color: white;
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      margin-left: auto;
+    }
+
+    /* Middle Panel - Content */
+    .content-panel {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+    }
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .lesson-title-input {
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-bottom: 2px solid #e5e7eb;
+      padding: 8px 0;
+      width: 100%;
+      outline: none;
+    }
+    .lesson-title-input:focus {
+      border-bottom-color: #3b82f6;
+    }
+    .content-area {
+      background: #f9fafb;
+      border: 1px dashed #d1d5db;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      color: #6b7280;
+      margin-top: 16px;
+    }
+
+    /* Right Panel - Lesson Details */
+    .details-panel {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+    }
+    .detail-group {
+      margin-bottom: 20px;
+    }
+    .detail-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .detail-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    /* Toggle Switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      margin-top: 20px;
+    }
+    .toggle-row.highlighted {
+      background: #f0fdf4;
+      border: 2px solid #22c55e;
+      position: relative;
+    }
+    .toggle-row.highlighted::after {
+      content: "NEW";
+      position: absolute;
+      top: -10px;
+      right: 12px;
+      background: #22c55e;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .toggle-info h4 {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    .toggle-info p {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      background: #d1d5db;
+      border-radius: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-switch.on {
+      background: #22c55e;
+    }
+    .toggle-switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-switch.on::after {
+      transform: translateX(22px);
+    }
+
+    /* Student View Section */
+    .student-view {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .lesson-card {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .lesson-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      cursor: pointer;
+    }
+    .lesson-icon {
+      width: 36px;
+      height: 36px;
+      background: #f3f4f6;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .lesson-header-text h4 {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+    .lesson-header-text span {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    /* Homework Section in Lesson */
+    .homework-section {
+      padding: 16px;
+      border-top: 1px solid #e5e7eb;
+      background: #fefce8;
+    }
+    .homework-section.submitted {
+      background: #f0fdf4;
+    }
+    .homework-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ca8a04;
+      margin-bottom: 12px;
+    }
+    .homework-header.submitted {
+      color: #16a34a;
+    }
+    .homework-upload-area {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 8px;
+      border: 1px dashed #d1d5db;
+    }
+    .homework-upload-area span {
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .upload-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .submitted-file {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #bbf7d0;
+    }
+    .file-icon {
+      width: 40px;
+      height: 40px;
+      background: #dcfce7;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .file-info {
+      flex: 1;
+    }
+    .file-info a {
+      font-size: 13px;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-decoration: none;
+    }
+    .file-info span {
+      font-size: 11px;
+      color: #6b7280;
+      display: block;
+      margin-top: 2px;
+    }
+    .replace-btn {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #374151;
+      cursor: pointer;
+    }
+
+    /* Comparison */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .comparison-col h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+    .comparison-col.before h3 {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+    .comparison-col.after h3 {
+      background: #f0fdf4;
+      color: #16a34a;
+    }
+
+    .note-box {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+    .note-box h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #92400e;
+      margin-bottom: 8px;
+    }
+    .note-box ul {
+      font-size: 13px;
+      color: #78350f;
+      margin-left: 20px;
+    }
+    .note-box li {
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Lesson-Level Homework Upload</h1>
+    <p class="subtitle">Moving homework uploads from session level to individual lessons</p>
+
+    <!-- Section 1: Course Builder -->
+    <div class="wireframe-section">
+      <div class="section-title">
+        <span>1.</span> Course Builder - Lesson Details Panel
+      </div>
+      <p class="section-desc">When creator selects a lesson, the right panel shows lesson settings including the new "Allow Homework Upload" toggle</p>
+
+      <div class="builder-layout">
+        <!-- Left: Session/Lesson Tree -->
+        <div class="sessions-panel">
+          <div class="panel-header">Curriculum</div>
+          <div class="session-item active">
+            Session 1: Introduction to AI Tools
+          </div>
+          <div class="lesson-list">
+            <div class="lesson-item selected">
+              <span>📄</span> What is AI and Why It Matters
+              <span class="hw-badge">HW</span>
+            </div>
+            <div class="lesson-item">
+              <span>📄</span> The AI Landscape
+            </div>
+          </div>
+
+          <div class="session-item">
+            Session 2: Mastering Prompts
+          </div>
+          <div class="lesson-list">
+            <div class="lesson-item">
+              <span>📄</span> Anatomy of a Great Prompt
+            </div>
+            <div class="lesson-item">
+              <span>📄</span> Advanced Techniques
+              <span class="hw-badge">HW</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle: Content Editor -->
+        <div class="content-panel">
+          <div class="content-header">
+            <input type="text" class="lesson-title-input" value="What is AI and Why It Matters" />
+          </div>
+          <div class="content-area">
+            <p>Lesson content editor area</p>
+            <p style="font-size: 12px; margin-top: 8px;">(Video, text, resources, etc.)</p>
+          </div>
+        </div>
+
+        <!-- Right: Lesson Details -->
+        <div class="details-panel">
+          <div class="panel-header">Lesson Details</div>
+
+          <div class="detail-group">
+            <div class="detail-label">Duration</div>
+            <input type="text" class="detail-input" value="15 minutes" />
+          </div>
+
+          <div class="detail-group">
+            <div class="detail-label">Lesson Type</div>
+            <select class="detail-input">
+              <option>Video</option>
+              <option>Text</option>
+              <option>Quiz</option>
+            </select>
+          </div>
+
+          <!-- NEW: Homework Toggle -->
+          <div class="toggle-row highlighted">
+            <div class="toggle-info">
+              <h4>Allow Homework Upload</h4>
+              <p>Students can submit files for this lesson</p>
+            </div>
+            <div class="toggle-switch on"></div>
+          </div>
+
+          <div class="note-box">
+            <h4>When enabled:</h4>
+            <ul>
+              <li>Upload section appears below lesson for enrolled students</li>
+              <li>Submissions visible in Workspace</li>
+              <li>Students can replace their submission</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Student View Comparison -->
+    <div class="wireframe-section">
+      <div class="section-title">
+        <span>2.</span> Student View - Homework at Lesson Level
+      </div>
+      <p class="section-desc">How students see the homework upload option when viewing course curriculum</p>
+
+      <div class="comparison">
+        <div class="comparison-col before">
+          <h3>Before (Session Level)</h3>
+          <div class="student-view">
+            <div class="lesson-card">
+              <div class="lesson-header">
+                <div class="lesson-icon">📄</div>
+                <div class="lesson-header-text">
+                  <h4>What is AI and Why It Matters</h4>
+                  <span>15 min</span>
+                </div>
+              </div>
+            </div>
+            <div class="lesson-card">
+              <div class="lesson-header">
+                <div class="lesson-icon">📄</div>
+                <div class="lesson-header-text">
+                  <h4>The AI Landscape</h4>
+                  <span>20 min</span>
+                </div>
+              </div>
+            </div>
+            <!-- Session-level homework -->
+            <div class="lesson-card">
+              <div class="homework-section">
+                <div class="homework-header">
+                  <span>📤</span> Session Homework
+                </div>
+                <div class="homework-upload-area">
+                  <span>No file submitted yet</span>
+                  <button class="upload-btn">+ Upload</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-col after">
+          <h3>After (Lesson Level)</h3>
+          <div class="student-view">
+            <!-- Lesson WITH homework -->
+            <div class="lesson-card">
+              <div class="lesson-header">
+                <div class="lesson-icon">📄</div>
+                <div class="lesson-header-text">
+                  <h4>What is AI and Why It Matters</h4>
+                  <span>15 min</span>
+                </div>
+              </div>
+              <div class="homework-section">
+                <div class="homework-header">
+                  <span>📤</span> Homework Upload
+                </div>
+                <div class="homework-upload-area">
+                  <span>No file submitted yet</span>
+                  <button class="upload-btn">+ Upload</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lesson WITHOUT homework -->
+            <div class="lesson-card">
+              <div class="lesson-header">
+                <div class="lesson-icon">📄</div>
+                <div class="lesson-header-text">
+                  <h4>The AI Landscape</h4>
+                  <span>20 min</span>
+                </div>
+              </div>
+              <!-- No homework section -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Submitted State -->
+    <div class="wireframe-section">
+      <div class="section-title">
+        <span>3.</span> Submitted State - Per Lesson
+      </div>
+      <p class="section-desc">Each lesson tracks its own submission independently</p>
+
+      <div class="student-view" style="max-width: 500px;">
+        <!-- Lesson with submitted homework -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="lesson-icon">📄</div>
+            <div class="lesson-header-text">
+              <h4>What is AI and Why It Matters</h4>
+              <span>15 min</span>
+            </div>
+          </div>
+          <div class="homework-section submitted">
+            <div class="homework-header submitted">
+              <span>✓</span> Homework Submitted
+            </div>
+            <div class="submitted-file">
+              <div class="file-icon">📎</div>
+              <div class="file-info">
+                <a href="#">my-ai-notes.pdf</a>
+                <span>2.4 MB • Submitted Feb 1, 2026</span>
+              </div>
+              <button class="replace-btn">Replace</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Another lesson with pending homework -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="lesson-icon">📄</div>
+            <div class="lesson-header-text">
+              <h4>Advanced Prompting Techniques</h4>
+              <span>30 min</span>
+            </div>
+          </div>
+          <div class="homework-section">
+            <div class="homework-header">
+              <span>📤</span> Homework Upload
+            </div>
+            <div class="homework-upload-area">
+              <span>No file submitted yet</span>
+              <button class="upload-btn">+ Upload</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Model Changes -->
+    <div class="wireframe-section">
+      <div class="section-title">
+        <span>4.</span> Data Model Changes
+      </div>
+      <p class="section-desc">How the data structure needs to change</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <h4 style="margin-bottom: 12px; color: #dc2626;">Before (Session Level)</h4>
+          <pre style="background: #f8fafc; padding: 16px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+sessions: [
+  {
+    number: 1,
+    title: "Introduction to AI Tools",
+    allowHomework: true,  // Session level
+    modules: [
+      { title: "What is AI", duration: 15 },
+      { title: "AI Landscape", duration: 20 }
+    ]
+  }
+]</pre>
+        </div>
+        <div>
+          <h4 style="margin-bottom: 12px; color: #16a34a;">After (Lesson Level)</h4>
+          <pre style="background: #f0fdf4; padding: 16px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+sessions: [
+  {
+    number: 1,
+    title: "Introduction to AI Tools",
+    modules: [
+      {
+        title: "What is AI",
+        duration: 15,
+        allowHomework: true  // Lesson level
+      },
+      {
+        title: "AI Landscape",
+        duration: 20,
+        allowHomework: false
+      }
+    ]
+  }
+]</pre>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h4 style="margin-bottom: 12px;">homework_submissions table change:</h4>
+        <pre style="background: #f8fafc; padding: 16px; border-radius: 8px; font-size: 12px;">
+-- Add lesson_index column (keep session_number for grouping)
+ALTER TABLE homework_submissions ADD COLUMN lesson_index INTEGER;
+
+-- lesson_index = index of the module within the session (0, 1, 2...)</pre>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
