@@ -762,7 +762,8 @@ body.dark-mode .creator-badge {
 
 .app {
   display: flex;
-  height: 100vh;
+  height: 100vh; /* Fallback */
+  height: 100dvh;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-width: 375px; /* Minimum for standard phones */
@@ -773,8 +774,9 @@ body.dark-mode .creator-badge {
   position: relative;
   align-items: flex-start;
   transition: background-color 0.3s ease, color 0.3s ease;
-  /* iOS safe area support - prevents content from going under status bar/notch */
+  /* iOS safe area support - prevents content from going under status bar/notch/home indicator */
   padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 /* Sidebar flows in the centered layout */

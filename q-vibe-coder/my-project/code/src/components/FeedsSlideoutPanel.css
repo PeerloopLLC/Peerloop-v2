@@ -25,7 +25,8 @@
   top: 0;
   left: 0;
   width: 240px; /* Default sidebar width - will be overridden by inline style */
-  height: 100vh;
+  height: 100vh; /* Fallback */
+  height: 100dvh;
   background: #ffffff;
   z-index: 1065; /* Above panel (1060), below sidebar (1070) */
   pointer-events: none;
@@ -41,7 +42,8 @@
   top: 0;
   left: 240px; /* Anchored at sidebar edge */
   width: 320px;
-  height: 100vh;
+  height: 100vh; /* Fallback */
+  height: 100dvh;
   background: #ffffff;
   border-right: 1px solid #e0e0e0;
   box-shadow: 4px 0 16px rgba(0, 0, 0, 0.1);

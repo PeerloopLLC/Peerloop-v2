@@ -1,6 +1,7 @@
 .community {
   background-color: var(--bg-primary);
-  min-height: 100vh;
+  min-height: 100vh; /* Fallback */
+  min-height: 100dvh;
   padding: 0;
   color: var(--text-primary);
 }
@@ -28,7 +29,8 @@
 .community-three-column {
   display: block;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100vh; /* Fallback */
+  min-height: 100dvh;
 }
 
 .community-center-column {
@@ -37,7 +39,8 @@
   border-right: 1px solid var(--border-color, #e2e8f0);
   border-left: 1px solid var(--border-color, #e2e8f0);
   overflow-y: auto;
-  height: 100vh;
+  height: 100vh; /* Fallback */
+  height: 100dvh;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }

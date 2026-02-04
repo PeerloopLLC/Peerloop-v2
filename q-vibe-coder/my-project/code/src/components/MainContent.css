@@ -4,7 +4,8 @@
   background-color: var(--bg-primary, #ffffff);
   overflow-y: auto;
   overflow-x: hidden;
-  height: 100vh;
+  height: 100vh; /* Fallback */
+  height: 100dvh;
   margin-left: 0;
   width: 810px;
   max-width: 810px;
@@ -13,6 +14,7 @@
   position: relative;
   box-sizing: border-box;
   padding: 0;
+  padding-bottom: env(safe-area-inset-bottom);
   /* Hide scrollbar while keeping scroll functionality */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
