@@ -8,6 +8,7 @@ import { initGetStream } from '../services/getstream';
 import { fakePosts } from '../data/communityPosts';
 import { communityUsers } from '../data/users';
 import UserHoverCard from './UserHoverCard';
+import CommunityHub from './CommunityHub';
 
 /**
  * MemberSearchView - Search for members (creators, student teachers, students)
@@ -444,6 +445,12 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
     return saved || 'slideout'; // Default to slideout panel
   });
 
+  // Community view mode preference (classic or hub)
+  const [communityViewMode, setCommunityViewMode] = useState(() => {
+    const saved = localStorage.getItem('communityViewMode');
+    return saved || 'classic';
+  });
+
   // Banner color from Profile settings
   const [userBannerColor, setUserBannerColor] = useState(() => {
     const saved = localStorage.getItem('profileBannerColor');
@@ -583,6 +590,24 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('communityNavStyleChanged', handleNavStyleChange);
+    };
+  }, []);
+
+  // Listen for community view mode changes from Settings
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'communityViewMode') {
+        setCommunityViewMode(e.newValue || 'classic');
+      }
+    };
+    const handleViewModeChange = (e) => {
+      setCommunityViewMode(e.detail || 'classic');
+    };
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('communityViewModeChanged', handleViewModeChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('communityViewModeChanged', handleViewModeChange);
     };
   }, []);
 
@@ -2793,8 +2818,70 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
             </div>
           )}
 
+          {/* Community Hub View - Shows when hub view mode is selected for creator communities */}
+          {communityViewMode === 'hub' && communityMode === 'creators' && selectedCreatorId && (() => {
+            const selectedCreator = groupedByCreator.find(c => c.id === selectedCreatorId);
+            const instructorIdFromSelected = typeof selectedCreatorId === 'string' ? parseInt(selectedCreatorId.replace('creator-', '')) : selectedCreatorId;
+            const hubInstructor = selectedCreator
+              ? getInstructorById(selectedCreator.instructorId)
+              : getInstructorById(instructorIdFromSelected);
+            if (!hubInstructor) return null;
+
+            const hubCreatorData = selectedCreator || {
+              id: selectedCreatorId,
+              name: pendingCreatorName || hubInstructor.name,
+              instructorId: instructorIdFromSelected,
+              allCourses: getAllCourses().filter(c => c.instructorId === instructorIdFromSelected),
+              followedCourseIds: selectedCourseFilters.map(f => f.id),
+              isFullCreatorFollow: false
+            };
+
+            return (
+              <CommunityHub
+                creatorData={hubCreatorData}
+                instructor={hubInstructor}
+                displayedPosts={displayedPosts}
+                isDarkMode={isDarkMode}
+                currentUser={currentUser}
+                selectedCourseFilters={selectedCourseFilters}
+                setSelectedCourseFilters={setSelectedCourseFilters}
+                onViewUserProfile={onViewUserProfile}
+                onViewCreatorProfile={onViewCreatorProfile}
+                onViewCourse={onViewCourse}
+                newPostText={newPostText}
+                setNewPostText={setNewPostText}
+                isComposerFocused={isComposerFocused}
+                setIsComposerFocused={setIsComposerFocused}
+                isPosting={isPosting}
+                postError={postError}
+                onSubmitPost={async () => {
+                  if (!newPostText.trim() || isPosting) return;
+                  setIsPosting(true);
+                  setPostError(null);
+                  try {
+                    const result = await createPost({
+                      content: newPostText.trim(),
+                      userId: currentUser?.id,
+                      userName: currentUser?.name || 'Anonymous',
+                      audience: selectedCreatorId
+                    });
+                    if (result.success) {
+                      setNewPostText('');
+                      setRealPosts(prev => [result.post, ...prev]);
+                    } else {
+                      setPostError(result.error || 'Failed to create post');
+                    }
+                  } catch (err) {
+                    setPostError('Something went wrong');
+                  }
+                  setIsPosting(false);
+                }}
+              />
+            );
+          })()}
+
           {/* Mini Creator Profile - Shows when a creator is selected (non-selector mode) */}
-          {communityNavStyle !== 'selector' && communityMode === 'creators' && selectedCreatorId && (() => {
+          {communityViewMode !== 'hub' && communityNavStyle !== 'selector' && communityMode === 'creators' && selectedCreatorId && (() => {
             const selectedCreator = groupedByCreator.find(c => c.id === selectedCreatorId);
             // Extract instructor ID from selectedCreatorId (format: "creator-{id}")
             const instructorIdFromSelected = typeof selectedCreatorId === 'string' ? parseInt(selectedCreatorId.replace('creator-', '')) : selectedCreatorId;
@@ -3231,8 +3318,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
             );
           })()}
 
-          {/* Feed Content - slightly lighter to show card shadow */}
-          <div className="community-feed-content" style={{ background: isDarkMode ? '#050505' : '#fff' }}>
+          {/* Feed Content - slightly lighter to show card shadow (hidden when Hub view is active for creators) */}
+          {!(communityViewMode === 'hub' && communityMode === 'creators' && selectedCreatorId) && <div className="community-feed-content" style={{ background: isDarkMode ? '#050505' : '#fff' }}>
 
             {/* Member Search View - Shows when Member Search pill is selected */}
             {communityMode === 'hub' && commonsActiveFeed === 'Member Search' && (
@@ -3917,7 +4004,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
               </div>
             )
             )}
-          </div>
+          </div>}
         </div>
 
         {/* Right Pane - Removed for cleaner centered layout */}

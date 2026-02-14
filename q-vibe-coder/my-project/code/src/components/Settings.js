@@ -52,6 +52,12 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     return saved ? parseInt(saved, 10) : 25; // Default 25 matches original #f0f0f0
   });
 
+  // Community view mode preference (classic or hub)
+  const [communityViewMode, setCommunityViewMode] = useState(() => {
+    const saved = localStorage.getItem('communityViewMode');
+    return saved || 'classic';
+  });
+
   // Breadcrumb font size preference (11-18px)
   const [breadcrumbFontSize, setBreadcrumbFontSize] = useState(() => {
     const saved = localStorage.getItem('breadcrumbFontSize');
@@ -81,6 +87,12 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     localStorage.setItem('combinedCardGrayLevel', combinedCardGrayLevel.toString());
     window.dispatchEvent(new CustomEvent('combinedCardGrayLevelChanged', { detail: combinedCardGrayLevel }));
   }, [combinedCardGrayLevel]);
+
+  // Save community view mode preference when it changes
+  useEffect(() => {
+    localStorage.setItem('communityViewMode', communityViewMode);
+    window.dispatchEvent(new CustomEvent('communityViewModeChanged', { detail: communityViewMode }));
+  }, [communityViewMode]);
 
   // Save breadcrumb font size preference when it changes
   useEffect(() => {
@@ -449,6 +461,82 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
               >
                 {option.label}
               </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Community View Mode Section */}
+      <div style={{ marginBottom: 32 }}>
+        <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+          Community View Mode
+        </h3>
+        <div style={{
+          background: 'var(--bg-secondary, #16181c)',
+          borderRadius: 12,
+          padding: '16px 20px'
+        }}>
+          <p style={{
+            color: 'var(--text-secondary, #71767b)',
+            fontSize: 'var(--fs-13)',
+            marginBottom: 12,
+            marginTop: 0
+          }}>
+            Choose how creator communities are displayed
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { value: 'classic', label: 'Classic', description: 'Traditional feed layout with profile card and course pills' },
+              { value: 'hub', label: 'Hub', description: 'Tabbed layout with Feeds, Courses, Content, and Calendar views' }
+            ].map(option => (
+              <label
+                key={option.value}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 12,
+                  padding: '12px 16px',
+                  borderRadius: 12,
+                  border: communityViewMode === option.value
+                    ? '2px solid #1d9bf0'
+                    : '1px solid var(--border-color, #2f3336)',
+                  background: communityViewMode === option.value
+                    ? 'rgba(29, 155, 240, 0.1)'
+                    : 'transparent',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <input
+                  type="radio"
+                  name="communityViewMode"
+                  value={option.value}
+                  checked={communityViewMode === option.value}
+                  onChange={(e) => setCommunityViewMode(e.target.value)}
+                  style={{
+                    width: 18,
+                    height: 18,
+                    accentColor: '#1d9bf0',
+                    marginTop: 2
+                  }}
+                />
+                <div>
+                  <div style={{
+                    color: communityViewMode === option.value ? '#1d9bf0' : 'var(--text-primary, #e7e9ea)',
+                    fontWeight: communityViewMode === option.value ? 600 : 400,
+                    fontSize: 'var(--fs-14)',
+                    marginBottom: 2
+                  }}>
+                    {option.label}
+                  </div>
+                  <div style={{
+                    color: 'var(--text-secondary, #71767b)',
+                    fontSize: 12
+                  }}>
+                    {option.description}
+                  </div>
+                </div>
+              </label>
             ))}
           </div>
         </div>
