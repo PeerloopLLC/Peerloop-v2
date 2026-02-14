@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/Peerloop-v2/static/css/main.06da8819.css",
-    "main.js": "/Peerloop-v2/static/js/main.bb9ab99c.js",
+    "main.css": "/Peerloop-v2/static/css/main.2b998130.css",
+    "main.js": "/Peerloop-v2/static/js/main.c5ffb6dc.js",
     "static/media/stream-chat-icons.eot": "/Peerloop-v2/static/media/stream-chat-icons.23ed7e178123c3011bdb.eot",
     "static/media/stream-chat-icons.ttf": "/Peerloop-v2/static/media/stream-chat-icons.f5156a7e5d2a460022d0.ttf",
     "static/media/stream-chat-icons.woff": "/Peerloop-v2/static/media/stream-chat-icons.e5d9e7208067db143a74.woff",
     "static/media/stream-chat-icons.svg": "/Peerloop-v2/static/media/stream-chat-icons.c76e825baeee72b2e71d.svg",
     "index.html": "/Peerloop-v2/index.html",
-    "main.06da8819.css.map": "/Peerloop-v2/static/css/main.06da8819.css.map",
-    "main.bb9ab99c.js.map": "/Peerloop-v2/static/js/main.bb9ab99c.js.map"
+    "main.2b998130.css.map": "/Peerloop-v2/static/css/main.2b998130.css.map",
+    "main.c5ffb6dc.js.map": "/Peerloop-v2/static/js/main.c5ffb6dc.js.map"
   },
   "entrypoints": [
-    "static/css/main.06da8819.css",
-    "static/js/main.bb9ab99c.js"
+    "static/css/main.2b998130.css",
+    "static/js/main.c5ffb6dc.js"
   ]
 }
