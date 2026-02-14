@@ -42,11 +42,24 @@ const CommunityHub = ({
   postError = null,
   onSubmitPost,
   onMenuChange,
-  signupCompleted = false
+  signupCompleted = false,
+  hubLayoutStyle = 'standard'
 }) => {
   const [activeTab, setActiveTab] = useState('feeds');
   const sentinelRef = useRef(null);
   const [isStuck, setIsStuck] = useState(false);
+  const [isWideScreenEnough, setIsWideScreenEnough] = useState(
+    typeof window !== 'undefined' ? window.matchMedia('(min-width: 1100px)').matches : false
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1100px)');
+    const handler = (e) => setIsWideScreenEnough(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+
+  const effectiveLayoutStyle = hubLayoutStyle === 'wide' && isWideScreenEnough ? 'wide' : 'standard';
 
   useEffect(() => {
     const el = sentinelRef.current;
@@ -168,7 +181,7 @@ const CommunityHub = ({
 
       {/* Credentials */}
       {instructor?.qualifications && instructor.qualifications.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12, position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 0, position: 'relative', zIndex: 1 }}>
           {instructor.qualifications.slice(0, 3).map((qual, index) => (
             <span key={index} style={{
               display: 'flex', alignItems: 'center', gap: 6,
@@ -181,6 +194,7 @@ const CommunityHub = ({
           ))}
         </div>
       )}
+
 
     </div>
   );
@@ -202,7 +216,7 @@ const CommunityHub = ({
       padding: '12px 16px',
       scrollbarWidth: 'none',
       borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-      background: isDarkMode ? '#000' : '#fff'
+      background: isDarkMode ? '#000' : '#f0f4ff'
     }}>
       {/* Main Hall Pill */}
       <button
@@ -952,9 +966,12 @@ const CommunityHub = ({
 
   return (
     <div>
-      {renderHeader()}
+      {effectiveLayoutStyle !== 'wide' && renderHeader()}
       <div ref={sentinelRef} style={{ height: 0, margin: 0 }} />
-      <div className={`community-hub-sticky-menus ${isDarkMode ? 'dark' : ''} ${isStuck ? 'stuck' : ''}`}>
+      <div
+        className={`community-hub-sticky-menus ${isDarkMode ? 'dark' : ''} ${isStuck ? 'stuck' : ''} ${effectiveLayoutStyle === 'wide' ? 'wide-mode' : ''}`}
+        style={effectiveLayoutStyle === 'wide' ? { marginTop: 0 } : undefined}
+      >
         <div className="community-hub-tabs">
           {[
             { id: 'feeds', label: 'Feeds' },

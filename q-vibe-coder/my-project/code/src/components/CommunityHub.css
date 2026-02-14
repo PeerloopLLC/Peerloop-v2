@@ -4,15 +4,16 @@
 .community-hub-header {
   position: relative;
   overflow: hidden;
-  padding: 20px 20px 14px;
+  padding: 20px 20px 54px;
   background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%);
 }
 
 /* Sticky menu container (tabs + sub-pills) */
 .community-hub-sticky-menus {
   position: sticky;
-  top: 45px;
+  top: 0px;
   z-index: 10;
+  margin-top: -40px;
   background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%);
   transition: box-shadow 0.2s ease;
 }
@@ -137,7 +138,7 @@
 .community-hub-tab {
   padding: 10px 20px;
   font-size: 14px; font-weight: 500;
-  color: rgba(255,255,255,0.7);
+  color: #fff;
   cursor: pointer;
   transition: all 0.2s;
   border: none;
@@ -485,6 +486,174 @@
 .community-hub-cal-event-meta {
   font-size: 12px;
   color: var(--text-secondary, #71767b);
+}
+
+/* ============================
+   Wide-mode sticky menus
+   ============================ */
+.community-hub-sticky-menus.wide-mode {
+  background: var(--bg-primary, #fff);
+  margin-top: 0;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.community-hub-sticky-menus.wide-mode.dark {
+  background: var(--bg-primary, #000);
+  border-bottom: 1px solid #2f3336;
+}
+
+.community-hub-sticky-menus.wide-mode .community-hub-tab {
+  color: var(--text-secondary, #536471);
+  background: transparent;
+  border-radius: 0;
+  padding: 12px 20px;
+  position: relative;
+}
+
+.community-hub-sticky-menus.wide-mode .community-hub-tab:hover {
+  background: var(--bg-secondary, #f7f9f9);
+  color: var(--text-primary, #0f1419);
+}
+
+.community-hub-sticky-menus.wide-mode.dark .community-hub-tab:hover {
+  background: rgba(255,255,255,0.06);
+  color: #e7e9ea;
+}
+
+.community-hub-sticky-menus.wide-mode .community-hub-tab.active {
+  color: var(--text-primary, #0f1419);
+  font-weight: 700;
+  background: transparent;
+}
+
+.community-hub-sticky-menus.wide-mode.dark .community-hub-tab.active {
+  color: #e7e9ea;
+}
+
+.community-hub-sticky-menus.wide-mode .community-hub-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 56px;
+  height: 4px;
+  background: #1d9bf0;
+  border-radius: 4px 4px 0 0;
+}
+
+/* ============================
+   Sidebar profile card
+   ============================ */
+.hub-sidebar-profile-card {
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.hub-sidebar-profile-banner {
+  height: 80px;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%);
+  position: relative;
+}
+
+.hub-sidebar-profile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 3px solid var(--bg-primary, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  position: absolute;
+  bottom: -28px;
+  left: 16px;
+}
+
+.hub-sidebar-profile-body {
+  padding: 36px 16px 16px;
+}
+
+.hub-sidebar-profile-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary, #0f1419);
+  margin: 0 0 2px;
+}
+
+.hub-sidebar-profile-title {
+  font-size: 14px;
+  color: var(--text-secondary, #536471);
+  margin: 0 0 12px;
+}
+
+.hub-sidebar-profile-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--text-secondary, #536471);
+}
+
+.hub-sidebar-profile-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hub-sidebar-profile-bio {
+  font-size: 14px;
+  color: var(--text-primary, #0f1419);
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.hub-sidebar-profile-creds {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-secondary, #536471);
+}
+
+.hub-sidebar-profile-creds span {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* Dark mode for sidebar card */
+.dark-mode .hub-sidebar-profile-card {
+  background: #000;
+  border-color: #2f3336;
+}
+
+.dark-mode .hub-sidebar-profile-avatar {
+  border-color: #000;
+}
+
+.dark-mode .hub-sidebar-profile-name {
+  color: #e7e9ea;
+}
+
+.dark-mode .hub-sidebar-profile-title {
+  color: #71767b;
+}
+
+.dark-mode .hub-sidebar-profile-stats {
+  color: #71767b;
+}
+
+.dark-mode .hub-sidebar-profile-bio {
+  color: #e7e9ea;
+}
+
+.dark-mode .hub-sidebar-profile-creds {
+  color: #71767b;
 }
 
 /* Feed content area inside hub */

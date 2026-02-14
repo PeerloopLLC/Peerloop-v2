@@ -7,6 +7,7 @@ import { createPost, getPosts, likePost } from '../services/posts';
 import { initGetStream } from '../services/getstream';
 import { fakePosts } from '../data/communityPosts';
 import { communityUsers } from '../data/users';
+import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
 import UserHoverCard from './UserHoverCard';
 import CommunityHub from './CommunityHub';
 
@@ -451,6 +452,12 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
     return saved || 'hub';
   });
 
+  // Hub layout style preference (standard or wide)
+  const [hubLayoutStyle, setHubLayoutStyle] = useState(() => {
+    const saved = localStorage.getItem('hubLayoutStyle');
+    return saved || 'standard';
+  });
+
   // Banner color from Profile settings
   const [userBannerColor, setUserBannerColor] = useState(() => {
     const saved = localStorage.getItem('profileBannerColor');
@@ -608,6 +615,24 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('communityViewModeChanged', handleViewModeChange);
+    };
+  }, []);
+
+  // Listen for hub layout style changes from Settings
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'hubLayoutStyle') {
+        setHubLayoutStyle(e.newValue || 'standard');
+      }
+    };
+    const handleLayoutStyleChange = (e) => {
+      setHubLayoutStyle(e.detail || 'standard');
+    };
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('hubLayoutStyleChanged', handleLayoutStyleChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('hubLayoutStyleChanged', handleLayoutStyleChange);
     };
   }, []);
 
@@ -1864,7 +1889,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
         </div>
       )}
 
-      <div className="community-three-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
+      <div className={`community-three-column${hubLayoutStyle === 'wide' && communityViewMode === 'hub' && communityMode === 'creators' && selectedCreatorId ? ' community-wide-layout' : ''}`} style={{ background: isDarkMode ? '#000' : '#fff' }}>
         <div ref={feedContainerRef} className="community-center-column" style={{ background: isDarkMode ? '#000' : '#fff' }}>
 
           {/* Horizontal tabs for switching between communities - AT THE VERY TOP */}
@@ -2749,7 +2774,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
 
               {/* Commons Feed Pills - always visible */}
               <div style={{
-                padding: isProfileCollapsed ? '8px 16px 12px 16px' : '12px 20px 16px 20px',
+                padding: isProfileCollapsed ? '8px 16px 12px 16px' : '4px 20px 16px 20px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
@@ -2861,6 +2886,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 postError={postError}
                 onMenuChange={onMenuChange}
                 signupCompleted={signupCompleted}
+                hubLayoutStyle={hubLayoutStyle}
                 onSubmitPost={async () => {
                   if (!newPostText.trim() || isPosting) return;
                   setIsPosting(true);
@@ -4014,7 +4040,54 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
           </div>}
         </div>
 
-        {/* Right Pane - Removed for cleaner centered layout */}
+        {/* Right Sidebar - Profile card in wide hub layout */}
+        {hubLayoutStyle === 'wide' && communityViewMode === 'hub' && communityMode === 'creators' && selectedCreatorId && (() => {
+          const selectedCreator = groupedByCreator.find(c => c.id === selectedCreatorId);
+          const instructorIdFromSelected = typeof selectedCreatorId === 'string' ? parseInt(selectedCreatorId.replace('creator-', '')) : selectedCreatorId;
+          const sidebarInstructor = selectedCreator
+            ? getInstructorById(selectedCreator.instructorId)
+            : getInstructorById(instructorIdFromSelected);
+          if (!sidebarInstructor) return null;
+          const sidebarCourses = getAllCourses().filter(c => c.instructorId === instructorIdFromSelected);
+
+          return (
+            <div className="community-hub-right-sidebar">
+              <div className="community-hub-right-sidebar-inner">
+                <div className="hub-sidebar-profile-card">
+                  <div className="hub-sidebar-profile-banner">
+                    <div className="hub-sidebar-profile-avatar">👥</div>
+                  </div>
+                  <div className="hub-sidebar-profile-body">
+                    <div className="hub-sidebar-profile-name">
+                      {sidebarInstructor.communityName || `${sidebarInstructor.name}'s Community`}
+                    </div>
+                    <div className="hub-sidebar-profile-title">
+                      {sidebarInstructor.title || 'Creator & Educator'}
+                    </div>
+                    <div className="hub-sidebar-profile-stats">
+                      <span><AiOutlineStar /> {sidebarInstructor.stats?.averageRating || '4.8'}</span>
+                      <span><AiOutlineTeam /> {(sidebarInstructor.stats?.studentsTaught || 0).toLocaleString()}</span>
+                      <span><FaBook style={{ fontSize: 12 }} /> {sidebarCourses.length}</span>
+                    </div>
+                    {sidebarInstructor.bio && (
+                      <div className="hub-sidebar-profile-bio">{sidebarInstructor.bio}</div>
+                    )}
+                    {sidebarInstructor.qualifications && sidebarInstructor.qualifications.length > 0 && (
+                      <div className="hub-sidebar-profile-creds">
+                        {sidebarInstructor.qualifications.slice(0, 3).map((qual, index) => (
+                          <span key={index}>
+                            <span style={{ color: '#1d9bf0' }}>✓</span>
+                            {qual.sentence}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

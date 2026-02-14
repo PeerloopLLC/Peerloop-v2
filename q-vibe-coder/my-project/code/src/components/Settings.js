@@ -58,6 +58,12 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     return saved || 'hub';
   });
 
+  // Hub layout style preference (standard or wide)
+  const [hubLayoutStyle, setHubLayoutStyle] = useState(() => {
+    const saved = localStorage.getItem('hubLayoutStyle');
+    return saved || 'standard';
+  });
+
   // Breadcrumb font size preference (11-18px)
   const [breadcrumbFontSize, setBreadcrumbFontSize] = useState(() => {
     const saved = localStorage.getItem('breadcrumbFontSize');
@@ -93,6 +99,12 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     localStorage.setItem('communityViewMode', communityViewMode);
     window.dispatchEvent(new CustomEvent('communityViewModeChanged', { detail: communityViewMode }));
   }, [communityViewMode]);
+
+  // Save hub layout style preference when it changes
+  useEffect(() => {
+    localStorage.setItem('hubLayoutStyle', hubLayoutStyle);
+    window.dispatchEvent(new CustomEvent('hubLayoutStyleChanged', { detail: hubLayoutStyle }));
+  }, [hubLayoutStyle]);
 
   // Save breadcrumb font size preference when it changes
   useEffect(() => {
@@ -541,6 +553,84 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
           </div>
         </div>
       </div>
+
+      {/* Hub Layout Style Section (only visible when hub mode is active) */}
+      {communityViewMode === 'hub' && (
+        <div style={{ marginBottom: 32 }}>
+          <h3 style={{ fontSize: 'var(--fs-16)', fontWeight: 600, marginBottom: 16, color: 'var(--text-primary, #e7e9ea)' }}>
+            Hub Layout
+          </h3>
+          <div style={{
+            background: 'var(--bg-secondary, #16181c)',
+            borderRadius: 12,
+            padding: '16px 20px'
+          }}>
+            <p style={{
+              color: 'var(--text-secondary, #71767b)',
+              fontSize: 'var(--fs-13)',
+              marginBottom: 12,
+              marginTop: 0
+            }}>
+              Choose how the creator hub is laid out
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[
+                { value: 'standard', label: 'Standard', description: 'Profile banner above tabs in the center column' },
+                { value: 'wide', label: 'Wide', description: 'Profile card in a right sidebar, more space for the feed' }
+              ].map(option => (
+                <label
+                  key={option.value}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 12,
+                    padding: '12px 16px',
+                    borderRadius: 12,
+                    border: hubLayoutStyle === option.value
+                      ? '2px solid #1d9bf0'
+                      : '1px solid var(--border-color, #2f3336)',
+                    background: hubLayoutStyle === option.value
+                      ? 'rgba(29, 155, 240, 0.1)'
+                      : 'transparent',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="hubLayoutStyle"
+                    value={option.value}
+                    checked={hubLayoutStyle === option.value}
+                    onChange={(e) => setHubLayoutStyle(e.target.value)}
+                    style={{
+                      width: 18,
+                      height: 18,
+                      accentColor: '#1d9bf0',
+                      marginTop: 2
+                    }}
+                  />
+                  <div>
+                    <div style={{
+                      color: hubLayoutStyle === option.value ? '#1d9bf0' : 'var(--text-primary, #e7e9ea)',
+                      fontWeight: hubLayoutStyle === option.value ? 600 : 400,
+                      fontSize: 'var(--fs-14)',
+                      marginBottom: 2
+                    }}>
+                      {option.label}
+                    </div>
+                    <div style={{
+                      color: 'var(--text-secondary, #71767b)',
+                      fontSize: 12
+                    }}>
+                      {option.description}
+                    </div>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Discover Listing Format Section */}
       <div style={{ marginBottom: 32 }}>

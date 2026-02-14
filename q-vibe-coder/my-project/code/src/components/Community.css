@@ -1203,6 +1203,52 @@
   }
 }
 
+/* Wide Layout — right sidebar for hub profile card */
+
+/* Widen the main-content cap so center + sidebar both fit */
+.main-content:has(.community-wide-layout) {
+  max-width: 1100px;
+}
+
+.community-wide-layout {
+  display: flex !important;
+}
+
+.community-wide-layout .community-center-column {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  max-width: 810px;
+}
+
+.community-hub-right-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  padding: 16px 12px 16px 0;
+  box-sizing: border-box;
+}
+
+.community-hub-right-sidebar-inner {
+  position: sticky;
+  top: 16px;
+}
+
+@media (max-width: 1100px) {
+  .main-content:has(.community-wide-layout) {
+    max-width: 810px;
+  }
+  .community-wide-layout {
+    display: block !important;
+  }
+  .community-wide-layout .community-center-column {
+    width: 100%;
+    flex: none;
+  }
+  .community-hub-right-sidebar {
+    display: none;
+  }
+}
+
 /* Responsive text for Community Hub */
 .show-on-mobile {
   display: none;
