@@ -235,7 +235,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
    * Primary menu items (top section)
    */
   const primaryItems = [
-    { icon: <FaUsers />, label: 'Feeds', displayLabel: 'My Feeds' }, // Feeds (was My Communities)
+    { icon: <FaUsers />, label: 'Feeds', displayLabel: 'My Communities' },
     { icon: <FaSearch />, label: 'Discover', displayLabel: 'Discover' }, // Discover (unified search for communities & courses)
     // Courses menu item removed - functionality still available via Discover
     // { icon: <FaBook />, label: 'Courses', displayLabel: 'Courses' }, // Browse courses
@@ -475,7 +475,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
               className={`feeds-flyout ${shouldCollapse ? 'feeds-flyout-collapsed' : 'feeds-flyout-expanded'}`}
             >
               <div className="feeds-flyout-header">
-                My Feeds ({allCommunities.length})
+                My Communities ({allCommunities.length})
               </div>
               <div className="feeds-flyout-list">
                 <div
@@ -526,10 +526,10 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
           }}
         >
           <div className="nav-icon"><FaUsers /></div>
-          <span className="nav-label">My Feeds</span>
+          <span className="nav-label">My Communities</span>
         </div>
 
-        {/* Divider under My Feeds */}
+        {/* Divider under My Communities */}
         <div className="nav-section-divider" />
 
         {/* My Courses - above Discover */}

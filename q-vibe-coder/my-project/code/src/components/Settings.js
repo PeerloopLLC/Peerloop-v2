@@ -55,7 +55,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
   // Community view mode preference (classic or hub)
   const [communityViewMode, setCommunityViewMode] = useState(() => {
     const saved = localStorage.getItem('communityViewMode');
-    return saved || 'classic';
+    return saved || 'hub';
   });
 
   // Breadcrumb font size preference (11-18px)

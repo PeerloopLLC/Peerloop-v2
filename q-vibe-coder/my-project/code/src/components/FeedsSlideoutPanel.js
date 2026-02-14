@@ -224,7 +224,7 @@ const FeedsSlideoutPanel = ({ currentUser, onSelectCommunity, onClose }) => {
         {/* Header */}
         <div className="slideout-panel-header">
           <div className="slideout-header-text">
-            <h3>My Feeds</h3>
+            <h3>My Communities</h3>
             <span className="slideout-header-subtitle">Choose A Community Feed</span>
           </div>
           <button className="slideout-close-btn" onClick={handleClose}>

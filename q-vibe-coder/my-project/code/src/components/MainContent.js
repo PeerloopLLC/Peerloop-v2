@@ -345,12 +345,12 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
       const activeCommunity = followedCommunities.find(c => c.id === commonsActiveFeed);
       if (activeCommunity && commonsActiveFeed !== 'main') {
         items.push({
-          label: 'My Feeds',
+          label: 'My Communities',
           onClick: () => setCommonsActiveFeed('main')
         });
         items.push({ label: activeCommunity.name });
       } else {
-        items.push({ label: 'My Feeds' });
+        items.push({ label: 'My Communities' });
       }
     } else if (activeMenu === 'Discover') {
       items.push({ label: 'Discover' });
@@ -384,7 +384,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         });
       } else if (cameFrom === 'feeds') {
         items.push({
-          label: 'My Feeds',
+          label: 'My Communities',
           onClick: () => {
             setSelectedInstructor(null);
             setSelectedCourse(null);
@@ -469,7 +469,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         });
       } else if (previousPage === 'My Community') {
         courseItems.push({
-          label: 'My Feeds',
+          label: 'My Communities',
           onClick: () => {
             setViewingCourseFromCommunity(null);
             onMenuChange('My Community');

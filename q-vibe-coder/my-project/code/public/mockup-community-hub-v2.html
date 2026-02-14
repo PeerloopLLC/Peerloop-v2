@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Hub v2 - Icon Tabs + Compact Header</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      color: #e7e9ea;
+      min-height: 100vh;
+    }
+    .app { display: flex; max-width: 1200px; margin: 0 auto; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px; padding: 16px 12px; border-right: 1px solid #2f3336;
+      height: 100vh; position: sticky; top: 0;
+      display: flex; flex-direction: column; overflow-y: auto;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; margin-bottom: 16px;
+    }
+    .logo-icon { font-size: 24px; color: #1d9bf0; }
+    .logo-text {
+      font-weight: 700; font-size: 15px; color: #71767b;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .nav-list { list-style: none; margin-bottom: 12px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 14px; border-radius: 25px; cursor: pointer;
+      transition: background 0.2s; font-size: 15px; color: #e7e9ea;
+    }
+    .nav-item:hover { background: #181818; }
+    .nav-item.active { font-weight: 700; }
+    .nav-icon { font-size: 20px; width: 24px; text-align: center; }
+    .section-label {
+      font-size: 12px; color: #71767b; text-transform: uppercase;
+      letter-spacing: 1px; padding: 12px 14px 6px; font-weight: 600;
+    }
+    .community-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 25px; cursor: pointer;
+      transition: background 0.2s; font-size: 14px; color: #e7e9ea;
+    }
+    .community-item:hover { background: #181818; }
+    .community-item.active { background: #1d3a5c; color: #1d9bf0; font-weight: 600; }
+    .community-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 600; color: #fff; flex-shrink: 0;
+    }
+    .discover-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; color: #1d9bf0; cursor: pointer;
+      font-size: 14px; border-radius: 25px; transition: background 0.2s;
+    }
+    .discover-link:hover { background: #181818; }
+    .sidebar-divider { border: none; border-top: 1px solid #2f3336; margin: 8px 0; }
+    .post-btn {
+      margin-top: auto; padding: 14px; background: #1d9bf0; color: #fff;
+      border: none; border-radius: 25px; font-size: 16px; font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1; max-width: 650px; border-right: 1px solid #2f3336;
+      min-height: 100vh;
+    }
+
+    /* Compact Header - Single Row */
+    .community-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 20px; border-bottom: 1px solid #2f3336;
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      position: sticky; top: 0; z-index: 10; gap: 16px;
+    }
+    .header-left {
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .creator-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; color: #fff;
+      background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4);
+    }
+    .creator-name { font-size: 16px; font-weight: 700; color: #fff; }
+    .creator-subtitle { font-size: 12px; color: rgba(255,255,255,0.7); }
+
+    /* Icon Tab Bar */
+    .icon-tabs {
+      display: flex; gap: 2px; flex-shrink: 0;
+    }
+    .icon-tab {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 8px 14px; border-radius: 12px; cursor: pointer;
+      transition: all 0.2s; border: none; background: transparent;
+      color: rgba(255,255,255,0.6); font-size: 11px; min-width: 56px;
+    }
+    .icon-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .icon-tab.active {
+      background: rgba(255,255,255,0.2); color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .icon-tab-icon { font-size: 20px; }
+    .icon-tab-label { font-weight: 500; }
+
+    /* Badge on icon tab */
+    .icon-tab-badge {
+      position: relative;
+    }
+    .badge {
+      position: absolute; top: -2px; right: -6px;
+      background: #ef4444; color: #fff; font-size: 10px;
+      padding: 1px 5px; border-radius: 10px; font-weight: 700;
+    }
+
+    /* Sub-pills row */
+    .sub-pills {
+      display: flex; gap: 8px; padding: 12px 20px;
+      border-bottom: 1px solid #2f3336;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .sub-pills::-webkit-scrollbar { display: none; }
+    .sub-pill {
+      padding: 6px 16px; font-size: 13px; border-radius: 20px;
+      border: 1px solid #3b82f6; color: #3b82f6; cursor: pointer;
+      white-space: nowrap; transition: all 0.2s; background: transparent;
+    }
+    .sub-pill:hover { background: rgba(59,130,246,0.1); }
+    .sub-pill.active { background: #1d9bf0; color: #fff; border-color: #1d9bf0; }
+
+    /* Composer */
+    .composer {
+      padding: 16px 20px; border-bottom: 1px solid #2f3336;
+      display: flex; gap: 12px;
+    }
+    .composer-avatar {
+      width: 40px; height: 40px; border-radius: 50%; background: #2563eb;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 600; color: #fff; flex-shrink: 0;
+    }
+    .composer-input {
+      flex: 1; background: transparent; border: none; color: #71767b;
+      font-size: 18px; outline: none; padding: 8px 0; resize: none;
+    }
+
+    /* Posts */
+    .post {
+      padding: 16px 20px; border-bottom: 1px solid #2f3336;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .post:hover { background: #080808; }
+    .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .post-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 600; color: #fff; flex-shrink: 0;
+    }
+    .post-author { font-weight: 700; font-size: 14px; }
+    .post-handle { color: #71767b; font-size: 14px; }
+    .post-time { color: #71767b; font-size: 14px; }
+    .post-body { font-size: 15px; line-height: 1.5; margin-bottom: 12px; }
+    .post-actions { display: flex; gap: 40px; color: #71767b; font-size: 13px; }
+    .post-action { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .post-action:hover { color: #1d9bf0; }
+
+    /* Courses */
+    .courses-grid { padding: 16px 20px; }
+    .course-card {
+      padding: 16px; border: 1px solid #2f3336; border-radius: 12px;
+      margin-bottom: 12px; cursor: pointer; transition: all 0.2s;
+    }
+    .course-card:hover { border-color: #3b82f6; background: #111; }
+    .course-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .course-meta { font-size: 13px; color: #71767b; margin-bottom: 10px; }
+    .progress-bar { height: 6px; background: #2f3336; border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #3b82f6; border-radius: 3px; }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: #71767b; margin-top: 6px;
+    }
+
+    /* Content */
+    .content-section { padding: 16px 20px; }
+    .content-card {
+      padding: 16px; border: 1px solid #2f3336; border-radius: 12px;
+      margin-bottom: 12px; display: flex; gap: 14px; align-items: flex-start;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .content-card:hover { border-color: #3b82f6; background: #111; }
+    .content-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .content-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .content-desc { font-size: 13px; color: #71767b; line-height: 1.4; }
+
+    /* Calendar */
+    .calendar-section { padding: 16px 20px; }
+    .cal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+    .cal-title { font-size: 16px; font-weight: 600; }
+    .cal-event {
+      display: flex; gap: 14px; padding: 14px; border: 1px solid #2f3336;
+      border-radius: 12px; margin-bottom: 10px; cursor: pointer;
+      transition: all 0.2s; align-items: flex-start;
+    }
+    .cal-event:hover { border-color: #3b82f6; background: #111; }
+    .cal-date-badge {
+      text-align: center; min-width: 48px; padding: 8px;
+      border-radius: 10px; background: #1e3a5f;
+    }
+    .cal-day { font-size: 18px; font-weight: 700; color: #3b82f6; }
+    .cal-month { font-size: 11px; color: #71767b; text-transform: uppercase; }
+    .cal-event-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .cal-event-time { font-size: 13px; color: #71767b; }
+    .cal-event-type {
+      font-size: 11px; padding: 2px 8px; border-radius: 10px;
+      display: inline-block; margin-top: 6px;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .variation-label {
+      position: fixed; top: 10px; right: 10px; background: #7c3aed;
+      color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 13px;
+      font-weight: 600; z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="variation-label">V2: Icon Tabs + Compact Header</div>
+  <div class="app">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">🔄</span>
+        <span class="logo-text">PeerLoop</span>
+      </div>
+      <ul class="nav-list">
+        <li class="nav-item"><span class="nav-icon">🏠</span> Home</li>
+        <li class="nav-item active"><span class="nav-icon">👥</span> My Communities</li>
+        <li class="nav-item"><span class="nav-icon">🔍</span> Discover</li>
+      </ul>
+      <div class="section-label">Communities</div>
+      <div class="community-item active">
+        <div class="community-avatar" style="background:#2563eb;">SC</div>
+        Sarah Chen
+      </div>
+      <div class="community-item">
+        <div class="community-avatar" style="background:#7c3aed;">MT</div>
+        Mike Torres
+      </div>
+      <div class="community-item">
+        <div class="community-avatar" style="background:#059669;">🌐</div>
+        The Commons
+      </div>
+      <div class="discover-link">+ Discover Communities</div>
+      <hr class="sidebar-divider">
+      <ul class="nav-list">
+        <li class="nav-item"><span class="nav-icon">🔔</span> Notifications</li>
+        <li class="nav-item"><span class="nav-icon">💬</span> Messages</li>
+        <li class="nav-item"><span class="nav-icon">📊</span> Workspace</li>
+        <li class="nav-item"><span class="nav-icon">👤</span> Profile</li>
+      </ul>
+      <button class="post-btn">Post</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Compact header: avatar+name on left, icon tabs on right -->
+      <div class="community-header">
+        <div class="header-left">
+          <div class="creator-avatar">SC</div>
+          <div>
+            <div class="creator-name">Sarah Chen</div>
+            <div class="creator-subtitle">342 members · 4 courses</div>
+          </div>
+        </div>
+        <div class="icon-tabs">
+          <button class="icon-tab active" onclick="switchTab('feeds', this)">
+            <span class="icon-tab-icon">💬</span>
+            <span class="icon-tab-label">Feeds</span>
+          </button>
+          <button class="icon-tab" onclick="switchTab('courses', this)">
+            <span class="icon-tab-icon">📚</span>
+            <span class="icon-tab-label">Courses</span>
+          </button>
+          <button class="icon-tab" onclick="switchTab('content', this)">
+            <span class="icon-tab-icon">📄</span>
+            <span class="icon-tab-label">Content</span>
+          </button>
+          <button class="icon-tab" onclick="switchTab('calendar', this)">
+            <span class="icon-tab-badge">
+              <span class="icon-tab-icon">📅</span>
+              <span class="badge">3</span>
+            </span>
+            <span class="icon-tab-label">Calendar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- FEEDS TAB -->
+      <div id="tab-feeds" class="tab-content active">
+        <div class="sub-pills">
+          <button class="sub-pill active">Main Hall</button>
+          <button class="sub-pill">React Fundamentals</button>
+          <button class="sub-pill">Advanced TypeScript</button>
+          <button class="sub-pill">System Design</button>
+        </div>
+        <div class="composer">
+          <div class="composer-avatar">G</div>
+          <textarea class="composer-input" placeholder="What's on your mind?" rows="1"></textarea>
+        </div>
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar" style="background:#2563eb;">SC</div>
+            <div>
+              <span class="post-author">Sarah Chen</span>
+              <span class="post-handle"> · @sarahchen</span>
+              <span class="post-time"> · 2h</span>
+            </div>
+          </div>
+          <div class="post-body">Just published a new tutorial on React Server Components! Check it out in the Content section. 🚀 Love seeing everyone's progress on the TypeScript challenges.</div>
+          <div class="post-actions">
+            <span class="post-action">💬 12</span>
+            <span class="post-action">🔄 5</span>
+            <span class="post-action">❤️ 34</span>
+            <span class="post-action">🔖</span>
+          </div>
+        </div>
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar" style="background:#7c3aed;">JK</div>
+            <div>
+              <span class="post-author">James Kim</span>
+              <span class="post-handle"> · @jamesk</span>
+              <span class="post-time"> · 5h</span>
+            </div>
+          </div>
+          <div class="post-body">Finally got custom hooks working in my project! The pattern Sarah showed in Lesson 7 clicked when I applied it to my own data fetching. Anyone else struggling with useCallback dependencies?</div>
+          <div class="post-actions">
+            <span class="post-action">💬 8</span>
+            <span class="post-action">🔄 2</span>
+            <span class="post-action">❤️ 19</span>
+            <span class="post-action">🔖</span>
+          </div>
+        </div>
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar" style="background:#dc2626;">ML</div>
+            <div>
+              <span class="post-author">Maria Lopez</span>
+              <span class="post-handle"> · @marialdev</span>
+              <span class="post-time"> · 8h</span>
+            </div>
+          </div>
+          <div class="post-body">📢 Study group this Thursday at 7pm EST! We're reviewing the System Design course, Chapter 4. Drop a 🙌 if you're joining.</div>
+          <div class="post-actions">
+            <span class="post-action">💬 24</span>
+            <span class="post-action">🔄 8</span>
+            <span class="post-action">❤️ 42</span>
+            <span class="post-action">🔖</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- COURSES TAB -->
+      <div id="tab-courses" class="tab-content">
+        <div class="courses-grid">
+          <div class="course-card">
+            <div class="course-title">React Fundamentals</div>
+            <div class="course-meta">12 lessons · 6 hours · Beginner</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
+            <div class="progress-label"><span>75% complete</span><span>Next: Lesson 9 - Custom Hooks</span></div>
+          </div>
+          <div class="course-card">
+            <div class="course-title">Advanced TypeScript</div>
+            <div class="course-meta">18 lessons · 10 hours · Intermediate</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+            <div class="progress-label"><span>30% complete</span><span>Next: Lesson 6 - Generics</span></div>
+          </div>
+          <div class="course-card">
+            <div class="course-title">System Design for Frontend</div>
+            <div class="course-meta">8 lessons · 4 hours · Advanced</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+            <div class="progress-label"><span>Not started</span><span>Start: Lesson 1 - Architecture</span></div>
+          </div>
+          <div class="course-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="course-title" style="margin:0;">Full-Stack with Next.js</div>
+              <span style="font-size:12px;padding:4px 10px;background:#1e3a5f;color:#3b82f6;border-radius:10px;">New</span>
+            </div>
+            <div class="course-meta">15 lessons · 8 hours · Intermediate</div>
+            <div style="margin-top:8px;">
+              <button style="padding:8px 20px;background:#3b82f6;color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;">Enroll Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENT TAB -->
+      <div id="tab-content" class="tab-content">
+        <div class="content-section">
+          <div class="content-card">
+            <div class="content-icon" style="background:#1e3a5f;">🎬</div>
+            <div>
+              <div class="content-title">Welcome to Sarah's Community</div>
+              <div class="content-desc">Introduction video - Learn what this community is about and how to get the most out of it.</div>
+            </div>
+          </div>
+          <div class="content-card">
+            <div class="content-icon" style="background:#1e3a5f;">📋</div>
+            <div>
+              <div class="content-title">Community Guidelines</div>
+              <div class="content-desc">Our rules, expectations, and tips for being a great community member.</div>
+            </div>
+          </div>
+          <div class="content-card">
+            <div class="content-icon" style="background:#1e3a5f;">🗺️</div>
+            <div>
+              <div class="content-title">Learning Roadmap</div>
+              <div class="content-desc">Recommended order of courses and resources for your learning journey.</div>
+            </div>
+          </div>
+          <div class="content-card">
+            <div class="content-icon" style="background:#1e3a5f;">📚</div>
+            <div>
+              <div class="content-title">Free Resources & Downloads</div>
+              <div class="content-desc">Cheat sheets, starter templates, and reference guides.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CALENDAR TAB -->
+      <div id="tab-calendar" class="tab-content">
+        <div class="calendar-section">
+          <div class="cal-header">
+            <div class="cal-title">Upcoming Events</div>
+          </div>
+          <div class="cal-event">
+            <div class="cal-date-badge"><div class="cal-day">14</div><div class="cal-month">Feb</div></div>
+            <div>
+              <div class="cal-event-title">React Hooks Deep Dive - Live Session</div>
+              <div class="cal-event-time">🕐 7:00 PM - 8:30 PM EST</div>
+              <span class="cal-event-type" style="background:#1e3a5f;color:#3b82f6;">Live Class</span>
+            </div>
+          </div>
+          <div class="cal-event">
+            <div class="cal-date-badge"><div class="cal-day">16</div><div class="cal-month">Feb</div></div>
+            <div>
+              <div class="cal-event-title">Office Hours with Sarah</div>
+              <div class="cal-event-time">🕐 12:00 PM - 1:00 PM EST</div>
+              <span class="cal-event-type" style="background:#1a3a2a;color:#22c55e;">Office Hours</span>
+            </div>
+          </div>
+          <div class="cal-event">
+            <div class="cal-date-badge"><div class="cal-day">18</div><div class="cal-month">Feb</div></div>
+            <div>
+              <div class="cal-event-title">TypeScript Generics Workshop</div>
+              <div class="cal-event-time">🕐 3:00 PM - 5:00 PM EST</div>
+              <span class="cal-event-type" style="background:#3b1f54;color:#a855f7;">Workshop</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function switchTab(tabName, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.icon-tab').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabName).classList.add('active');
+      btn.classList.add('active');
+    }
+    document.querySelectorAll('.sub-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.sub-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

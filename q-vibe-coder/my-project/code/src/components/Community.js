@@ -448,7 +448,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
   // Community view mode preference (classic or hub)
   const [communityViewMode, setCommunityViewMode] = useState(() => {
     const saved = localStorage.getItem('communityViewMode');
-    return saved || 'classic';
+    return saved || 'hub';
   });
 
   // Banner color from Profile settings
@@ -2827,13 +2827,18 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
               : getInstructorById(instructorIdFromSelected);
             if (!hubInstructor) return null;
 
-            const hubCreatorData = selectedCreator || {
+            const baseCreatorData = selectedCreator || {
               id: selectedCreatorId,
               name: pendingCreatorName || hubInstructor.name,
               instructorId: instructorIdFromSelected,
-              allCourses: getAllCourses().filter(c => c.instructorId === instructorIdFromSelected),
               followedCourseIds: selectedCourseFilters.map(f => f.id),
               isFullCreatorFollow: false
+            };
+            // Always get fresh courses — groupedByCreator memo may have stale data
+            // (coursesDatabase is mutated in-place when Supabase loads)
+            const hubCreatorData = {
+              ...baseCreatorData,
+              allCourses: getAllCourses().filter(c => c.instructorId === instructorIdFromSelected),
             };
 
             return (
@@ -2854,17 +2859,19 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 setIsComposerFocused={setIsComposerFocused}
                 isPosting={isPosting}
                 postError={postError}
+                onMenuChange={onMenuChange}
+                signupCompleted={signupCompleted}
                 onSubmitPost={async () => {
                   if (!newPostText.trim() || isPosting) return;
                   setIsPosting(true);
                   setPostError(null);
                   try {
-                    const result = await createPost({
-                      content: newPostText.trim(),
-                      userId: currentUser?.id,
-                      userName: currentUser?.name || 'Anonymous',
-                      audience: selectedCreatorId
-                    });
+                    const result = await createPost(
+                      currentUser?.id || 'anonymous',
+                      currentUser?.name || 'Anonymous User',
+                      newPostText.trim(),
+                      selectedCreatorId
+                    );
                     if (result.success) {
                       setNewPostText('');
                       setRealPosts(prev => [result.post, ...prev]);

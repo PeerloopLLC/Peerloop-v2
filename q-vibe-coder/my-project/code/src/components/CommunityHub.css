@@ -4,8 +4,25 @@
 .community-hub-header {
   position: relative;
   overflow: hidden;
-  padding: 20px;
+  padding: 20px 20px 14px;
   background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%);
+}
+
+/* Sticky menu container (tabs + sub-pills) */
+.community-hub-sticky-menus {
+  position: sticky;
+  top: 45px;
+  z-index: 10;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%);
+  transition: box-shadow 0.2s ease;
+}
+
+.community-hub-sticky-menus.dark {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+}
+
+.community-hub-sticky-menus.stuck {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 .community-hub-header::before {
@@ -20,7 +37,7 @@
 }
 
 .community-hub-header.dark {
-  background: linear-gradient(135deg, #0a1628 0%, #1e293b 50%, #0a1628 100%);
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
 }
 
 /* Geometric decorations */
@@ -108,49 +125,46 @@
   text-transform: uppercase;
 }
 
-/* Underline tab bar (X.com style) */
+/* Pill-top tabs inside header */
 .community-hub-tabs {
   display: flex;
-  background: var(--bg-primary, #000);
-  border-bottom: 1px solid var(--border-color, #2f3336);
+  gap: 4px;
+  margin-top: 14px;
+  position: relative;
+  z-index: 1;
 }
 
 .community-hub-tab {
-  flex: 1;
-  padding: 14px 0;
-  text-align: center;
+  padding: 10px 20px;
   font-size: 14px; font-weight: 500;
-  color: var(--text-secondary, #71767b);
+  color: rgba(255,255,255,0.7);
   cursor: pointer;
   transition: all 0.2s;
   border: none;
   background: transparent;
-  position: relative;
+  border-radius: 20px 20px 0 0;
+  white-space: nowrap;
 }
 
 .community-hub-tab:hover {
-  background: var(--hover-bg, rgba(255,255,255,0.03));
-  color: var(--text-primary, #e7e9ea);
+  color: #fff;
+  background: rgba(255,255,255,0.1);
 }
 
 .community-hub-tab.active {
-  color: var(--text-primary, #e7e9ea);
+  color: #0f1419;
   font-weight: 700;
+  background: #fff;
 }
 
-.community-hub-tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 60px; height: 3px;
-  background: #1d9bf0;
-  border-radius: 3px;
+.community-hub-header.dark .community-hub-tab.active {
+  color: #e7e9ea;
+  background: #000;
 }
 
 .community-hub-tab-count {
   font-size: 11px;
-  color: var(--text-secondary, #71767b);
+  color: rgba(255,255,255,0.5);
   margin-left: 4px;
 }
 
