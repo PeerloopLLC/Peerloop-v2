@@ -1291,7 +1291,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
         {/* Community Header Card */}
         <div style={{ background: '#fff', borderRadius: 16, margin: '0 16px 24px 16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
           {/* Banner */}
-          <div style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)', height: 120 }} />
+          <div style={{ background: '#ffffff', height: 120 }} />
           
           {/* Content */}
           <div style={{ padding: '0 24px 24px 24px', marginTop: -40 }}>
@@ -2817,15 +2817,15 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
               <div style={{
                 background: isDarkMode
                   ? 'linear-gradient(135deg, #0a1628 0%, #1e293b 100%)'
-                  : 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                  : '#ffffff',
                 borderRadius: 16,
                 padding: isProfileCollapsed ? '12px 16px' : '20px',
                 margin: '8px 16px 0 16px',
                 position: 'sticky',
                 top: communityNavStyle === 'pills' ? 57 : 0,
                 zIndex: 10,
-                border: 'none',
-                boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.12)',
+                border: isDarkMode ? 'none' : '1px solid #e5e7eb',
+                boxShadow: isDarkMode ? '0 4px 25px 10px rgba(80, 80, 80, 0.8)' : '0 2px 8px rgba(0,0,0,0.06)',
                 overflow: 'hidden',
                 transition: 'padding 0.3s ease-out'
               }}>
@@ -2836,7 +2836,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   right: 80,
                   width: 50,
                   height: 50,
-                  border: '2px solid rgba(255,255,255,0.15)',
+                  border: isDarkMode ? '2px solid rgba(255,255,255,0.15)' : '2px solid rgba(0,0,0,0.06)',
                   borderRadius: 10,
                   transform: 'rotate(15deg)',
                   pointerEvents: 'none'
@@ -2847,7 +2847,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   left: 40,
                   width: 40,
                   height: 40,
-                  border: '2px solid rgba(255,255,255,0.1)',
+                  border: isDarkMode ? '2px solid rgba(255,255,255,0.1)' : '2px solid rgba(0,0,0,0.04)',
                   borderRadius: '50%',
                   pointerEvents: 'none'
                 }} />
@@ -2857,7 +2857,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   right: 30,
                   width: 25,
                   height: 25,
-                  background: 'rgba(255,255,255,0.08)',
+                  background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)',
                   transform: 'rotate(45deg)',
                   pointerEvents: 'none'
                 }} />
@@ -2872,8 +2872,8 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                     width: 44,
                     height: 44,
                     borderRadius: 10,
-                    background: 'rgba(255,255,255,0.35)',
-                    border: '2px solid rgba(255,255,255,0.5)',
+                    background: isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.05)',
+                    border: isDarkMode ? '2px solid rgba(255,255,255,0.5)' : '2px solid rgba(0,0,0,0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -2889,7 +2889,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   <div style={{
                       fontSize: isProfileCollapsed ? 16 : 18,
                       fontWeight: 700,
-                      color: '#ffffff',
+                      color: isDarkMode ? '#ffffff' : '#1a1a1a',
                       display: 'inline-block',
                       lineHeight: 1.2,
                       position: 'relative',
@@ -2911,7 +2911,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   >
                     <span style={{
                       fontSize: 'var(--fs-13)',
-                      color: 'rgba(255,255,255,0.8)'
+                      color: isDarkMode ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.5)'
                     }}>
                       Created by
                     </span>
@@ -2927,7 +2927,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                         gap: 6,
                         fontSize: 'var(--fs-13)',
                         fontWeight: 600,
-                        color: '#ffffff',
+                        color: isDarkMode ? '#ffffff' : '#1a1a1a',
                         cursor: 'pointer'
                       }}
                       onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
@@ -2951,7 +2951,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           width: 20,
                           height: 20,
                           borderRadius: '50%',
-                          background: '#1d9bf0',
+                          background: isDarkMode ? '#1d9bf0' : '#999',
                           color: '#fff',
                           display: 'flex',
                           alignItems: 'center',
@@ -2983,9 +2983,9 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       gap: 6,
                       padding: '6px 14px',
                       borderRadius: 16,
-                      border: '2px solid rgba(255,255,255,0.8)',
-                      background: 'rgba(255,255,255,0.1)',
-                      color: '#ffffff',
+                      border: isDarkMode ? '2px solid rgba(255,255,255,0.8)' : '2px solid rgba(0,0,0,0.15)',
+                      background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)',
+                      color: isDarkMode ? '#ffffff' : '#1a1a1a',
                       fontSize: 'var(--fs-13)',
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -2995,12 +2995,12 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                       zIndex: 1
                     }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
-                      e.currentTarget.style.borderColor = '#ffffff';
+                      e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.08)';
+                      e.currentTarget.style.borderColor = isDarkMode ? '#ffffff' : 'rgba(0,0,0,0.25)';
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)';
+                      e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)';
+                      e.currentTarget.style.borderColor = isDarkMode ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.15)';
                     }}
                   >
                     View All Courses
@@ -3019,13 +3019,13 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                 }}>
                   <div style={{
                     fontSize: 'var(--fs-14)',
-                    color: 'rgba(255,255,255,0.85)'
+                    color: isDarkMode ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.6)'
                   }}>
                     {instructor.title}
                   </div>
                   <div style={{
                     fontSize: 'var(--fs-12)',
-                    color: 'rgba(255,255,255,0.7)',
+                    color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.45)',
                     marginTop: 2
                   }}>
                     {instructor.courses?.length || 0} Courses · {(instructor.stats?.studentsTaught || 0).toLocaleString()} Students · 189 Posts
@@ -3033,7 +3033,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                   {instructor.bio && (
                     <div style={{
                       fontSize: 'var(--fs-14)',
-                      color: 'rgba(255,255,255,0.9)',
+                      color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.7)',
                       marginTop: 8,
                       lineHeight: 1.4
                     }}>
@@ -3065,7 +3065,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                           marginTop: isProfileCollapsed ? 0 : 12,
                           fontSize: 'var(--fs-13)',
                           fontWeight: 500,
-                          color: 'rgba(255,255,255,0.7)',
+                          color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.45)',
                           maxHeight: isProfileCollapsed ? 0 : 20,
                           opacity: isProfileCollapsed ? 0 : 1,
                           overflow: 'hidden',
@@ -3139,12 +3139,12 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                             padding: isProfileCollapsed ? '6px 12px' : '8px 16px',
                             borderRadius: isProfileCollapsed ? 16 : 20,
                             border: isHubSelected
-                              ? '2px solid rgba(255,255,255,1)'
-                              : '2px solid rgba(255,255,255,0.8)',
+                              ? (isDarkMode ? '2px solid rgba(255,255,255,1)' : '2px solid rgba(0,0,0,0.3)')
+                              : (isDarkMode ? '2px solid rgba(255,255,255,0.8)' : '2px solid rgba(0,0,0,0.15)'),
                             background: isHubSelected
-                              ? 'rgba(255,255,255,0.25)'
-                              : 'rgba(255,255,255,0.1)',
-                            color: '#ffffff',
+                              ? (isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.08)')
+                              : (isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.03)'),
+                            color: isDarkMode ? '#ffffff' : '#1a1a1a',
                             fontSize: isProfileCollapsed ? 13 : 14,
                             fontWeight: 600,
                             cursor: 'pointer',
@@ -3152,7 +3152,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                             flexShrink: 0,
                             transition: 'all 0.3s ease-out',
                             boxShadow: isHubSelected
-                              ? 'inset 0 0 20px rgba(255,255,255,0.1), 0 0 0 3px rgba(255,255,255,0.2)'
+                              ? (isDarkMode ? 'inset 0 0 20px rgba(255,255,255,0.1), 0 0 0 3px rgba(255,255,255,0.2)' : 'inset 0 0 20px rgba(0,0,0,0.03), 0 0 0 3px rgba(0,0,0,0.06)')
                               : 'none'
                           }}
                         >
@@ -3177,12 +3177,12 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                                 padding: isProfileCollapsed ? '6px 12px' : '8px 16px',
                                 borderRadius: isProfileCollapsed ? 16 : 20,
                                 border: isSelected
-                                  ? '2px solid rgba(255,255,255,1)'
-                                  : '2px solid rgba(255,255,255,0.8)',
+                                  ? (isDarkMode ? '2px solid rgba(255,255,255,1)' : '2px solid rgba(0,0,0,0.3)')
+                                  : (isDarkMode ? '2px solid rgba(255,255,255,0.8)' : '2px solid rgba(0,0,0,0.15)'),
                                 background: isSelected
-                                  ? 'rgba(255,255,255,0.25)'
-                                  : 'rgba(255,255,255,0.1)',
-                                color: '#ffffff',
+                                  ? (isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.08)')
+                                  : (isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.03)'),
+                                color: isDarkMode ? '#ffffff' : '#1a1a1a',
                                 fontSize: isProfileCollapsed ? 13 : 14,
                                 fontWeight: 600,
                                 cursor: 'pointer',
@@ -3190,7 +3190,7 @@ const Community = ({ userStatus = null, followedCommunities = [], setFollowedCom
                                 flexShrink: 0,
                                 transition: 'all 0.3s ease-out',
                                 boxShadow: isSelected
-                                  ? 'inset 0 0 20px rgba(255,255,255,0.1), 0 0 0 3px rgba(255,255,255,0.2)'
+                                  ? (isDarkMode ? 'inset 0 0 20px rgba(255,255,255,0.1), 0 0 0 3px rgba(255,255,255,0.2)' : 'inset 0 0 20px rgba(0,0,0,0.03), 0 0 0 3px rgba(0,0,0,0.06)')
                                   : 'none'
                               }}
                             >
