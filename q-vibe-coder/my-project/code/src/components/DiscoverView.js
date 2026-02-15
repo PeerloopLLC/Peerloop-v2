@@ -56,6 +56,17 @@ const DiscoverView = ({
     return saved ? parseInt(saved, 10) : 25; // Default 25 matches original #f0f0f0
   });
 
+  // Community header grey level (0-100)
+  const [communityHeaderGrey, setCommunityHeaderGrey] = useState(() => {
+    const saved = localStorage.getItem('communityHeaderGrey');
+    return saved ? parseInt(saved, 10) : 60;
+  });
+
+  // Community badge background style ('grey' or 'white')
+  const [communityBadgeBg, setCommunityBadgeBg] = useState(() => {
+    return localStorage.getItem('communityBadgeBg') || 'grey';
+  });
+
   // Dropdown state for community follow menu
   const [openCommunityFollowDropdown, setOpenCommunityFollowDropdown] = useState(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -230,6 +241,24 @@ const DiscoverView = ({
     };
     window.addEventListener('combinedCardGrayLevelChanged', handleGrayLevelChange);
     return () => window.removeEventListener('combinedCardGrayLevelChanged', handleGrayLevelChange);
+  }, []);
+
+  // Listen for community header grey changes from Settings
+  useEffect(() => {
+    const handleGreyChange = (e) => {
+      setCommunityHeaderGrey(e.detail);
+    };
+    window.addEventListener('communityHeaderGreyChanged', handleGreyChange);
+    return () => window.removeEventListener('communityHeaderGreyChanged', handleGreyChange);
+  }, []);
+
+  // Listen for community badge bg changes from Settings
+  useEffect(() => {
+    const handleBadgeBgChange = (e) => {
+      setCommunityBadgeBg(e.detail);
+    };
+    window.addEventListener('communityBadgeBgChanged', handleBadgeBgChange);
+    return () => window.removeEventListener('communityBadgeBgChanged', handleBadgeBgChange);
   }, []);
 
   // Restore scroll position on mount - only if returning from a detail view
@@ -579,7 +608,7 @@ const DiscoverView = ({
                 <span
                   style={{
                     fontWeight: 700,
-                    color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                    color: (() => { const v = Math.round(255 - communityHeaderGrey * 2.55); return `rgb(${v}, ${v}, ${v})`; })(),
                     fontSize: s(15),
                     transition: 'all 0.15s ease',
                     cursor: 'pointer',
@@ -588,11 +617,13 @@ const DiscoverView = ({
                     marginLeft: -6
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = '#1d9bf0';
-                    e.currentTarget.style.backgroundColor = isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)';
+                    const hv = Math.round(255 - Math.min(100, communityHeaderGrey + 20) * 2.55);
+                    e.currentTarget.style.color = `rgb(${hv}, ${hv}, ${hv})`;
+                    e.currentTarget.style.backgroundColor = isDarkMode ? 'rgba(150, 150, 150, 0.15)' : 'rgba(150, 150, 150, 0.1)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = isDarkMode ? '#e7e9ea' : '#0f1419';
+                    const v = Math.round(255 - communityHeaderGrey * 2.55);
+                    e.currentTarget.style.color = `rgb(${v}, ${v}, ${v})`;
                     e.currentTarget.style.backgroundColor = 'transparent';
                   }}
                 >
@@ -1809,7 +1840,7 @@ const DiscoverView = ({
                                   style={{
                                     fontSize: 'var(--fs-16)',
                                     fontWeight: 700,
-                                    color: isDarkMode ? '#f1f5f9' : '#1e293b',
+                                    color: (() => { const v = Math.round(255 - communityHeaderGrey * 2.55); return `rgb(${v}, ${v}, ${v})`; })(),
                                     cursor: 'pointer',
                                     transition: 'all 0.2s ease',
                                     padding: '2px 8px',
@@ -1817,11 +1848,13 @@ const DiscoverView = ({
                                     marginLeft: -8
                                   }}
                                   onMouseEnter={(e) => {
-                                    e.currentTarget.style.color = '#0ea5e9';
-                                    e.currentTarget.style.backgroundColor = isDarkMode ? 'rgba(14, 165, 233, 0.2)' : 'rgba(14, 165, 233, 0.12)';
+                                    const hv = Math.round(255 - Math.min(100, communityHeaderGrey + 20) * 2.55);
+                                    e.currentTarget.style.color = `rgb(${hv}, ${hv}, ${hv})`;
+                                    e.currentTarget.style.backgroundColor = isDarkMode ? 'rgba(150, 150, 150, 0.2)' : 'rgba(150, 150, 150, 0.12)';
                                   }}
                                   onMouseLeave={(e) => {
-                                    e.currentTarget.style.color = isDarkMode ? '#f1f5f9' : '#1e293b';
+                                    const v = Math.round(255 - communityHeaderGrey * 2.55);
+                                    e.currentTarget.style.color = `rgb(${v}, ${v}, ${v})`;
                                     e.currentTarget.style.backgroundColor = 'transparent';
                                   }}
                                 >
@@ -2563,12 +2596,18 @@ const DiscoverView = ({
                                 textAlign: 'center',
                                 padding: '16px 14px',
                                 cursor: 'pointer',
-                                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                                background: communityBadgeBg === 'white'
+                                  ? (isDarkMode ? '#1e293b' : '#ffffff')
+                                  : (() => {
+                                      const v = Math.max(30, Math.round(communityHeaderGrey * 1.8));
+                                      return `linear-gradient(135deg, rgb(${v}, ${v}, ${v + 5}) 0%, rgb(${v + 30}, ${v + 30}, ${v + 35}) 100%)`;
+                                    })(),
                                 position: 'relative',
                                 overflow: 'hidden',
-                                transition: 'filter 0.15s'
+                                transition: 'filter 0.15s',
+                                borderLeft: communityBadgeBg === 'white' ? '1px solid #e5e7eb' : 'none'
                               }}
-                              onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.1)'}
+                              onMouseEnter={(e) => e.currentTarget.style.filter = communityBadgeBg === 'white' ? 'brightness(0.97)' : 'brightness(1.1)'}
                               onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
                             >
                               {/* Geometric shapes - 3B Pattern */}
@@ -2578,7 +2617,7 @@ const DiscoverView = ({
                                 right: 10,
                                 width: 50,
                                 height: 50,
-                                border: '2px solid rgba(255,255,255,0.15)',
+                                border: communityBadgeBg === 'white' ? '2px solid rgba(0,0,0,0.06)' : '2px solid rgba(255,255,255,0.15)',
                                 borderRadius: 10,
                                 transform: 'rotate(15deg)'
                               }} />
@@ -2588,7 +2627,7 @@ const DiscoverView = ({
                                 left: -10,
                                 width: 60,
                                 height: 60,
-                                border: '2px solid rgba(255,255,255,0.1)',
+                                border: communityBadgeBg === 'white' ? '2px solid rgba(0,0,0,0.04)' : '2px solid rgba(255,255,255,0.1)',
                                 borderRadius: '50%'
                               }} />
                               <div style={{
@@ -2597,7 +2636,7 @@ const DiscoverView = ({
                                 right: -15,
                                 width: 30,
                                 height: 30,
-                                background: 'rgba(255,255,255,0.08)',
+                                background: communityBadgeBg === 'white' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.08)',
                                 transform: 'rotate(45deg)'
                               }} />
 
@@ -2610,12 +2649,12 @@ const DiscoverView = ({
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: 18,
-                                background: 'rgba(255,255,255,0.2)',
+                                background: communityBadgeBg === 'white' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.2)',
                                 marginBottom: 10,
                                 position: 'relative',
                                 zIndex: 1,
                                 fontWeight: 600,
-                                color: 'white'
+                                color: communityBadgeBg === 'white' ? '#1a1a1a' : 'white'
                               }}>
                                 {(instructor.communityName || instructor.name)?.slice(0, 2).toUpperCase()}
                               </div>
@@ -2637,7 +2676,7 @@ const DiscoverView = ({
                                 <div style={{
                                   fontSize: 'var(--fs-14)',
                                   fontWeight: 600,
-                                  color: '#fff',
+                                  color: communityBadgeBg === 'white' ? '#1a1a1a' : '#fff',
                                   marginBottom: 3,
                                   position: 'relative',
                                   zIndex: 1,
@@ -2649,7 +2688,7 @@ const DiscoverView = ({
 
                               <div style={{
                                 fontSize: 'var(--fs-12)',
-                                color: 'rgba(255,255,255,0.75)',
+                                color: communityBadgeBg === 'white' ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.75)',
                                 marginBottom: 4,
                                 position: 'relative',
                                 zIndex: 1
@@ -2681,7 +2720,7 @@ const DiscoverView = ({
                                   }}
                                   style={{
                                     fontSize: 'var(--fs-11)',
-                                    color: 'rgba(255,255,255,0.85)',
+                                    color: communityBadgeBg === 'white' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.85)',
                                     marginBottom: 6,
                                     position: 'relative',
                                     zIndex: 1,
@@ -2803,7 +2842,7 @@ const DiscoverView = ({
                                 style={{
                                   fontSize: 'var(--fs-15)',
                                   fontWeight: 700,
-                                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                                  color: (() => { const v = Math.round(255 - communityHeaderGrey * 2.55); return `rgb(${v}, ${v}, ${v})`; })(),
                                   cursor: 'pointer',
                                   transition: 'all 0.15s ease',
                                   padding: '2px 6px',
@@ -2811,11 +2850,13 @@ const DiscoverView = ({
                                   marginLeft: -6
                                 }}
                                 onMouseEnter={(e) => {
-                                  e.currentTarget.style.color = '#1d9bf0';
-                                  e.currentTarget.style.backgroundColor = isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)';
+                                  const hv = Math.round(255 - Math.min(100, communityHeaderGrey + 20) * 2.55);
+                                  e.currentTarget.style.color = `rgb(${hv}, ${hv}, ${hv})`;
+                                  e.currentTarget.style.backgroundColor = isDarkMode ? 'rgba(150, 150, 150, 0.15)' : 'rgba(150, 150, 150, 0.1)';
                                 }}
                                 onMouseLeave={(e) => {
-                                  e.currentTarget.style.color = isDarkMode ? '#e7e9ea' : '#0f1419';
+                                  const v = Math.round(255 - communityHeaderGrey * 2.55);
+                                  e.currentTarget.style.color = `rgb(${v}, ${v}, ${v})`;
                                   e.currentTarget.style.backgroundColor = 'transparent';
                                 }}
                               >

@@ -94,11 +94,34 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
     window.dispatchEvent(new CustomEvent('communityViewModeChanged', { detail: communityViewMode }));
   }, [communityViewMode]);
 
+  // Community header grey level (0-100, where 0 = light grey, 100 = dark)
+  const [communityHeaderGrey, setCommunityHeaderGrey] = useState(() => {
+    const saved = localStorage.getItem('communityHeaderGrey');
+    return saved ? parseInt(saved, 10) : 60; // Default 60 = medium grey
+  });
+
+  // Community badge background style: 'grey' or 'white'
+  const [communityBadgeBg, setCommunityBadgeBg] = useState(() => {
+    return localStorage.getItem('communityBadgeBg') || 'grey';
+  });
+
+  // Save community badge bg preference when it changes
+  useEffect(() => {
+    localStorage.setItem('communityBadgeBg', communityBadgeBg);
+    window.dispatchEvent(new CustomEvent('communityBadgeBgChanged', { detail: communityBadgeBg }));
+  }, [communityBadgeBg]);
+
   // Save breadcrumb font size preference when it changes
   useEffect(() => {
     localStorage.setItem('breadcrumbFontSize', breadcrumbFontSize.toString());
     window.dispatchEvent(new CustomEvent('breadcrumbFontSizeChanged', { detail: breadcrumbFontSize }));
   }, [breadcrumbFontSize]);
+
+  // Save community header grey preference when it changes
+  useEffect(() => {
+    localStorage.setItem('communityHeaderGrey', communityHeaderGrey.toString());
+    window.dispatchEvent(new CustomEvent('communityHeaderGreyChanged', { detail: communityHeaderGrey }));
+  }, [communityHeaderGrey]);
 
   // Font size levels (like X.com): 13px, 14px, 15px, 17px, 19px
   const fontSizeLevels = [
@@ -407,6 +430,137 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
               marginBottom: 0
             }}>
               Adjusts the font size of the navigation breadcrumb (e.g., PeerLoop \ My Feeds).
+            </p>
+          </div>
+
+          {/* Community Header Grey Level */}
+          <div style={{
+            padding: '16px 20px',
+            borderTop: '1px solid var(--border-color, #2f3336)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 16
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 14 }}>🏷️</span>
+                <span style={{ color: 'var(--text-primary, #e7e9ea)' }}>Community Header Color</span>
+              </div>
+              <span style={{
+                color: `rgb(${Math.round(255 - communityHeaderGrey * 2.55)}, ${Math.round(255 - communityHeaderGrey * 2.55)}, ${Math.round(255 - communityHeaderGrey * 2.55)})`,
+                fontWeight: 600,
+                fontSize: 13
+              }}>
+                {communityHeaderGrey <= 20 ? 'Light' : communityHeaderGrey <= 40 ? 'Medium Light' : communityHeaderGrey <= 60 ? 'Medium' : communityHeaderGrey <= 80 ? 'Medium Dark' : 'Dark'}
+              </span>
+            </div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12
+            }}>
+              <span style={{ fontSize: 'var(--fs-12)', color: '#ccc' }}>Light</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="5"
+                value={communityHeaderGrey}
+                onChange={(e) => setCommunityHeaderGrey(parseInt(e.target.value, 10))}
+                style={{
+                  flex: 1,
+                  height: 4,
+                  borderRadius: 2,
+                  appearance: 'none',
+                  background: `linear-gradient(to right, #ccc 0%, #333 100%)`,
+                  cursor: 'pointer'
+                }}
+              />
+              <span style={{ fontSize: 'var(--fs-12)', color: '#555' }}>Dark</span>
+            </div>
+            <div style={{
+              marginTop: 12,
+              padding: '8px 12px',
+              borderRadius: 8,
+              background: 'var(--bg-primary, #000)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              <span style={{ fontSize: 'var(--fs-13)', color: 'var(--text-secondary, #71767b)' }}>Preview:</span>
+              <span style={{
+                fontSize: 'var(--fs-15)',
+                fontWeight: 700,
+                color: `rgb(${Math.round(255 - communityHeaderGrey * 2.55)}, ${Math.round(255 - communityHeaderGrey * 2.55)}, ${Math.round(255 - communityHeaderGrey * 2.55)})`
+              }}>
+                The Physics Lab
+              </span>
+            </div>
+            <p style={{
+              color: 'var(--text-secondary, #71767b)',
+              fontSize: 'var(--fs-12)',
+              marginTop: 12,
+              marginBottom: 0
+            }}>
+              Adjusts the grey level of community names on Discover course cards.
+            </p>
+          </div>
+
+          {/* Community Badge Background */}
+          <div style={{
+            padding: '16px 20px',
+            borderTop: '1px solid var(--border-color, #2f3336)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 12
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 14 }}>🎨</span>
+                <span style={{ color: 'var(--text-primary, #e7e9ea)' }}>Community Badge Background</span>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {[
+                { value: 'grey', label: 'Grey' },
+                { value: 'white', label: 'White' }
+              ].map(option => (
+                <button
+                  key={option.value}
+                  onClick={() => setCommunityBadgeBg(option.value)}
+                  style={{
+                    padding: '8px 20px',
+                    borderRadius: 20,
+                    border: communityBadgeBg === option.value
+                      ? '2px solid #1d9bf0'
+                      : '1px solid var(--border-color, #2f3336)',
+                    background: communityBadgeBg === option.value
+                      ? 'rgba(29, 155, 240, 0.15)'
+                      : 'transparent',
+                    color: communityBadgeBg === option.value
+                      ? '#1d9bf0'
+                      : 'var(--text-primary, #e7e9ea)',
+                    fontSize: 'var(--fs-13)',
+                    fontWeight: communityBadgeBg === option.value ? 600 : 400,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <p style={{
+              color: 'var(--text-secondary, #71767b)',
+              fontSize: 'var(--fs-12)',
+              marginTop: 12,
+              marginBottom: 0
+            }}>
+              Background color of the community badge on Discover course cards.
             </p>
           </div>
 
