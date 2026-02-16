@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './CommunityHub.css';
 import { FaHeart, FaComment, FaRetweet, FaBookmark, FaShare, FaImage, FaLink, FaPaperclip, FaBook } from 'react-icons/fa';
-import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
 import { getInstructorById, getCourseById } from '../data/database';
 import UserHoverCard from './UserHoverCard';
 
@@ -47,6 +46,7 @@ const CommunityHub = ({
 }) => {
   const [activeTab, setActiveTab] = useState('feeds');
   const sentinelRef = useRef(null);
+  const pillsScrollRef = useRef(null);
   const [isStuck, setIsStuck] = useState(false);
   const [isWideScreenEnough, setIsWideScreenEnough] = useState(
     typeof window !== 'undefined' ? window.matchMedia('(min-width: 1100px)').matches : false
@@ -81,6 +81,11 @@ const CommunityHub = ({
   const purchasedCourses = allCourses.filter(course => followedCourseIds.includes(course.id));
   const isMainHallSelected = selectedCourseFilters.length === 0;
 
+  // Count posts per course for badge counts
+  const getPostCountForCourse = (courseId) => {
+    return displayedPosts.filter(p => p.courseId === courseId).length;
+  };
+
   // Same abbreviation logic as MyCoursesView
   const getCourseAbbreviation = (title) => {
     if (!title) return '??';
@@ -106,96 +111,96 @@ const CommunityHub = ({
     return title.substring(0, 2).toUpperCase();
   };
 
+  // Scroll helpers for course pills
+  const scrollPills = (direction) => {
+    if (pillsScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -200 : 200;
+      pillsScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  // Get the current audience name for composer
+  const getAudienceName = () => {
+    if (selectedCourseFilters.length > 0) {
+      return selectedCourseFilters[0].name;
+    }
+    return 'Town Hall';
+  };
+
+  const renderSearchBar = () => (
+    <div className={`community-hub-search-bar ${isDarkMode ? 'dark' : ''}`}>
+      <input
+        type="text"
+        className="community-hub-search-input"
+        placeholder="What do you want to learn today?"
+        readOnly
+      />
+    </div>
+  );
+
   const renderHeader = () => (
     <div className={`community-hub-header ${isDarkMode ? 'dark' : ''}`}>
-      {/* Geometric shapes - 3B Pattern */}
-      {!isDarkMode && (
-        <>
-          <div style={{
-            position: 'absolute', top: 10, right: 10,
-            width: 60, height: 60,
-            border: '2px solid rgba(255,255,255,0.15)',
-            borderRadius: 12, transform: 'rotate(15deg)',
-            pointerEvents: 'none'
-          }} />
-          <div style={{
-            position: 'absolute', bottom: 20, left: -10,
-            width: 80, height: 80,
-            border: '2px solid rgba(255,255,255,0.1)',
-            borderRadius: '50%', pointerEvents: 'none'
-          }} />
-          <div style={{
-            position: 'absolute', top: '50%', right: -20,
-            width: 40, height: 40,
-            background: 'rgba(255,255,255,0.08)',
-            transform: 'rotate(45deg)', pointerEvents: 'none'
-          }} />
-        </>
-      )}
+      {/* Banner strip */}
+      <div className="community-hub-banner" />
 
-      {/* Top Row: Avatar + Name + Stats */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12, position: 'relative', zIndex: 1 }}>
-        {/* Community Circle Avatar */}
-        <div style={{
-          width: 64, height: 64, borderRadius: '50%',
-          background: isDarkMode ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' : 'rgba(255,255,255,0.2)',
-          border: '3px solid rgba(255,255,255,0.3)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 'var(--fs-28)', flexShrink: 0
-        }}>
-          👥
-        </div>
-        <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <h1 style={{ margin: 0, fontSize: 'var(--fs-20)', fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#ffffff' }}>
-              {instructor?.communityName || `${creatorName}'s Community`}
-            </h1>
-            <span style={{ color: isDarkMode ? '#71767b' : 'rgba(255,255,255,0.7)' }}>·</span>
-            <span style={{ color: '#1d9bf0', fontSize: 'var(--fs-15)', fontWeight: 600, cursor: 'pointer' }}>
+      {/* Card body */}
+      <div className="community-hub-card-body">
+        {/* Avatar row: avatar left, buttons right */}
+        <div className="community-hub-avatar-row">
+          <div className="community-hub-avatar-img">
+            {creatorInitials}
+          </div>
+          <div className="community-hub-card-actions">
+            <button className="community-hub-btn-following">
+              <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 010 .708l-7 7a.5.5 0 01-.708 0l-3.5-3.5a.5.5 0 11.708-.708L6.5 10.293l6.646-6.647a.5.5 0 01.708 0z"/></svg>
               Following
-            </span>
+            </button>
+            <button className="community-hub-btn-more">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            </button>
           </div>
-          <p style={{ margin: '2px 0 0 0', color: isDarkMode ? '#71767b' : 'rgba(255,255,255,0.85)', fontSize: 'var(--fs-17)' }}>
-            {instructor?.title || 'Creator & Educator'}
+        </div>
+
+        {/* Name + verified badge */}
+        <h1 className="community-hub-creator-name">
+          {instructor?.communityName || `${creatorName}'s Community`}
+          <span className="community-hub-verified-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="M5 13l4 4L19 7"/></svg>
+          </span>
+        </h1>
+
+        {/* Subtitle */}
+        <div className="community-hub-creator-subtitle">
+          {instructor?.title || 'Creator & Educator'}
+        </div>
+
+        {/* Bio */}
+        {instructor?.bio && (
+          <p className="community-hub-creator-bio">
+            {instructor.bio}
           </p>
-          {/* Inline Stats */}
-          <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 'var(--fs-17)', color: isDarkMode ? '#71767b' : 'rgba(255,255,255,0.75)', alignItems: 'center' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><AiOutlineStar /> {instructor?.stats?.averageRating || '4.8'}</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><AiOutlineTeam /> {(instructor?.stats?.studentsTaught || 0).toLocaleString()} students</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><FaBook style={{ fontSize: 14 }} /> {allCourses.length} courses</span>
+        )}
+
+        {/* Stats row */}
+        <div className="community-hub-creator-stats">
+          <span><strong>{instructor?.stats?.averageRating || '4.8'}</strong> rating</span>
+          <span><strong>{(instructor?.stats?.studentsTaught || 0).toLocaleString()}</strong> students</span>
+          <span><strong>{allCourses.length}</strong> courses</span>
+          <span><strong>{instructor?.stats?.communityMembers || '120'}</strong> members</span>
+        </div>
+
+        {/* Credentials */}
+        {instructor?.qualifications && instructor.qualifications.length > 0 && (
+          <div className="community-hub-creator-credentials">
+            {instructor.qualifications.slice(0, 3).map((qual, index) => (
+              <div key={index} className="community-hub-credential">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
+                {qual.sentence}
+              </div>
+            ))}
           </div>
-        </div>
+        )}
       </div>
-
-      {/* Bio */}
-      {instructor?.bio && (
-        <p style={{
-          margin: '0 0 12px 0',
-          color: isDarkMode ? '#e7e9ea' : 'rgba(255,255,255,0.9)',
-          fontSize: 'var(--fs-17)', lineHeight: 1.5,
-          position: 'relative', zIndex: 1
-        }}>
-          {instructor.bio}
-        </p>
-      )}
-
-      {/* Credentials */}
-      {instructor?.qualifications && instructor.qualifications.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 0, position: 'relative', zIndex: 1 }}>
-          {instructor.qualifications.slice(0, 3).map((qual, index) => (
-            <span key={index} style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              fontSize: 'var(--fs-17)',
-              color: isDarkMode ? '#71767b' : 'rgba(255,255,255,0.8)'
-            }}>
-              <span style={{ color: isDarkMode ? '#1d9bf0' : 'rgba(255,255,255,0.9)' }}>✓</span>
-              {qual.sentence}
-            </span>
-          ))}
-        </div>
-      )}
-
-
     </div>
   );
 
@@ -207,327 +212,163 @@ const CommunityHub = ({
   };
 
   const renderSubPills = () => (
-    <div className="course-pills-container" style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 8,
-      overflowX: 'auto',
-      overflowY: 'hidden',
-      padding: '12px 16px',
-      scrollbarWidth: 'none',
-      borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-      background: isDarkMode ? '#000' : '#f0f4ff'
-    }}>
-      {/* Main Hall Pill */}
-      <button
-        onClick={() => setSelectedCourseFilters([])}
-        className={`course-pill ${isMainHallSelected ? 'course-pill-selected' : ''}`}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '8px 16px',
-          borderRadius: 20,
-          border: isMainHallSelected
-            ? '2px solid #1d9bf0'
-            : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-          background: isMainHallSelected
-            ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-            : (isDarkMode ? '#2f3336' : '#e8ebee'),
-          color: isMainHallSelected
-            ? '#1d9bf0'
-            : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-          fontSize: 'var(--fs-14)',
-          fontWeight: 600,
-          cursor: 'pointer',
-          whiteSpace: 'nowrap',
-          flexShrink: 0,
-          transition: 'all 0.2s ease'
-        }}
-      >
-        Main Hall
+    <div className={`course-tabs-outer ${isDarkMode ? 'dark' : ''}`}>
+      {/* Left scroll arrow */}
+      <button className="course-scroll-btn" onClick={() => scrollPills('left')}>
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M15 19l-7-7 7-7"/></svg>
       </button>
 
-      {/* Course Pills - Only purchased courses */}
-      {purchasedCourses.map(course => {
-        const isSelected = selectedCourseFilters.length === 1 && selectedCourseFilters[0].id === course.id;
-        return (
-          <button
-            key={course.id}
-            onClick={() => {
-              setSelectedCourseFilters([{ id: course.id, name: course.title }]);
-            }}
-            className={`course-pill ${isSelected ? 'course-pill-selected' : ''}`}
-            title={course.title}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 16px',
-              borderRadius: 20,
-              border: isSelected
-                ? '2px solid #1d9bf0'
-                : (isDarkMode ? '2px solid #536471' : '2px solid #cfd9de'),
-              background: isSelected
-                ? (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)')
-                : (isDarkMode ? '#2f3336' : '#e8ebee'),
-              color: isSelected
-                ? '#1d9bf0'
-                : (isDarkMode ? '#e7e9ea' : '#0f1419'),
-              fontSize: 'var(--fs-14)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-              transition: 'all 0.2s ease'
-            }}
-          >
-            {course.title}
-          </button>
-        );
-      })}
+      {/* Pills container */}
+      <div className="course-pills-container" ref={pillsScrollRef}>
+        {/* Town Hall Pill */}
+        <button
+          onClick={() => setSelectedCourseFilters([])}
+          className={`course-pill ${isMainHallSelected ? 'course-pill-selected' : ''}`}
+        >
+          <span style={{ fontSize: 13 }}>🏠</span>
+          Town Hall
+        </button>
+
+        {/* Course Pills - Only purchased courses */}
+        {purchasedCourses.map(course => {
+          const isSelected = selectedCourseFilters.length === 1 && selectedCourseFilters[0].id === course.id;
+          const postCount = getPostCountForCourse(course.id);
+          return (
+            <button
+              key={course.id}
+              onClick={() => {
+                setSelectedCourseFilters([{ id: course.id, name: course.title }]);
+              }}
+              className={`course-pill ${isSelected ? 'course-pill-selected' : ''}`}
+              title={course.title}
+            >
+              {course.title}
+              {postCount > 0 && (
+                <span className="course-pill-count">{postCount}</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Right scroll arrow */}
+      <button className="course-scroll-btn" onClick={() => scrollPills('right')}>
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
     </div>
   );
 
+  const isComposerLocked = currentUser?.isNewUser && !signupCompleted;
+
   const renderFeedsTab = () => (
     <div>
-      {/* Post Composer - Same as classic feed */}
-      <div
-        className="post-composer"
-        style={{
-          borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-          padding: '12px 16px 16px 16px',
-          background: isDarkMode ? 'rgba(29, 155, 240, 0.03)' : 'rgba(29, 155, 240, 0.02)',
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          boxSizing: 'border-box'
-        }}
-      >
-        <div style={{
-          border: isDarkMode ? '1px solid #2f3336' : '1px solid #cfd9de',
-          borderRadius: 12,
-          background: isDarkMode ? '#0a0a0a' : '#fff',
-          overflow: 'hidden',
-          boxSizing: 'border-box',
-          width: '100%',
-          position: 'relative'
-        }}>
-          {/* Locked Overlay for new users */}
-          {currentUser?.isNewUser && !signupCompleted && (
-            <div style={{
-              position: 'absolute',
-              top: 0, left: 0, right: 0, bottom: 0,
-              background: isDarkMode ? 'rgba(0, 0, 0, 0.75)' : 'rgba(255, 255, 255, 0.85)',
-              backdropFilter: 'blur(2px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 10,
-              borderRadius: 12
-            }}>
-              <div style={{ textAlign: 'center', padding: '16px 24px' }}>
-                <div style={{ fontSize: 'var(--fs-24)', marginBottom: 8 }}>🔒</div>
-                <div style={{
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                  fontSize: 'var(--fs-15)',
-                  fontWeight: 600,
-                  marginBottom: 4
-                }}>
-                  Complete signup to share a post
-                </div>
-                <div style={{ color: isDarkMode ? '#71767b' : '#536471', fontSize: 13 }}>
-                  Select your interests below to unlock posting
-                </div>
+      {/* Post Composer - Open layout matching mockup */}
+      <div className={`community-hub-composer ${isDarkMode ? 'dark' : ''}`}>
+        {/* Locked Overlay for new users */}
+        {isComposerLocked && (
+          <div className={`community-hub-composer-locked ${isDarkMode ? 'dark' : ''}`}>
+            <div style={{ textAlign: 'center', padding: '16px 24px' }}>
+              <div style={{ fontSize: 'var(--fs-24)', marginBottom: 8 }}>🔒</div>
+              <div style={{
+                color: isDarkMode ? '#e7e9ea' : '#1a1d21',
+                fontSize: 'var(--fs-15)',
+                fontWeight: 600,
+                marginBottom: 4
+              }}>
+                Complete signup to share a post
+              </div>
+              <div style={{ color: isDarkMode ? '#71767b' : '#5f6b7a', fontSize: 13 }}>
+                Select your interests below to unlock posting
               </div>
             </div>
-          )}
-          {/* Text Area with Avatar */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            padding: '12px 14px',
-            gap: 10,
-            opacity: (currentUser?.isNewUser && !signupCompleted) ? 0.4 : 1
-          }}>
-            {currentUser?.avatar ? (
-              <img
-                src={currentUser.avatar}
-                alt={currentUser.name}
-                onClick={() => onMenuChange && onMenuChange('Profile')}
-                style={{
-                  width: 32, height: 32,
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  flexShrink: 0,
-                  marginTop: 2,
-                  cursor: 'pointer',
-                  transition: 'opacity 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
-                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-                title="View your profile"
-              />
-            ) : (
-              <div
-                onClick={() => onMenuChange && onMenuChange('Profile')}
-                style={{
-                  width: 32, height: 32,
-                  borderRadius: '50%',
-                  background: '#1d9bf0',
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 'var(--fs-12)',
-                  fontWeight: 700,
-                  flexShrink: 0,
-                  marginTop: 2,
-                  cursor: 'pointer',
-                  transition: 'opacity 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
-                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-                title="View your profile"
-              >
-                {getUserInitials()}
-              </div>
-            )}
-            <textarea
-              value={newPostText}
-              onChange={(e) => setNewPostText?.(e.target.value)}
-              onFocus={() => setIsComposerFocused?.(true)}
-              placeholder={
-                selectedCourseFilters.length > 0
-                  ? `Discuss ${selectedCourseFilters[0].name}...`
-                  : "Ask a question or share an insight..."
-              }
-              disabled={currentUser?.isNewUser && !signupCompleted}
-              style={{
-                flex: 1,
-                border: 'none',
-                outline: 'none',
-                resize: 'none',
-                fontSize: 'var(--fs-15)',
-                fontWeight: 400,
-                lineHeight: 1.5,
-                background: (isDarkMode ? '#2f3336' : '#f7f9f9'),
-                color: isDarkMode ? '#e7e9ea' : '#0f1419',
-                padding: 0,
-                minHeight: 50,
-                fontFamily: 'inherit',
-                boxSizing: 'border-box',
-                display: 'block'
-              }}
-            />
+          </div>
+        )}
+
+        {/* Avatar */}
+        {currentUser?.avatar ? (
+          <img
+            src={currentUser.avatar}
+            alt={currentUser.name}
+            className="community-hub-composer-avatar"
+            onClick={() => onMenuChange && onMenuChange('Profile')}
+            style={{ cursor: 'pointer' }}
+            title="View your profile"
+          />
+        ) : (
+          <div
+            className="community-hub-composer-avatar-placeholder"
+            onClick={() => onMenuChange && onMenuChange('Profile')}
+            title="View your profile"
+          >
+            {getUserInitials()}
+          </div>
+        )}
+
+        {/* Composer body */}
+        <div className="community-hub-composer-body" style={{ opacity: isComposerLocked ? 0.4 : 1 }}>
+          {/* Audience pill */}
+          <div className="community-hub-composer-audience">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/></svg>
+            Posting to: {getAudienceName()}
+            <svg width="10" height="10" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="2"><path d="M3 5l3 3 3-3"/></svg>
           </div>
 
-          {/* Bottom Action Bar */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '8px 12px',
-            borderTop: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4',
-            background: isDarkMode ? '#16181c' : '#f7f9f9',
-            width: '100%',
-            boxSizing: 'border-box',
-            opacity: (currentUser?.isNewUser && !signupCompleted) ? 0.4 : 1
-          }}>
-            {/* Media Icons */}
-            <div style={{ display: 'flex', gap: 4 }}>
+          {/* Textarea */}
+          <textarea
+            className="community-hub-composer-textarea"
+            value={newPostText}
+            onChange={(e) => setNewPostText?.(e.target.value)}
+            onFocus={() => setIsComposerFocused?.(true)}
+            placeholder={
+              selectedCourseFilters.length > 0
+                ? `Discuss ${selectedCourseFilters[0].name}...`
+                : "Ask a question or share an insight..."
+            }
+            disabled={isComposerLocked}
+            rows={2}
+          />
+
+          {/* Toolbar */}
+          <div className="community-hub-composer-toolbar">
+            <div className="community-hub-composer-media-actions">
               <button
-                disabled={currentUser?.isNewUser && !signupCompleted}
-                style={{
-                  background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
-                  border: 'none',
-                  color: '#1d9bf0',
-                  cursor: (currentUser?.isNewUser && !signupCompleted) ? 'not-allowed' : 'pointer',
-                  padding: '6px 8px',
-                  borderRadius: 6,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 'var(--fs-16)',
-                  transition: 'background 0.2s'
-                }}
+                className="community-hub-composer-action-btn"
+                disabled={isComposerLocked}
                 title="Add image"
-                onMouseEnter={e => !(currentUser?.isNewUser && !signupCompleted) && (e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)')}
-                onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)'}
               >
-                <FaImage />
+                <FaImage size={18} />
               </button>
               <button
-                disabled={currentUser?.isNewUser && !signupCompleted}
-                style={{
-                  background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
-                  border: 'none',
-                  color: '#1d9bf0',
-                  cursor: (currentUser?.isNewUser && !signupCompleted) ? 'not-allowed' : 'pointer',
-                  padding: '6px 8px',
-                  borderRadius: 6,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 'var(--fs-16)',
-                  transition: 'background 0.2s'
-                }}
+                className="community-hub-composer-action-btn"
+                disabled={isComposerLocked}
                 title="Add link"
-                onMouseEnter={e => !(currentUser?.isNewUser && !signupCompleted) && (e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)')}
-                onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)'}
               >
-                <FaLink />
+                <FaLink size={18} />
               </button>
               <button
-                disabled={currentUser?.isNewUser && !signupCompleted}
-                style={{
-                  background: isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)',
-                  border: 'none',
-                  color: '#1d9bf0',
-                  cursor: (currentUser?.isNewUser && !signupCompleted) ? 'not-allowed' : 'pointer',
-                  padding: '6px 8px',
-                  borderRadius: 6,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 'var(--fs-16)',
-                  transition: 'background 0.2s'
-                }}
+                className="community-hub-composer-action-btn"
+                disabled={isComposerLocked}
                 title="Attach file"
-                onMouseEnter={e => !(currentUser?.isNewUser && !signupCompleted) && (e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.15)')}
-                onMouseLeave={e => e.currentTarget.style.background = isDarkMode ? 'rgba(29, 155, 240, 0.1)' : 'rgba(29, 155, 240, 0.08)'}
               >
-                <FaPaperclip />
+                <FaPaperclip size={18} />
               </button>
             </div>
 
-            {/* Post Button */}
             <button
-              disabled={!newPostText?.trim() || isPosting || (currentUser?.isNewUser && !signupCompleted)}
+              className="community-hub-composer-submit"
+              disabled={!newPostText?.trim() || isPosting || isComposerLocked}
               onClick={onSubmitPost}
-              style={{
-                background: '#1d9bf0',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 20,
-                padding: '8px 20px',
-                fontWeight: 600,
-                fontSize: 'var(--fs-14)',
-                cursor: (newPostText?.trim() && !isPosting && !(currentUser?.isNewUser && !signupCompleted)) ? 'pointer' : 'not-allowed',
-                opacity: (newPostText?.trim() && !isPosting && !(currentUser?.isNewUser && !signupCompleted)) ? 1 : 0.5,
-                transition: 'opacity 0.2s'
-              }}
             >
               {isPosting ? 'Posting...' : 'Post'}
             </button>
           </div>
           {postError && (
-            <div style={{ color: '#f44', fontSize: 'var(--fs-12)', padding: '0 12px 8px' }}>{postError}</div>
+            <div style={{ color: '#ef4444', fontSize: 12, marginTop: 6 }}>{postError}</div>
           )}
         </div>
       </div>
 
-      {/* Posts Feed - Same post cards as classic feed */}
+      {/* Posts Feed */}
       <div className="posts-feed">
         {displayedPosts.length > 0 ? (
           displayedPosts.map(post => {
@@ -560,7 +401,7 @@ const CommunityHub = ({
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.transform = 'scale(1.05)';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(255,255,255,0.2)';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.12)';
                     }}
                     onMouseLeave={e => {
                       e.currentTarget.style.transform = 'scale(1)';
@@ -602,80 +443,57 @@ const CommunityHub = ({
                       >
                         {post.authorHandle}
                       </span>
-                      <span className="post-card-dot">·</span>
+                      <span className="post-card-dot">&middot;</span>
                       <span className="post-card-timestamp">{post.timestamp}</span>
                     </div>
-                    {post.community && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        {post.isPinned && (
-                          <span style={{
-                            background: isDarkMode ? 'rgba(29, 155, 240, 0.2)' : 'rgba(29, 155, 240, 0.1)',
-                            color: '#1d9bf0',
-                            fontSize: 10,
-                            fontWeight: 600,
-                            padding: '2px 6px',
-                            borderRadius: 4,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 3
-                          }}>
-                            📌 Pinned
-                          </span>
-                        )}
-                        {(post.isTownHallExclusive || post.isCreatorTownHall) ? (
-                          <span
-                            className="post-card-community"
-                            style={{
-                              background: post.isCreatorTownHall
-                                ? (isDarkMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.1)')
-                                : (isDarkMode ? 'rgba(29, 155, 240, 0.15)' : 'rgba(29, 155, 240, 0.1)'),
-                              color: post.isCreatorTownHall ? '#8b5cf6' : '#1d9bf0',
-                              padding: '2px 8px',
-                              borderRadius: 12,
-                              fontWeight: 500,
-                              cursor: 'default'
-                            }}
-                          >
+                    {/* Post meta badges */}
+                    <div className="post-card-meta-badges">
+                      {post.isTopContributor && (
+                        <span className="post-badge-top-contributor">Top contributor</span>
+                      )}
+                      {post.isPinned && (
+                        <span className="post-badge-pinned">📌 Pinned</span>
+                      )}
+                      {post.community && (
+                        (post.isTownHallExclusive || post.isCreatorTownHall) ? (
+                          <span className="post-badge-course">
                             {post.community}
                           </span>
                         ) : (
                           <span
-                            className="post-card-community"
+                            className="post-badge-course"
                             onClick={() => {
                               if (onViewCourse && post.courseId) {
                                 onViewCourse(post.courseId);
                               }
                             }}
                             style={{ cursor: 'pointer' }}
-                            onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                            onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                            title={`View ${post.community} course`}
                           >
-                            in {post.community}
+                            {post.community}
                           </span>
-                        )}
-                      </div>
-                    )}
+                        )
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="post-card-content">{post.content}</div>
                 <div className="post-card-actions">
-                  <button className="post-action-btn">
+                  <button className="post-action-btn reply">
                     <FaComment />
                     <span>{post.replies}</span>
                   </button>
-                  <button className="post-action-btn">
+                  <button className="post-action-btn repost">
                     <FaRetweet />
                     <span>{Math.floor(post.likes * 0.3)}</span>
                   </button>
-                  <button className="post-action-btn">
+                  <button className="post-action-btn like">
                     <FaHeart />
                     <span>{post.likes}</span>
                   </button>
-                  <button className="post-action-btn">
+                  <button className="post-action-btn bookmark">
                     <FaBookmark />
                   </button>
-                  <button className="post-action-btn">
+                  <button className="post-action-btn share">
                     <FaShare />
                   </button>
                 </div>
@@ -709,8 +527,8 @@ const CommunityHub = ({
               display: 'flex',
               gap: 12,
               padding: 12,
-              background: isDarkMode ? '#16181c' : '#f7f9f9',
-              border: isDarkMode ? '1px solid #2f3336' : '1px solid #e5e7eb',
+              background: isDarkMode ? '#16181c' : '#f8f9fb',
+              border: isDarkMode ? '1px solid #2f3336' : '1px solid #e8ecf1',
               borderRadius: 12,
               cursor: 'pointer',
               transition: 'all 0.2s ease',
@@ -718,11 +536,11 @@ const CommunityHub = ({
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = '#22c55e';
-              e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#eff3f4';
+              e.currentTarget.style.background = isDarkMode ? '#1d1f23' : '#f0f3f6';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#e5e7eb';
-              e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f7f9f9';
+              e.currentTarget.style.borderColor = isDarkMode ? '#2f3336' : '#e8ecf1';
+              e.currentTarget.style.background = isDarkMode ? '#16181c' : '#f8f9fb';
             }}
           >
             {/* Course Badge */}
@@ -744,11 +562,10 @@ const CommunityHub = ({
 
             {/* Course Content */}
             <div style={{ flex: 1, minWidth: 0, paddingRight: 100 }}>
-              {/* Title + Following */}
               <div style={{
                 fontSize: 'var(--fs-15)',
                 fontWeight: 600,
-                color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                color: isDarkMode ? '#e7e9ea' : '#1a1d21',
                 marginBottom: 2,
                 display: 'flex',
                 alignItems: 'center',
@@ -758,7 +575,7 @@ const CommunityHub = ({
                 <span>{course.title}</span>
                 {isPurchased && (
                   <>
-                    <span style={{ color: isDarkMode ? '#71767b' : '#374151', fontWeight: 400 }}>·</span>
+                    <span style={{ color: isDarkMode ? '#71767b' : '#5f6b7a', fontWeight: 400 }}>&middot;</span>
                     <span style={{
                       color: '#1d9bf0',
                       fontSize: 'var(--fs-15)',
@@ -769,19 +586,17 @@ const CommunityHub = ({
                   </>
                 )}
               </div>
-              {/* Description */}
               <div style={{
                 fontSize: 'var(--fs-14)',
-                color: isDarkMode ? '#a0a0a0' : '#374151',
+                color: isDarkMode ? '#a0a0a0' : '#5f6b7a',
                 lineHeight: 1.4,
                 marginBottom: 6
               }}>
                 {course.description}
               </div>
-              {/* Stats Line */}
               <div style={{
                 fontSize: 'var(--fs-14)',
-                color: isDarkMode ? '#71767b' : '#6b7280',
+                color: isDarkMode ? '#71767b' : '#9aa5b4',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4
@@ -797,9 +612,9 @@ const CommunityHub = ({
                   position: 'absolute',
                   top: 12,
                   right: 12,
-                  background: isDarkMode ? '#2f3336' : '#f7f9f9',
-                  border: isDarkMode ? '2px solid #374151' : '2px solid #cfd9de',
-                  color: isDarkMode ? '#e7e9ea' : '#0f1419',
+                  background: isDarkMode ? '#2f3336' : '#f8f9fb',
+                  border: isDarkMode ? '2px solid #374151' : '2px solid #e8ecf1',
+                  color: isDarkMode ? '#e7e9ea' : '#1a1d21',
                   padding: '8px 16px',
                   borderRadius: 20,
                   fontSize: 'var(--fs-14)',
@@ -966,6 +781,7 @@ const CommunityHub = ({
 
   return (
     <div>
+      {renderSearchBar()}
       {effectiveLayoutStyle !== 'wide' && renderHeader()}
       <div ref={sentinelRef} style={{ height: 0, margin: 0 }} />
       <div
@@ -974,7 +790,7 @@ const CommunityHub = ({
       >
         <div className="community-hub-tabs">
           {[
-            { id: 'feeds', label: 'Feeds' },
+            { id: 'feeds', label: 'Feed' },
             { id: 'courses', label: 'Courses' },
             { id: 'content', label: 'Content' },
             { id: 'calendar', label: 'Calendar' }
