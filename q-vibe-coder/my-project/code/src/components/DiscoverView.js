@@ -41,7 +41,7 @@ const DiscoverView = ({
 
   // Discover listing format preference
   const [discoverListingFormat, setDiscoverListingFormat] = useState(() => {
-    return localStorage.getItem('discoverListingFormat') || 'standard';
+    return localStorage.getItem('discoverListingFormat') || 'combined';
   });
 
   // Compact view text scale preference

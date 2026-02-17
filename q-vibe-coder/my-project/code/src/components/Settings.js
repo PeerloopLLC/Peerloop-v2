@@ -31,7 +31,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
   // Discover listing format preference
   const [discoverListingFormat, setDiscoverListingFormat] = useState(() => {
     const saved = localStorage.getItem('discoverListingFormat');
-    return saved || 'standard';
+    return saved || 'combined';
   });
 
   // Compact view text scale preference (0.8 to 1.5)
