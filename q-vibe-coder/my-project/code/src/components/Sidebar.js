@@ -32,7 +32,7 @@ import { getInstructorById } from '../data/database';
  * @param {Object} currentUser - Current user object with id
  * @param {Function} onSelectCommunity - Callback when a community is selected from sidebar
  */
-const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onLogout }) => {
+const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onViewCommunityDirect, onLogout }) => {
   // Track which tooltip is visible (by index)
   const [visibleTooltip, setVisibleTooltip] = useState(null);
   const timerRef = useRef(null);
@@ -58,6 +58,9 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
 
   // Track if flyout is open
   const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
+
+  // Track last click time for double-click-to-open-picker behavior
+  const lastSelectorClickRef = useRef(0);
 
   // Track if More popup menu is open
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -291,12 +294,22 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
    * Handle community selection from the Feeds sub-menu
    */
   const handleCommunitySelect = (community) => {
+    setSelectedCommunity(community);
     localStorage.setItem('pendingCommunityCreator', JSON.stringify(community));
-    window.dispatchEvent(new CustomEvent('communitySelected', { detail: community }));
-    if (onSelectCommunity) {
-      onSelectCommunity(community);
+    if (community.type === 'hub' || community.id === 'town-hall') {
+      // Town Hall / The Commons → go to Community view
+      window.dispatchEvent(new CustomEvent('communitySelected', { detail: community }));
+      if (onSelectCommunity) {
+        onSelectCommunity(community);
+      }
+      onMenuChange('My Community');
+    } else {
+      // Creator community → use same path as Discover (Browse_Communities)
+      const instructorId = typeof community.id === 'string' ? parseInt(community.id.replace('creator-', '')) : community.instructorId || community.id;
+      if (onViewCommunityDirect) {
+        onViewCommunityDirect({ id: instructorId, name: community.name });
+      }
     }
-    onMenuChange('My Community');
   };
 
   // Calculate visible and hidden communities
@@ -430,29 +443,30 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
               className={`community-selector ${isFlyoutOpen ? 'flyout-open' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                if (hasFollowedCommunities && communityNavStyle === 'slideout') {
-                  if (isSlideoutPanelOpen) {
+                const now = Date.now();
+                const timeSinceLastClick = now - lastSelectorClickRef.current;
+                lastSelectorClickRef.current = now;
+
+                if (timeSinceLastClick < 5000 && hasFollowedCommunities) {
+                  // Second click within 5 seconds → open picker
+                  if (communityNavStyle === 'slideout') {
                     window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
                   } else {
-                    handleCommunitySelect(selectedCommunity);
-                    window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
-                  }
-                } else if (hasFollowedCommunities && communityNavStyle === 'dropdown') {
-                  const willOpen = !isFlyoutOpen;
-                  setIsFlyoutOpen(willOpen);
-                  if (willOpen) {
-                    startGracePeriod();
-                  } else {
-                    clearFlyoutCloseTimer();
+                    const willOpen = !isFlyoutOpen;
+                    setIsFlyoutOpen(willOpen);
+                    if (willOpen) startGracePeriod();
+                    else clearFlyoutCloseTimer();
                   }
                 } else {
+                  // First click → navigate to the selected community
                   handleCommunitySelect(selectedCommunity);
                 }
               }}
             >
               <div className="community-selector-avatar community-badge" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>👥</div>
               <div className="community-selector-info">
-                <span className="community-selector-name">
+                <span className="community-selector-name">My Communities</span>
+                <span className="community-selector-count" style={{ fontSize: 11, opacity: 0.75 }}>
                   {selectedCommunity.id === 'town-hall'
                     ? 'The Commons'
                     : (() => {
@@ -461,7 +475,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
                         return instructor?.communityName || `${selectedCommunity.name || 'Community'} Community`;
                       })()}
                 </span>
-                {hasFollowedCommunities && <span className="community-selector-count">Choose A Community Feed</span>}
               </div>
               {hasFollowedCommunities && (
                 <span className="community-selector-arrow">&rarr;</span>
@@ -513,24 +526,6 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onL
           )}
         </div>
 
-        {/* My Feeds - below The Commons with consistent spacing */}
-        <div
-          className={`nav-item ${activeMenu === 'My Community' ? 'active' : ''}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsFlyoutOpen(false);
-            if (isSlideoutPanelOpen) {
-              window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
-            }
-            onMenuChange('My Community');
-          }}
-        >
-          <div className="nav-icon"><FaUsers /></div>
-          <span className="nav-label">My Communities</span>
-        </div>
-
-        {/* Divider under My Communities */}
-        <div className="nav-section-divider" />
 
         {/* My Courses - above Discover */}
         <div
@@ -680,6 +675,7 @@ Sidebar.propTypes = {
   activeMenu: PropTypes.string.isRequired,
   currentUser: PropTypes.object,
   onSelectCommunity: PropTypes.func,
+  onViewCommunityDirect: PropTypes.func,
   onLogout: PropTypes.func
 };
 

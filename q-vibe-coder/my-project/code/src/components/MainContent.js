@@ -320,6 +320,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
     setEnrollingCourse(null);
     setViewingCourseFromCommunity(null);
     localStorage.removeItem('viewingCreatorProfile');
+    setCreatorProfileTab(previousContext.type === 'feeds' ? 'feed' : 'courses');
     onMenuChange('Browse_Communities');
   };
 
@@ -1588,6 +1589,18 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         }
       }
     }, [activeMenu]);
+
+    // Handle direct community navigation from sidebar (same path as Discover)
+    React.useEffect(() => {
+      const handleViewCommunityDirect = (event) => {
+        const instructor = event.detail;
+        if (instructor && instructor.id) {
+          handleViewCommunity(instructor, { type: 'feeds' });
+        }
+      };
+      window.addEventListener('viewCommunityDirect', handleViewCommunityDirect);
+      return () => window.removeEventListener('viewCommunityDirect', handleViewCommunityDirect);
+    }, []);
 
     // Reset course viewing state when navigating to main menus (Messages, Profile, etc.)
     React.useEffect(() => {
@@ -3196,7 +3209,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           setCommonsActiveFeed={setCommonsActiveFeed}
           onViewCreatorProfile={(creator) => {
             // Navigate to creator profile in Browse with back navigation to Feeds
-            const instructorId = creator.instructorId || (typeof creator.id === 'string' ? creator.id.replace('creator-', '') : creator.id);
+            const instructorId = parseInt(creator.instructorId || (typeof creator.id === 'string' ? creator.id.replace('creator-', '') : creator.id));
             const fullData = getInstructorWithCourses(instructorId);
             setSelectedInstructor(fullData || creator);
             setSelectedCourse(null); // Clear any selected course so profile shows
@@ -3215,7 +3228,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           }}
           onViewCommunity={(instructor) => {
             // Navigate to Community Detail page (same as clicking community header on Discover)
-            const instructorId = instructor.instructorId || (typeof instructor.id === 'string' ? instructor.id.replace('creator-', '') : instructor.id);
+            const instructorId = parseInt(instructor.instructorId || (typeof instructor.id === 'string' ? instructor.id.replace('creator-', '') : instructor.id));
             const fullData = getInstructorWithCourses(instructorId);
             setSelectedInstructor(fullData || instructor);
             setSelectedCourse(null); // Clear so community view shows, not a specific course

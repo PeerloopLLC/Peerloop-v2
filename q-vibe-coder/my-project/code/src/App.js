@@ -320,11 +320,15 @@ function App() {
             currentUser={currentUser}
             onLogout={handleLogout}
             onSelectCommunity={(community) => {
-              // Store selected community in localStorage for Community component to pick up
+              // Store selected community for MainContent to pick up
               localStorage.setItem('pendingCommunityCreator', JSON.stringify({
                 id: community.id,
                 name: community.name
               }));
+            }}
+            onViewCommunityDirect={(community) => {
+              // Direct navigation to Browse_Communities (same as Discover path)
+              window.dispatchEvent(new CustomEvent('viewCommunityDirect', { detail: community }));
             }}
           />
         )}
@@ -335,13 +339,22 @@ function App() {
           <FeedsSlideoutPanel
             currentUser={currentUser}
             onSelectCommunity={(community) => {
-              // Store selected community and navigate to community view
-              localStorage.setItem('pendingCommunityCreator', JSON.stringify({
-                id: community.id,
-                name: community.name
-              }));
-              window.dispatchEvent(new CustomEvent('communitySelected', { detail: community }));
-              handleMenuChange('My Community');
+              if (community.type === 'hub' || community.id === 'town-hall') {
+                // Town Hall / The Commons → Community view
+                localStorage.setItem('pendingCommunityCreator', JSON.stringify({
+                  id: community.id,
+                  name: community.name
+                }));
+                window.dispatchEvent(new CustomEvent('communitySelected', { detail: community }));
+                handleMenuChange('My Community');
+              } else {
+                // Creator community → same path as Discover (Browse_Communities)
+                const instructorId = typeof community.id === 'string' ? parseInt(community.id.replace('creator-', '')) : community.instructorId || community.id;
+                // Update sidebar display
+                window.dispatchEvent(new CustomEvent('communitySelected', { detail: community }));
+                localStorage.setItem('pendingCommunityCreator', JSON.stringify(community));
+                window.dispatchEvent(new CustomEvent('viewCommunityDirect', { detail: { id: instructorId, name: community.name } }));
+              }
             }}
           />
         )}

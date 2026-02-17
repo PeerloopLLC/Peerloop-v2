@@ -64,7 +64,7 @@ const DiscoverView = ({
 
   // Community badge background style ('grey' or 'white')
   const [communityBadgeBg, setCommunityBadgeBg] = useState(() => {
-    return localStorage.getItem('communityBadgeBg') || 'grey';
+    return localStorage.getItem('communityBadgeBg') || 'color';
   });
 
   // Dropdown state for community follow menu
@@ -2598,6 +2598,10 @@ const DiscoverView = ({
                                 cursor: 'pointer',
                                 background: communityBadgeBg === 'white'
                                   ? (isDarkMode ? '#1e293b' : '#ffffff')
+                                  : communityBadgeBg === 'color'
+                                  ? (isDarkMode
+                                      ? 'linear-gradient(135deg, #1e40af 0%, #5b21b6 50%, #7c3aed 100%)'
+                                      : 'linear-gradient(135deg, #4f7df3 0%, #764ba2 50%, #c084fc 100%)')
                                   : (() => {
                                       const v = Math.max(30, Math.round(communityHeaderGrey * 1.8));
                                       return `linear-gradient(135deg, rgb(${v}, ${v}, ${v + 5}) 0%, rgb(${v + 30}, ${v + 30}, ${v + 35}) 100%)`;

@@ -185,18 +185,10 @@ const BrowseView = ({
     // Use creatorProfileTab for unified tabs (feed/courses/content/calendar)
     // Default to 'courses' which is set from MainContent
     const activeTab = creatorProfileTab || 'courses';
+    const isMember = isCreatorFollowed(creator.id);
 
     return (
       <div>
-        {/* Search Bar - CommunityHub style */}
-        <div className={`community-hub-search-bar ${isDarkMode ? 'dark' : ''}`}>
-          <input
-            type="text"
-            className="community-hub-search-input"
-            placeholder="What do you want to learn today?"
-            readOnly
-          />
-        </div>
 
         {/* Header - CommunityHub style */}
         <div className={`community-hub-header ${isDarkMode ? 'dark' : ''}`}>
@@ -315,7 +307,28 @@ const BrowseView = ({
 
         {/* Tab Content */}
         {/* === FEED TAB === */}
-        {activeTab === 'feed' && (
+        {activeTab === 'feed' && !isMember && (
+          <div style={{ padding: '48px 20px', textAlign: 'center' }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#1a1d21', marginBottom: 8 }}>
+              Join {creatorName} to see the feed
+            </h3>
+            <p style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#9aa5b4', marginBottom: 20, maxWidth: 320, margin: '0 auto 20px' }}>
+              Follow this community to access posts, discussions, and updates from {creator.name}.
+            </p>
+            <button
+              onClick={() => handleFollowInstructor(creator.id)}
+              style={{
+                background: '#1d9bf0', color: '#fff', border: 'none',
+                padding: '10px 24px', borderRadius: 9999, fontSize: 15,
+                fontWeight: 700, cursor: 'pointer'
+              }}
+            >
+              Join Community
+            </button>
+          </div>
+        )}
+        {activeTab === 'feed' && isMember && (
           <div>
             {creatorPosts.map((post, index) => (
               <div key={index} style={{
@@ -452,7 +465,28 @@ const BrowseView = ({
         )}
 
         {/* === CONTENT TAB === */}
-        {activeTab === 'content' && (
+        {activeTab === 'content' && !isMember && (
+          <div style={{ padding: '48px 20px', textAlign: 'center' }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#1a1d21', marginBottom: 8 }}>
+              Join {creatorName} to access content
+            </h3>
+            <p style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#9aa5b4', marginBottom: 20, maxWidth: 320, margin: '0 auto 20px' }}>
+              Follow this community to access exclusive videos, resources, and materials from {creator.name}.
+            </p>
+            <button
+              onClick={() => handleFollowInstructor(creator.id)}
+              style={{
+                background: '#1d9bf0', color: '#fff', border: 'none',
+                padding: '10px 24px', borderRadius: 9999, fontSize: 15,
+                fontWeight: 700, cursor: 'pointer'
+              }}
+            >
+              Join Community
+            </button>
+          </div>
+        )}
+        {activeTab === 'content' && isMember && (
           <div className="community-hub-content-section">
             <div className="community-hub-content-hero">
               <div className="community-hub-content-hero-label">Featured</div>
@@ -497,7 +531,28 @@ const BrowseView = ({
         )}
 
         {/* === CALENDAR TAB === */}
-        {activeTab === 'calendar' && (
+        {activeTab === 'calendar' && !isMember && (
+          <div style={{ padding: '48px 20px', textAlign: 'center' }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#1a1d21', marginBottom: 8 }}>
+              Join {creatorName} to see events
+            </h3>
+            <p style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#9aa5b4', marginBottom: 20, maxWidth: 320, margin: '0 auto 20px' }}>
+              Follow this community to see upcoming sessions, workshops, and events.
+            </p>
+            <button
+              onClick={() => handleFollowInstructor(creator.id)}
+              style={{
+                background: '#1d9bf0', color: '#fff', border: 'none',
+                padding: '10px 24px', borderRadius: 9999, fontSize: 15,
+                fontWeight: 700, cursor: 'pointer'
+              }}
+            >
+              Join Community
+            </button>
+          </div>
+        )}
+        {activeTab === 'calendar' && isMember && (
           <div className="community-hub-calendar">
             <div className="community-hub-cal-week">
               {weekDays.map((day, i) => (
@@ -811,7 +866,7 @@ const BrowseView = ({
   };
 
   // Hide search bar when viewing instructor profile from Discover (show just the back button header)
-  const hideSearchBar = selectedInstructor && previousBrowseContext?.type === 'discover';
+  const hideSearchBar = !!selectedInstructor;
 
   return (
     <div className="main-content">

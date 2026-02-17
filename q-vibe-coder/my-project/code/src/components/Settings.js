@@ -114,7 +114,7 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
 
   // Community badge background style: 'grey' or 'white'
   const [communityBadgeBg, setCommunityBadgeBg] = useState(() => {
-    return localStorage.getItem('communityBadgeBg') || 'grey';
+    return localStorage.getItem('communityBadgeBg') || 'color';
   });
 
   // Save community badge bg preference when it changes
@@ -539,7 +539,8 @@ const Settings = ({ currentUser, onMenuChange, isDarkMode, onToggleDarkMode }) =
             <div style={{ display: 'flex', gap: 8 }}>
               {[
                 { value: 'grey', label: 'Grey' },
-                { value: 'white', label: 'White' }
+                { value: 'white', label: 'White' },
+                { value: 'color', label: 'Color' }
               ].map(option => (
                 <button
                   key={option.value}
