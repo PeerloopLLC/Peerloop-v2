@@ -42,6 +42,12 @@
 | Notion | Clean course builder UX, drag-and-drop |
 | WordPress Gutenberg | Block-based content editing |
 
+### UI Redesign (Matt MacClousky)
+
+**Figma Board:** https://www.figma.com/board/dxwQEJIwe9OjMr2njwpUXb/PeerLoop-Concepts?node-id=0-1&p=f&t=hx4Sr3MkN2X7HVRl-0
+
+Matt MacClousky was hired to rethink the PeerLoop interface. This Figma board is the first step in that process (added Feb 2026).
+
 ---
 
 ## Constraints
