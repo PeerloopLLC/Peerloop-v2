@@ -861,8 +861,8 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
                     })()}
                   </div>
 
-                  {/* Session Action Buttons - Only for enrolled users */}
-                  {isEnrolled && !isCreator && (() => {
+                  {/* Session Action Buttons - For enrolled users and course creators */}
+                  {(isEnrolled || isCreator) && (() => {
                     const scheduled = scheduledSessions.find(s => s.sessionNumber === session.number);
                     const isComplete = sessionCompletion[course?.id]?.[session.number]?.completed;
 

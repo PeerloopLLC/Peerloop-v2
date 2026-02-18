@@ -443,12 +443,8 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onV
               className={`community-selector ${isFlyoutOpen ? 'flyout-open' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                const now = Date.now();
-                const timeSinceLastClick = now - lastSelectorClickRef.current;
-                lastSelectorClickRef.current = now;
-
-                if (timeSinceLastClick < 5000 && hasFollowedCommunities) {
-                  // Second click within 5 seconds → open picker
+                if (hasFollowedCommunities) {
+                  // Always open the community picker on click
                   if (communityNavStyle === 'slideout') {
                     window.dispatchEvent(new CustomEvent('toggleSlideoutPanel'));
                   } else {
@@ -458,7 +454,7 @@ const Sidebar = ({ onMenuChange, activeMenu, currentUser, onSelectCommunity, onV
                     else clearFlyoutCloseTimer();
                   }
                 } else {
-                  // First click → navigate to the selected community
+                  // No followed communities - navigate to selected
                   handleCommunitySelect(selectedCommunity);
                 }
               }}
