@@ -7,6 +7,7 @@ import EnrollmentFlow from './EnrollmentFlow';
 import Breadcrumb from './Breadcrumb';
 import './CommunityHub.css';
 import { getInstructorById, getCourseById, getInstructorWithCourses, iconConfig } from '../data/database';
+import { fakePosts } from '../data/communityPosts';
 
 // Generate course abbreviation from title (matching DiscoverView.js)
 const getCourseAbbreviation = (title) => {
@@ -88,6 +89,8 @@ const BrowseView = ({
   // State for profile tabs (courses vs general content)
   const [activeProfileTab, setActiveProfileTab] = useState('courses');
   const [selectedContentItem, setSelectedContentItem] = useState(null);
+  // State for selected course pill in feed (null = Town Hall, or { id, title })
+  const [selectedFeedCourse, setSelectedFeedCourse] = useState(null);
 
   // Available banner colors (matching Profile.js)
   const bannerColorOptions = {
@@ -288,12 +291,20 @@ const BrowseView = ({
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M15 19l-7-7 7-7"/></svg>
               </button>
               <div className="course-pills-container" ref={pillsScrollRef}>
-                <button className="course-pill course-pill-selected">
+                <button
+                  className={`course-pill ${selectedFeedCourse === null ? 'course-pill-selected' : ''}`}
+                  onClick={() => setSelectedFeedCourse(null)}
+                >
                   <span style={{ fontSize: 13 }}>🏠</span>
                   Town Hall
                 </button>
                 {creatorCourses.filter(c => isCoursePurchased(c.id)).map(course => (
-                  <button key={course.id} className="course-pill" title={course.title}>
+                  <button
+                    key={course.id}
+                    className={`course-pill ${selectedFeedCourse?.id === course.id ? 'course-pill-selected' : ''}`}
+                    onClick={() => setSelectedFeedCourse({ id: course.id, title: course.title })}
+                    title={course.title}
+                  >
                     {course.title}
                   </button>
                 ))}
@@ -328,53 +339,123 @@ const BrowseView = ({
             </button>
           </div>
         )}
-        {activeTab === 'feed' && isMember && (
-          <div>
-            {creatorPosts.map((post, index) => (
-              <div key={index} style={{
-                padding: '16px 20px',
-                borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e8ecf1'
-              }}>
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'white', fontSize: 14, fontWeight: 700, flexShrink: 0
-                  }}>
-                    {creatorInitials}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                      <span style={{ fontWeight: 700, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#1a1d21' }}>
-                        {creator.name}
-                      </span>
-                      <span style={{ color: isDarkMode ? '#71767b' : '#9aa5b4', fontSize: 13 }}>·</span>
-                      <span style={{ color: isDarkMode ? '#71767b' : '#9aa5b4', fontSize: 13 }}>{post.time}</span>
-                    </div>
-                    <div style={{
-                      display: 'inline-block',
-                      background: post.type === 'announcement' ? '#eef3fe' : post.type === 'tip' ? '#ecfdf5' : '#fffbeb',
-                      color: post.type === 'announcement' ? '#4f7df3' : post.type === 'tip' ? '#22c55e' : '#f59e0b',
-                      padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, marginBottom: 6
-                    }}>
-                      {post.type === 'announcement' && '📢 ANNOUNCEMENT'}
-                      {post.type === 'tip' && '💡 TIP'}
-                      {post.type === 'update' && '🔔 UPDATE'}
-                    </div>
-                    <div style={{ fontSize: 15, color: isDarkMode ? '#e7e9ea' : '#1a1d21', lineHeight: 1.5, marginBottom: 8 }}>
-                      {post.content}
-                    </div>
-                    <div style={{ display: 'flex', gap: 20, fontSize: 13, color: isDarkMode ? '#71767b' : '#9aa5b4' }}>
-                      <span>💬 {post.stats.replies}</span>
-                      <span>❤️ {post.stats.likes}</span>
+        {activeTab === 'feed' && isMember && (() => {
+          // Get the instructor ID for filtering fakePosts
+          const creatorInstructorId = creator.id;
+          // Filter posts based on selected pill
+          const feedPosts = selectedFeedCourse === null
+            ? // Town Hall: show creator town hall posts + hardcoded posts
+              [
+                ...creatorPosts.map((p, i) => ({ ...p, _type: 'local', _key: `local-${i}` })),
+                ...fakePosts
+                  .filter(post => post.isCreatorTownHall && post.instructorId === creatorInstructorId)
+                  .map(post => ({
+                    _type: 'fake', _key: `fake-${post.id}`,
+                    time: post.timestamp, content: post.content,
+                    stats: { likes: post.likes, replies: post.replies },
+                    type: post.isPinned ? 'announcement' : 'tip',
+                    author: post.author, authorAvatar: post.authorAvatar,
+                    community: post.community
+                  })),
+                ...fakePosts
+                  .filter(post => !post.isCreatorTownHall && !post.isTownHallExclusive && post.communityInstructorId === creatorInstructorId)
+                  .map(post => ({
+                    _type: 'fake', _key: `fake-${post.id}`,
+                    time: post.timestamp, content: post.content,
+                    stats: { likes: post.likes, replies: post.replies },
+                    type: null,
+                    author: post.author, authorAvatar: post.authorAvatar,
+                    community: post.community
+                  }))
+              ]
+            : // Course pill: show posts matching the course title
+              fakePosts
+                .filter(post => post.community === selectedFeedCourse.title)
+                .map(post => ({
+                  _type: 'fake', _key: `fake-${post.id}`,
+                  time: post.timestamp, content: post.content,
+                  stats: { likes: post.likes, replies: post.replies },
+                  type: null,
+                  author: post.author, authorAvatar: post.authorAvatar,
+                  community: post.community
+                }));
+
+          return (
+            <div>
+              {feedPosts.length > 0 ? feedPosts.map((post) => (
+                <div key={post._key} style={{
+                  padding: '16px 20px',
+                  borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #e8ecf1'
+                }}>
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    {post.authorAvatar ? (
+                      <img src={post.authorAvatar} alt={post.author || creator.name} style={{
+                        width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', flexShrink: 0
+                      }} />
+                    ) : (
+                      <div style={{
+                        width: 40, height: 40, borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: 'white', fontSize: 14, fontWeight: 700, flexShrink: 0
+                      }}>
+                        {creatorInitials}
+                      </div>
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                        <span style={{ fontWeight: 700, fontSize: 14, color: isDarkMode ? '#e7e9ea' : '#1a1d21' }}>
+                          {post.author || creator.name}
+                        </span>
+                        <span style={{ color: isDarkMode ? '#71767b' : '#9aa5b4', fontSize: 13 }}>·</span>
+                        <span style={{ color: isDarkMode ? '#71767b' : '#9aa5b4', fontSize: 13 }}>{post.time}</span>
+                      </div>
+                      {post.type && (
+                        <div style={{
+                          display: 'inline-block',
+                          background: post.type === 'announcement' ? '#eef3fe' : post.type === 'tip' ? '#ecfdf5' : '#fffbeb',
+                          color: post.type === 'announcement' ? '#4f7df3' : post.type === 'tip' ? '#22c55e' : '#f59e0b',
+                          padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, marginBottom: 6
+                        }}>
+                          {post.type === 'announcement' && '📢 ANNOUNCEMENT'}
+                          {post.type === 'tip' && '💡 TIP'}
+                          {post.type === 'update' && '🔔 UPDATE'}
+                        </div>
+                      )}
+                      {post.community && selectedFeedCourse !== null && (
+                        <div style={{
+                          display: 'inline-block',
+                          background: isDarkMode ? 'rgba(29, 155, 240, 0.15)' : '#eef3fe',
+                          color: '#1d9bf0',
+                          padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, marginBottom: 6
+                        }}>
+                          in {post.community}
+                        </div>
+                      )}
+                      <div style={{ fontSize: 15, color: isDarkMode ? '#e7e9ea' : '#1a1d21', lineHeight: 1.5, marginBottom: 8 }}>
+                        {post.content}
+                      </div>
+                      <div style={{ display: 'flex', gap: 20, fontSize: 13, color: isDarkMode ? '#71767b' : '#9aa5b4' }}>
+                        <span>💬 {post.stats.replies}</span>
+                        <span>❤️ {post.stats.likes}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              )) : (
+                <div style={{ padding: '48px 20px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 40, marginBottom: 12 }}>📭</div>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#1a1d21', marginBottom: 8 }}>
+                    No posts yet
+                  </h3>
+                  <p style={{ fontSize: 14, color: isDarkMode ? '#71767b' : '#9aa5b4' }}>
+                    Be the first to start a discussion in this course!
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* === COURSES TAB === */}
         {activeTab === 'courses' && (
