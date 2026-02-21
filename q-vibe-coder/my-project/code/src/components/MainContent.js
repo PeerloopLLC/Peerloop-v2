@@ -724,11 +724,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
           return parsed;
         }
       }
-      // demo_new, demo_sarah, and demo_alex start with no default sessions (fresh users)
-      if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah' || currentUser.id === 'demo_alex') {
-        return [];
-      }
-      // Default: sample sessions for other users with Guy Rymberg courses
+      // Default: sample sessions for all users with Guy Rymberg courses
       // These match the purchased courses: [15, 22, 23, 24, 25]
       const today = new Date();
       const defaultSessions = [
@@ -802,13 +798,7 @@ const MainContent = ({ activeMenu, currentUser, onSwitchUser, onMenuChange, isDa
         }
       }
 
-      // demo_new, demo_sarah, and demo_alex start with no default sessions (fresh users)
-      if (currentUser.id === 'demo_new' || currentUser.id === 'demo_sarah' || currentUser.id === 'demo_alex') {
-        setScheduledSessions([]);
-        return;
-      }
-
-      // Generate default sessions for other users with Guy Rymberg courses
+      // Generate default sessions for all users with Guy Rymberg courses
       const today = new Date();
       const defaultSessions = [
         {

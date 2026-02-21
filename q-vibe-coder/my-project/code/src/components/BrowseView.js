@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FaBook, FaUser, FaSearch, FaFolder, FaPlay, FaFileAlt, FaLink } from 'react-icons/fa';
 import { AiOutlineStar, AiOutlineTeam, AiOutlineClockCircle, AiOutlineBarChart } from 'react-icons/ai';
@@ -8,6 +8,8 @@ import Breadcrumb from './Breadcrumb';
 import './CommunityHub.css';
 import { getInstructorById, getCourseById, getInstructorWithCourses, iconConfig } from '../data/database';
 import { fakePosts } from '../data/communityPosts';
+import PostComposer from './PostComposer';
+import { createPost, getPosts } from '../services/posts';
 
 // Generate course abbreviation from title (matching DiscoverView.js)
 const getCourseAbbreviation = (title) => {
@@ -91,6 +93,51 @@ const BrowseView = ({
   const [selectedContentItem, setSelectedContentItem] = useState(null);
   // State for selected course pill in feed (null = Town Hall, or { id, title })
   const [selectedFeedCourse, setSelectedFeedCourse] = useState(null);
+  // Post composer state
+  const [newPostText, setNewPostText] = useState('');
+  const [isComposerFocused, setIsComposerFocused] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
+  const [postError, setPostError] = useState(null);
+  const [realPosts, setRealPosts] = useState([]);
+
+  // Load real posts from Supabase
+  useEffect(() => {
+    const loadPosts = async () => {
+      const result = await getPosts();
+      if (result.success) setRealPosts(result.posts);
+    };
+    loadPosts();
+  }, []);
+
+  // Listen for posts created from compose modal
+  useEffect(() => {
+    const handleNewPost = (e) => {
+      if (e.detail) setRealPosts(prev => [e.detail, ...prev]);
+    };
+    window.addEventListener('newPostCreated', handleNewPost);
+    return () => window.removeEventListener('newPostCreated', handleNewPost);
+  }, []);
+
+  const handleSubmitPost = async () => {
+    if (!newPostText.trim() || isPosting) return;
+    setIsPosting(true);
+    setPostError(null);
+    const audience = selectedFeedCourse ? selectedFeedCourse.title : 'everyone';
+    const result = await createPost(
+      currentUser?.id || 'anonymous',
+      currentUser?.name || 'Anonymous User',
+      newPostText.trim(),
+      audience
+    );
+    if (result.success) {
+      setRealPosts(prev => [result.post, ...prev]);
+      setNewPostText('');
+      setIsComposerFocused(false);
+    } else {
+      setPostError(result.error || 'Failed to create post');
+    }
+    setIsPosting(false);
+  };
 
   // Available banner colors (matching Profile.js)
   const bannerColorOptions = {
@@ -342,10 +389,38 @@ const BrowseView = ({
         {activeTab === 'feed' && isMember && (() => {
           // Get the instructor ID for filtering fakePosts
           const creatorInstructorId = creator.id;
+
+          // Format real posts from Supabase
+          const formatTimeAgo = (timestamp) => {
+            if (!timestamp) return 'just now';
+            const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+            if (seconds < 60) return 'just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
+            return new Date(timestamp).toLocaleDateString();
+          };
+          const formattedRealPosts = realPosts
+            .filter(post => {
+              if (selectedFeedCourse === null) return post.audience === 'everyone';
+              return post.audience === selectedFeedCourse.title;
+            })
+            .map(post => ({
+              _type: 'real', _key: `real-${post.id}`,
+              time: formatTimeAgo(post.created_at), content: post.content,
+              stats: { likes: post.likes || 0, replies: post.comments || 0 },
+              type: null,
+              author: post.user_name,
+              authorAvatar: currentUser?.avatar,
+              community: post.audience === 'everyone' ? 'Everyone' : post.audience,
+              isRealPost: true
+            }));
+
           // Filter posts based on selected pill
           const feedPosts = selectedFeedCourse === null
-            ? // Town Hall: show creator town hall posts + hardcoded posts
+            ? // Town Hall: show real posts + creator town hall posts + hardcoded posts
               [
+                ...formattedRealPosts,
                 ...creatorPosts.map((p, i) => ({ ...p, _type: 'local', _key: `local-${i}` })),
                 ...fakePosts
                   .filter(post => post.isCreatorTownHall && post.instructorId === creatorInstructorId)
@@ -368,20 +443,36 @@ const BrowseView = ({
                     community: post.community
                   }))
               ]
-            : // Course pill: show posts matching the course title
-              fakePosts
-                .filter(post => post.community === selectedFeedCourse.title)
-                .map(post => ({
-                  _type: 'fake', _key: `fake-${post.id}`,
-                  time: post.timestamp, content: post.content,
-                  stats: { likes: post.likes, replies: post.replies },
-                  type: null,
-                  author: post.author, authorAvatar: post.authorAvatar,
-                  community: post.community
-                }));
+            : // Course pill: show real posts + posts matching the course title
+              [
+                ...formattedRealPosts,
+                ...fakePosts
+                  .filter(post => post.community === selectedFeedCourse.title)
+                  .map(post => ({
+                    _type: 'fake', _key: `fake-${post.id}`,
+                    time: post.timestamp, content: post.content,
+                    stats: { likes: post.likes, replies: post.replies },
+                    type: null,
+                    author: post.author, authorAvatar: post.authorAvatar,
+                    community: post.community
+                  }))
+              ];
 
           return (
             <div>
+              <PostComposer
+                currentUser={currentUser}
+                newPostText={newPostText}
+                setNewPostText={setNewPostText}
+                isComposerFocused={isComposerFocused}
+                setIsComposerFocused={setIsComposerFocused}
+                isPosting={isPosting}
+                postError={postError}
+                onSubmit={handleSubmitPost}
+                isDarkMode={isDarkMode}
+                communityMode="creators"
+                selectedCourseFilters={selectedFeedCourse ? [{ name: selectedFeedCourse.title }] : []}
+              />
               {feedPosts.length > 0 ? feedPosts.map((post) => (
                 <div key={post._key} style={{
                   padding: '16px 20px',

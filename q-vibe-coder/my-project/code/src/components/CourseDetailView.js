@@ -7,6 +7,7 @@ import SessionTimelineCards from './SessionTimelineCards';
 import { getCourseFiles, uploadCourseFile, addCourseFileLink, deleteCourseFile, formatFileSize } from '../services/courseFiles';
 import { uploadHomework, getStudentHomework, replaceHomework, formatFileSize as formatHomeworkSize } from '../services/homeworkFiles';
 import CourseMessages from './CourseMessages';
+import { createPost, getPosts } from '../services/posts';
 import './MainContent.css';
 
 /**
@@ -1215,6 +1216,7 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
   const [expandedModules, setExpandedModules] = useState({});
   const [newPostText, setNewPostText] = useState('');
   const [isPosting, setIsPosting] = useState(false);
+  const [realPosts, setRealPosts] = useState([]);
   const [isJoiningSession, setIsJoiningSession] = useState(false);
   const [showBbbModal, setShowBbbModal] = useState(false);
   const [bbbJoinUrl, setBbbJoinUrl] = useState(null);
@@ -1347,14 +1349,39 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
   const nextActionable = isCoursePurchased ? getNextActionableSession() : null;
 
   // Handle post submission
+  // Load real posts from Supabase
+  useEffect(() => {
+    const loadPosts = async () => {
+      const result = await getPosts();
+      if (result.success) setRealPosts(result.posts);
+    };
+    loadPosts();
+  }, []);
+
+  // Listen for posts created from compose modal
+  useEffect(() => {
+    const handleNewPost = (e) => {
+      if (e.detail) setRealPosts(prev => [e.detail, ...prev]);
+    };
+    window.addEventListener('newPostCreated', handleNewPost);
+    return () => window.removeEventListener('newPostCreated', handleNewPost);
+  }, []);
+
   const handleSubmitPost = async () => {
     if (!newPostText.trim() || isPosting) return;
     setIsPosting(true);
-    // For now, just clear the post (would connect to backend later)
-    setTimeout(() => {
+    const audience = course?.title || 'everyone';
+    const result = await createPost(
+      currentUser?.id || 'anonymous',
+      currentUser?.name || 'Anonymous User',
+      newPostText.trim(),
+      audience
+    );
+    if (result.success) {
+      setRealPosts(prev => [result.post, ...prev]);
       setNewPostText('');
-      setIsPosting(false);
-    }, 500);
+    }
+    setIsPosting(false);
   };
 
   // Detect if user is on iOS/iPad/mobile Safari (iframe restrictions)
@@ -3467,6 +3494,49 @@ const CourseDetailView = ({ course, onBack, isDarkMode, userStatus = null, follo
                   </div>
                 </div>
               </div>
+
+              {/* Real posts from Supabase */}
+              {realPosts
+                .filter(post => post.audience === course?.title || post.audience === 'everyone')
+                .map(post => {
+                  const seconds = Math.floor((new Date() - new Date(post.created_at)) / 1000);
+                  const timeAgo = seconds < 60 ? 'just now' : seconds < 3600 ? `${Math.floor(seconds / 60)} minutes ago` : seconds < 86400 ? `${Math.floor(seconds / 3600)} hours ago` : seconds < 604800 ? `${Math.floor(seconds / 86400)} days ago` : new Date(post.created_at).toLocaleDateString();
+                  return { id: `real-${post.id}`, author: post.user_name, authorHandle: `@${post.user_name.toLowerCase().replace(/\s/g, '')}`, authorAvatar: currentUser?.avatar, content: post.content, timestamp: timeAgo, likes: post.likes || 0, replies: post.comments || 0, retweets: 0 };
+                })
+                .map(post => (
+                <div
+                  key={post.id}
+                  style={{
+                    padding: 16,
+                    borderBottom: isDarkMode ? '1px solid #2f3336' : '1px solid #eff3f4'
+                  }}
+                >
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    {post.authorAvatar ? (
+                      <img src={post.authorAvatar} alt={post.author} style={{ width: 40, height: 40, borderRadius: '50%' }} />
+                    ) : (
+                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#1d9bf0', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>
+                        {post.author?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                        <span style={{ fontWeight: 700, color: isDarkMode ? '#e7e9ea' : '#0f1419' }}>{post.author}</span>
+                        <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>{post.authorHandle}</span>
+                        <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>·</span>
+                        <span style={{ color: isDarkMode ? '#71767b' : '#536471' }}>{post.timestamp}</span>
+                      </div>
+                      <p style={{ margin: '0 0 12px 0', color: isDarkMode ? '#e7e9ea' : '#0f1419', fontSize: 'var(--fs-15)', lineHeight: 1.5 }}>{post.content}</p>
+                      <div style={{ display: 'flex', gap: 24 }}>
+                        <button style={{ background: 'none', border: 'none', color: isDarkMode ? '#71767b' : '#536471', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13 }}><FaComment /> {post.replies}</button>
+                        <button style={{ background: 'none', border: 'none', color: isDarkMode ? '#71767b' : '#536471', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13 }}><FaRetweet /> {post.retweets}</button>
+                        <button style={{ background: 'none', border: 'none', color: isDarkMode ? '#71767b' : '#536471', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13 }}><FaHeart /> {post.likes}</button>
+                        <button style={{ background: 'none', border: 'none', color: isDarkMode ? '#71767b' : '#536471', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13 }}><FaShare /></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
 
               {/* Sample course feed posts */}
               {[
