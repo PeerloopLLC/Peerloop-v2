@@ -269,8 +269,15 @@ const CourseCurriculumSection = ({ course, isDarkMode, expandedModules, setExpan
   // Handle file download click
   const handleDownloadFile = (file, e) => {
     e.stopPropagation();
-    // If file has a URL, open it
-    if (file.url) {
+    e.preventDefault();
+    if (file.url?.startsWith('blob:')) {
+      // Locally stored file (REACT_APP_FILE_STORAGE=local) - save it under its real name
+      const link = document.createElement('a');
+      link.href = file.url;
+      link.download = file.name;
+      link.click();
+    } else if (file.url) {
+      // If file has a URL, open it
       window.open(file.url, '_blank');
     } else {
       alert(`Download: ${file.name}`);

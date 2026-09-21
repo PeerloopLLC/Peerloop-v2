@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import * as localFiles from './localCourseFiles';
 
 /**
  * Course Files Service
@@ -6,9 +7,13 @@ import { supabase } from './supabase';
  *
  * Storage bucket: course-files
  * Database table: course_files
+ *
+ * Set REACT_APP_FILE_STORAGE=local (e.g. in .env.development.local) to keep
+ * files in the browser instead - see localCourseFiles.js.
  */
 
 const BUCKET_NAME = 'course-files';
+const USE_LOCAL_FILES = process.env.REACT_APP_FILE_STORAGE === 'local';
 
 /**
  * Upload a file to Supabase Storage and save metadata
@@ -20,6 +25,7 @@ const BUCKET_NAME = 'course-files';
  * @returns {Promise<{data: object, error: object}>}
  */
 export const uploadCourseFile = async (file, courseId, moduleIndex, fileType, uploadedBy) => {
+  if (USE_LOCAL_FILES) return localFiles.uploadCourseFile(file, courseId, moduleIndex, fileType, uploadedBy);
   try {
     // Generate unique filename
     const timestamp = Date.now();
@@ -83,6 +89,7 @@ export const uploadCourseFile = async (file, courseId, moduleIndex, fileType, up
  * @returns {Promise<{data: object, error: object}>}
  */
 export const addCourseFileLink = async (fileName, fileUrl, courseId, moduleIndex, fileType, uploadedBy) => {
+  if (USE_LOCAL_FILES) return localFiles.addCourseFileLink(fileName, fileUrl, courseId, moduleIndex, fileType, uploadedBy);
   try {
     const { data, error } = await supabase
       .from('course_files')
@@ -113,6 +120,7 @@ export const addCourseFileLink = async (fileName, fileUrl, courseId, moduleIndex
  * @returns {Promise<{data: object[], error: object}>}
  */
 export const getCourseFiles = async (courseId) => {
+  if (USE_LOCAL_FILES) return localFiles.getCourseFiles(courseId);
   try {
     const { data, error } = await supabase
       .from('course_files')
@@ -134,6 +142,7 @@ export const getCourseFiles = async (courseId) => {
  * @returns {Promise<{data: object[], error: object}>}
  */
 export const getModuleFiles = async (courseId, moduleIndex) => {
+  if (USE_LOCAL_FILES) return localFiles.getModuleFiles(courseId, moduleIndex);
   try {
     const { data, error } = await supabase
       .from('course_files')
@@ -156,6 +165,7 @@ export const getModuleFiles = async (courseId, moduleIndex) => {
  * @returns {Promise<{data: object, error: object}>}
  */
 export const updateFileLoadInBbb = async (fileId, loadInBbb) => {
+  if (USE_LOCAL_FILES) return localFiles.updateFileLoadInBbb(fileId, loadInBbb);
   try {
     const { data, error } = await supabase
       .from('course_files')
@@ -178,6 +188,7 @@ export const updateFileLoadInBbb = async (fileId, loadInBbb) => {
  * @returns {Promise<{error: object}>}
  */
 export const deleteCourseFile = async (fileId, filePath) => {
+  if (USE_LOCAL_FILES) return localFiles.deleteCourseFile(fileId);
   try {
     // Delete from storage if it's an uploaded file
     if (filePath) {

@@ -600,7 +600,7 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
                           />
                           BBB
                         </label>
-                        <a href={file.file_url} target="_blank" rel="noopener noreferrer" style={{ padding: '4px 10px', border: `1px solid ${accentBlue}`, color: accentBlue, borderRadius: 4, fontSize: 12, textDecoration: 'none' }}>View</a>
+                        <a href={file.file_url} target="_blank" rel="noopener noreferrer" download={file.file_url?.startsWith('blob:') ? file.file_name : undefined} style={{ padding: '4px 10px', border: `1px solid ${accentBlue}`, color: accentBlue, borderRadius: 4, fontSize: 12, textDecoration: 'none' }}>View</a>
                         <button onClick={() => handleDeleteFile(file.id, file.file_path, getLessonModuleIndex())} style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', border: 'none', borderRadius: 4, color: '#ef4444', cursor: 'pointer' }}><FaTrash size={12} /></button>
                       </div>
                     ))}
@@ -698,7 +698,7 @@ const CourseBuilder = ({ isDarkMode = true, onClose, onSave, initialCourse = nul
                           />
                           BBB
                         </label>
-                        <a href={file.file_url} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 12px', background: accentBlue + '20', color: accentBlue, borderRadius: 6, fontSize: 12, textDecoration: 'none' }}>View</a>
+                        <a href={file.file_url} target="_blank" rel="noopener noreferrer" download={file.file_url?.startsWith('blob:') ? file.file_name : undefined} style={{ padding: '6px 12px', background: accentBlue + '20', color: accentBlue, borderRadius: 6, fontSize: 12, textDecoration: 'none' }}>View</a>
                         <button onClick={() => handleDeleteFile(file.id, file.file_path, encodeModuleIndex(selectedSession, 0))} style={{ padding: 6, background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><FaTrash size={12} /></button>
                       </div>
                     ))}
